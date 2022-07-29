@@ -1,0 +1,239 @@
+﻿@{ ViewData["Title"] = "Manage Users";
+    Layout = "_Layout"; }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfDepartment tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+    function ShowSelectedZonesBranches() {
+        if ($('#zoneSearchField option:selected').val() == 0) {
+            $('#brSearchField').empty();
+            $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>');
+        }
+        else {
+            $('#brSearchField').empty();
+            $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>')
+            $.ajax({
+                url: "/Planning/zone_branches",
+                type: "POST",
+                data: {
+                    'zone_code': $('#zoneSearchField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    g_userList = data;
+                    $.each(data, function (index, branch) {
+                        $('#brSearchField').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function ShowSelectedDivisionDepartments() {
+        if ($('#divSearchField option:selected').val() == 0) {
+            $('#deptSearchField').empty();
+            $('#deptSearchField').append('<option value="0" id="0">--Select Audit Department--</option>')
+        }
+        else {
+            $('#deptSearchField').empty();
+            $('#deptSearchField').append('<option value="0" id="0">--Select Audit Department--</option>')
+
+            $.ajax({
+                url: "/Planning/div_departments",
+                type: "POST",
+                data: {
+                    'div_code': $('#divSearchField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    
+                   $.each(data, function (index, dept) {
+                        $('#deptSearchField').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+            getSubEntities();
+        }
+    }
+    function findButtonClickHandler() {
+        $('#userListTable tbody').empty();
+        $.ajax({
+            url: "/AdministrationPanel/find_users",
+            type: "POST",
+            data: {
+                'PPNumber': $('#ppnoSearchField').val()
+            },
+            cache: false,
+            success: function (data) {
+                
+                g_userList = data;
+                $.each(data, function (index, user) {
+                    $('#userListTable tbody').append('<tr><td>' + user.name + '</td><td>' + user.ppNumber + '</td><td>' + user.userPostingZone + '</td><td>' + user.userPostingBranch + '</td><td>' + user.userPostingDiv + '</td><td>' + user.userPostingDept + '</td><td>' + user.email + '</td><td>' + user.userGroupID + '</td><td>' + user.isActive +'</td></tr>')
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+
+</script>
+
+<div class="row col-md-12 mt-3">
+    <h3>Manage Users</h3>
+</div>
+
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>P.P.No.</label>
+    </div>
+    <div class="col-md-4">
+        <input id="ppnoSearchField" type="text" class="form-control" placeholder="P.P.Number" aria-label="P.P.Number" aria-describedby="basic-addon2">
+    </div>
+    <div class="col-md-2">
+        <label>login Name</label>
+    </div>
+    <div class="col-md-4">
+        <input id="loginSearchField" class="form-control" type="text" />
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Division</label>
+    </div>
+    <div class="col-md-4">
+        <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Division--</option>
+            @{
+                if (ViewData["DivisionList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["DivisionList"]))
+                    {
+                        <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
+                    }
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label>Department</label>
+    </div>
+    <div class="col-md-4">
+        <select id="deptSearchField" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Department--</option>
+        </select>
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Zone</label>
+    </div>
+    <div class="col-md-4">
+        <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Zone--</option>
+            @{
+                if (ViewData["ZoneList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["ZoneList"]))
+                    {
+                        <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                    }
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label>Branches</label>
+    </div>
+    <div class="col-md-4">
+        <select id="brSearchField" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Branch--</option>
+        </select>
+    </div>
+</div>
+
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Password</label>
+    </div>
+    <div class="col-md-4">
+        <input id="passSearchField" type="password" class="form-control"/>
+    </div>
+    <div class="col-md-2">
+        <label>Confirm Password</label>
+    </div>
+    <div class="col-md-4">
+        <input id="conPassSearchField" class="form-control" type="password" />
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Email</label>
+    </div>
+    <div class="col-md-10">
+        <input id="emailSearchField" class="form-control" type="text" />
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Group/Role</label>
+    </div>
+    <div class="col-md-10">
+        <select id="roleSearchField" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Group--</option>
+            @{
+                if (ViewData["GroupList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["GroupList"]))
+                    {
+                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                    }
+                }
+            }
+        </select>
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Is Active</label>
+    </div>
+    <div class="col-md-10">
+        <input id="isActiveSearchField" type="checkbox" />
+    </div>
+</div>
+<div class="row col-md-12 mt-1">
+     <button onclick="findButtonClickHandler();" class="btn btn-danger col-md-2" style="margin-left:auto;">Find</button>
+    
+</div>
+<div class="mt-1">
+    <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" id="userListTable">
+        <thead>
+            <tr>
+                <td style="text-align:left;"><h6>User Name</h6></td>
+                <td style="text-align:left;"><h6>P.P. No.</h6></td>
+                <td style="text-align:left;"><h6>Zone</h6></td>
+                <td style="text-align:left;"><h6>Branch</h6></td>
+                <td style="text-align:left;"><h6>Division</h6></td>
+                <td style="text-align:left;"><h6>Department</h6></td>
+                <td style="text-align:left;"><h6>Email</h6></td>
+                <td style="text-align:left;"><h6>Group/Role</h6></td>
+                <td style="text-align:left;"><h6>Is Active</h6></td>
+            </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+    </table>
+</div>
+
+
+
+

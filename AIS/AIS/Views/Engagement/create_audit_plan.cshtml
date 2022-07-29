@@ -1,0 +1,164 @@
+﻿@{
+    ViewData["Title"] = "Join";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    $('#document').ready(function () {
+        $('#sidebar_policy').hide();
+    });
+</script>
+
+<div class="row mt-3">
+    <center class="row">
+        <h4>Create Audit Plan</h4>
+    </center>
+</div>
+
+<div>
+    <center class="w-100">
+        <table class="table table-bordered table-sm mb-0 mt-3 bg-white table-hover table-striped" style="width:600px" id="Joining Report">
+            <thead>
+                <tr>
+                    <td style="text-align:left;" colspan="8"><h6>Audit Plan</h6></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="600">Audit Period</td>
+                    <td width="600"></td>
+                </tr>
+                <tr>
+                    <td width="600" rowspan="4">Entity Details</td>
+                </tr>
+                <tr>
+                    <td width="600">Division:</td>
+
+                </tr>
+                <tr>
+                    <td width="600">Department:</td>
+                </tr>
+                <tr>
+                    <td width="600">Sub-Entity:</td>
+                </tr>
+                <tr>
+                    <td width="600" rowspan="4">Entity Details</td>
+                </tr>
+                <tr>
+                    <td width="600">Zone:</td>
+                </tr>
+                <tr>
+                    <td width="600">Branch:</td>
+                </tr>
+                <tr>
+                    <td width="600">Sub-Entity:</td>
+                </tr>
+                <tr>
+                    <td width="600" rowspan="3">Execution Period</td>
+                </tr>
+                <tr>
+                    <td width="600">Start Date: <input class="form-select form-control" type="date" /></td>
+                </tr>
+                <tr>
+                    <td width="600">End Date:</td>
+                </tr>
+                <tr>
+                    <td width="600" rowspan="3">Operation Period</td>
+                </tr>
+                <tr>
+                    <td width="600">Start Date: <input class="form-select form-control" type="date" /></td>
+                </tr>
+                <tr>
+                    <td width="600">End Date:</td>
+                </tr>
+                <tr>
+                    <td width="600">Select Audit Team</td>
+                    <td width="600">
+                        <select id="periodSelectionBox" class="form-select form-control">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="600">Instructions for Auditor</td>
+                    <td width="600"><input class="form-select form-control" type="text" /></td>
+                </tr>
+                <tr>
+                    <td width="600">Is Travelling Required</td>
+                    <td width="600"><input type="checkbox" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</div>
+<div class="row mt-3">
+    <div class="col-md-6 mt-5">
+        <button class="btn-primary" style="float:right;">Save</button>
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="Plan Review">
+        <thead>
+            <tr>
+                <th>Audit Period</th>
+                <th>Entity Details</th>
+                <th>Execution Period</th>
+                <th>Operation Period</th>
+                <th>Audit Team</th>
+                <th>Instructions</th>
+                <th>Is Treavelling Required</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="row mt-3">
+            <div class="col-md-6 mt-5">
+                <button class="btn-primary" style="float:right;">Submit</button>
+            </div>
+</div>

@@ -1,0 +1,125 @@
+﻿@{
+    ViewData["Title"] = "Menu Assignment";
+    Layout = "_Layout";
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.menu_page_selectAll').on('click', function () {
+
+            if ($('.menu_page_selectAll').is(':checked'))
+                $('.menu_page_tick').attr('checked', true);
+            else
+                $('.menu_page_tick').attr('checked', false);
+
+        });
+
+
+    });
+    function showPagesBlock() {
+
+        if ($('#menuSelectionBox option:selected').val() == 0) {
+            $('.pagesBlock').addClass('d-none');
+
+        }
+        else {
+            $('.menu_page_tick').attr('checked', false);
+            $('.pagesBlock').addClass('d-none');
+            $.ajax({
+                url: "/AdministrationPanel/menu_pages",
+                type: "POST",
+                data: {
+                    'MENU_ID': $('#menuSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $('.menu_page_tick').attr('checked', false);
+                    $.each(data, function (index, page) {
+                        $('#pagemenuitem_' + page.id).attr('checked', true);
+                       // $('#menuPagesArea').append('<div class="col-md-4"><div class= "row col-md-12" ><div class="col-md-2"><input checked="checked" id="' + page.id + '" class="menu_page_tick" type="checkbox" /></div><div class="col-md-10"><label class="font-weight-normal">' + page.page_Name+'</label></div></div></div>');
+                    });
+                    $('.pagesBlock').removeClass('d-none');
+                },
+                dataType: "json",
+            });
+
+        }
+    }
+</script>
+
+<div class="col-md-12" style="margin-top:20px;">
+    <h5>Menu Assignment</h5>
+    <div class="row col-md-12 d-none-1">
+        <div class="col-md-2 mt-2">
+            <label class="font-weight-normal">Group/Role</label>
+        </div>
+        <div class="col-md-10 mt-2">
+            <select id="groupSelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" selected>--Select Group/Roles--</option>
+                @{
+                    if (ViewData["GroupList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["GroupList"]))
+                        {
+                            <option value="@item.GROUP_ID" id="@item.GROUP_ID">@item.GROUP_NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12">
+        <div class="col-md-2 mt-2">
+            <label class="font-weight-normal">Menu</label>
+        </div>
+        <div class="col-md-10 mt-2">
+            <select id="menuSelectionBox" onchange="showPagesBlock();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" selected>--Select Menu--</option>
+                @{
+                    if (ViewData["MenuList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["MenuList"]))
+                        {
+                            <option value="@item.Menu_Id" id="@item.Menu_Id">@item.Menu_Name</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 pagesBlock d-none">
+        <div class="col-md-2 mt-2">
+            <label class="font-weight-normal">Pages</label>
+        </div>
+        <div class="col-md-10 mt-2">
+            <div class="row col-md-12">
+                <div style="margin-left:auto;">
+                    <input class="menu_page_selectAll" type="checkbox" /> <label class="font-weight-normal ml-2">Select All</label>
+                </div>
+            </div>
+            <div id="menuPagesArea" class="row col-md-12">
+                @{
+                    if (ViewData["MenuPagesList"] != null)
+                    {
+
+                        foreach (var item in (dynamic)(ViewData["MenuPagesList"]))
+                        {
+
+                            <div class="col-md-6">
+                                <input id="pagemenuitem_@item.Id" class="menu_page_tick" type="checkbox" /> <label class="font-weight-normal ml-2">@item.Page_Name</label>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-4">
+        <div style="margin-left:auto;">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-danger ml-2">Save Changes</button>
+        </div>
+    </div>
+
+</div>

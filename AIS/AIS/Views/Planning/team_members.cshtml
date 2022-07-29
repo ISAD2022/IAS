@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "Team Members";
+    Layout = "_Layout";
+}
+<style type="text/css">
+    .editRole {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .selectRole {
+        display: none;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        ShowEmployeeContainer();
+        $("#searchTeamFormation").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfEmployeeTeam tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+        
+    });
+   
+    function ShowEmployeeContainer() {
+        console.log($('#deptSelectionBox option:selected').val());
+        if ($('#deptSelectionBox option:selected').val() == 0)
+            $('#listOfEmployeeTeam tbody').empty();
+        else {
+            $('#listOfEmployeeTeam tbody').empty();
+            $.ajax({
+                url: "/Planning/audit_team",
+                type: "POST",
+                data: {
+                    'dept_code': $('#deptSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    var teamId = 0;
+                    var srNo = 1;
+                    var teamMembers=[];
+                    $.each(data, function (index, team) {
+                       
+                        if (team.iS_TEAMLEAD == "Y") {
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' </p></td><td class="empMembers"></td><td><small class="text-danger deleteTeam">Edit</small></td><td><small class="text-danger deleteTeam">Delete</small></td></tr>');
+                        } else
+                        {
+                            teamMembers.push(team);
+                            if (team.code != teamId) {
+                                teamId = team.code;
+                                srNo++;
+                            } 
+                        }
+                    });
+                    $.each(teamMembers, function (index, team) {
+                        if (team.iS_TEAMLEAD != "Y")
+                        {
+                            prevText = $('#listOfEmployeeTeam tbody #teamcode_' + team.code + ' .empMembers').html();
+                            if (prevText != '')
+                                prevText += ", ";
+                            $('#listOfEmployeeTeam tbody #teamcode_' + team.code + ' .empMembers').text(prevText +  team.employeename );
+                        }
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function addNewTeam() {
+        $('#setupAuditTeam').modal('show');
+    }
+    function publishNewTeamChanges() {
+
+    }
+</script>
+<div class="row d-none">
+    <h5>Select Department</h5>
+    <select id="deptSelectionBox" onchange="ShowEmployeeContainer();" class="form-select form-control" aria-label="Default select example">
+        @{
+            if (ViewData["AuditDepartments"] != null)
+            {
+                foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                {
+                    <option selected ="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                }
+            }
+        }
+
+    </select>
+</div>
+<div id="listofEmployeesContainer" class="row mt-3">
+    <div class="row mt-2 w-100">
+        <div class="col-md-6">
+            <h5>Team Formation</h5>
+        </div>
+        <div class="col-md-6" style="padding-right:0px;">
+            <button onclick="addNewTeam();" class="btn btn-danger" style="float:right;">Constitue New Team</button>
+        </div>
+    </div>
+    <table id="listOfEmployeeTeam" class="table align-middle mb-0 mt-2 bg-white table-hover table-striped">
+        <thead class="bg-light">
+            <tr>
+                <th class="col-md-1">Sr No.</th>
+                <th class="col-md-3">Team Name</th>
+                <th class="col-md-3">Team Lead</th>
+                <th class="col-md-7">Team Members</th>
+                <th class="col-md-1">Edit</th>
+                <th class="col-md-1">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+</div>
+
+<div id="setupAuditTeam" class="modal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog  modal-lg" role="document" >
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">New Audit Team</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="branchCodeModalField">Team Name</label>
+                        <input type="text" class="form-control" id="teamNameModalField" aria-describedby="brcode" placeholder="Team Name">
+
+                    </div>
+                    <div class="form-group">
+                        <div class="row col-md-12">
+                            <label class="col-md-3">Participant</label>
+                            <label class="col-md-6">Auditors</label>
+                            <label class="col-md-3">Team Lead</label>
+                        </div>
+                        <div class="row" style="padding-left:20px;">
+                            @{
+                                if (ViewData["AuditEmployees"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["AuditEmployees"]))
+                                    {
+                                        <div class="col-md-3"><input type="checkbox" /></div>
+                                        <div class="col-md-6"><label>@item.EMPLOYEEFIRSTNAME&nbsp;@item.EMPLOYEELASTNAME</label></div>
+                                        <div class="col-md-3"><input name="isTeamLead" type="radio" /></div>
+                            
+                                    }
+                                }
+                            }
+
+                            </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="publishNewTeamChanges();" type="button" class="btn btn-danger">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

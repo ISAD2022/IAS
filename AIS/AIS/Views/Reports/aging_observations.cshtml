@@ -1,0 +1,574 @@
+﻿@{
+    ViewData["Title"] = "Audit Period";
+    Layout = "_Layout";
+}
+
+
+<div class="row text-center" style="margin-top:50px;">
+    <p>POST CHANGES IN TEAM MEMBERS</p>
+
+</div>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentMain" Runat="Server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <div id="pagetitle">
+        Add/Modify Audit Plan Team
+    </div>
+    <table width="100%">
+        <tr>
+            <td colspan="6" align="center">
+                <asp:Label id="MessageLabel" runat="server" CssClass="error"
+                           EnableViewState="False" Font-Size="Small"></asp:Label>
+                <asp:UpdateProgress id="UpdateProgress1" runat="server" DisplayAfter="0">
+                    <progresstemplate>
+                        <img src="../images/25-1.gif" />
+                        <font>  Processing please wait... </font>
+                    </progresstemplate>
+                </asp:UpdateProgress>
+            </td>
+
+        </tr>
+    </table>
+    <asp:MultiView ID="MV" runat="server">
+        <asp:View ID="View1" runat="server">
+            <table width="100%">
+                <tr>
+                    <td class="FieldTitle" width="24%"> Audit Period</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td width="24%" colspan=4>
+
+                        <asp:DropDownList ID="ddlAuditPeriod" runat="server"
+                                          SkinID="SimpleDropDown" AutoPostBack="false">
+                        </asp:DropDownList>
+                        <asp:CompareValidator ID="cmpAuditVal" runat="server"
+                                              ControlToValidate="ddlAuditPeriod" SkinID="CValidator" EnableViewState="False"
+                                              Operator="NotEqual" ValueToCompare="0" Display="Dynamic">***Required</asp:CompareValidator>
+                    </td>
+                    <%--
+                    <td class="FieldTitle"> </td>
+                    <td><span style="color: #ff0000"></span></td>
+                    <td></td>
+                    --%>
+                </tr>
+
+
+                <tr>
+                    <td class="FieldTitle"> Audit Department</td>
+                    <td><span style="color: #ff0000">*</span></td>
+                    <td colspan="4">
+
+                        <asp:RadioButtonList ID="rdList" runat="server"
+                                             OnSelectedIndexChanged="rd_SelectedIndexChanged"
+                                             SkinID="SimpleRadioButton" AutoPostBack="True"
+                                             RepeatDirection="Horizontal">
+                        </asp:RadioButtonList>
+
+                        <asp:RequiredFieldValidator ID="rfvAuditDept" runat="server"
+                                                    ControlToValidate="rdList" Display="Dynamic" ErrorMessage="***Required"
+                                                    SkinID="Validator"></asp:RequiredFieldValidator>
+
+                    </td>
+
+                </tr>
+
+                <tr id="az" runat="server">
+                    <td class="FieldTitle" width="24%"> Audit Zone</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td width="24%">
+
+                        <asp:DropDownList ID="ddlAZone" runat="server"
+                                          onselectedindexchanged="ddlAZone_SelectedIndexChanged"
+                                          SkinID="SimpleDropDown" AutoPostBack="True">
+                            <asp:ListItem Value="0">Please Select---</asp:ListItem>
+                        </asp:DropDownList>
+
+                    </td>
+                    <td class="FieldTitle"> Branch</td>
+                    <td><span style="color: #ff0000">*</span></td>
+                    <td>
+                        <asp:UpdatePanel runat="server" id="UpdatePanelBranch">
+                            <ContentTemplate>
+                                <asp:DropDownList ID="ddlbranch" SkinID="SimpleDropDown" runat="server"><asp:ListItem Value="0">Please Select---</asp:ListItem></asp:DropDownList>
+                                <asp:TextBox ID="txtBrCode" runat="server" Font-Names="Verdana" MaxLength="5"
+                                             SkinID="SimpleTextBox" style="text-align:right" Width="40px"></asp:TextBox>
+                            </ContentTemplate>
+                            <Triggers>
+                                <asp:AsyncPostBackTrigger ControlID="ddlAZone"></asp:AsyncPostBackTrigger>
+                            </Triggers>
+                        </asp:UpdatePanel>
+
+                        <asp:CompareValidator ID="cmpBr" runat="server"
+                                              ControlToValidate="ddlbranch" SkinID="CValidator"
+                                              Operator="NotEqual" ValueToCompare="0" Display="Dynamic" Enabled="False"
+                                              EnableClientScript="False">***Required</asp:CompareValidator>
+                        <asp:RangeValidator ID="rvBrCode" runat="server" ControlToValidate="txtBrCode"
+                                            Display="Dynamic" EnableViewState="False" MaximumValue="99999" MinimumValue="1"
+                                            SkinID="RValidator" Type="Integer">***Valid BrCode is Required.</asp:RangeValidator>
+                        <asp:RequiredFieldValidator ID="rfvBrCode" runat="server"
+                                                    ControlToValidate="txtBrCode" Display="Dynamic" ErrorMessage="***Required"
+                                                    SkinID="Validator"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr id="div" runat="server">
+                    <td class="FieldTitle">
+                        Division
+                    </td>
+                    <td>
+                        <span style="color: #ff0000">*</span>
+                    </td>
+                    <td>
+
+                        <asp:DropDownList ID="ddlDivision" runat="server"
+                                          onselectedindexchanged="ddlDiv_SelectedIndexChanged"
+                                          SkinID="SimpleDropDown" AutoPostBack="True">
+                            <asp:ListItem Value="0">Please Select---</asp:ListItem>
+                        </asp:DropDownList>
+
+                    </td>
+                    <td class="FieldTitle">
+                        Departments
+                    </td>
+                    <td>
+                        <span style="color: #ff0000">*</span>
+                    </td>
+                    <td>
+                        <asp:UpdatePanel runat="server" id="UpdatePanelDepart">
+                            <ContentTemplate>
+                                <asp:DropDownList ID="ddlDepartments" SkinID="SimpleDropDown" runat="server"
+                                                  Width="150px">
+                                    <asp:ListItem Value="0">Please Select---</asp:ListItem>
+                                </asp:DropDownList>
+                                <asp:CompareValidator ID="cmpDepart" runat="server"
+                                                      ControlToValidate="ddlDepartments" Display="Dynamic" Operator="NotEqual"
+                                                      SkinID="CValidator" ValueToCompare="0">***Required</asp:CompareValidator>
+                            </ContentTemplate>
+                            <Triggers>
+                                <asp:AsyncPostBackTrigger ControlID="ddlDivision"></asp:AsyncPostBackTrigger>
+                            </Triggers>
+                        </asp:UpdatePanel>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="FieldTitle">
+                        Start Date <span style="font-size:8pt;font-family:Verdana">(ddMMyyyy)</span>
+                    </td>
+                    <td>
+                        <span style="color: #ff0000">*</span>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="txtStartDate" runat="server" Font-Names="Verdana"
+                                     SkinID="SimpleTextBox" Width="114px"></asp:TextBox>
+                        <asp:RegularExpressionValidator ID="REExpDate" runat="server"
+                                                        ControlToValidate="txtStartDate" Display="Dynamic" EnableViewState="False"
+                                                        SkinID="REValidator"
+                                                        ValidationExpression="^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(18|19|20)\d\d$">
+                            **Valid
+                            Date(ddMMyyyy) is required.
+                        </asp:RegularExpressionValidator>
+                        <asp:RequiredFieldValidator ID="rfvrptDate" runat="server"
+                                                    ControlToValidate="txtStartDate" Display="Dynamic" ErrorMessage="***Required"
+                                                    SkinID="Validator"></asp:RequiredFieldValidator>
+                    </td>
+                    <td class="FieldTitle">
+                        End Date <span style="font-size:8pt;font-family:Verdana">(ddMMyyyy)</span>
+                    </td>
+                    <td>
+                        <span style="color: #ff0000">*</span>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="txtEndDate" runat="server" Font-Names="Verdana"
+                                     SkinID="SimpleTextBox" Width="114px"></asp:TextBox>
+                        <asp:RegularExpressionValidator ID="REExpDate0" runat="server"
+                                                        ControlToValidate="txtEndDate" Display="Dynamic" EnableViewState="False"
+                                                        SkinID="REValidator"
+                                                        ValidationExpression="^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(18|19|20)\d\d$">
+                            **Valid
+                            Date(ddMMyyyy) is required.
+                        </asp:RegularExpressionValidator>
+                        <asp:RequiredFieldValidator ID="rfvrptDate0" runat="server"
+                                                    ControlToValidate="txtEndDate" Display="Dynamic" ErrorMessage="***Required"
+                                                    SkinID="Validator"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+
+                <tr id="auditDays" runat="server">
+                    <td width="20%" class="FieldTitle"> Days For Audit</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td width="24%">
+                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtDaysForAudit" style="text-align:right"
+                                     Font-Names="Verdana" Width="79px" MaxLength="3"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvDays" runat="server"
+                                                    ControlToValidate="txtDaysForAudit" SkinID="Validator" Display="Dynamic"
+                                                    ErrorMessage="***Required" EnableViewState="False"></asp:RequiredFieldValidator>
+                        &nbsp;<asp:RangeValidator ID="rvDaysFAu" runat="server" ControlToValidate="txtDaysForAudit"
+                                                  Display="Dynamic" EnableViewState="False" MaximumValue="100"
+                                                  MinimumValue="1" SkinID="RValidator" Type="Integer">
+                            ***Valid Number is
+                            Required.
+                        </asp:RangeValidator>
+                    </td>
+                    <td class="FieldTitle" width="24%"> No Of Days For Discussion</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td>
+                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtDaysForDiscussion" style="text-align:center"
+                                     Font-Names="Verdana" Width="66px" MaxLength="3"></asp:TextBox>
+                        &nbsp;<asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtTotal" style="text-align:right"
+                                           Font-Names="Verdana" Width="66px" MaxLength="3" BackColor="#6666FF"
+                                           ForeColor="White" ReadOnly="True"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvDaysDiss"
+                                                    runat="server" ControlToValidate="txtDaysForDiscussion" Display="Dynamic"
+                                                    ErrorMessage="***Required" SkinID="Validator"></asp:RequiredFieldValidator>
+                        &nbsp;<asp:RangeValidator ID="rvDaysFDiss" runat="server"
+                                                  ControlToValidate="txtDaysForDiscussion" Display="Dynamic"
+                                                  EnableViewState="False" MaximumValue="100" MinimumValue="1" SkinID="RValidator"
+                                                  Type="Integer">***Valid Number is Required.</asp:RangeValidator>
+                    </td>
+                </tr>
+
+                <tr id="NoOfLC" runat="server">
+                    <td width="20%" class="FieldTitle"> Nos Of LCs/Vouchers</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td width="24%">
+                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtLCCount" style="text-align:Right"
+                                     Font-Names="Verdana" Width="74px" MaxLength="6"></asp:TextBox>
+                        -<asp:TextBox ID="txtNoVoucher" runat="server" Font-Names="Verdana"
+                                      MaxLength="6" SkinID="SimpleTextBox" style="text-align:Right" Width="74px"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RFVLC" runat="server"
+                                                    ControlToValidate="txtLCCount" SkinID="Validator" Display="Dynamic"
+                                                    ErrorMessage="***Required" EnableViewState="False"></asp:RequiredFieldValidator>
+                        &nbsp;<asp:RangeValidator ID="RVLCCNT" runat="server" ControlToValidate="txtLCCount"
+                                                  Display="Dynamic" EnableViewState="False" MaximumValue="99999999"
+                                                  MinimumValue="1" SkinID="RValidator" Type="Integer">
+                            Valid LC Count is
+                            Required.
+                        </asp:RangeValidator>
+                        <asp:RangeValidator ID="RVLCCNT0" runat="server"
+                                            ControlToValidate="txtNoVoucher" Display="Dynamic" EnableViewState="False"
+                                            MaximumValue="99999999" MinimumValue="1" SkinID="RValidator" Type="Integer">
+                            ***Valid
+                            Voucher No is Required.
+                        </asp:RangeValidator>
+                    </td>
+                    <td class="FieldTitle" width="24%"> Amount Disbursed</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td>
+                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtAmountDisbursed" style="text-align:Right"
+                                     Font-Names="Verdana" Width="120px" MaxLength="10"></asp:TextBox>
+                        &nbsp;<asp:RequiredFieldValidator ID="rfvAmntDisb"
+                                                          runat="server" ControlToValidate="txtAmountDisbursed" Display="Dynamic"
+                                                          ErrorMessage="***Required" SkinID="Validator"></asp:RequiredFieldValidator>
+                        &nbsp;<asp:RangeValidator ID="rvAmntDisb" runat="server"
+                                                  ControlToValidate="txtAmountDisbursed" Display="Dynamic"
+                                                  EnableViewState="False" MaximumValue="9999999999" MinimumValue="1" SkinID="RValidator"
+                                                  Type="Double">***Valid Number is Required.</asp:RangeValidator>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="20%" class="FieldTitle"> Description</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td colspan="4">
+                        <asp:TextBox ID="txtRemarks" runat="server" Font-Names="Verdana"
+                                     SkinID="SimpleTextBox" Width="400px" MaxLength="100"></asp:TextBox>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td width="20%" class="FieldTitle"> Team </td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td colspan="4">
+                        <asp:UpdatePanel runat="server" id="updateListMembers">
+                            <ContentTemplate>
+                                <asp:RadioButtonList ID="chkListTeamMembers" AutoPostBack="true" OnSelectedIndexChanged="chkListTeamSelectedIndexChanged" SkinID="SimpleRadioButton" Font-Size="8" runat="server" RepeatColumns="3">
+                                </asp:RadioButtonList>
+                            </ContentTemplate>
+                            <Triggers>
+                                <asp:AsyncPostBackTrigger ControlID="ddlAZone"></asp:AsyncPostBackTrigger>
+                            </Triggers>
+                        </asp:UpdatePanel>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td width="20%" class="FieldTitle"> Members</td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td colspan="4">
+                        <asp:UpdatePanel runat="server" id="UpdatePanel1">
+                            <ContentTemplate>
+                                <asp:RadioButtonList ID="rdEmployees" SkinID="SimpleRadioButton" Font-Size="8" runat="server" RepeatColumns="3">
+                                </asp:RadioButtonList>
+                            </ContentTemplate>
+                            <Triggers>
+                                <asp:AsyncPostBackTrigger ControlID="chkListTeamMembers"></asp:AsyncPostBackTrigger>
+                            </Triggers>
+                        </asp:UpdatePanel>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="FieldTitle" width="20%">
+                    </td>
+                    <td width="1%">
+                        &nbsp;
+                    </td>
+                    <td colspan="2">
+                        <asp:Button ID="btnSubmit" runat="server" onclick="btnSave_Click"
+                                    SkinID="SimpleButton" Text="Save" Visible="False" />
+                        &nbsp;&nbsp;<asp:Button ID="btnClearMain" runat="server" CausesValidation="False"
+                                                onclick="btnMainjClear_Click" SkinID="SimpleButton" Text="Clear"
+                                                Visible="False" />
+                        &nbsp;<asp:Button ID="btnSavAndSubmit" runat="server"
+                                          onclick="btnSaveNSubmit_Click" SkinID="SimpleButton"
+                                          Text="Save &amp; Submit"
+                                          onclientclick="javascript:return confirm('Are you sure you want to Save and submit this Information.After Submission Information cant be change?')"
+                                          Visible="False" />
+                        &nbsp;
+                    </td>
+
+                    <td width="1%">
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="6" align="center">
+
+
+                        <asp:GridView ID="gvMain" runat="server" AllowSorting="true"
+                                      AutoGenerateColumns="false" DataKeyNames="PPNO"
+                                      EmptyDataText="Plan Member." PageSize="10" SkinID="SampleGridView"
+                                      width="100%">
+                            <pagersettings Position="TopAndBottom" />
+                            <columns>
+                                <asp:BoundField DataField="ppno" HeaderText="ppno">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="70px" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="70px" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="empName" HeaderText="Employee Name">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="130" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="130" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="deptDesc" HeaderText="Department Name">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="120" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="120" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="zonename" HeaderText="Audit Zone">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="100" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="100" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="RANK" HeaderText="Rank">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="100" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="100" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="is_teamlead" HeaderText="Team Lead">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="center"
+                                               Width="30" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="center"
+                                                 Width="30" />
+                                </asp:BoundField>
+
+                                <asp:TemplateField HeaderText="Select">
+                                    <ItemTemplate>
+                                        <asp:CheckBox ID="chk" runat="server" SkinID="SimpleCheckBox" />
+                                    </ItemTemplate>
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Center" Width="30px" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Center" Width="30px" />
+
+                                </asp:TemplateField>
+
+                            </columns>
+                        </asp:GridView>
+                    </td>
+
+
+                </tr>
+
+                <tr>
+                    <td class="FieldTitle" width="24%">
+                        <asp:Button ID="btnAPDelete" runat="server" onclick="btnDeletePlan_Click"
+                                    SkinID="SimpleButton" Text="Delete Plan" Width="88px" />
+                    </td>
+                    <td width="1%">&nbsp;</td>
+                    <%--
+                    <td width="24%">
+                    </td>
+                    <td class="FieldTitle"> </td>--%>
+
+                    <td align="right" colspan="4">
+                        &nbsp;<asp:Button ID="btnAddNew" runat="server" onclick="btnAddNew_Click"
+                                          SkinID="SimpleButton" Text="Add New" Width="84px" />
+                        &nbsp;<asp:Button ID="btnFinalSubmit" runat="server" onclick="btnFinalSubmit_Click"
+                                          SkinID="SimpleButton" Text="Replace" Width="61px" Visible="False" />
+                        &nbsp;<asp:Button ID="btnInActive" runat="server" onclick="btnInactive_Click"
+                                          SkinID="SimpleButton" Text="Delete" Width="54px" />
+                        &nbsp;<asp:Button ID="btnSelectLead" runat="server" onclick="btnCahangeLead_Click"
+                                          SkinID="SimpleButton" style="margin-left: 18px" Text="Change Lead"
+                                          Width="101px" />
+                    </td>
+                </tr>
+
+            </table>
+
+        </asp:View>
+
+        <asp:View ID="View2" runat="server">
+            <table width="100%">
+                <%--
+                <tr>
+                    <td colspan="6" align="center">
+                        <asp:DetailsView ID="dv" SkinID="SampleDetailsView" runat="server" AllowPaging="false"
+                                         AutoGenerateRows="False"
+                                         Height="50px" Width="500px">
+
+                            <Fields>
+                                <asp:BoundField DataField="TRAN_DATE" HeaderText="Tran Date" HtmlEncode="false" DataFormatString="{0:dd-MM-yyyy}" />
+                                <asp:BoundField DataField="BRANCHCode" HeaderText="Branch Code" />
+                                <asp:BoundField DataField="category_code" HeaderText="Category" />
+                                <asp:BoundField DataField="catName" HeaderText="Description" />
+                                <asp:BoundField DataField="borrowercode" HeaderText="Borrower Code" />
+                                <asp:BoundField DataField="description" HeaderText="Description" />
+                            </Fields>
+
+                            <HeaderTemplate>
+                                Borrower Information
+                            </HeaderTemplate>
+                        </asp:DetailsView>
+
+                    </td>
+                </tr>--%>
+                <%--
+                <tr>
+                    <td class="FieldTitle" width="24%"> PPNO </td>
+                    <td width="1%"><span style="color: #ff0000">*</span></td>
+                    <td width="24%">
+
+
+
+                        <asp:TextBox ID="txtPPNO" runat="server" Font-Names="Verdana" MaxLength="3"
+                                     SkinID="SimpleTextBox" style="text-align:center" Width="79px"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvDays0" runat="server"
+                                                    ControlToValidate="txtPPNO" Display="Dynamic" ErrorMessage="***Required"
+                                                    SkinID="Validator"></asp:RequiredFieldValidator>
+                        <asp:RangeValidator ID="rvDaysFAu0" runat="server"
+                                            ControlToValidate="txtDaysForAudit" Display="Dynamic" EnableViewState="False"
+                                            MaximumValue="100" MinimumValue="1" SkinID="RValidator" Type="Integer">
+                            ***Valid
+                            Number is Required.
+                        </asp:RangeValidator>
+
+
+
+                    </td>
+                    <td class="FieldTitle"> </td>
+                    <td>&nbsp;</td>
+                    <td>
+                    </td>
+                </tr>--%>
+
+                <%--
+                <tr>
+                    <td class="FieldTitle" width="24%"> &nbsp;</td>
+                    <td width="1%">&nbsp;</td>
+                    <td width="24%">
+
+                        <asp:Button ID="btnSaveMember" runat="server" onclick="btnSaveMember_Click"
+                                    SkinID="SimpleButton" Text="Save" />
+                        &nbsp;
+                        <asp:Button ID="btnBack" runat="server" CausesValidation="False"
+                                    onclick="btnBack_Click" SkinID="SimpleButton" Text="Clear" />
+
+                    </td>
+                    <td class="FieldTitle"> </td>
+                    <td>&nbsp;</td>
+                    <td>
+                    </td>
+                </tr>--%>
+
+                <%--
+                <tr>
+                    <td colspan="6" align="center">
+
+
+                        <asp:GridView ID="gvMain" runat="server" AllowSorting="true" width="100%"
+                                      AutoGenerateColumns="false" CssClass="PrettyGridView" DataKeyNames="ID"
+                                      EmptyDataText="No Record Found."
+                                      onselectedindexchanged="gvMain_SelectedIndexChanged" PageSize="10"
+                                      SkinID="SampleGridView" onrowcommand="gvMain_RowCommand">
+                            <pagersettings Position="TopAndBottom" />
+                            <columns>
+                                <asp:BoundField DataField="ppno" HeaderText="ppno">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="70px" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="70px" />
+                                </asp:BoundField>
+
+                                <asp:BoundField DataField="empName" HeaderText="Employee Name">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="130" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="130" />
+                                </asp:BoundField>
+                                <asp:BoundField DataField="deptDesc" HeaderText="Department Name">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="120" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="120" />
+                                </asp:BoundField>
+
+                                <asp:BoundField DataField="zonename" HeaderText="Audit Zone">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="100" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="100" />
+                                </asp:BoundField>
+
+                                <asp:BoundField DataField="RANK" HeaderText="Rank">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="100" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="100" />
+                                </asp:BoundField>
+
+                                <asp:BoundField DataField="desig" HeaderText="Designation">
+                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                               Width="100" />
+                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
+                                                 Width="100" />
+                                </asp:BoundField>
+
+                            </columns>
+                        </asp:GridView>
+
+                    </td>
+
+
+                </tr>--%>
+
+
+
+
+            </table>
+        </asp:View>
+
+    </asp:MultiView>
+
+</asp:Content>
+
