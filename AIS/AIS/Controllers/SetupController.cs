@@ -193,11 +193,11 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult inspection_unit()
+        public IActionResult Inspection_Unit()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["AuditZoneList"] = dBConnection.GetAuditZones();
+            ViewData["ICList"] = dBConnection.GetInspectionUnits();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -216,7 +216,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["AuditZoneList"] = dBConnection.GetAuditZones();
+            ViewData["ControlViolationList"] = dBConnection.GetControlViolations();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -231,13 +231,18 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
+        [HttpPost]
+        public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
+        {
+            return dBConnection.AddControlViolation(cv);
+        }
         public IActionResult processes()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["ControlViolationsList"] = dBConnection.GetControlViolations();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

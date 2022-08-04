@@ -2,6 +2,8 @@
     Layout = "_Layout"; }
 
 <script type="text/javascript">
+    var g_userList = [];
+    var g_userId = 0;
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
@@ -26,9 +28,8 @@
                 },
                 cache: false,
                 success: function (data) {
-                    g_userList = data;
                     $.each(data, function (index, branch) {
-                        $('#brSearchField').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
+                        $('#brSearchField').append('<option value="' + branch.branchid + '" id="' + branch.branchid + '">' + branch.description + '</option>')
                     });
 
                 },
@@ -61,28 +62,200 @@
                 },
                 dataType: "json",
             });
-            getSubEntities();
         }
     }
     function findButtonClickHandler() {
+        var whereCheck = 0;
+        if ($('#ppnoSearchField').val() != "")
+            whereCheck++;
+        if ($('#loginSearchField').val() != "")
+            whereCheck++;
+        if ($('#divSearchField option:selected').val() != 0)
+            whereCheck++;
+        if ($('#deptSearchField option:selected').val() != 0)
+            whereCheck++;
+        if ($('#zoneSearchField option:selected').val() != 0)
+            whereCheck++;
+        if ($('#brSearchField option:selected').val() != 0)
+            whereCheck++;
+        if ($('#emailSearchField').val() != "")
+            whereCheck++;
+        if ($('#roleSearchField option:selected').val() != 0)
+            whereCheck++;
+
+        if (whereCheck == 0) {
+            alert('Please provide at least one filter to proceed');
+            return;
+        }
+
         $('#userListTable tbody').empty();
         $.ajax({
             url: "/AdministrationPanel/find_users",
             type: "POST",
             data: {
-                'PPNumber': $('#ppnoSearchField').val()
+                'PPNUMBER': $('#ppnoSearchField').val(),
+                'LOGINNAME': $('#loginSearchField').val(),
+                'DIVISIONID': $('#divSearchField option:selected').val(),
+                'DEPARTMENTID': $('#deptSearchField option:selected').val(),
+                'ZONEID': $('#zoneSearchField option:selected').val(),
+                'BRANCHID': $('#brSearchField option:selected').val(),
+                'EMAIL': $('#emailSearchField').val(),
+                'GROUPID': $('#roleSearchField option:selected').val(),
             },
             cache: false,
             success: function (data) {
                 
                 g_userList = data;
                 $.each(data, function (index, user) {
-                    $('#userListTable tbody').append('<tr><td>' + user.name + '</td><td>' + user.ppNumber + '</td><td>' + user.userPostingZone + '</td><td>' + user.userPostingBranch + '</td><td>' + user.userPostingDiv + '</td><td>' + user.userPostingDept + '</td><td>' + user.email + '</td><td>' + user.userGroupID + '</td><td>' + user.isActive +'</td></tr>')
+                    $('#userListTable tbody').append('<tr id="userrecordrow_' + user.id + '"><td>' + user.name + '</td><td>' + user.ppNumber + '</td><td>' + user.zoneName + '</td><td>' + user.branchName + '</td><td>' + user.divName + '</td><td>' + user.deptName + '</td><td>' + user.email + '</td><td>' + user.userRole + '</td><td>' + user.isActive + '</td><td><a class="text-danger editmode" href="#" onclick="editUserDetails(' + user.id + ')">Edit</a><a class="text-danger cancelmode d-none" href="#" onclick="cancelEditUserDetails(' + user.id +')">Cancel</a></td></tr>')
                 });
 
             },
             dataType: "json",
         });
+    }
+    function editUserDetails(userId) {
+        g_userId = userId;
+        $('#userrecordrow_' + userId).css({ 'background': 'rgba(0,0,0,.05)', 'font-weight': 'bold', 'color': 'navy' });
+        $('#userrecordrow_' + userId + ' .editmode').addClass('d-none');
+        $('#userrecordrow_' + userId + ' .cancelmode').removeClass('d-none');
+        $('#saveChangesButton').removeClass('d-none');
+        $('#findButton').addClass('d-none');
+        $('#searchFieldsContainer').addClass('d-none');
+        $('#saveChangesFieldsContainer').removeClass('d-none');
+        $.each(g_userList, function (index, user) {
+            if (user.id == userId) {
+                $('#ppnoSaveField').val(user.ppNumber);
+                $('#loginSaveField').val(user.ppNumber);
+                if (user.userPostingDiv != null) {
+                    $('#divSaveField').val(user.userPostingDiv);
+                    ShowEditedDivisionDepartments(user.userPostingDept);
+                }
+                if (user.userPostingZone != null) {
+                    $('#zoneSaveField').val(user.userPostingZone);
+                    ShowEditedZonesBranches(user.userPostingBranch);
+                }
+                $('#emailSaveField').val(user.email);
+                if (user.userPostingZone != null)
+                    $('#roleSaveField').val(user.userGroupID);
+                else
+                    $('#roleSaveField').val(0);
+                if (user.isActive == "A")
+                    $('#isActiveSaveField').attr('checked', true);
+                else
+                    $('#isActiveSaveField').attr('checked', false);
+            }
+        });
+    }
+    function ShowEditedZonesBranches(brId) {
+        if (brId == 0 || brId == null) {
+            $('#brSaveField').empty();
+            $('#brSaveField').append('<option value="0" id="0">--Select Branch--</option>');
+        }
+        else {
+            $('#brSaveField').empty();
+            $('#brSaveField').append('<option value="0" id="0">--Select Branch--</option>')
+            $.ajax({
+                url: "/Planning/zone_branches",
+                type: "POST",
+                data: {
+                    'zone_code': $('#zoneSaveField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, branch) {
+                        var selected = '';
+                        if (branch.branchid == brId)
+                            selected = 'selected="selected"';
+                        $('#brSaveField').append('<option value="' + branch.branchid + '" id="' + branch.branchid + '"  ' + selected + ' >' + branch.description + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function ShowEditedDivisionDepartments(deptId) {
+        if (deptId == 0 || deptId==null) {
+            $('#deptSaveField').empty();
+            $('#deptSaveField').append('<option value="0" id="0">--Select Audit Department--</option>')
+        }
+        else {
+            $('#deptSaveField').empty();
+            $('#deptSaveField').append('<option value="0" id="0">--Select Audit Department--</option>')
+
+            $.ajax({
+                url: "/Planning/div_departments",
+                type: "POST",
+                data: {
+                    'div_code': $('#divSafeField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+
+                    $.each(data, function (index, dept) {
+                        var selected = '';
+                        if (dept.id == deptId)
+                            selected = 'selected="selected"';
+                        $('#deptSaveField').append('<option value="' + dept.id + '"  id="' + dept.id + '" ' + selected + '>' + dept.name + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function cancelEditUserDetails(userId) {
+        g_userId = 0;
+        $('#userrecordrow_' + userId).css({ 'background': 'none', 'font-weight': 'normal', 'color': 'black' });
+        $('#userrecordrow_' + userId + ' .editmode').removeClass('d-none');
+        $('#userrecordrow_' + userId + ' .cancelmode').addClass('d-none');
+        $('#saveChangesButton').addClass('d-none');
+        $('#findButton').removeClass('d-none');
+        $('#saveChangesFieldsContainer').addClass('d-none');
+        $('#searchFieldsContainer').removeClass('d-none');
+        clearSearchFields();
+    }
+    function clearSearchFields() {
+        $('#ppnoSaveField').val('');
+        $('#loginSaveField').val('');
+        $('#divSaveField').val(0);
+        $('#deptSaveField').val(0);
+        $('#zoneSaveField').val(0);
+        $('#brSaveField').val(0);
+        $('#emailSaveField').val('');
+        $('#passSaveField').val('');
+        $('#conPassSaveField').val('');
+        $('#roleSaveField').val(0);
+        $('#isActiveSaveField').attr('checked', false);
+    }
+    function saveButtonClickHandler() {
+        if ($('#passSaveField').val() == '') {
+            alert('Please Enter Password');
+            return;
+        }
+        if ($('#passSaveField').val() == $('#conPassSaveField').val()) {
+            $.ajax({
+                url: "/AdministrationPanel/update_user",
+                type: "POST",
+                data: {
+                    'USER_ID': g_userId,
+                    'PPNO': $('#ppnoSaveField').val(),
+                    'ROLE_ID': $('#roleSaveField option:selected').val(),
+                    'PASSWORD': $('#passSaveField').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    alert('User Successfully Updated');
+                  
+                },
+                dataType: "json",
+            });
+
+        } else {
+            alert('Password and Confirm Password should be Same');
+            return;
+        }
     }
 
 </script>
@@ -90,128 +263,237 @@
 <div class="row col-md-12 mt-3">
     <h3>Manage Users</h3>
 </div>
+<div id="searchFieldsContainer">
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>P.P.No.</label>
+        </div>
+        <div class="col-md-4">
+            <input id="ppnoSearchField" type="text" class="form-control" placeholder="P.P.Number" aria-label="P.P.Number" aria-describedby="basic-addon2">
+        </div>
+        <div class="col-md-2">
+            <label>login Name</label>
+        </div>
+        <div class="col-md-4">
+            <input id="loginSearchField" class="form-control" type="text" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Division</label>
+        </div>
+        <div class="col-md-4">
+            <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Division--</option>
+                @{
+                    if (ViewData["DivisionList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["DivisionList"]))
+                        {
+                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Department</label>
+        </div>
+        <div class="col-md-4">
+            <select id="deptSearchField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Department--</option>
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Zone</label>
+        </div>
+        <div class="col-md-4">
+            <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Zone--</option>
+                @{
+                    if (ViewData["ZoneList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["ZoneList"]))
+                        {
+                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Branches</label>
+        </div>
+        <div class="col-md-4">
+            <select id="brSearchField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Branch--</option>
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Email</label>
+        </div>
+        <div class="col-md-10">
+            <input id="emailSearchField" class="form-control" type="text" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Group/Role</label>
+        </div>
+        <div class="col-md-10">
+            <select id="roleSearchField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Group--</option>
+                @{
+                    if (ViewData["GroupList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["GroupList"]))
+                        {
+                            <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Is Active</label>
+        </div>
+        <div class="col-md-10">
+            <input id="isActiveSearchField" type="checkbox" />
+        </div>
+    </div>
+</div>
+
+<div id="saveChangesFieldsContainer" class="d-none">
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>P.P.No.</label>
+        </div>
+        <div class="col-md-4">
+            <input id="ppnoSaveField" type="text" class="form-control" placeholder="P.P.Number" aria-label="P.P.Number" aria-describedby="basic-addon2">
+        </div>
+        <div class="col-md-2">
+            <label>login Name</label>
+        </div>
+        <div class="col-md-4">
+            <input id="loginSaveField" class="form-control" type="text" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Division</label>
+        </div>
+        <div class="col-md-4">
+            <select id="divSaveField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Division--</option>
+                @{
+                    if (ViewData["DivisionList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["DivisionList"]))
+                        {
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Department</label>
+        </div>
+        <div class="col-md-4">
+            <select id="deptSaveField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Department--</option>
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Zone</label>
+        </div>
+        <div class="col-md-4">
+            <select id="zoneSaveField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Zone--</option>
+                @{
+                    if (ViewData["ZoneList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["ZoneList"]))
+                        {
+                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Branches</label>
+        </div>
+        <div class="col-md-4">
+            <select id="brSaveField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Branch--</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Password</label>
+        </div>
+        <div class="col-md-4">
+            <input id="passSaveField" type="password" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label>Confirm Password</label>
+        </div>
+        <div class="col-md-4">
+            <input id="conPassSaveField" class="form-control" type="password" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Email</label>
+        </div>
+        <div class="col-md-10">
+            <input id="emailSaveField" class="form-control" type="text" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Group/Role</label>
+        </div>
+        <div class="col-md-10">
+            <select id="roleSaveField" class="form-control form-select">
+                <option id="0" value="0" selected="selected">--Select Group--</option>
+                @{
+                    if (ViewData["GroupList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["GroupList"]))
+                        {
+                            <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Is Active</label>
+        </div>
+        <div class="col-md-10">
+            <input id="isActiveSaveField" type="checkbox" />
+        </div>
+    </div>
+</div>
 
 <div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>P.P.No.</label>
-    </div>
-    <div class="col-md-4">
-        <input id="ppnoSearchField" type="text" class="form-control" placeholder="P.P.Number" aria-label="P.P.Number" aria-describedby="basic-addon2">
-    </div>
-    <div class="col-md-2">
-        <label>login Name</label>
-    </div>
-    <div class="col-md-4">
-        <input id="loginSearchField" class="form-control" type="text" />
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Division</label>
-    </div>
-    <div class="col-md-4">
-        <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Division--</option>
-            @{
-                if (ViewData["DivisionList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["DivisionList"]))
-                    {
-                        <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                    }
-                }
-            }
-        </select>
-    </div>
-    <div class="col-md-2">
-        <label>Department</label>
-    </div>
-    <div class="col-md-4">
-        <select id="deptSearchField" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Department--</option>
-        </select>
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Zone</label>
-    </div>
-    <div class="col-md-4">
-        <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Zone--</option>
-            @{
-                if (ViewData["ZoneList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["ZoneList"]))
-                    {
-                        <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                    }
-                }
-            }
-        </select>
-    </div>
-    <div class="col-md-2">
-        <label>Branches</label>
-    </div>
-    <div class="col-md-4">
-        <select id="brSearchField" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Branch--</option>
-        </select>
-    </div>
-</div>
+    <button id="findButton" onclick="findButtonClickHandler();" class="btn btn-danger col-md-2" style="margin-left:auto;">Find</button>
+    <button id="saveChangesButton" onclick="saveButtonClickHandler();" class="btn btn-success col-md-2 d-none" style="margin-left:auto;">Save Changes</button>
 
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Password</label>
-    </div>
-    <div class="col-md-4">
-        <input id="passSearchField" type="password" class="form-control"/>
-    </div>
-    <div class="col-md-2">
-        <label>Confirm Password</label>
-    </div>
-    <div class="col-md-4">
-        <input id="conPassSearchField" class="form-control" type="password" />
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Email</label>
-    </div>
-    <div class="col-md-10">
-        <input id="emailSearchField" class="form-control" type="text" />
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Group/Role</label>
-    </div>
-    <div class="col-md-10">
-        <select id="roleSearchField" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Group--</option>
-            @{
-                if (ViewData["GroupList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["GroupList"]))
-                    {
-                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
-                    }
-                }
-            }
-        </select>
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-    <div class="col-md-2">
-        <label>Is Active</label>
-    </div>
-    <div class="col-md-10">
-        <input id="isActiveSearchField" type="checkbox" />
-    </div>
-</div>
-<div class="row col-md-12 mt-1">
-     <button onclick="findButtonClickHandler();" class="btn btn-danger col-md-2" style="margin-left:auto;">Find</button>
-    
 </div>
 <div class="mt-1">
     <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" id="userListTable">
@@ -226,6 +508,7 @@
                 <td style="text-align:left;"><h6>Email</h6></td>
                 <td style="text-align:left;"><h6>Group/Role</h6></td>
                 <td style="text-align:left;"><h6>Is Active</h6></td>
+                <td style="text-align:left;"></td>
             </tr>
         </thead>
         <tbody>

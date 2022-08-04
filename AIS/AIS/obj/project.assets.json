@@ -998,11 +998,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\source\\repos\\AIS\\AIS\\AIS.csproj",
+      "projectUniqueName": "D:\\Audit Inspection Sol\\ais\\AIS\\AIS\\AIS.csproj",
       "projectName": "AIS",
-      "projectPath": "C:\\Users\\Administrator\\source\\repos\\AIS\\AIS\\AIS.csproj",
+      "projectPath": "D:\\Audit Inspection Sol\\ais\\AIS\\AIS\\AIS.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\source\\repos\\AIS\\AIS\\obj\\",
+      "outputPath": "D:\\Audit Inspection Sol\\ais\\AIS\\AIS\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"

@@ -4,403 +4,249 @@
 }
 
 <script type="text/javascript">
-    var g_teams = [];
-    var g_branches = [];
+
     $(document).ready(function () {
-        $('#sidebar_policy').hide();
-        $('.hiddenContainers').hide();
-        $('.fieldAuditFields').hide();
-        $('.nonFieldAuditFields').hide();
-        $('#branchInfoArea').hide();
+        $('.brField').addClass('d-none');
+
 
     });
-    function getBusinessDateCount(startDate, endDate) {
-        var elapsed, daysBeforeFirstSaturday, daysAfterLastSunday;
-        var ifThen = function (a, b, c) {
-            return a == b ? c : a;
-        };
+    function addRecordToauditCriteriaListBox() {
+        var entityName = '';
+        if ($('#auditCriteriaEntityField option:selected').val() != 0)
+            entityName = $('#auditCriteriaEntityField option:selected').text();
 
-        elapsed = endDate - startDate;
-        elapsed /= 86400000;
+        var name = $('#auditCriteriaNameField').val();
+        var days = $('#auditCriteriaDaysField').val();
+        var risk = '';
+        if ($('#auditCriteriaRiskField option:selected').val() != 0)
+            risk = $('#auditCriteriaRiskField option:selected').text();
 
-        daysBeforeFirstSunday = (7 - startDate.getDay()) % 7;
-        daysAfterLastSunday = endDate.getDay();
 
-        elapsed -= (daysBeforeFirstSunday + daysAfterLastSunday);
-        elapsed = (elapsed / 7) * 5;
-        elapsed += ifThen(daysBeforeFirstSunday - 1, -1, 0) + ifThen(daysAfterLastSunday, 6, 5);
+        var size = '';
+        if ($('#auditCriteriaSizeField option:selected').val() != 0)
+            size = $('#auditCriteriaSizeField option:selected').text();
 
-        return Math.ceil(elapsed);
-    }
-    function ShowDepartmentAuditPeriods() {
-        if ($('#deptSelectionBox option:selected').val() == 0)
-            $('.hiddenContainers').hide();
-        else {
-            $('.hiddenContainers').show();
-            if ($('#deptSelectionBox option:selected').val() == '473') {
-                $('.fieldAuditFields').show();
-                $('.nonFieldAuditFields').hide();
-            } else {
-                $('.nonFieldAuditFields').show();
-                $('.fieldAuditFields').hide();
-            }
-            $.ajax({
-                url: "/Planning/audit_periods",
-                type: "POST",
-                data: {
-                    'dept_code': $('#deptSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#periodSelectionBox').empty();
-                    $('#periodSelectionBox').append('<option value="0" id="0">--Select Audit Period--</option>')
-                    console.log(data);
-                    $.each(data, function (index, period) {
-                        $('#periodSelectionBox').append('<option value="' + period.id + '" id="' + period.id + '">' + period.description + '</option>')
-                    });
-
-                },
-                dataType: "json",
-            });
-            $.ajax({
-                url: "/Planning/audit_teams",
-                type: "POST",
-                data: {
-                    'dept_code': $('#deptSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#teamSelectionBox').empty();
-                    $('#teamSelectionBox').append('<option value="0" id="0">--Select Audit Team--</option>')
-                    g_teams = data;
-                    $.each(data, function (index, team) {
-                        if (team.iS_TEAMLEAD == 'Y')
-                            $('#teamSelectionBox').append('<option value="' + team.code + '" id="' + team.code + '">' + team.name + '</option>')
-                    });
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function ShowSelectedZonesBranches() {
-        if ($('#auditZoneSelectionBox option:selected').val() == 0) {
-            $('#branchSelectionBox').empty();
-            $('#branchInfoArea').hide();
-            $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-        }
-        else {
-            $('#branchSelectionBox').empty();
-            $('#branchInfoArea').hide();
-            $.ajax({
-                url: "/Planning/zone_branches",
-                type: "POST",
-                data: {
-                    'zone_code': $('#auditZoneSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    g_branches = data;
-                    $('#branchSelectionBox').empty();
-                    $('#branchInfoArea').hide();
-                    $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-                    console.log(data);
-                    $.each(data, function (index, branch) {
-                        $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
-                    });
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function ShowSelectedDivisionDepartments() {
-        if ($('#divSelectionBox option:selected').val() == 0) {
-            $('#divDeptSelectionBox').empty();
-            $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-        }
-        else {
-            $('#divDeptSelectionBox').empty();
-            $.ajax({
-                url: "/Planning/div_departments",
-                type: "POST",
-                data: {
-                    'div_code': $('#divSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#divDeptSelectionBox').empty();
-                    $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-                    console.log(data);
-                    $.each(data, function (index, dept) {
-                        $('#divDeptSelectionBox').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
-                    });
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function ShowBranchInfoBox() {
-        $('#branchInfoArea').show();
-    }
-    function previewAuditPlan() {
-        $('#previewAuditPlan').modal('show');
-        $('#auditorDept').text($('#deptSelectionBox option:selected').text());
-        $('#auditorPlan').text($('#periodSelectionBox option:selected').text());
-        $('#descModal_field').html($('#descriptionAuditPlanField').val());
-        if ($('#deptSelectionBox option:selected').val() == '473') {
-            $('#divzone_field').text($('#auditZoneSelectionBox option:selected').text());
-            $('#deptBranch_field').text($('#branchSelectionBox option:selected').text());
-
-        } else {
-            $('#divzone_field').text($('#divSelectionBox option:selected').text());
-            $('#deptBranch_field').text($('#divDeptSelectionBox option:selected').text());
-
-        }
-        $('#exeFrom_field').html($('#executionPeriodFromField').val());
-        $('#exeTo_field').html($('#executionPeriodToField').val());
-        $('#operationalFrom_field').html($('#auditPeriodFromField').val());
-        $('#operationalTo_field').html($('#auditPeriodToField').val());
-        //
-        if ($('#isTravelingRequiredField').is(":checked"))
-            $('#travelingReq_field').html('Yes');
+        var visit = '';
+        if ($('#auditCriteriaVisitField').is(':checked'))
+            visit = "Yes";
         else
-            $('#travelingReq_field').html('No');
-        $('#remarksAddtn_field').html($('#remarksAdditionalInfoField').val());
-        $('#teamName_field').text($('#teamSelectionBox option:selected').text());
-        //
-        var teamMembersFields = "";
-        $.each(g_teams, function (index, team) {
-            if (team.name == $('#teamSelectionBox option:selected').text()) {
-                if (team.iS_TEAMLEAD == "Y")
-                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (L)<br>";
-                else
-                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (M)<br>";
-            }
-        });
-        $('#teamMembers_field').html(teamMembersFields);
+            Visit = "No";
+
+        $('#auditCriteriaListBox tbody').append('<tr><td>' + entityName + '</td><td>' + name + '</td><td>' + risk + '</td><td>' + size + '</td><td>' + days + '</td><td>' + visit + '</td><td><a>Edit</a><a style="margin-left:10px;">Delete</a></td></tr>')
 
     }
-    function publishNewAuditPlanChanges(){
-        var periodId = $('#periodSelectionBox option:selected').val();
-        var stDate = $('#executionPeriodFromField').val();
-        var edDate = $('#executionPeriodToField').val();
-        var period_stDate = $('#auditPeriodFromField').val();
-        var period_edDate = $('#auditPeriodToField').val();
-        var conducted_by = $('#deptSelectionBox option:selected').val();
-        var no_days = getBusinessDateCount(new Date(stDate), new Date(edDate));
-        var zoneId = $('#auditZoneSelectionBox option:selected').val();
-        var branchId = 0;
-        if (zoneId != 0)
-            branchId = $('#branchSelectionBox option:selected').val();
-
-        var divId = $('#divSelectionBox option:selected').val();
-        var deptId = 0;
-        if (divId != 0)
-            deptId = $('#divDeptSelectionBox option:selected').val();
-
-        var teamId = $('#teamSelectionBox option:selected').val();
-        var status = 1;
-        var desc = $('#descriptionAuditPlanField').val() ;
-
-       $.ajax({
-           url: "/Planning/add_audit_plan",
-            type: "POST",
-            data: {
-                'AUDITPERIOD_ID': periodId,
-                'AUDIT_STARTDATE': stDate,
-                'AUDIT_ENDDATE': edDate,
-                'AUDITPERIOD_FROM': period_stDate,
-                'AUDITPERIOD_TO': period_edDate,
-                'AUDIT_CONDUCTBY_DEPT': conducted_by,
-                'NO_OF_DAYS_AUDIT': no_days,
-                'AUDIT_ZONEID': zoneId,
-                'BRANCHID': branchId,
-                'DIVISION_ID': divId,
-                'DEPARTMENT_ID': deptId,
-                'TEAM_CONST_ID': teamId,
-                'STATUS': status,
-                'DESCRIPTION': desc
-            },
-            cache: false,
-            success: function (data) {
-                window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
-            },
-            dataType: "json",
-        });
+    function enitityChangeEvent() {
+        if ($('#auditCriteriaEntityField option:selected').val() == 2) {
+            $('.brField').removeClass('d-none');
+            $('.brField').val(0);
+        } else
+            $('.brField').addClass('d-none');
+        $('.brField').val(0);
+    }
+    function addAuditEntitiesModal() {
+        $('#setupAuditEntitiesModal').modal('show');
     }
 </script>
 
 <div class="row col-md-12">
     <h3 style="color: #45c545;">Audit Criteria</h3>
-</div>    
-        <div class="row mt-3 col-md-12">
-            <div class="row col-md-4">
-                <h5>Select Entity</h5>
-            </div>
-            <div class="row col-md-8">
-                <select id="EntitySelectionBox" class="form-select form-control">
-                    <option value="0" selected>Select Entity</option>
-                    <option value="1">Audit Zone</option>
-                    <option value="2">Branch</option>
-                    <option value="3">Division</option>
-                    <option value="4">Department</option>
-                    <option value="5">Application</option>
-                    <option value="6">Servers</option>
-                    <option value="7">HO Unit</option>
-                    <option value="8">Other</option>
-                </select>
-            </div>
-        </div>
-        
-    <div class="row mt-3 col-md-12">
-        <div class="row col-md-4">
-            <h5>Select Sub Entity</h5>
-        </div>
-        <div class="row col-md-8">
-            <select id="subentitySelectionBox" class="form-select form-control">
-                <option value="0" selected>Select Sub Entity</option>
+</div>
+<div class="row mt-3 col-md-12">
+    <div class="row col-md-4">
+        <h5>Select Entity</h5>
+    </div>
+    <div class="row col-md-8">
+        <div class="col-md-8 pl-0">
+            <select id="auditCriteriaEntityField" onchange="enitityChangeEvent();" class="form-select form-control">
+                <option value="0" id="0" selected>--Select Entity--</option>
+                @{
+                    if (ViewData["AuditEntities"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["AuditEntities"]))
+                        {
+                            <option value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                        }
+                    }
+                }
             </select>
         </div>
-    </div>    
-          
-    <div class="row col-md-12 mt-3">
-        <div class="row col-md-4">
-            <h5>Risk Category</h5>
-        </div>    
-        <div class="row col-md-8">
-            <select id="RiskCategorySelectionBox" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>Select Risk Category</option>
-                <option value="1">High</option>
-                <option value="2">Medium</option>
-                <option value="3">Low</option>
-            </select>
+        <div class="col-md-4 pl-0">
+            <button onclick="addAuditEntitiesModal();" class="btn btn-danger">Add New Entity</button>
         </div>
     </div>
-       
-    <div class="row col-md-12 mt-3">
-        <div class="row col-md-4">
-            <h5>Size</h5>
-        </div>
-        <div class="row col-md-8">
-            <select id="sieSelectionBox" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>Select Size</option>
-                <option value="1">Large</option>
-                <option value="2">Medium</option>
-                <option value="3">Small</option>
-            </select>
-        </div>
-    </div>
-    <div class="row col-md-12 mt-3">
-        <div class="row col-md-4">
-            <h5>No. of Days</h5>
-        </div>
-        <div class="row col-md-8">
-            <input type="number" />
-        </div>
-    </div>
+</div>
 
-    <div class="row col-md-12 mt-3">
-        <div class="row col-md-4">
-            <h5>Spot Visit</h5>
-        </div>
-        <div class="row col-md-8">
-            <input type="checkbox" />
-        </div>
+<div class="row mt-3 col-md-12 d-none">
+    <div class="row col-md-4">
+        <h5>Name</h5>
     </div>
+    <div class="row col-md-8">
+        <input id="auditCriteriaNameField" class="form-control" />
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>Audit Period</h5>
+    </div>
+    <div class="row col-md-8">
+        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Period--</option>
+            @{
+                if (ViewData["AuditPeriodList"] != null)
+                {
 
-    <div class="row col-md-12 mt-3">
-        <div class="row col-md-4">
-            <h5>Is Travelling Required</h5>
-        </div>    
-        <div class="row col-md-8">
-            <input type="checkbox" />
+                    foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
+                    {
+                        <option id="@period.ID" value="@period.ID">@period.DESCRIPTION &nbsp;---&nbsp; @period.DEPARTMENT_NAME</option>
+                    }
+
+                }
+            }
+        </select>
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>Risk Category</h5>
+    </div>
+    <div class="row col-md-8">
+        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>Select Risk Category</option>
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+        </select>
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>Frequency</h5>
+    </div>
+    <div class="row col-md-8">
+        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Frequency--</option>
+            <option value="1">Anually</option>
+            <option value="2">BiAnually</option>
+            <option value="3">High</option>
+        </select>
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3 brField">
+    <div class="row col-md-4">
+        <h5>Size</h5>
+    </div>
+    <div class="row col-md-8">
+        <select id="auditCriteriaSizeField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+        </select>
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>No. of Days</h5>
+    </div>
+    <div class="row col-md-8">
+        <input id="auditCriteriaDaysField" class="form-control" type="number" />
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>Spot/Field Visit</h5>
+    </div>
+    <div class="row col-md-8">
+        <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <button onclick="addRecordToauditCriteriaListBox();" class="col-md-2 btn btn-danger">Save</button>
+</div>
+
+<div class="row w-100">
+    <table id="auditCriteriaListBox" class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr>
+                <td class="col-md-2">Entity</td>
+                <td class="col-md-3">Name</td>
+                <td class="col-md-2">Risk Category</td>
+                <td class="col-md-2">Size</td>
+                <td class="col-md-1">No. of Days</td>
+                <td class="col-md-1">Spot Visit</td>
+                <td class="col-md-1"></td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div class="row col-md-12 mt-3">
+    <button onclick="alert('Under Construction');" class="col-md-2 btn btn-success">Submit</button>
+</div>
+
+
+<div id="setupAuditEntitiesModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Audit Entities</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="auditeeEntTypesCodeModelField">Code</label>
+                        <input type="text" class="form-control" id="auditeeEntTypesCodeModelField" aria-describedby="brcode" placeholder="Entity Code">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="auditeeEntTypesDescModelField">Description</label>
+                        <textarea id="auditeeEntTypesDescModelField" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="auditeeEntTypesIsAuditableModelField">Is Auditable</label>  <div class="row col-md-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsAuditableModelField" value="option1" />
+                                <label class="form-check-label" for="branchActiveModalField">Active</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsNotAuditableModelField" value="option2" />
+                                <label class="form-check-label" for="branchInactiveModalField">Inactive</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="auditeeEntTypesIsActiveModelField">Status</label>
+                        <div class="row col-md-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsActiveModelField" value="option1" />
+                                <label class="form-check-label" for="branchActiveModalField">Active</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsInactiveModelField" value="option2" />
+                                <label class="form-check-label" for="branchInactiveModalField">Inactive</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="alert('Working on the Backend Functions');" type="button" class="btn btn-danger">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
-    <div class="row col-md-12 mt-3"> 
-        <button class="btn-primary">Save</button>
-    </div>
-    
-    <div class="row w-100">
-        <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
-            <thead>
-                <tr>
-                    <td width="50"><h5>Sr No.</h5></td>
-                    <td width="200"><h5>Entity</h5></td>
-                    <td width="200"><h5>Sub Entity</h5></td>
-                    <td width="100"><h5>Risk Category</h5></td>
-                    <td width="100"><h5>Size</h5></td>
-                    <td width="50"><h5>No. of Days</h5></td>
-                    <td width="50"><h5>Spot Visit</h5></td>
-                    <td width="50"><h5>Is Travelling Required</h5></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="row col-md-12 mt-3">
-        <button class="btn-primary">Submit</button>
-    </div>
+</div>
 

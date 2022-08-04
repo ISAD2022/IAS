@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3VfXeX3hN7HEi4HEeGgizBY+8cfFGxybSHVx7eIdZJTxNKk8kixxOivSO1oChXUpU8jI7uO0lBuY6YcbN5C3HQ==",
+  "dgSpecHash": "h3JSuxscIpmgtJsC9CTzD9zhLSCBvmlzNA6nkncwNP6AF/79ss5zQb3sE10VZ2u0bH2+/0gNoRmzQVTPzHYL0w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Administrator\\source\\repos\\AIS\\AIS\\AIS.csproj",
+  "projectFilePath": "D:\\Audit Inspection Sol\\ais\\AIS\\AIS\\AIS.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.4\\microsoft.netcore.platforms.5.0.4.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",

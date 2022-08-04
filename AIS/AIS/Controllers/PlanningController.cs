@@ -160,6 +160,9 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
+            ViewData["DivisionsList"] = dBConnection.GetDivisions(false);
+            ViewData["AuditZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -287,6 +290,7 @@ namespace AIS.Controllers
             foreach(var id in auditPeriod.DEPARTMENT_IDS) {
                 AuditPeriodModel apm = new AuditPeriodModel();
                 apm.AUDIT_CONDUCT_BY_DEPTID = id;
+                apm.STATUS_ID= 1;
                 apm.DESCRIPTION =auditPeriod.DESCRIPTION;
                 apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
                 apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);

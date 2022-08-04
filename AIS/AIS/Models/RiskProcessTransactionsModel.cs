@@ -6,6 +6,7 @@ namespace AIS.Models
     public class RiskProcessTransactions
     {
         public int ID { get; set; }
+        public int V_ID { get; set; }
         public int PD_ID { get; set; }
         public int DIV_ID { get; set; }
         public string DIV_NAME { get; set; }
@@ -22,6 +23,8 @@ namespace AIS.Models
         public string PROCESS_STATUS { get; set; }
         [NotMapped] 
         public string PROCESS_COMMENTS { get; set; }
+        [NotMapped]
+        public string VIOLATION_NAME { get; set; }
 
     }
 }

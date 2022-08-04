@@ -25,8 +25,10 @@ namespace AIS
             try
             {
                 // create connection
+               
                 OracleConnection con = new OracleConnection();
                 // create connection string using builder
+                
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
@@ -34,6 +36,8 @@ namespace AIS
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
                 con.Open();
+                EmailConfiguration email = new EmailConfiguration();
+                email.ConfigEmail();
                 return con;
 
             }
@@ -257,41 +261,151 @@ namespace AIS
             con.Close();
             return gm;
         }
-
-        public List<UserModel> GetAllUsers(UserModel user)
+        public List<UserModel> GetAllUsers(FindUserModel user)
         {
+            string whereClause = " 1 = 1 ";
+            if (user.DIVISIONID != 0)
+                whereClause = whereClause+ " and e.CURRENTDIVISIONCODE =" + user.DIVISIONID;
+            if (user.DEPARTMENTID != 0)
+                whereClause = whereClause+ " and e.CURRENTDEPARTMENTCODE =" + user.DEPARTMENTID;
+            if (user.ZONEID != 0)
+                whereClause = whereClause + " and e.CURRENTZONECODE =" + user.ZONEID;
+            if (user.BRANCHID != 0)
+                whereClause = whereClause + " and e.CURRENTZONECODE =" + user.BRANCHID;
+            if (user.EMAIL != "" && user.EMAIL != null)
+                whereClause = whereClause + " and e.EMAIL like  %'" + user.EMAIL+"'%";
+            if (user.GROUPID != 0)
+                whereClause = whereClause + " and r.ROLE_ID =" + user.GROUPID;
+            if (user.PPNUMBER != 0)
+                whereClause = whereClause + " and e.PPNO =" + user.PPNUMBER;
+            if (user.LOGINNAME != 0)
+                whereClause = whereClause + " and e.PPNO =" + user.LOGINNAME;
+
             List<UserModel> userList = new List<UserModel>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select U.*,b.BRANCHID, z.ZONEID,dep.ID as DEPTID, d.DIVISIONID from V_SERVICE_USER U left join v_service_zones z on u.ZONEID=z.ZONEID left join v_service_branch b on u.BRANCHID=b.BRANCHID left join v_service_division d on u.DIVISIONID=d.DIVISIONID left join v_service_department dep on u.DEPARTMENTID=dep.ID WHERE U.PPNO='" + user.PPNumber+"' ORDER BY U.USERID";
+                cmd.CommandText = "select  u.USERID, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join v_service_user u on e.PPNO=u.PPNO left join v_service_division d on e.CURRENTDIVISIONCODE=d.CODE left join v_service_department dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE "+whereClause+" ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     UserModel um = new UserModel();
-                    um.ID = Convert.ToInt32(rdr["USERID"]);
+                    if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
+                        um.ID = Convert.ToInt32(rdr["USERID"]);
                     um.PPNumber = rdr["PPNO"].ToString();
-                    um.Name = rdr["LOGIN_NAME"].ToString();
-                    um.Email = rdr["LOGIN_NAME"].ToString();
-                    if(rdr["BRANCHID"].ToString()!= null && rdr["BRANCHID"].ToString() != "")
-                    um.UserPostingBranch = Convert.ToInt32(rdr["BRANCHID"]);
-                    if (rdr["DEPTID"].ToString() != null && rdr["DEPTID"].ToString() != "")
-                        um.UserPostingDept = Convert.ToInt32(rdr["DEPTID"]);
-                    if (rdr["ZONEID"].ToString() != null && rdr["ZONEID"].ToString() != "")
-                        um.UserPostingZone = Convert.ToInt32(rdr["ZONEID"]);
-                    if (rdr["DIVISIONID"].ToString() != null && rdr["DIVISIONID"].ToString() != "")
-                        um.UserPostingDiv = Convert.ToInt32(rdr["DIVISIONID"]);
-
-                    //  um.Name = rdr["LOGIN_NAME"].ToString();
-                    //  um.GROUP_DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    //  um.GROUP_CODE = Convert.ToInt32(rdr["GROUP_ID"]);
-                    //  um.ISACTIVE = rdr["STATUS"].ToString();
+                    um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString()+" "+ rdr["EMPLOYEELASTNAME"].ToString();
+                    um.Email = rdr["EMAIL"].ToString();
+                    if(rdr["CURRENTBRANCHCODE"].ToString()!= null && rdr["CURRENTBRANCHCODE"].ToString() != "")
+                    um.UserPostingBranch = Convert.ToInt32(rdr["CURRENTBRANCHCODE"]);
+                    if (rdr["CURRENTDEPARTMENTCODE"].ToString() != null && rdr["CURRENTDEPARTMENTCODE"].ToString() != "")
+                        um.UserPostingDept = Convert.ToInt32(rdr["CURRENTDEPARTMENTCODE"]);
+                    if (rdr["CURRENTZONECODE"].ToString() != null && rdr["CURRENTZONECODE"].ToString() != "")
+                        um.UserPostingZone = Convert.ToInt32(rdr["CURRENTZONECODE"]);
+                    if (rdr["CURRENTDIVISIONCODE"].ToString() != null && rdr["CURRENTDIVISIONCODE"].ToString() != "")
+                        um.UserPostingDiv = Convert.ToInt32(rdr["CURRENTDIVISIONCODE"]);
+                    if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
+                        um.UserGroupID = Convert.ToInt32(rdr["group_id"]);
+                    um.DivName= rdr["divName"].ToString();
+                    um.DeptName = rdr["DeptName"].ToString();
+                    um.ZoneName = rdr["ZONENAME"].ToString();
+                    um.BranchName = rdr["BRANCHNAME"].ToString();
+                    um.UserRole = rdr["group_name"].ToString();
+                    um.UserGroup = rdr["group_name"].ToString();
+                    um.IsActive= rdr["STATUSTYPE"].ToString();
                     userList.Add(um);
                 }
             }
             con.Close();
             return userList;
             
+        }
+        public List<AuditEntitiesModel> GetAuditEntities()
+        {
+            
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM  t_auditee_ent_types et where et.auditable='A'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();                   
+                    entity.AUTID = Convert.ToInt32(rdr["AUTID"]);
+                    entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
+                    entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    if (rdr["EFFECTIVE_FROM"].ToString() != null && rdr["EFFECTIVE_FROM"].ToString() != "")
+                        entity.EFFECTIVE_FROM = Convert.ToDateTime(rdr["EFFECTIVE_FROM"].ToString());
+
+                    if (rdr["VALIDUNTIL"].ToString() != null && rdr["VALIDUNTIL"].ToString() != "")
+                        entity.VALIDUNTIL = Convert.ToDateTime(rdr["VALIDUNTIL"].ToString()); 
+                    entity.ACTIVE = rdr["ACTIVE"].ToString();
+                    entity.CREATED_BY = rdr["CREATED_BY"].ToString();
+                    if (rdr["CREATED_ON"].ToString() != null && rdr["CREATED_ON"].ToString() != "")
+                        entity.CREATED_ON = Convert.ToDateTime(rdr["CREATED_ON"].ToString());
+
+                    if (rdr["RECORD_TIMESTAMP"].ToString() != null && rdr["RECORD_TIMESTAMP"].ToString() != "")
+                        entity.RECORD_TIMESTAMP = Convert.ToDateTime(rdr["RECORD_TIMESTAMP"].ToString());
+                    entity.AUDITABLE = rdr["AUDITABLE"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return entitiesList;
+
+        }
+        public List<AuditSubEntitiesModel> GetAuditSubEntities()
+        {
+
+            List<AuditSubEntitiesModel> subEntitiesList = new List<AuditSubEntitiesModel>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM  t_subentity se where se.STATUS = 'Y'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditSubEntitiesModel entity = new AuditSubEntitiesModel();
+                    entity.ID = Convert.ToInt32(rdr["ID"]);
+                    entity.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
+                    entity.DEP_ID = Convert.ToInt32(rdr["DEP_ID"]);
+                    entity.NAME = rdr["E_NAME"].ToString();
+                    entity.STATUS = rdr["STATUS"].ToString();
+                    subEntitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return subEntitiesList;
+
+        }
+        public UpdateUserModel UpdateUser(UpdateUserModel user)
+        {
+            var enc_pass = getMd5Hash(user.PASSWORD);
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE appservices.t_qar_users SET PASSWORD = '"+ enc_pass + "' WHERE USERID="+user.USER_ID+" and PPNO='"+user.PPNO+"'";
+                cmd.ExecuteReader();
+                if(user.ROLE_ID!=0)
+                {
+                    cmd.CommandText = "Select um.USERID FROM t_user_maping um WHERE um.ROLE_ID=" + user.ROLE_ID + " and um.USERID=" + user.USER_ID;
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    bool isAlreadyAdded = false;
+                    while (rdr.Read())
+                    {
+                        if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
+                            isAlreadyAdded = true;
+                    }
+                    if (!isAlreadyAdded)
+                        cmd.CommandText = "INSERT INTO t_user_maping ( USERID,PPNO,GROUP_ID, ROLE_ID) VALUES ("+user.USER_ID+", '"+user.PPNO+"',"+user.ROLE_ID+", "+user.ROLE_ID+" )";
+                    else
+                        cmd.CommandText = "UPDATE t_user_maping SET GROUP_ID = " + user.ROLE_ID + ", ROLE_ID=" + user.ROLE_ID + " WHERE USERID=" + user.USER_ID + " and PPNO='" + user.PPNO + "'";
+                    cmd.ExecuteReader();
+                }
+            }
+            con.Close();
+            user.PASSWORD = "";
+            return user;
         }
         public void AddGroupMenuAssignment(int role_id = 0, int menu_id = 0, string page_ids = "")
         {
@@ -383,7 +497,34 @@ namespace AIS
             con.Close();
             return AZList;
         }
+        public List<InspectionUnitsModel> GetInspectionUnits()
+        {
+            var con = this.DatabaseConnection();
+            List<InspectionUnitsModel> ICList = new List<InspectionUnitsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Select z.* FROM T_INS_UNITS z order by z.unit_name asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    InspectionUnitsModel z = new InspectionUnitsModel();
+                    z.I_ID = Convert.ToInt32(rdr["I_ID"]);
+                    z.I_CODE = rdr["I_CODE"].ToString();
+                    z.UNIT_NAME = rdr["UNIT_NAME"].ToString();
+                    z.DISCRIPTION = rdr["DISCRIPTION"].ToString();
+                    if (rdr["STATUS"].ToString() == "Y")
+                        z.STATUS = "Active";
+                    else if (rdr["STATUS"].ToString() == "N")
+                        z.STATUS = "InActive";
+                    else
+                        z.STATUS = rdr["ISACTIVE"].ToString();
 
+                    ICList.Add(z);
+                }
+            }
+            con.Close();
+            return ICList;
+        }
         public List<BranchModel> GetBranches(int zone_code=0)
         {
             var con = this.DatabaseConnection();
@@ -494,17 +635,52 @@ namespace AIS
             con.Close();
             return brSizeList;
         }
+        public List<ControlViolationsModel> GetControlViolations()
+        {
+            var con = this.DatabaseConnection();
+            List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Select v.* FROM t_control_violation v order by v.ID asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ControlViolationsModel v = new ControlViolationsModel();
+                    v.ID = Convert.ToInt32(rdr["ID"]);
+                    v.V_NAME = rdr["V_NAME"].ToString();
+                    v.MAX_NUMBER = Convert.ToInt32(rdr["MAX_NUMBER"]);
+                    v.STATUS = rdr["STATUS"].ToString();
+                    controlViolationList.Add(v);
+                }
+            }
+            con.Close();
+            return controlViolationList;
+        }
+        public ControlViolationsModel AddControlViolation(ControlViolationsModel cv)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                if(cv.ID==0)
+                cmd.CommandText = "INSERT INTO t_control_violation cv (cv.ID,cv.V_NAME, cv.MAX_NUMBER, cv.STATUS) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM t_control_violation PP), '" + cv.V_NAME + "','" + cv.MAX_NUMBER+"','"+cv.STATUS+"')";
+                else
+                    cmd.CommandText = "UPDATE t_control_violation cv SET cv.V_NAME = '"+cv.V_NAME+"', cv.MAX_NUMBER='"+cv.MAX_NUMBER+"', cv.STATUS= '"+cv.STATUS+"' WHERE cv.ID="+cv.ID;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return cv;
+        }
         public List<DivisionModel> GetDivisions(bool sessionCheck=true)
         {
             var con = this.DatabaseConnection();
             List<DivisionModel> divList = new List<DivisionModel>();
             string query = "";
-            if (sessionCheck)
+            /*if (sessionCheck)
             {
                 var loggedInUser = sessionHandler.GetSessionUser();
                 if (loggedInUser.UserPostingDiv != 0)
                     query = query + " and d.DIVISIONID=" + loggedInUser.UserPostingDiv;
-            }
+            }*/
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "select * from v_service_division d WHERE d.ISACTIVE='Y' "+ query + " order by d.CODE asc";
@@ -534,7 +710,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_DIVISIONS d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE+"','"+div.NAME+"','"+div.DESCRIPTION+"','"+div.ISACTIVE+"')";
+                cmd.CommandText = "INSERT INTO v_Service_Division d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE+"','"+div.NAME+"','"+div.DESCRIPTION+"','"+div.ISACTIVE+"')";
                 OracleDataReader rdr = cmd.ExecuteReader();
                
             }
@@ -547,26 +723,26 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_DIVISIONS d SET d.CODE='" + div.CODE + "', d.NAME='" + div.NAME + "', d.DESCRIPTION='" + div.DESCRIPTION + "', d.STATUS='" + div.ISACTIVE + "' WHERE d.ID="+div.DIVISIONID; 
+                cmd.CommandText = "UPDATE v_Service_Division d SET d.CODE='" + div.CODE + "', d.NAME='" + div.NAME + "', d.DESCRIPTION='" + div.DESCRIPTION + "', d.STATUS='" + div.ISACTIVE + "' WHERE d.ID="+div.DIVISIONID; 
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
             con.Close();*/
             return div;
-        }
+        }       
         public List<DepartmentModel> GetDepartments(int div_code=0,bool sessionCheck=true)
         {
             var con = this.DatabaseConnection();
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
             string query = "";
-            if (sessionCheck)
+            /*if (sessionCheck)
             {
                 if (loggedInUser.UserPostingDiv != 0)
                     query = query + " and d.DIVISIONID=" + loggedInUser.UserPostingDiv;
                 if (loggedInUser.UserPostingDept != 0)
                     query = query + " and dp.ID=" + loggedInUser.UserPostingDept;
-            }
+            }*/
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
@@ -668,7 +844,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_DEPARTMENTS d (d.ID,d.CODE, d.NAME, d.DIV_ID, d.STATUS) VALUES ( '" + dept.CODE + "','" + dept.CODE + "','" + dept.NAME + "','" + dept.DIV_ID + "','" + dept.STATUS + "')";
+                cmd.CommandText = "INSERT INTO v_Service_Department d (d.ID,d.CODE, d.NAME, d.DIV_ID, d.STATUS) VALUES ( '" + dept.CODE + "','" + dept.CODE + "','" + dept.NAME + "','" + dept.DIV_ID + "','" + dept.STATUS + "')";
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
@@ -681,7 +857,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_DEPARTMENTS d SET d.CODE='" + dept.CODE + "', d.NAME='" + dept.NAME + "', d.DIV_ID='" + dept.DIV_ID + "', d.STATUS='" + dept.STATUS + "' WHERE d.ID=" + dept.ID;
+                cmd.CommandText = "UPDATE v_Service_Department d SET d.CODE='" + dept.CODE + "', d.NAME='" + dept.NAME + "', d.DIV_ID='" + dept.DIV_ID + "', d.STATUS='" + dept.STATUS + "' WHERE d.ID=" + dept.ID;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
@@ -879,9 +1055,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (dept_code == 0)
-                    cmd.CommandText = "select * from T_AU_PERIOD p order by p.ID asc";
+                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID order by p.ID asc";
                 else
-                    cmd.CommandText = "select * from T_AU_PERIOD p WHERE P.AUDIT_CONDUCT_BY_DEPTID = "+dept_code+" order by p.ID asc";
+                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID WHERE P.AUDIT_CONDUCT_BY_DEPTID = " + dept_code+" order by p.ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -890,8 +1066,10 @@ namespace AIS
                     period.ID = Convert.ToInt32(rdr["ID"]);
                     period.AUDIT_CONDUCT_BY_DEPTID = Convert.ToInt32(rdr["AUDIT_CONDUCT_BY_DEPTID"]);
                     period.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    period.DEPARTMENT_NAME = rdr["DEPARTMENT_NAME"].ToString();
                     period.START_DATE = Convert.ToDateTime(rdr["START_DATE"]);
                     period.END_DATE = Convert.ToDateTime(rdr["END_DATE"]);
+                    period.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
                     periodList.Add(period);
                 }
             }
@@ -903,7 +1081,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.AUDIT_CONDUCT_BY_DEPTID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION+ "', TO_DATE('"+periodModel.START_DATE+ "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM')," + periodModel.AUDIT_CONDUCT_BY_DEPTID+")";
+                cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.AUDIT_CONDUCT_BY_DEPTID,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION+ "', TO_DATE('"+periodModel.START_DATE+ "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM')," + periodModel.AUDIT_CONDUCT_BY_DEPTID+", "+periodModel.STATUS_ID+")";
                 OracleDataReader rdr = cmd.ExecuteReader();
             }
             con.Close();
@@ -927,9 +1105,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (period_id == 0)
-                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.name as AUDITZONE_NAME from T_AU_PLAN p left join t_divisions d on p.division_id = d.code left join t_departments dp on p.department_id = dp.code left join V_SERVICE_BRANCH b on p.branchid = b.branchcode left join t_audiV_SERVICE_ZONES az on p.audit_zoneid = az.code order by p.PLAN_ID asc";
+                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join v_Service_Division d on p.division_id = d.DIVISIONID left join v_Service_Department dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID order by p.PLAN_ID asc";
                 else
-                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.name as AUDITZONE_NAME from T_AU_PLAN p left join t_divisions d on p.division_id = d.code left join t_departments dp on p.department_id = dp.code left join V_SERVICE_BRANCH b on p.branchid = b.branchcode left join t_audiV_SERVICE_ZONES az on p.audit_zoneid = az.code where p.auditperiod_id=" + period_id+ " order by p.PLAN_ID asc";
+                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join v_Service_Division d on p.division_id = d.DIVISIONID left join v_Service_Department dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID where p.auditperiod_id=" + period_id+ " order by p.PLAN_ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1020,16 +1198,16 @@ namespace AIS
                 if (procDetailId == 0)
                 {
                     if(transactionId==0)
-                    cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.ID = p.P_ID  order by pt.id asc"; 
+                    cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID  order by pt.id asc"; 
                     else
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.ID = p.P_ID WHERE pt.ID=" + transactionId + " order by pt.id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID WHERE pt.ID=" + transactionId + " order by pt.id asc";
                 }
                 else
                 {
                     if (transactionId == 0) 
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME from  t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.ID = p.P_ID where pt.pd_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from  t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID where pt.pd_id = " + procDetailId + " order by pt.Id asc";
                     else
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.ID = p.P_ID where pt.ID=" + transactionId+" pt.pd_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID where pt.ID=" + transactionId+" pt.pd_id = " + procDetailId + " order by pt.Id asc";
 
                 }
                     OracleDataReader rdr = cmd.ExecuteReader();
@@ -1038,7 +1216,8 @@ namespace AIS
                         RiskProcessTransactions pTran = new RiskProcessTransactions();
                         pTran.ID = Convert.ToInt32(rdr["ID"]);
                         pTran.PD_ID = Convert.ToInt32(rdr["PD_ID"]);
-                        if (rdr["DIV_ID"].ToString() != null && rdr["DIV_ID"].ToString() != "")
+                        pTran.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    if (rdr["DIV_ID"].ToString() != null && rdr["DIV_ID"].ToString() != "")
                             pTran.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
                         if (rdr["DIV_NAME"].ToString() != null && rdr["DIV_NAME"].ToString() != "")
                             pTran.DIV_NAME = rdr["DIV_NAME"].ToString();
@@ -1052,6 +1231,7 @@ namespace AIS
                     pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_WEIGHTAGE"]);
                     pTran.SUB_PROCESS_NAME = rdr["TITLE"].ToString();
                     pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
+                    pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
                     riskTransList.Add(pTran);
                     }
                 }
@@ -1140,7 +1320,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into t_r_m_process_transaction p (p.ID,p.PD_ID,p.DESCRIPTION,p.CONTROL_OWNER,p.DIV_ID,p.DIV_NAME,p.ACTION,p.RISK_WEIGHTAGE,p.RISK_MAX_NUMBER) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction pp)," + trans.PD_ID + ",'" + trans.DESCRIPTION + "','" + trans.CONTROL_OWNER + "','" + trans.DIV_ID + "','" + trans.DIV_NAME + "','" + trans.ACTION + "','" + trans.RISK_WEIGHTAGE + "','" + trans.RISK_MAX_NUMBER + "')";
+                cmd.CommandText = "insert into t_r_m_process_transaction p (p.ID,p.V_ID, p.PD_ID,p.DESCRIPTION,p.CONTROL_OWNER,p.DIV_ID,p.DIV_NAME,p.ACTION,p.RISK_WEIGHTAGE,p.RISK_MAX_NUMBER) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction pp)," + trans.V_ID + "," + trans.PD_ID + ",'" + trans.DESCRIPTION + "','" + trans.CONTROL_OWNER + "','" + trans.DIV_ID + "','" + trans.DIV_NAME + "','" + trans.ACTION + "','" + trans.RISK_WEIGHTAGE + "','" + trans.RISK_MAX_NUMBER + "')";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 cmd.CommandText = "insert into t_r_m_process_transaction_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction_log pp), (select max(tp.ID) from t_r_m_process_transaction tp) ,'1',"+ loggedInUser.ID+ ",'New Transaction Added')";
                 cmd.ExecuteReader();

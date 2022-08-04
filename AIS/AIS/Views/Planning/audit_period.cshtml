@@ -90,6 +90,7 @@
                 'DESCRIPTION': desc,
                 'STARTDATE': startDate,
                 'ENDDATE': endDate,
+                'STATUS_ID': 1,
                 'DEPARTMENT_IDS': deptIds
             },
             cache: false,
@@ -100,7 +101,7 @@
         });
     }
     function getAuditPlan(periodId) {
-        window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val()+"&periodId=" + periodId;
+        window.location.href = "/Planning/tentative_audit_plan?dept=" + $('#deptSelectionBox option:selected').val()+"&periodId=" + periodId;
     }
 
 </script>

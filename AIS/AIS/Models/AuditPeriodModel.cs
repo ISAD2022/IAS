@@ -10,6 +10,7 @@ namespace AIS.Models
         public DateTime? START_DATE { get; set; }
         public DateTime? END_DATE { get; set; }
         public int AUDIT_CONDUCT_BY_DEPTID { get; set; }
+        public int STATUS_ID { get; set; }
         [NotMapped]
         public string DEPARTMENT_NAME { get; set; }
     }

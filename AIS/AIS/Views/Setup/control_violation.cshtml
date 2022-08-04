@@ -7,80 +7,63 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var g_branchId = 0;
+        var g_controlViolationId = 0;
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
-            $("#listOfBranches tbody tr").filter(function () {
+            $("#listofControlViolations tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
     });
 
-    function newBranchSetup() {
-        g_branchId = 0;
-        $('#setupBranchModal').modal('show');
-        $('#branchCodeModalField').val('');
-        $('#branchNameModalField').val('');
-        $('#branchZoneModalField').val('');
-        $('#branchSizeModalField').val('');
-        $('#branchRiskModalField').val('');
+    function newControlViolationSetup() {
+        g_controlViolationId = 0;
+        $('#setupControlViolationModal').modal('show');
+        $('#controlViolationNameModelField').val('');
+        $('#controlViolationMaxNumberModelField').val(0);
+        $('#controlViolationActiveModelField').attr('checked', true);
+        $('#controlViolationInactiveModelField').attr('checked', false);      
     }
 
-    function setupBranch(code, name, zone, zoneId, size, sizeId,risk, status,brId ) {
-        g_branchId = brId;
-        $('#branchCodeModalField').val(code);
-        $('#branchNameModalField').val(name);
-        $('#branchZoneModalField').val(zoneId);
-        $('#branchSizeModalField').val(sizeId);
-        $('#branchRiskModalField').val(risk);
-        if (status == "Active")
-            $('#branchActiveModalField').click();
-        else if (status == "InActive")
-            $('#branchInactiveModalField').click();
+    function setupControlViolation(name, number, status, id ) {
+        g_controlViolationId = id;
+        $('#controlViolationNameModelField').val(name);
+        $('#controlViolationMaxNumberModelField').val(number);
+      if (status == "Y")
+            $('#controlViolationActiveModelField').click();
+        else 
+            $('#controlViolationInactiveModelField').click();
 
-        $('#setupBranchModal').modal('show');
+        $('#setupControlViolationModal').modal('show');
     }
 
-    function publishBranchChanges() {
+    function publishControlViolationChanges() {
 
-        var code = $('#branchCodeModalField').val();
-        var name = $('#branchNameModalField').val();
-        var zoneId = $('#branchZoneModalField').val();
-        var zone_name = $('#branchZoneModalField option:selected').text();
-        var sizeId = $('#branchSizeModalField').val();
-        var size = $('#branchSizeModalField option:selected').text();
-        var risk = $('#branchRiskModalField').val();
+        var name = $('#controlViolationNameModelField').val();
+        var max_number = $('#controlViolationMaxNumberModelField').val();
         var status;
         var badge;
-        if ($('#branchActiveModalField').is(':checked')) {
-            status = 'Active';
+        if ($('#controlViolationActiveModelField').is(':checked')) {
+            status = 'Y';
             badge = 'badge-success ';
         }
         else {
-            status = 'InActive';
+            status = 'N';
             badge = 'badge-danger ';
         }
-        if (g_branchId == 0)
-            var row = "<tr id=\"div_" + g_branchId + " \"><td><p class=\"fw - normal mb - 1\">" + code + "</p></td><td><p class=\"fw - normal mb - 1\">" + name + "</p></td><td><p class=\"fw - normal mb - 1\">" + zone_name + "</p></td><td><p class=\"fw - normal mb - 1\">" + size + "</p></td><td><p class=\"fw - normal mb - 1\">" + risk + "</p></td><td><span class=\"badge " + badge + " rounded - pill d - inline\">" + status + "</span></td><td><button type=\"button\" class=\"btn btn - link text - danger btn - sm btn - rounded\" onclick=\"setupBranch('" + code + "', '" + name + "', '" + zone_name + "', '" + zoneId + "', '" + size + "', '" + sizeId + "', '" + risk + "', '" + status + "', '" + g_branchId + "'); \" > Edit</button></td ></tr >";
-        else
-            $('#div_' + g_branchId).html("<td><p class=\"fw - normal mb - 1\">" + code + "</p></td><td><p class=\"fw - normal mb - 1\">" + name + "</p></td><td><p class=\"fw - normal mb - 1\">" + zone_name + "</p></td><td><p class=\"fw - normal mb - 1\">" + size + "</p></td><td><p class=\"fw - normal mb - 1\">" + risk + "</p></td><td><span class=\"badge " + badge + " rounded - pill d - inline\">" + status + "</span></td><td><button type=\"button\" class=\"btn btn - link text - danger btn - sm btn - rounded\" onclick=\"setupBranch('" + code + "', '" + name + "', '" + zone_name + "', '" + zoneId + "', '" + size + "', '" + sizeId + "', '" + risk + "', '" + status + "', '" + g_branchId + "'); \" > Edit</button></td >");
-        $('#listOfBranches tbody').append(row);
-        $('#setupBranchModal').modal('hide');
+        
         $.ajax({
-            url: "/Setup/branch_add",
+            url: "/Setup/add_control_violation",
             type: "POST",
             data: {
-                'BRANCHID': g_branchId,
-                'BRANCHCODE': code,
-                'BRANCHNAME': name,
-                'ZONEID': zoneId,
-                'BRANCH_SIZE_ID': sizeId,
-                'BRANCH_SIZE': size,
-                'ZONE_NAME': zone_name,
-                'ISACTIVE': status
+                'ID': g_controlViolationId,
+                'V_NAME': name,
+                'MAX_NUMBER': max_number,
+                'STATUS': status
             },
             cache: false,
             success: function (data) {
+                $('#setupControlViolationModal').modal('hide');
                 console.log(data);
                 window.location = window.location.pathname;
 
@@ -95,7 +78,7 @@
             <h3>Control Violations</h3>   
         </div>
         <div class="col-md-2">
-            <button onclick="newBranchSetup();" style="float:right;"class="btn btn-danger w-100">Add New</button>
+            <button onclick="newControlViolationSetup();" style="float:right;"class="btn btn-danger w-100">Add New</button>
         </div>
     
     <br>
@@ -111,31 +94,31 @@
                 </thead>
                 <tbody>
                     @{
-                        if (ViewData["BranchList"] != null)
+                        if (ViewData["ControlViolationList"] != null)
                         {
-                            foreach (var item in (dynamic)(ViewData["BranchList"]))
+                            foreach (var item in (dynamic)(ViewData["ControlViolationList"]))
                             {
 
-                                <tr id="div_@item.BRANCHID">
+                                <tr id="div_@item.ID">
 
                                     <td>
-                                        <p class="fw-normal mb-1">@item.ZONE_NAME</p>
+                                        <p class="fw-normal mb-1">@item.V_NAME</p>
                                     </td>
                                     <td>
-                                        <p class="fw-normal mb-1">@item.BRANCH_SIZE</p>
+                                        <p class="fw-normal mb-1">@item.MAX_NUMBER</p>
                                     </td>
 
-                                    <td class="dept_status">
+                                    <td class="cv_status">
                                         @{
-                                            if (item.ISACTIVE == "Active")
+                                            if (item.STATUS == "Y")
 
-                                            { <span class="badge badge-success rounded-pill d-inline">@item.ISACTIVE</span>}
+                                            { <span class="badge badge-success rounded-pill d-inline">@item.STATUS</span>}
                                         else
-                                        { <span class="badge badge-danger rounded-pill d-inline">@item.ISACTIVE</span>}
+                                        { <span class="badge badge-danger rounded-pill d-inline">@item.STATUS</span>}
                                         }
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-link text-danger btn-sm btn-rounded" onclick="setupBranch('@item.BRANCHCODE','@item.BRANCHNAME','@item.ZONE_NAME','@item.ZONEID','@item.BRANCH_SIZE','@item.BRANCH_SIZE_ID','','@item.ISACTIVE','@item.BRANCHID');">
+                                        <button type="button" class="btn btn-link text-danger btn-sm btn-rounded" onclick="setupControlViolation('@item.V_NAME','@item.MAX_NUMBER','@item.STATUS','@item.ID');">
                                             Edit
                                         </button>
                                     </td>
@@ -148,9 +131,9 @@
     </div>
 </div>
 
-<div id="setupBranchModal" class="modal" tabindex="-1" role="dialog">
+<div id="setupControlViolationModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content" style="padding:10px;">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Control Violation</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -158,27 +141,27 @@
                 </button>
             </div>
             <div class="form-group">
-                <label for="branchNameModalField">Name</label>
-                <input type="text" class="form-control" id="branchNameModalField" placeholder="Name">
+                <label for="controlViolationNameModelField">Name</label>
+                <input type="text" class="form-control" id="controlViolationNameModelField" placeholder="Name">
             </div>
             <div class="form-group">
-                <label for="branchNameModalField">Maximum Number</label>
-                <input type="text" class="form-control" id="branchNameModalField" placeholder="Maximum Number">
+                <label for="controlViolationMaxNumberModelField">Maximum Number</label>
+                <input type="number" class="form-control" id="controlViolationMaxNumberModelField" placeholder="Maximum Number">
             </div>
             <div class="modal-body">
                 <form>
 
                     <div class="form-group">
-                        <label for="branchAddressModalField">Status</label>
+                        <label for="controlViolationStatusModalField">Status</label>
                         <div class="row col-md-12">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="branchActiveModalField" value="option1" />
-                                <label class="form-check-label" for="branchActiveModalField">Active</label>
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="controlViolationActiveModelField" value="option1" />
+                                <label class="form-check-label" for="controlViolationActiveModelField">Active</label>
                             </div>
 
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="branchInactiveModalField" value="option2" />
-                                <label class="form-check-label" for="branchInactiveModalField">Inactive</label>
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="controlViolationInactiveModelField" value="option2" />
+                                <label class="form-check-label" for="controlViolationInactiveModelField">Inactive</label>
                             </div>
                         </div>
                     </div>
@@ -187,7 +170,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="publishBranchChanges();" type="button" class="btn btn-danger">Save changes</button>
+                <button onclick="publishControlViolationChanges();" type="button" class="btn btn-danger">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

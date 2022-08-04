@@ -309,14 +309,17 @@ namespace AIS.Controllers
                 }
                 foreach (var id in gItemMap.MENU_ITEM_IDs)
                 {
-                    dBConnection.AddGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
-                }
+                        dBConnection.AddGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
+                }               
             }
             else
             {
-                foreach (var id in gItemMap.UNLINK_MENU_ITEM_IDs)
+                if (gItemMap.UNLINK_MENU_ITEM_IDs != null && gItemMap.UNLINK_MENU_ITEM_IDs.Count > 0)
                 {
-                    dBConnection.RemoveGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
+                    foreach (var id in gItemMap.UNLINK_MENU_ITEM_IDs)
+                    {
+                        dBConnection.RemoveGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
+                    }
                 }
                 dBConnection.RemoveGroupMenuAssignment(gItemMap.GROUP_ID, gItemMap.MENU_ID);
             }
@@ -330,9 +333,14 @@ namespace AIS.Controllers
                
         }
         [HttpPost]
-        public List<UserModel> find_users(UserModel user)
+        public List<UserModel> find_users(FindUserModel user)
         {
             return dBConnection.GetAllUsers(user);
+        }
+        [HttpPost]
+        public UpdateUserModel update_user(UpdateUserModel user)
+        {
+            return dBConnection.UpdateUser(user);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
