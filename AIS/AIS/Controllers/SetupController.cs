@@ -109,7 +109,7 @@ namespace AIS.Controllers
 
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -143,8 +143,8 @@ namespace AIS.Controllers
 
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions();
-            ViewData["DepartmentList"] = dBConnection.GetDepartments(0);
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["DepartmentList"] = dBConnection.GetDepartments(0,false);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

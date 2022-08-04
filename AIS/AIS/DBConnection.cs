@@ -706,7 +706,7 @@ namespace AIS
         }
         public DivisionModel AddDivision(DivisionModel div)
         {
-            /*
+            
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -714,7 +714,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                
             }
-            con.Close();*/
+            con.Close();
             return div;
         }
         public DivisionModel UpdateDivision(DivisionModel div)
@@ -736,13 +736,13 @@ namespace AIS
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
             string query = "";
-            /*if (sessionCheck)
+            if (sessionCheck)
             {
                 if (loggedInUser.UserPostingDiv != 0)
                     query = query + " and d.DIVISIONID=" + loggedInUser.UserPostingDiv;
                 if (loggedInUser.UserPostingDept != 0)
                     query = query + " and dp.ID=" + loggedInUser.UserPostingDept;
-            }*/
+            }
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
