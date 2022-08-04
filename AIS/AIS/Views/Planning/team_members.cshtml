@@ -3,14 +3,12 @@
     Layout = "_Layout";
 }
 <style type="text/css">
-    .editRole {
-        display: inline-block;
+    .deleteTeam:hover {
+        font-size: 120%;
+        font-weight:bold;
         cursor: pointer;
     }
-
-    .selectRole {
-        display: none;
-    }
+    
 </style>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -45,7 +43,7 @@
                     $.each(data, function (index, team) {
                        
                         if (team.iS_TEAMLEAD == "Y") {
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' </p></td><td class="empMembers"></td><td><small class="text-danger deleteTeam">Edit</small></td><td><small class="text-danger deleteTeam">Delete</small></td></tr>');
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' </p></td><td class="empMembers"></td><td> <small onclick="deleteTeam(\'' + team.code +'\');" class="text-danger deleteTeam">Delete</small></td></tr>');
                         } else
                         {
                             teamMembers.push(team);
@@ -70,9 +68,99 @@
         }
     }
     function addNewTeam() {
+        $('#teamNameModalField').val('');
+        $('#teamCodeModalField').val('');
+        $.each($('.participantcheckboxes'), function (index, member) { $(member).attr('checked', false); });
+        $.each($('.teamleadradio'), function (index, member) { $(member).attr('checked', false); });
+       
         $('#setupAuditTeam').modal('show');
     }
     function publishNewTeamChanges() {
+        
+        var teamName = $('#teamNameModalField').val();
+        if (teamName == '') {
+            alert('Enter Team Name');
+            return false;
+        }
+        var teamCode = $('#teamCodeModalField').val();
+        if (teamCode == '') {
+            alert('Enter Team Code');
+            return false;
+        }
+
+        if (!$('.participantcheckboxes').is(':checked')) {
+            alert('Select Team Participants');
+            return false;
+        }
+        if (!$('.teamleadradio').is(':checked')) {
+            alert('Select Team Lead');
+            return false;
+        }
+        var participants = [];
+        $.each($('.participantcheckboxes'), function (index, member) {
+            if ($(member).is(':checked')) {
+                var obj = {
+                    'T_CODE': teamCode,
+                    'T_NAME':teamName,
+                    'PPNO': $(member).attr('memberid'),
+                    'NAME': $(member).attr('memberfname') +" "+$(member).attr('memberlname'),
+                    'PLACEOFPOSTING': $(member).attr('memberplaceofposting'),
+                    'ISTEAMLEAD': 'N',
+                    'STATUS': 'Y',
+                }
+                participants.push(obj);
+            }
+        });
+        var teamLeadID = 0;
+        var teamLeadCheck = false;
+
+        $.each($('.teamleadradio'), function (index, lead) {
+            if ($(lead).is(':checked')) {
+                teamLeadID = $(lead).attr('memberid');                
+            }
+        });
+        $.each(participants, function (i, p) {
+            console.log(p.PPNO);
+            if (p.PPNO == teamLeadID) {
+                p.ISTEAMLEAD = 'Y'
+                teamLeadCheck = 1;
+            }
+        });
+        if (!teamLeadCheck) {
+            alert('Select Team Lead among Team Participants');
+            return false;
+        }
+
+        $.ajax({
+            url: "/Planning/add_audit_team",
+            type: "POST",
+            data: {
+                'AUDIT_TEAM': participants
+            },
+            cache: false,
+            success: function (data) {
+                window.location = window.location.pathname;
+            },
+            dataType: "json",
+        });
+
+
+    }
+    function deleteTeam(teamCode) {
+
+        $.ajax({
+            url: "/Planning/delete_audit_team",
+            type: "POST",
+            data: {
+                'T_CODE': teamCode
+            },
+            cache: false,
+            success: function (data) {
+                window.location = window.location.pathname;
+            },
+            dataType: "json",
+        });
+
 
     }
 </script>
@@ -104,10 +192,9 @@
         <thead class="bg-light">
             <tr>
                 <th class="col-md-1">Sr No.</th>
-                <th class="col-md-3">Team Name</th>
-                <th class="col-md-3">Team Lead</th>
-                <th class="col-md-7">Team Members</th>
-                <th class="col-md-1">Edit</th>
+                <th class="col-md-2">Team Name</th>
+                <th class="col-md-2">Team Lead</th>
+                <th class="col-md-6">Team Members</th>
                 <th class="col-md-1">Delete</th>
             </tr>
         </thead>
@@ -129,6 +216,11 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
+                        <label for="teamCodeModalField">Team Code</label>
+                        <input type="text" class="form-control" id="teamCodeModalField" aria-describedby="brcode" placeholder="Team Code">
+
+                    </div>
+                    <div class="form-group">
                         <label for="branchCodeModalField">Team Name</label>
                         <input type="text" class="form-control" id="teamNameModalField" aria-describedby="brcode" placeholder="Team Name">
 
@@ -145,15 +237,15 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["AuditEmployees"]))
                                     {
-                                        <div class="col-md-3"><input type="checkbox" /></div>
+                                        <div class="col-md-3"><input id="participants_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE"  class="participantcheckboxes" type="checkbox" /></div>
                                         <div class="col-md-6"><label>@item.EMPLOYEEFIRSTNAME&nbsp;@item.EMPLOYEELASTNAME</label></div>
-                                        <div class="col-md-3"><input name="isTeamLead" type="radio" /></div>
-                            
+                                        <div class="col-md-3"><input id="lead_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE" class="teamleadradio" name="isTeamLead" type="radio" /></div>
+
                                     }
                                 }
                             }
 
-                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

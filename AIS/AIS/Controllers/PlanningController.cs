@@ -339,6 +339,34 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditTeams(dept_code);
         }
+        [HttpPost]
+        public List<AuditTeamModel> add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
+        {
+            List<AuditTeamModel> aTeams = new List<AuditTeamModel>();
+            if (AUDIT_TEAM.Count > 0 && AUDIT_TEAM != null)
+            {
+                foreach(var item in AUDIT_TEAM) { 
+                AuditTeamModel ateam = new AuditTeamModel();
+                    ateam.ID = 0;
+                    ateam.CODE = item.T_CODE;
+                    ateam.NAME = item.T_NAME;
+                    ateam.EMPLOYEENAME = item.NAME;
+                    ateam.TEAMMEMBER_ID = item.PPNO;
+                    ateam.PLACE_OF_POSTING = item.PLACEOFPOSTING;
+                    ateam.IS_TEAMLEAD = item.ISTEAMLEAD;
+                    ateam.STATUS = item.STATUS;
+                    dBConnection.AddAuditTeam(ateam);
+                    aTeams.Add(ateam);
+                }
+            }
+            return aTeams;
+        }
+        [HttpPost]
+        public bool delete_audit_team(string T_CODE)
+        {
+            return dBConnection.DeleteAuditTeam(T_CODE);
+                 
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

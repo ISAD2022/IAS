@@ -1035,18 +1035,50 @@ namespace AIS
                 {
                     AuditTeamModel team = new AuditTeamModel();
                     team.ID = Convert.ToInt32(rdr["T_ID"]);
-                    team.CODE = Convert.ToInt32(rdr["T_CODE"]);
+                    team.CODE = rdr["T_CODE"].ToString();
                     team.NAME = rdr["TEAM_NAME"].ToString();
                     team.AUDIT_DEPARTMENT = Convert.ToInt32(rdr["PLACE_OF_POSTING"]);
                     team.TEAMMEMBER_ID = Convert.ToInt32(rdr["MEMBER_PPNO"]);
                     team.IS_TEAMLEAD = rdr["ISTEAMLEAD"].ToString();
                     team.PLACE_OF_POSTING= rdr["AUDIT_DEPARTMENT"].ToString();
                     team.EMPLOYEENAME = rdr["MEMBER_NAME"].ToString();
+                    team.STATUS = rdr["STATUS"].ToString();
                     teamList.Add(team);
                 }
             }
             con.Close();
             return teamList;
+        }
+        public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+               cmd.CommandText = "INSERT INTO T_AU_TEAM_MEMBERS (T_ID, T_CODE, TEAM_NAME, MEMBER_PPNO, MEMBER_NAME, ISTEAMLEAD, PLACE_OF_POSTING, STATUS ) VALUES ( (SELECT COALESCE(max(PP.T_ID)+1,1) FROM T_AU_TEAM_MEMBERS PP), '"+aTeam.CODE+"', '"+aTeam.NAME+"', '"+aTeam.TEAMMEMBER_ID+ "', '"+aTeam.EMPLOYEENAME+"', '"+aTeam.IS_TEAMLEAD+"', '"+aTeam.PLACE_OF_POSTING+"', '"+aTeam.STATUS + "')";
+
+                cmd.ExecuteReader();
+               
+            }
+            con.Close();
+            return aTeam;
+        }
+        public bool DeleteAuditTeam(string T_CODE)
+        {
+            if (T_CODE != "" && T_CODE != null)
+            {
+                var con = this.DatabaseConnection();
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM  T_AU_TEAM_MEMBERS WHERE T_CODE = '" + T_CODE + "'";
+
+                    cmd.ExecuteReader();
+
+                }
+                con.Close();
+                return true;
+            }
+            else
+                return false;
         }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
         {
