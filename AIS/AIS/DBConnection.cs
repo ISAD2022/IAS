@@ -741,14 +741,14 @@ namespace AIS
                 if (loggedInUser.UserPostingDiv != 0)
                     query = query + " and d.DIVISIONID=" + loggedInUser.UserPostingDiv;
                 if (loggedInUser.UserPostingDept != 0)
-                    query = query + " and dp.ID=" + loggedInUser.UserPostingDept;
+                    query = query + " and d.ID=" + loggedInUser.UserPostingDept;
             }
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                cmd.CommandText = "Select dp.*, d.NAME as DIV_NAME FROM v_service_department dp inner join v_service_division d on dp.DIVISIONID = d.DIVISIONID WHERE dp.ISACTIVE='Y' " + query + " order by dp.CODE asc";
+                cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.org_unit_typeid = 4 and d.ISACTIVE ='Y' " + query + " order by d.CODE asc";
                 else
-                    cmd.CommandText = "Select dp.*, d.NAME as DIV_NAME FROM v_service_department dp inner join v_service_division d on dp.DIVISIONID = d.DIVISIONID WHERE dp.DIVISIONID=" + div_code + " and dp.ISACTIVE='Y' " + query + " order by dp.CODE asc";
+                    cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.org_unit_typeid = 4 and d.ISACTIVE ='Y' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -764,6 +764,17 @@ namespace AIS
                     else
                         dept.STATUS = rdr["ISACTIVE"].ToString();
                     dept.DIV_NAME = rdr["DIV_NAME"].ToString();
+                    if (rdr["AUDITED_BY_DEPID"].ToString() != null && rdr["AUDITED_BY_DEPID"].ToString() != "")
+                    { 
+                       // dept.AUDITED_BY_NAME = rdr["ADUTIED_BY"].ToString();
+                        dept.AUDITED_BY_DEPID = Convert.ToInt32(rdr["AUDITED_BY_DEPID"]);
+                        cmd.CommandText = "Select dep.NAME FROM V_SERVICE_DEPARTMENT dep WHERE dep.ID = "+ dept.AUDITED_BY_DEPID;
+                        OracleDataReader rdr2 = cmd.ExecuteReader();
+                        while (rdr2.Read())
+                        {
+                            dept.AUDITED_BY_NAME= rdr2["NAME"].ToString();
+                        }
+                    }
                     deptList.Add(dept);
                 }
             }
@@ -853,15 +864,14 @@ namespace AIS
         }
         public DepartmentModel UpdateDepartment(DepartmentModel dept)
         {
-            /*
+            
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE v_Service_Department d SET d.CODE='" + dept.CODE + "', d.NAME='" + dept.NAME + "', d.DIV_ID='" + dept.DIV_ID + "', d.STATUS='" + dept.STATUS + "' WHERE d.ID=" + dept.ID;
+                cmd.CommandText = "UPDATE t_auditee_entities_maping  mp SET mp.AUDITEDBY='" + dept.AUDITED_BY_DEPID + "' WHERE mp.CODE=" + dept.CODE;
                 OracleDataReader rdr = cmd.ExecuteReader();
-
             }
-            con.Close();*/
+            con.Close();
             return dept;
         }
         public List<RiskGroupModel> GetRiskGroup()

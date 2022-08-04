@@ -14,7 +14,9 @@ namespace AIS.Models
         public string DIV_NAME { get; set; }
         [NotMapped]
         public string HO_UNIT_NAME { get; set; }
-
+        [NotMapped]
+        public string AUDITED_BY_NAME { get; set; }
+        public int AUDITED_BY_DEPID { get; set; }
 
     }
 }
