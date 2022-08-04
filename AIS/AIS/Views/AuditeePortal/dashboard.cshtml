@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Engagement Plan";
+    ViewData["Title"] = "Dashboard";
     Layout = "_Layout";
 }
 
@@ -11,7 +11,7 @@
         $('.hiddenContainers').addClass('d-none');
         $('.fieldAuditFields').addClass('d-none');
         $('.nonFieldAuditFields').addClass('d-none');
-        $('#branchInfoArea').addClass('d-none');        
+        $('#branchInfoArea').addClass('d-none');
         ShowDepartmentAuditPeriods();
 
     });
@@ -37,9 +37,9 @@
         if ($('#deptSelectionBox option:selected').val() == 0)
             $('.hiddenContainers').addClass('d-none');
         else {
-             $('.hiddenContainers').removeClass('d-none');
+            $('.hiddenContainers').removeClass('d-none');
             if ($('#deptSelectionBox option:selected').val() == '473') {
-                 $('.fieldAuditFields').removeClass('d-none');
+                $('.fieldAuditFields').removeClass('d-none');
                 $('.nonFieldAuditFields').addClass('d-none');
             } else {
                 $('.nonFieldAuditFields').removeClass('d-none');
@@ -148,10 +148,11 @@
         if ($('#branchSelectionBox option:selected').val() == 0) {
             $('#branchInfoArea').addClass('d-none');
         } else {
-            $('#branchInfoArea').removeClass('d-none');}
+            $('#branchInfoArea').removeClass('d-none');
+        }
     }
     function previewAuditPlan() {
-        
+
         $('#previewAuditPlan').modal('show');
         $('#auditorDept').text($('#deptSelectionBox option:selected').text());
         $('#auditorPlan').text($('#periodSelectionBox option:selected').text());
@@ -164,7 +165,7 @@
             $('#divzone_field').text($('#divSelectionBox option:selected').text());
             $('#deptBranch_field').text($('#divDeptSelectionBox option:selected').text());
 
-        }        
+        }
         $('#exeFrom_field').html($('#executionPeriodFromField').val());
         $('#exeTo_field').html($('#executionPeriodToField').val());
         $('#operationalFrom_field').html($('#auditPeriodFromField').val());
@@ -212,10 +213,10 @@
 
         var teamId = $('#teamSelectionBox option:selected').val();
         var status = 1;
-        var desc = $('#descriptionAuditPlanField').val() ;
-        
-       $.ajax({
-           url: "/Planning/add_audit_plan",
+        var desc = $('#descriptionAuditPlanField').val();
+
+        $.ajax({
+            url: "/Planning/add_audit_plan",
             type: "POST",
             data: {
                 'AUDITPERIOD_ID': periodId,
@@ -253,60 +254,49 @@
                 },
                 cache: false,
                 success: function (data) {
-                  $.each(data, function (index, ent) {
-                      $('#entitySelectionBox').append('<option value="'+ent.id+'" id="'+ent.id+'" >'+ent.name+'</option>');
+                    $.each(data, function (index, ent) {
+                        $('#entitySelectionBox').append('<option value="' + ent.id + '" id="' + ent.id + '" >' + ent.name + '</option>');
                     });
 
                 },
                 dataType: "json",
             });
-           
-        } else
-        {
+
+        } else {
             $('#entitySelectionBox').empty();
             $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
         }
-        
+
 
     }
 </script>
 <div class="row w-100">
     <div class="col-md-8">
-        <h3 style="color: #45c545;">Create Engagement Plan</h3>
-       <select id="deptSelectionBox" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
-           @{
-                if (ViewData["AuditDepartments"] != null)
+        <h3 style="color: #45c545;">Dashboard for Divisional Head</h3>
+
+        <div class="row col-md-12 mt-3">
+            <h5>Select Department</h5>
+            <select id="department" class="form-select form-control">
+                <option value="0" id="0" selected>--Select Department--</option>
+            </select>
+        </div>
+        <div class="row col-md-12 mt-3">
+            <h5>Nature of Violation</h5>
+            <select id="natureofviolation" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>Nature of Violation</option>
+                <!--@{
+                if (ViewData["AuditZonesList"] != null)
                 {
-                    foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                    foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
                     {
-                        <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
                     }
                 }
-            }
-
-        </select>
-        <div class="hiddenContainers d-none mt-3">
-            <h5>Select Audit Period</h5>
-            <select id="periodSelectionBox" class="form-select form-control">
+                }-->
             </select>
-            <div class="row fieldAuditFields mt-3 d-none">
-                <div class="col-md-6">
-                    <h5>Select Audit Zone</h5>
-                    <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
-                        <option value="0" id="0" selected>--Select Audit Zone--</option>
-                        @{
-                            if (ViewData["AuditZonesList"] != null)
-                            {
-                                foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
-                                {
-                                    <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                                }
-                            }
-                        }
-                    </select>
-
-                </div>
-                <div class="col-md-6">
+        </div>
+    </div>
+    <!--      <div class="col-md-6">
                     <h5>Select Audit Branch</h5>
                     <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
                         <option value="0" id="0">--Select Audit Branch--</option>
@@ -342,7 +332,7 @@
                 <div class="col-md-12">
                     <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
                         <option value="0" id="0" selected>--Select Sub Entity--</option>
-                       
+
                     </select>
                 </div>
                </div>
@@ -392,56 +382,84 @@
 
 
         </div>
-    </div>
-    <div class="col-md-4">
-        <div id="branchInfoArea" class="mt-3 col-md-12 d-none">
-            <h5>Branch Information</h5>
-            <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+    </div>-->
 
-                <tbody>
-                    <tr>
-                        <td>Branch Name</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Branch Size</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Risk Rating</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>No. of Loan Cases (Disbersed During the Period)</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Amount Disbursed</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>No. of New Account Opened</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Last Audited On</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="mt-3 col-md-12">
+        <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Name of Audit Report</th>
+                    <th>Nature of Violation</th>
+                    <th>Audit Year</th>
+                    <th>Para No. Outstanding</th>
+                    <th>Observation</th>
+                    <th>Risk Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-<div class="row col-md-12 w-100 mt-3">
-    <button style="width:150px;" class="btn btn-lg btn-danger">Cancel</button>
-    <button style="width:150px; margin-left:50px; margin-right:50px;" class="btn btn-lg btn-danger">Reset</button>
+
+<!--<div class="row col-md-12 w-100 mt-3">
+    <button style="width:150px;" class="btn btn-primary">Cancel</button>
+    <button style="width:150px; margin-left:50px; margin-right:50px;" class="btn btn-primary">Reset</button>
     <button onclick="previewAuditPlan();" style="width: 150px;" class="btn btn-lg btn-danger">Preview</button>
 
-</div>
+</div>-->
 
 
 <div id="previewAuditPlan" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Preview Audit Plan</h5>
