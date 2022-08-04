@@ -1000,6 +1000,32 @@ namespace AIS
             con.Close();
             return empList;
         }
+        public List<TentativePlanModel> GetTentativePlansForHO()
+        {
+           
+            var con = this.DatabaseConnection();
+            List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from v_getauditplan_department";
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    TentativePlanModel tplan = new TentativePlanModel();
+                    tplan.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                    tplan.CODE = rdr["CODE"].ToString();
+                    tplan.FREQUENCYDESCRIPTION = rdr["frequency_discription"].ToString();
+                    tplan.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    tplansList.Add(tplan);
+                }
+            }
+            con.Close();
+            return tplansList;
+        }
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
         {
             var loggedInUser = sessionHandler.GetSessionUser();

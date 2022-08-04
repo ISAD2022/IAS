@@ -309,7 +309,8 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
             ViewData["DivisionsList"] = dBConnection.GetDivisions(false);
-            ViewData["AuditZonesList"] = dBConnection.GetZones();
+            ViewData["AuditZonesList"] = dBConnection.GetZones(); 
+            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForHO();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
