@@ -1044,16 +1044,22 @@ namespace AIS
             con.Close();
             return empList;
         }
-        public List<TentativePlanModel> GetTentativePlansForHO()
+        public List<TentativePlanModel> GetTentativePlansForFields(bool sessionCheck=true)
         {
            
             var con = this.DatabaseConnection();
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
-
+            string query = "";
+            if (sessionCheck)
+            {
+                var loggedInUser = sessionHandler.GetSessionUser();
+                if (loggedInUser.UserPostingAuditZone != 0)
+                    query = query + " and p.AUDITZONEID=" + loggedInUser.UserPostingAuditZone;
+            }
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from v_getauditplan";
+                cmd.CommandText = "select * from t_au_plan p WHERE 1 =1 "+query+" order by p.RISK, p.ZONENAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

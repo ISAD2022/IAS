@@ -199,7 +199,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForHO();
+            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForFields();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -311,7 +311,7 @@ namespace AIS.Controllers
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
             ViewData["DivisionsList"] = dBConnection.GetDivisions(false);
             ViewData["AuditZonesList"] = dBConnection.GetZones(); 
-            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForHO();
+            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForFields();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
