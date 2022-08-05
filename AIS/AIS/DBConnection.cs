@@ -1179,7 +1179,7 @@ namespace AIS
                 if (dept_code == 0)
                     cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID order by p.ID asc";
                 else
-                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID WHERE P.AUDIT_CONDUCT_BY_DEPTID = " + dept_code+" order by p.ID asc";
+                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID order by p.ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
