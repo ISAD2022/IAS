@@ -1059,7 +1059,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_au_plan p WHERE 1 =1 "+query+" order by p.RISK, p.ZONENAME asc";
+                cmd.CommandText = "select * from t_au_plan p WHERE 1 =1 "+query+ " order by decode(p.risk, 'High', 1, 'Medium', 2, 'Low', 3 ), p.ZONENAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
