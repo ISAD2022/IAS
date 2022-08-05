@@ -1061,13 +1061,13 @@ namespace AIS
                     TentativePlanModel tplan = new TentativePlanModel();
                     tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
                     tplan.AUDIT_ZONE_ID = Convert.ToInt32(rdr["AUDITZONEID"]);
-                    tplan.BR_SIZE = Convert.ToInt32(rdr["BR_SIZE"]);
-                    tplan.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    tplan.BR_SIZE = rdr["BR_SIZE"].ToString();
+                    tplan.RISK = rdr["RISK"].ToString();
                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
                     tplan.CODE = rdr["CODE"].ToString();
                     tplan.ZONE_NAME = rdr["ZONENAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
-                    tplan.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    tplan.BR_NAME = rdr["BR_NAME"].ToString();
                     tplansList.Add(tplan);
                 }
             }
