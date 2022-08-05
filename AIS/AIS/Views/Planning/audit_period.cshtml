@@ -66,7 +66,7 @@
                 deptIds.push($(chkbox).attr('dept-id'));
             }
         });
-        if (desc == "" || stDate == "" || edDate == "" || deptIds.length == 0) {
+        if (desc == "" || stDate == "" || edDate == "" ) {
             alert("Missing Mandatory fields");
             return;
         }
@@ -94,8 +94,14 @@
                 'DEPARTMENT_IDS': deptIds
             },
             cache: false,
-            success: function (data) {
-                location.reload();
+             success: function (data) {
+                 if (data.STATUS) { location.reload(); }
+                 else {
+                     alert(data.Message);
+                     return;
+                 }
+                
+
             },
             dataType: "json",
         });
@@ -171,25 +177,27 @@
                         <label for="periodEndModalField">End Date<span class="text-danger">*</span></label>
                         <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
                     </div>
-                    @{
-                        <h5 for="periodEndModalField">Audit Conducted By<span class="text-danger">*</span></h5>
-                        if (ViewData["AuditDepartments"] != null)
-                        {
-                            foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                    <div class="d-none">
+                        @{
+                            <h5 for="periodEndModalField">Audit Conducted By<span class="text-danger">*</span></h5>
+                            if (ViewData["AuditDepartments"] != null)
                             {
-                                <div class="form-group">
-                                    <div class="row w-100 col-md-12">
-                                        <div class="col-md-10">
-                                            <small for="checkbox_@item.CODE">@item.NAME</small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <input type="checkbox" class="deptCheckBoxes" dept-id="@item.CODE" id="checkbox_@item.CODE" style="float:right;" value="@item.CODE" aria-label="...">
+                                foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                                {
+                                    <div class="form-group">
+                                        <div class="row w-100 col-md-12">
+                                            <div class="col-md-10">
+                                                <small for="checkbox_@item.CODE">@item.NAME</small>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="checkbox" class="deptCheckBoxes" dept-id="@item.CODE" id="checkbox_@item.CODE" style="float:right;" value="@item.CODE" aria-label="...">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
                             }
                         }
-                    }
+                    </div>
 
                 </form>
             </div>

@@ -1198,16 +1198,30 @@ namespace AIS
             con.Close();
             return periodList;
         }
-        public AuditPeriodModel AddAuditPeriod(AuditPeriodModel periodModel)
+        public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
+            bool result = false;
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.AUDIT_CONDUCT_BY_DEPTID,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION+ "', TO_DATE('"+periodModel.START_DATE+ "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM')," + periodModel.AUDIT_CONDUCT_BY_DEPTID+", "+periodModel.STATUS_ID+")";
+                cmd.CommandText = "select ID from t_au_period p where (to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy') <= p.start_date and p.start_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) OR (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) or (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date  and  p.end_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM'))";
                 OracleDataReader rdr = cmd.ExecuteReader();
+                bool periodExists = false;
+                while (rdr.Read())
+                {
+                    if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
+                        periodExists = true;
+                }
+                if (!periodExists) {
+                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.AUDIT_CONDUCT_BY_DEPTID,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM')," + periodModel.AUDIT_CONDUCT_BY_DEPTID + ", " + periodModel.STATUS_ID + ")";
+                    cmd.ExecuteReader();
+                    result = true;
+                }
+                else
+                    result = false;
             }
             con.Close();
-            return periodModel;
+            return result;
         }
         public AuditPlanModel AddAuditPlan(AuditPlanModel plan)
         {

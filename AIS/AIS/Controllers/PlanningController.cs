@@ -285,19 +285,22 @@ namespace AIS.Controllers
             return dBConnection.GetAuditPeriods(dept_code);
         }
         [HttpPost]
-        public List<AuditPeriodModel> add_audit_period(AddAuditPeriodModel auditPeriod)
+        public string add_audit_period(AddAuditPeriodModel auditPeriod)
         {
-            List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
-            foreach(var id in auditPeriod.DEPARTMENT_IDS) {
-                AuditPeriodModel apm = new AuditPeriodModel();
-                apm.AUDIT_CONDUCT_BY_DEPTID = id;
-                apm.STATUS_ID= 1;
-                apm.DESCRIPTION =auditPeriod.DESCRIPTION;
-                apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
-                apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);
-                periodList.Add(dBConnection.AddAuditPeriod(apm));
+            AuditPeriodModel apm = new AuditPeriodModel();
+            apm.AUDIT_CONDUCT_BY_DEPTID = 0;
+            apm.STATUS_ID= 1;
+            apm.DESCRIPTION =auditPeriod.DESCRIPTION;
+            apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
+            apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);
+            if(dBConnection.AddAuditPeriod(apm))
+            {
+                return "{\"Status\":true,\"Message\":\"Audit Period Added Successfully\"}";
             }
-            return periodList;
+            else {
+                return "{\"Status\":false,\"Message\":\"Already Audit Period Exists With in that Date Range\"}";
+            }
+
         }
         [HttpPost]
         public AuditPlanModel add_audit_plan(AuditPlanModel plan)
