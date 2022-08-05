@@ -3,6 +3,14 @@
     Layout = "_Layout";
 }
 
+<style type="text/css">
+    .text-hover:hover
+    {
+        font-size:110px;
+        font-weight:bold;
+    }
+</style>
+
 <script type="text/javascript">
   
 </script>
@@ -14,8 +22,11 @@
         <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="Plan Review">
             <thead>
                 <tr>
+                    <th>Sr No</th>
                     <th>Operation Zone</th>
-                    <th>Description</th>
+                    <th>Branch</th>
+                    <th>Size</th>
+                    <th>Risk</th>
                     <th>Frequency</th>
                     <th>No. of Days</th>
                     <th>Actions</th>
@@ -25,16 +36,21 @@
                 @{
                     if (ViewData["TentativePlansList"] != null)
                     {
+                        int sr= 1;
 
                         foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
                         {
                                 <tr>
-                                    <td>@item.CODE</td>
+                                    <td>@sr</td>
+                                    <td>@item.ZONE_NAME</td>
                                     <td>@item.DESCRIPTION</td>
-                                    <td>@item.FREQUENCYDESCRIPTION</td>
+                                    <td>@item.BR_SIZE</td>
+                                    <td>@item.RISK_ID</td>
+                                    <td>@item.FREQUENCY_DESCRIPTION</td>
                                     <td>@item.NO_OF_DAYS</td>
-                                    <td><small>Edit</small></td>
+                                    <td><small class="text-center text-danger text-hover">Edit</small></td>
                                 </tr>
+                            sr = sr + 1;
                         }
 
                     }

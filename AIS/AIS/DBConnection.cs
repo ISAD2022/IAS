@@ -43,7 +43,6 @@ namespace AIS
             }
             catch (Exception) { return null; }
         }
-
         public UserModel AutheticateLogin(LoginModel login)
         {
             var con = this.DatabaseConnection();
@@ -63,20 +62,40 @@ namespace AIS
                     user.PPNumber = rdr["PPNO"].ToString();
                     user.UserLocationType = rdr["USER_LOCATION_TYPE"].ToString();
                     user.IsActive = rdr["ISACTIVE"].ToString();
-                    if (rdr["DIVISIONID"].ToString()!=null && rdr["DIVISIONID"].ToString() != "")
-                    user.UserPostingDiv = Convert.ToInt32(rdr["DIVISIONID"]);
+                    if (rdr["DIVISIONID"].ToString() != null && rdr["DIVISIONID"].ToString() != "")
+                        user.UserPostingDiv = Convert.ToInt32(rdr["DIVISIONID"]);
+                    else
+                        user.UserPostingDiv = 0;
+
                     if (rdr["DEPARTMENTID"].ToString() != null && rdr["DEPARTMENTID"].ToString() != "")
                         user.UserPostingDept = Convert.ToInt32(rdr["DEPARTMENTID"]);
+                    else
+                        user.UserPostingDept = 0;
+
                     if (rdr["ZONEID"].ToString() != null && rdr["ZONEID"].ToString() != "")
                         user.UserPostingZone = Convert.ToInt32(rdr["ZONEID"]);
+                    else
+                        user.UserPostingZone = 0;
+
                     if (rdr["BRANCHID"].ToString() != null && rdr["BRANCHID"].ToString() != "")
                         user.UserPostingBranch = Convert.ToInt32(rdr["BRANCHID"]);
+                    else
+                        user.UserPostingBranch = 0;
+
                     if (rdr["AUDIT_ZONEID"].ToString() != null && rdr["AUDIT_ZONEID"].ToString() != "")
                         user.UserPostingAuditZone = Convert.ToInt32(rdr["AUDIT_ZONEID"]);
+                    else
+                        user.UserPostingAuditZone = 0;
+
                     if (rdr["GROUP_ID"].ToString() != null && rdr["GROUP_ID"].ToString() != "")
                         user.UserGroupID = Convert.ToInt32(rdr["GROUP_ID"]);
+                    else
+                        user.UserGroupID = 0;
+
                     if (rdr["ROLE_ID"].ToString() != null && rdr["ROLE_ID"].ToString() != "")
                         user.UserRoleID = Convert.ToInt32(rdr["ROLE_ID"]);
+                    else
+                        user.UserRoleID = 0;
 
                 }
             }
@@ -469,13 +488,21 @@ namespace AIS
             }
             con.Close();
         }
-        public List<AuditZoneModel> GetAuditZones()
+        public List<AuditZoneModel> GetAuditZones(bool sessionCheck=true)
         {
             var con = this.DatabaseConnection();
             List<AuditZoneModel> AZList = new List<AuditZoneModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (sessionCheck)
+            {
+                if (loggedInUser.UserPostingAuditZone != 0)
+                    query = query + " and z.ID=" + loggedInUser.UserPostingAuditZone;
+               
+            }
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Select z.* FROM T_auditzone z order by z.ZONENAME asc";
+                cmd.CommandText = "Select z.* FROM T_auditzone z WHERE 1=1 "+query+" order by z.ZONENAME asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -525,17 +552,27 @@ namespace AIS
             con.Close();
             return ICList;
         }
-        public List<BranchModel> GetBranches(int zone_code=0)
+        public List<BranchModel> GetBranches(int zone_code=0,bool sessionCheck=true)
         {
             var con = this.DatabaseConnection();
-            List<BranchModel> branchList = new List<BranchModel>();
+            List<BranchModel> branchList = new List<BranchModel>();            
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (sessionCheck)
+            {
+                if (loggedInUser.UserPostingZone != 0)
+                    query = query + " and z.ZONEID=" + loggedInUser.UserPostingZone;
+                if (loggedInUser.UserPostingBranch != 0)
+                    query = query + " and b.ZONEID=" + loggedInUser.UserPostingBranch;
+            }
+
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if(zone_code==0)
-                    cmd.CommandText = "Select b.*, z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid  order by b.BRANCHNAME asc";
+                    cmd.CommandText = "Select b.*, z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE 1=1 "+query+" order by b.BRANCHNAME asc";
                 //cmd.CommandText = "Select b.*, s.DESCRIPTION as BRANCH_SIZE,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join T_BR_SIZE s on b.BRANCH_SIZE_ID=s.BR_SIZE_ID inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid  order by b.BRANCHNAME asc";
                 else
-                    cmd.CommandText = "Select b.*,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONECODE=" + zone_code + " order by b.BRANCHNAME asc";
+                    cmd.CommandText = "Select b.*,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONEID=" + zone_code + query+ " order by b.BRANCHNAME asc";
                 //cmd.CommandText = "Select b.*, s.DESCRIPTION as BRANCH_SIZE,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join T_BR_SIZE s on b.BRANCH_SIZE_ID=s.BR_SIZE_ID inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONECODE="+zone_code+" order by b.BRANCHNAME asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -587,13 +624,20 @@ namespace AIS
             con.Close();*/
             return br;
         }
-        public List<ZoneModel> GetZones()
+        public List<ZoneModel> GetZones(bool sessionCheck=true)
         {
             var con = this.DatabaseConnection();
             List<ZoneModel> zoneList = new List<ZoneModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (sessionCheck)
+            {
+                if (loggedInUser.UserPostingZone != 0)
+                    query = query + " and z.ZONECODE=" + loggedInUser.UserPostingZone;              
+            }
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Select z.* FROM V_SERVICE_ZONES z order by z.ZONENAME asc";
+                cmd.CommandText = "Select z.* FROM V_SERVICE_ZONES z WHERE 1=1 "+query+" order by z.ZONENAME asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1009,16 +1053,20 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from v_getauditplan_department";
+                cmd.CommandText = "select * from v_getauditplan";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     TentativePlanModel tplan = new TentativePlanModel();
-                    tplan.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    tplan.AUDIT_ZONE_ID = Convert.ToInt32(rdr["AUDITZONEID"]);
+                    tplan.BR_SIZE = Convert.ToInt32(rdr["BR_SIZE"]);
+                    tplan.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
                     tplan.CODE = rdr["CODE"].ToString();
-                    tplan.FREQUENCYDESCRIPTION = rdr["frequency_discription"].ToString();
+                    tplan.ZONE_NAME = rdr["ZONENAME"].ToString();
+                    tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
                     tplan.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     tplansList.Add(tplan);
                 }
