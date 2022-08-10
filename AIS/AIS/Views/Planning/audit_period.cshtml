@@ -11,20 +11,15 @@
 </style>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#sidebar_policy').hide();
-        $('#listOfAuditPeriodsContainer').hide();
+        ShowDepartmentAuditPeriods();
     });
     function ShowDepartmentAuditPeriods() {
-        if ($('#deptSelectionBox option:selected').val() == 0)
-            $('#listOfAuditPeriodsContainer').hide();
-        else {
-            $('#listOfAuditPeriodsContainer').show();
+     
 
             $.ajax({
                 url: "/Planning/audit_periods",
                 type: "POST",
                 data: {
-                    'dept_code': $('#deptSelectionBox option:selected').val()
                 },
                 cache: false,
                 success: function (data) {
@@ -42,7 +37,7 @@
                 },
                 dataType: "json",
             });
-        }
+      
     }
     function setupNewAuditPeriod() {
         $('#setupAuditPeriod').modal('show');
@@ -95,13 +90,9 @@
             },
             cache: false,
              success: function (data) {
-                 if (data.STATUS) { location.reload(); }
-                 else {
+
                      alert(data.Message);
                      return;
-                 }
-                
-
             },
             dataType: "json",
         });
@@ -120,22 +111,8 @@
             <button onclick="setupNewAuditPeriod();" class="btn btn-danger" style="float:right;">Add New Period</button>
         </div>
     </div>
-    <h5>Select Department</h5>
-    <select id="deptSelectionBox" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control" aria-label="Default select example">
-        <option value="0" selected>Select Your Department</option>
-        @{
-            if (ViewData["AuditDepartments"] != null)
-            {
-                foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
-                {
-                    <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
-                }
-            }
-        }
-
-    </select>
 </div>
-<div id="listOfAuditPeriodsContainer" class="row mt-3 hide">
+<div id="listOfAuditPeriodsContainer" class="row mt-3">
     
     <br />
     <table id="listOfAuditPeriods" class="table align-middle mb-0 mt-2 bg-white table-hover table-striped">

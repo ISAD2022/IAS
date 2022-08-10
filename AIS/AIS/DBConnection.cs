@@ -1177,18 +1177,16 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (dept_code == 0)
-                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID order by p.ID asc";
+                    cmd.CommandText = "select p.* from T_AU_PERIOD p order by p.ID asc";
                 else
-                    cmd.CommandText = "select p.*, d.name as DEPARTMENT_NAME from T_AU_PERIOD p inner join V_SERVICE_DEPARTMENT d on p.AUDIT_CONDUCT_BY_DEPTID=d.ID order by p.ID asc";
+                    cmd.CommandText = "select p.* from T_AU_PERIOD p order by p.ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     AuditPeriodModel period = new AuditPeriodModel();
                     period.ID = Convert.ToInt32(rdr["ID"]);
-                    period.AUDIT_CONDUCT_BY_DEPTID = Convert.ToInt32(rdr["AUDIT_CONDUCT_BY_DEPTID"]);
                     period.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    period.DEPARTMENT_NAME = rdr["DEPARTMENT_NAME"].ToString();
                     period.START_DATE = Convert.ToDateTime(rdr["START_DATE"]);
                     period.END_DATE = Convert.ToDateTime(rdr["END_DATE"]);
                     period.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
@@ -1213,7 +1211,7 @@ namespace AIS
                         periodExists = true;
                 }
                 if (!periodExists) {
-                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.AUDIT_CONDUCT_BY_DEPTID,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM')," + periodModel.AUDIT_CONDUCT_BY_DEPTID + ", " + periodModel.STATUS_ID + ")";
+                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + periodModel.STATUS_ID + ")";
                     cmd.ExecuteReader();
                     result = true;
                 }

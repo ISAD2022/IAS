@@ -40,7 +40,7 @@ namespace AIS
                 SmtpServer.Send(mail);
                 return true;
             }
-            catch (Exception e) { return false; }
+            catch (Exception) { return false; }
         }
 
     }  

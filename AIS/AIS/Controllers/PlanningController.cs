@@ -288,7 +288,6 @@ namespace AIS.Controllers
         public string add_audit_period(AddAuditPeriodModel auditPeriod)
         {
             AuditPeriodModel apm = new AuditPeriodModel();
-            apm.AUDIT_CONDUCT_BY_DEPTID = 0;
             apm.STATUS_ID= 1;
             apm.DESCRIPTION =auditPeriod.DESCRIPTION;
             apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
