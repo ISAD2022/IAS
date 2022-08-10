@@ -20,24 +20,26 @@ namespace AIS
 
     public class EmailConfiguration
     {
-        private readonly SessionHandler sessionHandler = new SessionHandler();
+        private readonly EmailCredentails emailCredentails = new EmailCredentails();
+     
         public bool ConfigEmail()
         {
             try
             {
-                return true;
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("mail.ztbl.com.pk");
+                //------WORKING CODE COMMENTED DO NOT DELETE ------
 
-                mail.From = new MailAddress("ali.125525@ztbl.com.pk");
+                /*EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient(em.Host);
+                mail.From = new MailAddress(em.EMAIL);
                 mail.To.Add("khattak.aqib@ztbl.com.pk");
                 mail.Subject = "Test Mail";
                 mail.Body = "This is testing Email from AIS";
-                SmtpServer.Host = "mail.ztbl.com.pk";
-                SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("ali.125525@ztbl.com.pk", "PASS");
+                SmtpServer.Host = em.Host;
+                SmtpServer.Port = em.Port;
+                SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);
                 SmtpServer.EnableSsl = true;
-                SmtpServer.Send(mail);
+                SmtpServer.Send(mail);*/
                 return true;
             }
             catch (Exception) { return false; }
