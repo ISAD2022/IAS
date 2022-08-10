@@ -104,6 +104,7 @@ namespace AIS.Controllers
             ViewData["AuditEntities"] = dBConnection.GetAuditEntities();
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
             ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
+            ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
             ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -118,6 +119,30 @@ namespace AIS.Controllers
                 else
                     return View();
             }
+        }
+        [HttpPost]
+        public bool add_audit_criteria(List<List<String>> CRITERIA_LIST)
+        {
+            foreach(var criteria in CRITERIA_LIST)
+            {
+                AddAuditCriteriaModel cm = new AddAuditCriteriaModel();
+                cm.ID = 0;
+                cm.AUDITPERIODID = Convert.ToInt32(criteria[0]);
+                cm.ENTITY_ID = Convert.ToInt32(criteria[1]);
+                cm.RISK_ID = Convert.ToInt32(criteria[2]);
+                cm.FREQUENCY_ID = Convert.ToInt32(criteria[3]);
+                cm.SIZE_ID = Convert.ToInt32(criteria[4]);
+                cm.NO_OF_DAYS = Convert.ToInt32(criteria[5]);
+                if ((criteria[6].ToLower()) == "yes")
+                    criteria[6] = "Y";
+                else
+                    criteria[6] = "N";
+
+                cm.VISIT = criteria[6];
+                cm.APPROVAL_STATUS = 1;
+                dBConnection.AddAuditCriteria(cm);
+            }
+            return true;
         }
         public IActionResult submission_for_review()
         {
@@ -318,6 +343,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

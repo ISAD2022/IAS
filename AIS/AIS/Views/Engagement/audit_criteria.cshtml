@@ -13,84 +13,84 @@
         if ($('#auditCriteriaEntityField option:selected').val() != 0)
             entityName = $('#auditCriteriaEntityField option:selected').text();
 
-        var name = $('#auditCriteriaNameField').val();
+        var period = '';
+        if ($('#auditCriteriaPeriodField option:selected').val() != 0)
+            period = $('#auditCriteriaPeriodField option:selected').text();
+
         var days = $('#auditCriteriaDaysField').val();
         var risk = '';
         if ($('#auditCriteriaRiskField option:selected').val() != 0)
             risk = $('#auditCriteriaRiskField option:selected').text();
+
+        var freq = '';
+        if ($('#auditCriteriaFreqField option:selected').val() != 0)
+            freq = $('#auditCriteriaFreqField option:selected').text();
 
 
         var size = '';
         if ($('#auditCriteriaSizeField option:selected').val() != 0)
             size = $('#auditCriteriaSizeField option:selected').text();
 
-        var visit = '';
+        var visit = 'No';
         if ($('#auditCriteriaVisitField').is(':checked'))
             visit = "Yes";
-        else
-            Visit = "No";
 
-        $('#auditCriteriaListBox tbody').append('<tr><td>' + entityName + '</td><td>' + name + '</td><td>' + risk + '</td><td>' + size + '</td><td>' + days + '</td><td>' + visit + '</td><td><a>Edit</a><a style="margin-left:10px;">Delete</a></td></tr>')
+        $('#auditCriteriaListBox tbody').append('<tr><td value="' + $('#auditCriteriaPeriodField option:selected').val() + '">' + period + '</td><td value="' + $('#auditCriteriaEntityField option:selected').val() + '">' + entityName + '</td><td value="' + $('#auditCriteriaRiskField option:selected').val() + '">' + risk + '</td><td value="' + $('#auditCriteriaFreqField option:selected').val() + '">' + freq + '</td><td value="' + $('#auditCriteriaSizeField option:selected').val() + '">' + size + '</td><td value="' + days + '">' + days + '</td><td value="' + visit + '">' + visit + '</td><td><a onclick=DeleteCriteriaRecordFromGrid(this); class="text-hover text-danger">Delete</a></td></tr>')
 
     }
+    function DeleteCriteriaRecordFromGrid(e) {
+        $(e).parent().parent().remove();
+    }
     function enitityChangeEvent() {
-        if ($('#auditCriteriaEntityField option:selected').val() == 2) {
+        if ($('#auditCriteriaEntityField option:selected').val() == 6) {
             $('.brField').removeClass('d-none');
-            $('.brField').val(0);
+            $('#auditCriteriaSizeField option:selected').val(0);
         } else
             $('.brField').addClass('d-none');
-        $('.brField').val(0);
+        $('#auditCriteriaSizeField option:selected').val(0);
     }
     function addAuditEntitiesModal() {
         $('#setupAuditEntitiesModal').modal('show');
     }
     function submitAuditCriteria() {
+        var criteria_list = [];
+        $.each($('#auditCriteriaListBox tbody tr'), function (index, row) {
+            var criteria = [];
+            $.each($(row).find('td'), function (i, d) {
+                if (typeof $(d).attr('value') != "undefined" && $(d).attr('value') != null) {
+                    criteria.push($(d).attr('value'));
+                }
+            });
+            criteria_list.push(criteria);            
+        });
+        if (criteria_list.length > 0) {
+            $.ajax({
+                url: "/Engagement/add_audit_criteria",
+                type: "POST",
+                data: {
+                    'CRITERIA_LIST': criteria_list
+                },
+                cache: false,
+                success: function (data) {
+                    alert('Audit Criteria Added Successfully');
+                    location.reload();
 
+                },
+                dataType: "json",
+            });
+        }
     }
 </script>
 
 <div class="row col-md-12">
     <h3 style="color: #45c545;">Audit Criteria</h3>
 </div>
-<div class="row mt-3 col-md-12">
-    <div class="row col-md-4">
-        <h5>Select Entity</h5>
-    </div>
-    <div class="row col-md-8">
-        <div class="col-md-8 pl-0">
-            <select id="auditCriteriaEntityField" onchange="enitityChangeEvent();" class="form-select form-control">
-                <option value="0" id="0" selected>--Select Entity--</option>
-                @{
-                    if (ViewData["AuditEntities"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["AuditEntities"]))
-                        {
-                            <option value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-4 pl-0">
-            <button onclick="addAuditEntitiesModal();" class="btn btn-danger">Add New Entity</button>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-3 col-md-12 d-none">
-    <div class="row col-md-4">
-        <h5>Name</h5>
-    </div>
-    <div class="row col-md-8">
-        <input id="auditCriteriaNameField" class="form-control" />
-    </div>
-</div>
 <div class="row col-md-12 mt-3">
     <div class="row col-md-4">
         <h5>Audit Period</h5>
     </div>
     <div class="row col-md-8">
-        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+        <select id="auditCriteriaPeriodField" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Audit Period--</option>
             @{
                 if (ViewData["AuditPeriodList"] != null)
@@ -106,6 +106,32 @@
         </select>
     </div>
 </div>
+<div class="row mt-3 col-md-12">
+    <div class="row col-md-4">
+        <h5>Select Entity</h5>
+    </div>
+    <div class="row col-md-8">
+        <div class="col-md-9 pl-0">
+            <select id="auditCriteriaEntityField" onchange="enitityChangeEvent();" class="form-select form-control">
+                <option value="0" id="0" selected>--Select Entity--</option>
+                @{
+                    if (ViewData["AuditEntities"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["AuditEntities"]))
+                        {
+                            <option value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3 pr-0">
+            <button onclick="addAuditEntitiesModal();" class="btn btn-danger float-right" >Add New Entity</button>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-4">
@@ -113,7 +139,7 @@
     </div>
     <div class="row col-md-8">
         <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>Select Risk Category</option>
+            <option value="0" id="0" selected>--Select Risk Category--</option>
             @{
                 if (ViewData["RiskList"] != null)
                 {
@@ -134,7 +160,7 @@
         <h5>Frequency</h5>
     </div>
     <div class="row col-md-8">
-        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+        <select id="auditCriteriaFreqField" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Frequency--</option>
             @{
                 if (ViewData["AuditFrequencies"] != null)
@@ -157,10 +183,16 @@
     </div>
     <div class="row col-md-8">
         <select id="auditCriteriaSizeField" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>Select Size</option>
-            <option value="1">Small</option>
-            <option value="2">Medium</option>
-            <option value="3">Large</option>
+            <option value="0" id="0" selected>--Select Size--</option>
+            @{
+                if (ViewData["BranchSizesList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["BranchSizesList"]))
+                    {
+                        <option value="@item.BR_SIZE_ID" id="@item.BR_SIZE_ID">@item.DESCRIPTION</option>
+                    }
+                }
+            }
         </select>
     </div>
 </div>
@@ -189,10 +221,11 @@
     <table id="auditCriteriaListBox" class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
         <thead>
             <tr>
+                <td class="col-md-3">Period</td>
                 <td class="col-md-2">Entity</td>
-                <td class="col-md-3">Name</td>
-                <td class="col-md-2">Risk Category</td>
-                <td class="col-md-2">Size</td>
+                <td class="col-md-1">Risk Category</td>
+                <td class="col-md-2">Frequency</td>
+                <td class="col-md-1">Size</td>
                 <td class="col-md-1">No. of Days</td>
                 <td class="col-md-1">Spot Visit</td>
                 <td class="col-md-1"></td>
@@ -203,7 +236,7 @@
     </table>
 </div>
 <div class="row col-md-12 mt-3">
-    <button onclick="" class="col-md-2 btn btn-success">Submit</button>
+    <button onclick="submitAuditCriteria();" class="col-md-2 btn btn-success">Submit</button>
 </div>
 
 
