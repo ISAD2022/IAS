@@ -103,6 +103,8 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditEntities"] = dBConnection.GetAuditEntities();
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

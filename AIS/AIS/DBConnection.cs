@@ -1202,7 +1202,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ID from t_au_period p where (to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy') <= p.start_date and p.start_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) OR (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) or (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date  and  p.end_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = "select ID from t_au_period p where (to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy') <= p.start_date and p.start_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) OR (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) or (p.start_date <= to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date  and  p.end_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM'))   or (to_date('" + periodModel.START_DATE + "', 'dd/mm/yyyy HH:MI:SS AM') <=p.start_date and p.end_date <= to_date('" + periodModel.END_DATE + "', 'dd/mm/yyyy HH:MI:SS AM'))";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 bool periodExists = false;
                 while (rdr.Read())
@@ -1520,6 +1520,48 @@ namespace AIS
             }
             con.Close();
             return true;
+        }
+        public List<AuditFrequencyModel> GetAuditFrequencies()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditFrequencyModel> freqList = new List<AuditFrequencyModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "select * from T_AUDIT_FREQUENCY F WHERE F.STATUS='Y' order by F.ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditFrequencyModel freq = new AuditFrequencyModel();
+                    freq.ID = Convert.ToInt32(rdr["ID"]);
+                    freq.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
+                    freq.FREQUENCY_DISCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
+                    freq.STATUS = rdr["STATUS"].ToString();
+                    freqList.Add(freq);
+                }
+            }
+            con.Close();
+            return freqList;
+        }
+        public List<RiskModel> GetRisks()
+        {
+            var con = this.DatabaseConnection();
+            List<RiskModel> riskList = new List<RiskModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+             
+                cmd.CommandText = "select * from T_RISK R order by R.R_ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskModel risk = new RiskModel();
+                    risk.R_ID = Convert.ToInt32(rdr["R_ID"]);
+                    risk.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    riskList.Add(risk);
+                }
+            }
+            con.Close();
+            return riskList;
         }
     }
 }
