@@ -1,574 +1,454 @@
-﻿@{
-    ViewData["Title"] = "Audit Period";
-    Layout = "_Layout";
-}
+﻿@{ ViewData["Title"] = "Significant Findings";
+    Layout = "_Layout"; }
 
-
-<div class="row text-center" style="margin-top:50px;">
-    <p>POST CHANGES IN TEAM MEMBERS</p>
-
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sidebar_policy').hide();
+    })
+</script>
+<div class="row text-center mt-3">
+    <H2 style=" display:block;color: #45c545;">Aging of the Oustanding Paras</H2>
 </div>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentMain" Runat="Server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server">
-    </asp:ScriptManager>
-    <div id="pagetitle">
-        Add/Modify Audit Plan Team
+
+<script type="text/javascript">
+    var g_teams = [];
+    var g_branches = [];
+    $(document).ready(function () {
+        $('#deptSelectionBox').addClass('d-none');
+        $('.hiddenContainers').addClass('d-none');
+        $('.fieldAuditFields').addClass('d-none');
+        $('.nonFieldAuditFields').addClass('d-none');
+        $('#branchInfoArea').addClass('d-none');
+        ShowDepartmentAuditPeriods();
+
+    });
+    function getBusinessDateCount(startDate, endDate) {
+        var elapsed, daysBeforeFirstSaturday, daysAfterLastSunday;
+        var ifThen = function (a, b, c) {
+            return a == b ? c : a;
+        };
+
+        elapsed = endDate - startDate;
+        elapsed /= 86400000;
+
+        daysBeforeFirstSunday = (7 - startDate.getDay()) % 7;
+        daysAfterLastSunday = endDate.getDay();
+
+        elapsed -= (daysBeforeFirstSunday + daysAfterLastSunday);
+        elapsed = (elapsed / 7) * 5;
+        elapsed += ifThen(daysBeforeFirstSunday - 1, -1, 0) + ifThen(daysAfterLastSunday, 6, 5);
+
+        return Math.ceil(elapsed);
+    }
+    function ShowDepartmentAuditPeriods() {
+        if ($('#deptSelectionBox option:selected').val() == 0)
+            $('.hiddenContainers').addClass('d-none');
+        else {
+            $('.hiddenContainers').removeClass('d-none');
+            if ($('#deptSelectionBox option:selected').val() == '473') {
+                $('.fieldAuditFields').removeClass('d-none');
+                $('.nonFieldAuditFields').addClass('d-none');
+            } else {
+                $('.nonFieldAuditFields').removeClass('d-none');
+                $('.fieldAuditFields').addClass('d-none');
+            }
+            $.ajax({
+                url: "/Planning/audit_periods",
+                type: "POST",
+                data: {
+                    'dept_code': $('#deptSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $('#periodSelectionBox').empty();
+                    $('#periodSelectionBox').append('<option value="0" id="0">--Select Audit Period--</option>')
+                    console.log(data);
+                    $.each(data, function (index, period) {
+                        $('#periodSelectionBox').append('<option value="' + period.id + '" id="' + period.id + '">' + period.description + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+            $.ajax({
+                url: "/Planning/audit_teams",
+                type: "POST",
+                data: {
+                    'dept_code': $('#deptSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $('#teamSelectionBox').empty();
+                    $('#teamSelectionBox').append('<option value="0" id="0">--Select Audit Team--</option>')
+                    g_teams = data;
+                    $.each(data, function (index, team) {
+                        if (team.iS_TEAMLEAD == 'Y')
+                            $('#teamSelectionBox').append('<option value="' + team.code + '" id="' + team.code + '">' + team.name + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function ShowSelectedZonesBranches() {
+        if ($('#auditZoneSelectionBox option:selected').val() == 0) {
+            $('#branchSelectionBox').empty();
+            $('#branchInfoArea').addClass('d-none');
+            $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>');
+        }
+        else {
+            $('#branchSelectionBox').empty();
+            $('#branchInfoArea').removeClass('d-none');
+            $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
+            $.ajax({
+                url: "/Planning/zone_branches",
+                type: "POST",
+                data: {
+                    'zone_code': $('#auditZoneSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    g_branches = data;
+                    $('#branchSelectionBox').empty();
+                    $('#branchInfoArea').hide();
+                    $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
+                    console.log(data);
+                    $.each(data, function (index, branch) {
+                        $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function ShowSelectedDivisionDepartments() {
+        if ($('#divSelectionBox option:selected').val() == 0) {
+            $('#divDeptSelectionBox').empty();
+            $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
+        }
+        else {
+            $('#divDeptSelectionBox').empty();
+            $.ajax({
+                url: "/Planning/div_departments",
+                type: "POST",
+                data: {
+                    'div_code': $('#divSelectionBox option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $('#divDeptSelectionBox').empty();
+                    $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
+                    console.log(data);
+                    $.each(data, function (index, dept) {
+                        $('#divDeptSelectionBox').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
+                    });
+
+                },
+                dataType: "json",
+            });
+            getSubEntities();
+        }
+    }
+    function ShowBranchInfoBox() {
+        if ($('#branchSelectionBox option:selected').val() == 0) {
+            $('#branchInfoArea').addClass('d-none');
+        } else {
+            $('#branchInfoArea').removeClass('d-none');
+        }
+    }
+    function previewAuditPlan() {
+
+        $('#previewAuditPlan').modal('show');
+        $('#auditorDept').text($('#deptSelectionBox option:selected').text());
+        $('#auditorPlan').text($('#periodSelectionBox option:selected').text());
+        $('#descModal_field').html($('#entitySelectionBox option:selected').text());
+        if ($('#deptSelectionBox option:selected').val() == '473') {
+            $('#divzone_field').text($('#auditZoneSelectionBox option:selected').text());
+            $('#deptBranch_field').text($('#branchSelectionBox option:selected').text());
+
+        } else {
+            $('#divzone_field').text($('#divSelectionBox option:selected').text());
+            $('#deptBranch_field').text($('#divDeptSelectionBox option:selected').text());
+
+        }
+        $('#exeFrom_field').html($('#executionPeriodFromField').val());
+        $('#exeTo_field').html($('#executionPeriodToField').val());
+        $('#operationalFrom_field').html($('#auditPeriodFromField').val());
+        $('#operationalTo_field').html($('#auditPeriodToField').val());
+        //
+        if ($('#isTravelingRequiredField').is(":checked"))
+            $('#travelingReq_field').html('Yes');
+        else
+            $('#travelingReq_field').html('No');
+        $('#remarksAddtn_field').html($('#remarksAdditionalInfoField').val());
+        $('#teamName_field').text($('#teamSelectionBox option:selected').text());
+        //
+        var teamMembersFields = "";
+        $.each(g_teams, function (index, team) {
+            if (team.name == $('#teamSelectionBox option:selected').text()) {
+                if (team.iS_TEAMLEAD == "Y")
+                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (L)<br>";
+                else
+                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (M)<br>";
+            }
+        });
+        $('#teamMembers_field').html(teamMembersFields);
+
+    }
+    function publishNewAuditPlanChanges() {
+
+        alert("Under Construction");
+        return false;
+        var periodId = $('#periodSelectionBox option:selected').val();
+        var stDate = $('#executionPeriodFromField').val();
+        var edDate = $('#executionPeriodToField').val();
+        var period_stDate = $('#auditPeriodFromField').val();
+        var period_edDate = $('#auditPeriodToField').val();
+        var conducted_by = $('#deptSelectionBox option:selected').val();
+        var no_days = getBusinessDateCount(new Date(stDate), new Date(edDate));
+        var zoneId = $('#auditZoneSelectionBox option:selected').val();
+        var branchId = 0;
+        if (zoneId != 0)
+            branchId = $('#branchSelectionBox option:selected').val();
+
+        var divId = $('#divSelectionBox option:selected').val();
+        var deptId = 0;
+        if (divId != 0)
+            deptId = $('#divDeptSelectionBox option:selected').val();
+
+        var teamId = $('#teamSelectionBox option:selected').val();
+        var status = 1;
+        var desc = $('#descriptionAuditPlanField').val();
+
+        $.ajax({
+            url: "/Planning/add_audit_plan",
+            type: "POST",
+            data: {
+                'AUDITPERIOD_ID': periodId,
+                'AUDIT_STARTDATE': stDate,
+                'AUDIT_ENDDATE': edDate,
+                'AUDITPERIOD_FROM': period_stDate,
+                'AUDITPERIOD_TO': period_edDate,
+                'AUDIT_CONDUCTBY_DEPT': conducted_by,
+                'NO_OF_DAYS_AUDIT': no_days,
+                'AUDIT_ZONEID': zoneId,
+                'BRANCHID': branchId,
+                'DIVISION_ID': divId,
+                'DEPARTMENT_ID': deptId,
+                'TEAM_CONST_ID': teamId,
+                'STATUS': status,
+                'DESCRIPTION': desc
+            },
+            cache: false,
+            success: function (data) {
+                window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
+            },
+            dataType: "json",
+        });
+    }
+    function getSubEntities() {
+        if ($('#divSelectionBox option:selected').val() != 0) {
+            $('#entitySelectionBox').empty();
+            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
+            $.ajax({
+                url: "/Setup/get_sub_entities",
+                type: "POST",
+                data: {
+                    'div_id': $('#divSelectionBox option:selected').val(),
+                    'dept_id': $('#divDeptSelectionBox option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, ent) {
+                        $('#entitySelectionBox').append('<option value="' + ent.id + '" id="' + ent.id + '" >' + ent.name + '</option>');
+                    });
+
+                },
+                dataType: "json",
+            });
+
+        } else {
+            $('#entitySelectionBox').empty();
+            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
+        }
+
+
+    }
+</script>
+
+
+<!--<div class="panel panel-default">
+    Default panel contents
+<div class="panel-heading"> </div>
+<div class="panel-body">
+    <p>...</p>
+</div>
+
+List group
+<ul class="list-group">
+    <li class="list-group-item">Branch Special Audit</li>
+    <li class="list-group-item">SAM Protfolio </li>
+    <li class="list-group-item">Budget Assesment</li>
+    <li class="list-group-item">Profitabilty Assesment of the branches</li>
+    <li class="list-group-item">Inspection</li>
+</ul>
+-->
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-12">
+        <h5>Select Department</h5>
+        <select id="entity" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
+            <option value="0" id="0" selected>--Select Department--</option>
+            <option value="1" id="1">Information Systems Audit Department</option>
+            <option value="2" id="2">Corporate Audit Department</option>
+            <option value="3" id="3">Field Audit Department</option>
+            <option value="4" id="4">Inspection & Complaint Department</option>
+        </select>
     </div>
-    <table width="100%">
-        <tr>
-            <td colspan="6" align="center">
-                <asp:Label id="MessageLabel" runat="server" CssClass="error"
-                           EnableViewState="False" Font-Size="Small"></asp:Label>
-                <asp:UpdateProgress id="UpdateProgress1" runat="server" DisplayAfter="0">
-                    <progresstemplate>
-                        <img src="../images/25-1.gif" />
-                        <font>  Processing please wait... </font>
-                    </progresstemplate>
-                </asp:UpdateProgress>
-            </td>
+</div>
+<!--<div class="row mt-3">
+    <div class="col-md-6">
+        <h5>Select Audit Zone</h5>
+        <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Zone--</option>
+            @{
+                if (ViewData["AuditZonesList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
+                    {
+                        <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                    }
+                }
+            }
+        </select>
 
-        </tr>
+    </div>
+    <div class="col-md-6">
+        <h5>Select Audit Branch</h5>
+        <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0">--Select Audit Branch--</option>
+        </select>
+    </div>
+</div>
+<div class="row nonFieldAuditFields mt-3">
+    <div class="col-md-6">
+        <h5>Select Audit Division</h5>
+        <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Division--</option>
+            @{
+                if (ViewData["DivisionsList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["DivisionsList"]))
+                    {
+                        <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
+                    }
+                }
+            }
+        </select>
+
+    </div>
+    <div class="col-md-6">
+        <h5>Select Audit Department</h5>
+        <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0">--Select Audit Department--</option>
+        </select>
+    </div>
+</div>
+<div class="row mt-3 w-100">
+    <div class="col-md-12"><h5>Sub Entities</h5></div>
+    <div class="col-md-12">
+        <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Sub Entity--</option>
+
+        </select>
+    </div>
+</div>-->
+<div class="row mt-3 col-md-12">
+    <div class="row col-md-6">
+        <b>Start Date:</b><input class="form-control" type="date" />
+    </div>
+    <div class="row col-md-6" style="margin-left:10px;">
+        <b>End Date:</b><input class="form-control" type="date" />
+    </div>
+</div>
+<div class="row mt-3 col-md-12">
+    <div class="row col-md-6">
+        <b>As On Date:</b><input id="executionPeriodToField" class="form-control" type="date" />
+    </div>
+    <div class="row col-md-6" style="margin-left:10px;">
+        <b>Audit Year</b>
+        <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Year--</option>
+        </select>
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <button class="btn btn-primary">Find</button>
+</div>
+
+<div class="mt-3">
+    <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" id="Risk wise observation">
+        <thead>
+            <tr>
+                <th>Department:</th>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <th>Significant Findings for the Year:</th>
+                <td colspan="4"></td>
+            </tr>
+
+            <tr>
+                <th>Sr. No.</th>
+                <th>Name of Audit Report</th>
+                <th>Observation</th>
+                <th>Risk Category</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
     </table>
-    <asp:MultiView ID="MV" runat="server">
-        <asp:View ID="View1" runat="server">
-            <table width="100%">
-                <tr>
-                    <td class="FieldTitle" width="24%"> Audit Period</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td width="24%" colspan=4>
+</div>
 
-                        <asp:DropDownList ID="ddlAuditPeriod" runat="server"
-                                          SkinID="SimpleDropDown" AutoPostBack="false">
-                        </asp:DropDownList>
-                        <asp:CompareValidator ID="cmpAuditVal" runat="server"
-                                              ControlToValidate="ddlAuditPeriod" SkinID="CValidator" EnableViewState="False"
-                                              Operator="NotEqual" ValueToCompare="0" Display="Dynamic">***Required</asp:CompareValidator>
-                    </td>
-                    <%--
-                    <td class="FieldTitle"> </td>
-                    <td><span style="color: #ff0000"></span></td>
-                    <td></td>
-                    --%>
-                </tr>
-
-
-                <tr>
-                    <td class="FieldTitle"> Audit Department</td>
-                    <td><span style="color: #ff0000">*</span></td>
-                    <td colspan="4">
-
-                        <asp:RadioButtonList ID="rdList" runat="server"
-                                             OnSelectedIndexChanged="rd_SelectedIndexChanged"
-                                             SkinID="SimpleRadioButton" AutoPostBack="True"
-                                             RepeatDirection="Horizontal">
-                        </asp:RadioButtonList>
-
-                        <asp:RequiredFieldValidator ID="rfvAuditDept" runat="server"
-                                                    ControlToValidate="rdList" Display="Dynamic" ErrorMessage="***Required"
-                                                    SkinID="Validator"></asp:RequiredFieldValidator>
-
-                    </td>
-
-                </tr>
-
-                <tr id="az" runat="server">
-                    <td class="FieldTitle" width="24%"> Audit Zone</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td width="24%">
-
-                        <asp:DropDownList ID="ddlAZone" runat="server"
-                                          onselectedindexchanged="ddlAZone_SelectedIndexChanged"
-                                          SkinID="SimpleDropDown" AutoPostBack="True">
-                            <asp:ListItem Value="0">Please Select---</asp:ListItem>
-                        </asp:DropDownList>
-
-                    </td>
-                    <td class="FieldTitle"> Branch</td>
-                    <td><span style="color: #ff0000">*</span></td>
-                    <td>
-                        <asp:UpdatePanel runat="server" id="UpdatePanelBranch">
-                            <ContentTemplate>
-                                <asp:DropDownList ID="ddlbranch" SkinID="SimpleDropDown" runat="server"><asp:ListItem Value="0">Please Select---</asp:ListItem></asp:DropDownList>
-                                <asp:TextBox ID="txtBrCode" runat="server" Font-Names="Verdana" MaxLength="5"
-                                             SkinID="SimpleTextBox" style="text-align:right" Width="40px"></asp:TextBox>
-                            </ContentTemplate>
-                            <Triggers>
-                                <asp:AsyncPostBackTrigger ControlID="ddlAZone"></asp:AsyncPostBackTrigger>
-                            </Triggers>
-                        </asp:UpdatePanel>
-
-                        <asp:CompareValidator ID="cmpBr" runat="server"
-                                              ControlToValidate="ddlbranch" SkinID="CValidator"
-                                              Operator="NotEqual" ValueToCompare="0" Display="Dynamic" Enabled="False"
-                                              EnableClientScript="False">***Required</asp:CompareValidator>
-                        <asp:RangeValidator ID="rvBrCode" runat="server" ControlToValidate="txtBrCode"
-                                            Display="Dynamic" EnableViewState="False" MaximumValue="99999" MinimumValue="1"
-                                            SkinID="RValidator" Type="Integer">***Valid BrCode is Required.</asp:RangeValidator>
-                        <asp:RequiredFieldValidator ID="rfvBrCode" runat="server"
-                                                    ControlToValidate="txtBrCode" Display="Dynamic" ErrorMessage="***Required"
-                                                    SkinID="Validator"></asp:RequiredFieldValidator>
-                    </td>
-                </tr>
-                <tr id="div" runat="server">
-                    <td class="FieldTitle">
-                        Division
-                    </td>
-                    <td>
-                        <span style="color: #ff0000">*</span>
-                    </td>
-                    <td>
-
-                        <asp:DropDownList ID="ddlDivision" runat="server"
-                                          onselectedindexchanged="ddlDiv_SelectedIndexChanged"
-                                          SkinID="SimpleDropDown" AutoPostBack="True">
-                            <asp:ListItem Value="0">Please Select---</asp:ListItem>
-                        </asp:DropDownList>
-
-                    </td>
-                    <td class="FieldTitle">
-                        Departments
-                    </td>
-                    <td>
-                        <span style="color: #ff0000">*</span>
-                    </td>
-                    <td>
-                        <asp:UpdatePanel runat="server" id="UpdatePanelDepart">
-                            <ContentTemplate>
-                                <asp:DropDownList ID="ddlDepartments" SkinID="SimpleDropDown" runat="server"
-                                                  Width="150px">
-                                    <asp:ListItem Value="0">Please Select---</asp:ListItem>
-                                </asp:DropDownList>
-                                <asp:CompareValidator ID="cmpDepart" runat="server"
-                                                      ControlToValidate="ddlDepartments" Display="Dynamic" Operator="NotEqual"
-                                                      SkinID="CValidator" ValueToCompare="0">***Required</asp:CompareValidator>
-                            </ContentTemplate>
-                            <Triggers>
-                                <asp:AsyncPostBackTrigger ControlID="ddlDivision"></asp:AsyncPostBackTrigger>
-                            </Triggers>
-                        </asp:UpdatePanel>
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="FieldTitle">
-                        Start Date <span style="font-size:8pt;font-family:Verdana">(ddMMyyyy)</span>
-                    </td>
-                    <td>
-                        <span style="color: #ff0000">*</span>
-                    </td>
-                    <td>
-                        <asp:TextBox ID="txtStartDate" runat="server" Font-Names="Verdana"
-                                     SkinID="SimpleTextBox" Width="114px"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="REExpDate" runat="server"
-                                                        ControlToValidate="txtStartDate" Display="Dynamic" EnableViewState="False"
-                                                        SkinID="REValidator"
-                                                        ValidationExpression="^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(18|19|20)\d\d$">
-                            **Valid
-                            Date(ddMMyyyy) is required.
-                        </asp:RegularExpressionValidator>
-                        <asp:RequiredFieldValidator ID="rfvrptDate" runat="server"
-                                                    ControlToValidate="txtStartDate" Display="Dynamic" ErrorMessage="***Required"
-                                                    SkinID="Validator"></asp:RequiredFieldValidator>
-                    </td>
-                    <td class="FieldTitle">
-                        End Date <span style="font-size:8pt;font-family:Verdana">(ddMMyyyy)</span>
-                    </td>
-                    <td>
-                        <span style="color: #ff0000">*</span>
-                    </td>
-                    <td>
-                        <asp:TextBox ID="txtEndDate" runat="server" Font-Names="Verdana"
-                                     SkinID="SimpleTextBox" Width="114px"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="REExpDate0" runat="server"
-                                                        ControlToValidate="txtEndDate" Display="Dynamic" EnableViewState="False"
-                                                        SkinID="REValidator"
-                                                        ValidationExpression="^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(18|19|20)\d\d$">
-                            **Valid
-                            Date(ddMMyyyy) is required.
-                        </asp:RegularExpressionValidator>
-                        <asp:RequiredFieldValidator ID="rfvrptDate0" runat="server"
-                                                    ControlToValidate="txtEndDate" Display="Dynamic" ErrorMessage="***Required"
-                                                    SkinID="Validator"></asp:RequiredFieldValidator>
-                    </td>
-                </tr>
-
-                <tr id="auditDays" runat="server">
-                    <td width="20%" class="FieldTitle"> Days For Audit</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td width="24%">
-                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtDaysForAudit" style="text-align:right"
-                                     Font-Names="Verdana" Width="79px" MaxLength="3"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvDays" runat="server"
-                                                    ControlToValidate="txtDaysForAudit" SkinID="Validator" Display="Dynamic"
-                                                    ErrorMessage="***Required" EnableViewState="False"></asp:RequiredFieldValidator>
-                        &nbsp;<asp:RangeValidator ID="rvDaysFAu" runat="server" ControlToValidate="txtDaysForAudit"
-                                                  Display="Dynamic" EnableViewState="False" MaximumValue="100"
-                                                  MinimumValue="1" SkinID="RValidator" Type="Integer">
-                            ***Valid Number is
-                            Required.
-                        </asp:RangeValidator>
-                    </td>
-                    <td class="FieldTitle" width="24%"> No Of Days For Discussion</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td>
-                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtDaysForDiscussion" style="text-align:center"
-                                     Font-Names="Verdana" Width="66px" MaxLength="3"></asp:TextBox>
-                        &nbsp;<asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtTotal" style="text-align:right"
-                                           Font-Names="Verdana" Width="66px" MaxLength="3" BackColor="#6666FF"
-                                           ForeColor="White" ReadOnly="True"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvDaysDiss"
-                                                    runat="server" ControlToValidate="txtDaysForDiscussion" Display="Dynamic"
-                                                    ErrorMessage="***Required" SkinID="Validator"></asp:RequiredFieldValidator>
-                        &nbsp;<asp:RangeValidator ID="rvDaysFDiss" runat="server"
-                                                  ControlToValidate="txtDaysForDiscussion" Display="Dynamic"
-                                                  EnableViewState="False" MaximumValue="100" MinimumValue="1" SkinID="RValidator"
-                                                  Type="Integer">***Valid Number is Required.</asp:RangeValidator>
-                    </td>
-                </tr>
-
-                <tr id="NoOfLC" runat="server">
-                    <td width="20%" class="FieldTitle"> Nos Of LCs/Vouchers</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td width="24%">
-                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtLCCount" style="text-align:Right"
-                                     Font-Names="Verdana" Width="74px" MaxLength="6"></asp:TextBox>
-                        -<asp:TextBox ID="txtNoVoucher" runat="server" Font-Names="Verdana"
-                                      MaxLength="6" SkinID="SimpleTextBox" style="text-align:Right" Width="74px"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RFVLC" runat="server"
-                                                    ControlToValidate="txtLCCount" SkinID="Validator" Display="Dynamic"
-                                                    ErrorMessage="***Required" EnableViewState="False"></asp:RequiredFieldValidator>
-                        &nbsp;<asp:RangeValidator ID="RVLCCNT" runat="server" ControlToValidate="txtLCCount"
-                                                  Display="Dynamic" EnableViewState="False" MaximumValue="99999999"
-                                                  MinimumValue="1" SkinID="RValidator" Type="Integer">
-                            Valid LC Count is
-                            Required.
-                        </asp:RangeValidator>
-                        <asp:RangeValidator ID="RVLCCNT0" runat="server"
-                                            ControlToValidate="txtNoVoucher" Display="Dynamic" EnableViewState="False"
-                                            MaximumValue="99999999" MinimumValue="1" SkinID="RValidator" Type="Integer">
-                            ***Valid
-                            Voucher No is Required.
-                        </asp:RangeValidator>
-                    </td>
-                    <td class="FieldTitle" width="24%"> Amount Disbursed</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td>
-                        <asp:TextBox runat="server" SkinID="SimpleTextBox" id="txtAmountDisbursed" style="text-align:Right"
-                                     Font-Names="Verdana" Width="120px" MaxLength="10"></asp:TextBox>
-                        &nbsp;<asp:RequiredFieldValidator ID="rfvAmntDisb"
-                                                          runat="server" ControlToValidate="txtAmountDisbursed" Display="Dynamic"
-                                                          ErrorMessage="***Required" SkinID="Validator"></asp:RequiredFieldValidator>
-                        &nbsp;<asp:RangeValidator ID="rvAmntDisb" runat="server"
-                                                  ControlToValidate="txtAmountDisbursed" Display="Dynamic"
-                                                  EnableViewState="False" MaximumValue="9999999999" MinimumValue="1" SkinID="RValidator"
-                                                  Type="Double">***Valid Number is Required.</asp:RangeValidator>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td width="20%" class="FieldTitle"> Description</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td colspan="4">
-                        <asp:TextBox ID="txtRemarks" runat="server" Font-Names="Verdana"
-                                     SkinID="SimpleTextBox" Width="400px" MaxLength="100"></asp:TextBox>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td width="20%" class="FieldTitle"> Team </td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td colspan="4">
-                        <asp:UpdatePanel runat="server" id="updateListMembers">
-                            <ContentTemplate>
-                                <asp:RadioButtonList ID="chkListTeamMembers" AutoPostBack="true" OnSelectedIndexChanged="chkListTeamSelectedIndexChanged" SkinID="SimpleRadioButton" Font-Size="8" runat="server" RepeatColumns="3">
-                                </asp:RadioButtonList>
-                            </ContentTemplate>
-                            <Triggers>
-                                <asp:AsyncPostBackTrigger ControlID="ddlAZone"></asp:AsyncPostBackTrigger>
-                            </Triggers>
-                        </asp:UpdatePanel>
-                    </td>
-
-                </tr>
-
-                <tr>
-                    <td width="20%" class="FieldTitle"> Members</td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td colspan="4">
-                        <asp:UpdatePanel runat="server" id="UpdatePanel1">
-                            <ContentTemplate>
-                                <asp:RadioButtonList ID="rdEmployees" SkinID="SimpleRadioButton" Font-Size="8" runat="server" RepeatColumns="3">
-                                </asp:RadioButtonList>
-                            </ContentTemplate>
-                            <Triggers>
-                                <asp:AsyncPostBackTrigger ControlID="chkListTeamMembers"></asp:AsyncPostBackTrigger>
-                            </Triggers>
-                        </asp:UpdatePanel>
-                    </td>
-
-                </tr>
-                <tr>
-                    <td class="FieldTitle" width="20%">
-                    </td>
-                    <td width="1%">
-                        &nbsp;
-                    </td>
-                    <td colspan="2">
-                        <asp:Button ID="btnSubmit" runat="server" onclick="btnSave_Click"
-                                    SkinID="SimpleButton" Text="Save" Visible="False" />
-                        &nbsp;&nbsp;<asp:Button ID="btnClearMain" runat="server" CausesValidation="False"
-                                                onclick="btnMainjClear_Click" SkinID="SimpleButton" Text="Clear"
-                                                Visible="False" />
-                        &nbsp;<asp:Button ID="btnSavAndSubmit" runat="server"
-                                          onclick="btnSaveNSubmit_Click" SkinID="SimpleButton"
-                                          Text="Save &amp; Submit"
-                                          onclientclick="javascript:return confirm('Are you sure you want to Save and submit this Information.After Submission Information cant be change?')"
-                                          Visible="False" />
-                        &nbsp;
-                    </td>
-
-                    <td width="1%">
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="6" align="center">
-
-
-                        <asp:GridView ID="gvMain" runat="server" AllowSorting="true"
-                                      AutoGenerateColumns="false" DataKeyNames="PPNO"
-                                      EmptyDataText="Plan Member." PageSize="10" SkinID="SampleGridView"
-                                      width="100%">
-                            <pagersettings Position="TopAndBottom" />
-                            <columns>
-                                <asp:BoundField DataField="ppno" HeaderText="ppno">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="70px" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="70px" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="empName" HeaderText="Employee Name">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="130" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="130" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="deptDesc" HeaderText="Department Name">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="120" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="120" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="zonename" HeaderText="Audit Zone">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="100" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="100" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="RANK" HeaderText="Rank">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="100" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="100" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="is_teamlead" HeaderText="Team Lead">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="center"
-                                               Width="30" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="center"
-                                                 Width="30" />
-                                </asp:BoundField>
-
-                                <asp:TemplateField HeaderText="Select">
-                                    <ItemTemplate>
-                                        <asp:CheckBox ID="chk" runat="server" SkinID="SimpleCheckBox" />
-                                    </ItemTemplate>
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Center" Width="30px" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Center" Width="30px" />
-
-                                </asp:TemplateField>
-
-                            </columns>
-                        </asp:GridView>
-                    </td>
-
-
-                </tr>
-
-                <tr>
-                    <td class="FieldTitle" width="24%">
-                        <asp:Button ID="btnAPDelete" runat="server" onclick="btnDeletePlan_Click"
-                                    SkinID="SimpleButton" Text="Delete Plan" Width="88px" />
-                    </td>
-                    <td width="1%">&nbsp;</td>
-                    <%--
-                    <td width="24%">
-                    </td>
-                    <td class="FieldTitle"> </td>--%>
-
-                    <td align="right" colspan="4">
-                        &nbsp;<asp:Button ID="btnAddNew" runat="server" onclick="btnAddNew_Click"
-                                          SkinID="SimpleButton" Text="Add New" Width="84px" />
-                        &nbsp;<asp:Button ID="btnFinalSubmit" runat="server" onclick="btnFinalSubmit_Click"
-                                          SkinID="SimpleButton" Text="Replace" Width="61px" Visible="False" />
-                        &nbsp;<asp:Button ID="btnInActive" runat="server" onclick="btnInactive_Click"
-                                          SkinID="SimpleButton" Text="Delete" Width="54px" />
-                        &nbsp;<asp:Button ID="btnSelectLead" runat="server" onclick="btnCahangeLead_Click"
-                                          SkinID="SimpleButton" style="margin-left: 18px" Text="Change Lead"
-                                          Width="101px" />
-                    </td>
-                </tr>
-
-            </table>
-
-        </asp:View>
-
-        <asp:View ID="View2" runat="server">
-            <table width="100%">
-                <%--
-                <tr>
-                    <td colspan="6" align="center">
-                        <asp:DetailsView ID="dv" SkinID="SampleDetailsView" runat="server" AllowPaging="false"
-                                         AutoGenerateRows="False"
-                                         Height="50px" Width="500px">
-
-                            <Fields>
-                                <asp:BoundField DataField="TRAN_DATE" HeaderText="Tran Date" HtmlEncode="false" DataFormatString="{0:dd-MM-yyyy}" />
-                                <asp:BoundField DataField="BRANCHCode" HeaderText="Branch Code" />
-                                <asp:BoundField DataField="category_code" HeaderText="Category" />
-                                <asp:BoundField DataField="catName" HeaderText="Description" />
-                                <asp:BoundField DataField="borrowercode" HeaderText="Borrower Code" />
-                                <asp:BoundField DataField="description" HeaderText="Description" />
-                            </Fields>
-
-                            <HeaderTemplate>
-                                Borrower Information
-                            </HeaderTemplate>
-                        </asp:DetailsView>
-
-                    </td>
-                </tr>--%>
-                <%--
-                <tr>
-                    <td class="FieldTitle" width="24%"> PPNO </td>
-                    <td width="1%"><span style="color: #ff0000">*</span></td>
-                    <td width="24%">
-
-
-
-                        <asp:TextBox ID="txtPPNO" runat="server" Font-Names="Verdana" MaxLength="3"
-                                     SkinID="SimpleTextBox" style="text-align:center" Width="79px"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvDays0" runat="server"
-                                                    ControlToValidate="txtPPNO" Display="Dynamic" ErrorMessage="***Required"
-                                                    SkinID="Validator"></asp:RequiredFieldValidator>
-                        <asp:RangeValidator ID="rvDaysFAu0" runat="server"
-                                            ControlToValidate="txtDaysForAudit" Display="Dynamic" EnableViewState="False"
-                                            MaximumValue="100" MinimumValue="1" SkinID="RValidator" Type="Integer">
-                            ***Valid
-                            Number is Required.
-                        </asp:RangeValidator>
-
-
-
-                    </td>
-                    <td class="FieldTitle"> </td>
-                    <td>&nbsp;</td>
-                    <td>
-                    </td>
-                </tr>--%>
-
-                <%--
-                <tr>
-                    <td class="FieldTitle" width="24%"> &nbsp;</td>
-                    <td width="1%">&nbsp;</td>
-                    <td width="24%">
-
-                        <asp:Button ID="btnSaveMember" runat="server" onclick="btnSaveMember_Click"
-                                    SkinID="SimpleButton" Text="Save" />
-                        &nbsp;
-                        <asp:Button ID="btnBack" runat="server" CausesValidation="False"
-                                    onclick="btnBack_Click" SkinID="SimpleButton" Text="Clear" />
-
-                    </td>
-                    <td class="FieldTitle"> </td>
-                    <td>&nbsp;</td>
-                    <td>
-                    </td>
-                </tr>--%>
-
-                <%--
-                <tr>
-                    <td colspan="6" align="center">
-
-
-                        <asp:GridView ID="gvMain" runat="server" AllowSorting="true" width="100%"
-                                      AutoGenerateColumns="false" CssClass="PrettyGridView" DataKeyNames="ID"
-                                      EmptyDataText="No Record Found."
-                                      onselectedindexchanged="gvMain_SelectedIndexChanged" PageSize="10"
-                                      SkinID="SampleGridView" onrowcommand="gvMain_RowCommand">
-                            <pagersettings Position="TopAndBottom" />
-                            <columns>
-                                <asp:BoundField DataField="ppno" HeaderText="ppno">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="70px" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="70px" />
-                                </asp:BoundField>
-
-                                <asp:BoundField DataField="empName" HeaderText="Employee Name">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="130" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="130" />
-                                </asp:BoundField>
-                                <asp:BoundField DataField="deptDesc" HeaderText="Department Name">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="120" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="120" />
-                                </asp:BoundField>
-
-                                <asp:BoundField DataField="zonename" HeaderText="Audit Zone">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="100" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="100" />
-                                </asp:BoundField>
-
-                                <asp:BoundField DataField="RANK" HeaderText="Rank">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="100" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="100" />
-                                </asp:BoundField>
-
-                                <asp:BoundField DataField="desig" HeaderText="Designation">
-                                    <ItemStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                               Width="100" />
-                                    <HeaderStyle Font-Names="Tahoma" Font-Size="8pt" HorizontalAlign="Left"
-                                                 Width="100" />
-                                </asp:BoundField>
-
-                            </columns>
-                        </asp:GridView>
-
-                    </td>
-
-
-                </tr>--%>
-
-
-
-
-            </table>
-        </asp:View>
-
-    </asp:MultiView>
-
-</asp:Content>
 

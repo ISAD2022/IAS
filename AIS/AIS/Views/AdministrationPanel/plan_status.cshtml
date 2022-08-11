@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Manage User";
+    ViewData["Title"] = "Plan Status";
     Layout = "_Layout";
 }
 
@@ -79,6 +79,101 @@
         });
     }
 </script>
+<div class="row text-center" style="margin-top:30px;">
+    <h3>Audit Plan</h3>
+</div>
+<div class="col-md-12">
+    <h5>Audit Period</h5>
+    <select id="entity" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
+        <option value="0" id="0" selected>--Select Audit Period--</option>
+        @{
+            if (ViewData["AuditDepartments"] != null)
+            {
+                foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                {
+                    <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                }
+            }
+        }
 
-
-
+    </select>
+</div>
+<div class="row col-md-12">
+    <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="Plan Review">
+        <thead>
+            <tr>
+                <th>SR</th>
+                <th>Audit Entity</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Approval</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
+                        Approve
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
