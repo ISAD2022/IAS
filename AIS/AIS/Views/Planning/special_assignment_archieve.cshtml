@@ -325,7 +325,7 @@ List group
                         {
                             foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
                             {
-                                <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                                <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
                             }
                         }
                     }
@@ -429,7 +429,7 @@ List group
 
 
 <div id="previewAuditPlan" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Preview Special Assignment</h5>
@@ -437,7 +437,7 @@ List group
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body ">
+            <div class="modal-body">
                 <form>
                     <div class="form-group">
                         <center class="col-md-12"><h3 id="auditorDept"></h3></center>
@@ -467,12 +467,12 @@ List group
                             <label id="descModal_field"></label>
                         </div>
                     </div>
-                    <div class="form-group row" style="border:double">
-                        <h4 class="col-md-12" >Execution Period</h4>
+                    <div class="form-group row">
+                        <h4 class="col-md-12">Execution Period</h4>
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>From</label>
+                            <label><b>From</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="exeFrom_field"></label>
@@ -480,18 +480,18 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>To</label>
+                            <label><b>To</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="exeTo_field"></label>
                         </div>
                     </div>
-                    <div class="form-group row" style="border:double">
+                    <div class="form-group row">
                         <h4 class="col-md-12">Operational/Audit Period</h4>
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>From</label>
+                            <label><b>From</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="operationalFrom_field"></label>
@@ -499,18 +499,18 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>To</label>
+                            <label><b>To</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="operationalTo_field"></label>
                         </div>
                     </div>
-                    <div class="form-group row" style="border:double">
+                    <div class="form-group row">
                         <h4 class="col-md-12">Audit Team</h4>
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>Team Name</label>
+                            <label><b>Team Name</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="teamName_field"></label>
@@ -518,7 +518,7 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>Team Members</label>
+                            <label><b>Team Members</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="teamMembers_field"></label>
@@ -526,7 +526,7 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label>Is Traveling Required</label>
+                            <label><b>Is Traveling Required </b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="travelingReq_field"></label>
@@ -534,7 +534,7 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-12">
-                            <label><b>Remarks/Instructions for Auditors:</b></label>
+                            <label><b>Remarks/Instructions for Auditors</b></label>
                         </div>
                         <div class="col-md-12">
                             <label id="remarksAddtn_field"></label>

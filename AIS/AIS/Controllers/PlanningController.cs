@@ -328,6 +328,29 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult tentative_engagement_plan()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
+            ViewData["DivisionsList"] = dBConnection.GetDivisions(false);
+            ViewData["AuditZonesList"] = dBConnection.GetZones();
+            ViewData["TentativePlansList"] = dBConnection.GetTentativePlansForFields();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpPost]
         public List<BranchModel> zone_branches(int zone_code)
         {
