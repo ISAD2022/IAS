@@ -21,7 +21,6 @@ namespace AIS.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult audit_criteria()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -31,6 +30,42 @@ namespace AIS.Controllers
             ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
             ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult refferedback_audit_criteria()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult audit_criteria_approval()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

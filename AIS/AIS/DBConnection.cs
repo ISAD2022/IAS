@@ -1576,6 +1576,18 @@ namespace AIS
             con.Close();
             return riskList;
         }
+        public List<AddAuditCriteriaModel> GetRefferedBackAuditCriterias()
+        {
+            var con = this.DatabaseConnection();
+            List<AddAuditCriteriaModel> criteriaList = new List<AddAuditCriteriaModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "SELECT * FROM T_AUDIT_CRITERIA ";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return criteriaList;
+        }
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
         {
             var con = this.DatabaseConnection();
