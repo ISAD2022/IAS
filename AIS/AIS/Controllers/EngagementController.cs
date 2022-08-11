@@ -39,7 +39,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult task_list()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -144,6 +143,20 @@ namespace AIS.Controllers
             }
             return true;
         }
+        [HttpPost]
+        public AuditEntitiesModel add_auditee_entity(AuditEntitiesModel am)
+        {
+            var userLoggedIn=sessionHandler.GetSessionUser();
+            am.AUTID = 0;
+            am.CREATED_BY = userLoggedIn.PPNumber;
+            am.CREATED_ON = DateTime.Now;
+            am.EFFECTIVE_FROM = DateTime.Now;
+            am.RECORD_TIMESTAMP = DateTime.Now;
+            dBConnection.AddAuditEntity(am);
+            return am;
+
+
+        }
         public IActionResult submission_for_review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -162,7 +175,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult Join()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

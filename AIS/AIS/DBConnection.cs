@@ -373,6 +373,19 @@ namespace AIS
             return entitiesList;
 
         }
+        public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO t_auditee_ent_types et ( et.AUTID, et.ENTITYCODE, et.ENTITYTYPEDESC, et.EFFECTIVE_FROM, et.ACTIVE, et.CREATED_BY, et.CREATED_ON, et.RECORD_TIMESTAMP, et.AUDITABLE ) VALUES ( (select COALESCE(max(p.AUTID)+1,1) from t_auditee_ent_types p) , '"+am.ENTITYCODE+"', '"+am.ENTITYTYPEDESC+"', to_date('"+am.EFFECTIVE_FROM+ "', 'dd/mm/yyyy HH:MI:SS AM'), '" + am.ACTIVE+"', '"+am.CREATED_BY+"', to_date('"+am.CREATED_ON+ "', 'dd/mm/yyyy HH:MI:SS AM'), to_date('" + am.RECORD_TIMESTAMP+ "', 'dd/mm/yyyy HH:MI:SS AM'), '" + am.AUDITABLE+"') ";
+                cmd.ExecuteReader();
+               
+            }
+            con.Close();
+            return am;
+
+        }
         public List<AuditSubEntitiesModel> GetAuditSubEntities()
         {
 
