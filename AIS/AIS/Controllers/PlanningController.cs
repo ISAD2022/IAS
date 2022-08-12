@@ -49,6 +49,11 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ReferedBackAuditCriteriaList"] = dBConnection.GetRefferedBackAuditCriterias();
+            ViewData["AuditEntities"] = dBConnection.GetAuditEntities();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
+            ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -341,6 +346,29 @@ namespace AIS.Controllers
             return true;
         }
         [HttpPost]
+        [HttpPost]
+        public bool update_audit_criteria(List<String> CRITERIA_LIST)
+        {
+           
+                AddAuditCriteriaModel cm = new AddAuditCriteriaModel();
+                cm.ID = Convert.ToInt32(CRITERIA_LIST[0]);
+                cm.AUDITPERIODID = Convert.ToInt32(CRITERIA_LIST[1]);
+                cm.ENTITY_ID = Convert.ToInt32(CRITERIA_LIST[2]);
+                cm.RISK_ID = Convert.ToInt32(CRITERIA_LIST[3]);
+                cm.FREQUENCY_ID = Convert.ToInt32(CRITERIA_LIST[4]);
+                cm.SIZE_ID = Convert.ToInt32(CRITERIA_LIST[5]);
+                cm.NO_OF_DAYS = Convert.ToInt32(CRITERIA_LIST[6]);
+                if ((CRITERIA_LIST[7].ToLower()) == "y")
+                CRITERIA_LIST[7] = "Y";
+                else
+                CRITERIA_LIST[7] = "N";
+
+                cm.VISIT = CRITERIA_LIST[7];
+                cm.APPROVAL_STATUS = 3;
+                dBConnection.UpdateAuditCriteria(cm, CRITERIA_LIST[8]);
+            
+            return true;
+        }
         public List<AuditTeamModel> audit_team(int dept_code)
         {
             return dBConnection.GetAuditTeams(dept_code);

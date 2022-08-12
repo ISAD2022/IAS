@@ -27,81 +27,83 @@
         });
     });
 
-   
-    function recommendReferProcTransaction(id) {
+
+    function recommendReferredBackAuditCriterias(id, period_id, ent_id, size_id, risk_id, freq_id, visit, nodays) {
         g_trId = id;
-        $('#recommendReferProcTransactionModal').modal('show');
-        $.ajax({
-            url: "/Setup/process_transactions",
-            type: "POST",
-            data: {
-                'transactionId': id
-            },
-            cache: false,
-            success: function (data) {
-                var tr = data[0];
-                $('#viewerMainProcNameModalField').val(tr.procesS_NAME);
-                $('#viewerNameModalField').val(tr.suB_PROCESS_NAME);
-                $('#viewerDescModalField').val(tr.description);
-                $('#viewerControlModalField').val(tr.controL_OWNER);
-                $('#viewerDivModalField').val(tr.diV_NAME);
-                $('#viewerActionModalField').val(tr.action);
-                if (tr.risK_WEIGHTAGE==3)
-                $('#viewerRiskModalField').val('High');
-                if (tr.risK_WEIGHTAGE == 3)
-                    $('#viewerRiskModalField').val('Medium');
-                else
-                    $('#viewerRiskModalField').val('Low');
-                $('#viewerRiskMaxModalField').val(tr.risK_MAX_NUMBER);
-            },
-            dataType: "json",
-        });
+        console.log(id, period_id, ent_id, size_id, risk_id,freq_id, nodays, visit);
+        $('#recommendReferredBackAuditCriteriasModal').modal('show');
+        $('#auditCriteriaPeriodField').val(period_id);
+        $('#auditCriteriaEntityField').val(ent_id);
+        $('#auditCriteriaRiskField').val(risk_id);
+        $('#auditCriteriaSizeField').val(size_id);
+        $('#auditCriteriaFreqField').val(freq_id)
+        $('#auditCriteriaDaysField').val(nodays);
+        if (visit == 'Y')
+            $('#auditCriteriaVisitField').attr('checked', true);
+        else
+            $('#auditCriteriaVisitField').attr('checked', false);
     }
     function recommendProcTransaction() {
         $('#commentsBox').modal('show');
         $('#finalCommentsButtonSave').attr('onclick', 'finalRecommendProcessTransaction()');
-       
     }
-    function refferedBackProcTransaction() {
-        $('#commentsBox').modal('show');
-        $('#finalCommentsButtonSave').attr('onclick', 'finalRefferedBackProcessTransaction()');
-       
-    }
+   
     function finalRecommendProcessTransaction() {
-       
+        if ($('#commentAreaInCommentsBox').val() == "") {
+            alert("Enter Comments to Proceed"); return false;
+        }
+
+        var entity= '';
+        if ($('#auditCriteriaEntityField option:selected').val() != 0)
+            entity = $('#auditCriteriaEntityField option:selected').val();
+
+        var period = '';
+        if ($('#auditCriteriaPeriodField option:selected').val() != 0)
+            period = $('#auditCriteriaPeriodField option:selected').val();
+
+        var days = $('#auditCriteriaDaysField').val();
+        var risk = '';
+        if ($('#auditCriteriaRiskField option:selected').val() != 0)
+            risk = $('#auditCriteriaRiskField option:selected').val();
+
+        var freq = '';
+        if ($('#auditCriteriaFreqField option:selected').val() != 0)
+            freq = $('#auditCriteriaFreqField option:selected').val();
+
+        var size = '';
+        if ($('#auditCriteriaSizeField option:selected').val() != 0)
+            size = $('#auditCriteriaSizeField option:selected').val();
+
+        var visit = 'N';
+        if ($('#auditCriteriaVisitField').is(':checked'))
+            visit = "Y";
+        var criteria_details = [];
+        criteria_details.push(g_trId);
+        criteria_details.push(period);
+        criteria_details.push(entity);
+        criteria_details.push(risk);
+        criteria_details.push(freq);
+        criteria_details.push(size);
+        criteria_details.push(days);
+        criteria_details.push(visit);
+        criteria_details.push($('#commentAreaInCommentsBox').val());
+
         $.ajax({
-            url: "/Setup/recommend_process_transaction_by_reviewer",
+            url: "/Planning/update_audit_criteria",
             type: "POST",
             data: {
-                'T_ID': g_trId,
-                'COMMENTS': $('#commentAreaInCommentsBox').val()
+                'CRITERIA_LIST': criteria_details
             },
             cache: false,
             success: function (data) {
-                $('#recommendReferProcTransactionModal').modal('hide');
+                $('#recommendReferredBackAuditCriteriasModal').modal('hide');
                 console.log(data);
                 window.location = window.location.pathname;
             },
             dataType: "json",
         });
     }
-    function finalRefferedBackProcessTransaction() {
-        $.ajax({
-            url: "/Setup/reffered_back_process_transaction_by_reviewer",
-            type: "POST",
-            data: {
-                'T_ID': g_trId,
-                'COMMENTS': $('#commentAreaInCommentsBox').val()
-            },
-            cache: false,
-            success: function (data) {
-                $('#recommendReferProcTransactionModal').modal('hide');
-                console.log(data);
-                window.location = window.location.pathname;
-            },
-            dataType: "json",
-        });
-    }
+  
 </script>
 
 <div class="col-md-12" style="margin-top:20px;">
@@ -159,7 +161,8 @@
                             <p class="fw-normal mb-1">@item.COMMENTS</p>
                         </td>                      
                         <td>
-                            <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
+                            
+                            <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferredBackAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_ID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS');">
                                 Details
                             </button>
                         </td>
@@ -170,11 +173,11 @@
     </table>
 </div>
 
-<div id="recommendReferProcTransactionModal" class="modal" tabindex="-1" role="dialog">
+<div id="recommendReferredBackAuditCriteriasModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Transaction Details</h5>
+                <h5 class="modal-title">Audit Criteria Details</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
