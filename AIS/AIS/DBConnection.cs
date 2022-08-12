@@ -1581,14 +1581,66 @@ namespace AIS
             con.Close();
             return riskList;
         }
-        public List<AddAuditCriteriaModel> GetRefferedBackAuditCriterias()
+        public List<AuditCriteriaModel> GetRefferedBackAuditCriterias()
         {
             var con = this.DatabaseConnection();
-            List<AddAuditCriteriaModel> criteriaList = new List<AddAuditCriteriaModel>();
+            List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM T_AUDIT_CRITERIA ";
-                cmd.ExecuteReader();
+                cmd.CommandText = "select ac.*, al.REMARKS as COMMENTS , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.id inner join t_auditee_ent_types et on ac.entity_id=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id inner join t_br_size s on ac.size_id=s.br_size_id left join T_AUDIT_CRITERIA_LOG al on ac.ID=al.C_ID WHERE ac.APPROVAL_STATUS=2";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditCriteriaModel acr = new AuditCriteriaModel();
+                    acr.ID = Convert.ToInt32(rdr["ID"]);
+                    acr.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
+                    acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                    acr.APPROVAL_STATUS = Convert.ToInt32(rdr["APPROVAL_STATUS"]);
+                    acr.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    acr.PERIOD = rdr["PERIOD"].ToString(); 
+                    acr.ENTITY = rdr["ENTITY"].ToString();
+                    acr.FREQUENCY = rdr["FREQUENCY"].ToString();
+                    acr.SIZE = rdr["BRSIZE"].ToString();
+                    acr.RISK = rdr["RISK"].ToString();
+                    acr.VISIT = rdr["VISIT"].ToString();
+                    acr.COMMENTS = rdr["COMMENTS"].ToString();
+                    criteriaList.Add(acr);
+                }
+            }
+            con.Close();
+            return criteriaList;
+        }
+        public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select ac.*, al.REMARKS as COMMENTS , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.id inner join t_auditee_ent_types et on ac.entity_id=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id inner join t_br_size s on ac.size_id=s.br_size_id left join T_AUDIT_CRITERIA_LOG al on ac.ID=al.C_ID WHERE ac.APPROVAL_STATUS IN (1,3)";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditCriteriaModel acr = new AuditCriteriaModel();
+                    acr.ID = Convert.ToInt32(rdr["ID"]);
+                    acr.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
+                    acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                    acr.APPROVAL_STATUS = Convert.ToInt32(rdr["APPROVAL_STATUS"]);
+                    acr.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    acr.PERIOD = rdr["PERIOD"].ToString();
+                    acr.ENTITY = rdr["ENTITY"].ToString();
+                    acr.FREQUENCY = rdr["FREQUENCY"].ToString();
+                    acr.SIZE = rdr["BRSIZE"].ToString();
+                    acr.RISK = rdr["RISK"].ToString();
+                    acr.VISIT = rdr["VISIT"].ToString();
+                    acr.COMMENTS = rdr["COMMENTS"].ToString();
+                    criteriaList.Add(acr);
+                }
             }
             con.Close();
             return criteriaList;
@@ -1599,6 +1651,64 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_ID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_ID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "' )";
+                cmd.ExecuteReader();
+                AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
+                alog.ID = 0;
+                alog.C_ID = 0;
+                alog.STATUS_ID = 1;
+                alog.REMARKS = "AUDIT CRITERIA CREATED";
+                var loggedInUser=sessionHandler.GetSessionUser();
+                alog.CREATEDBY_ID = loggedInUser.ID;
+                alog.CREATED_ON = DateTime.Now;
+                alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
+                alog.LAST_UPDATED_ON = DateTime.Now;
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool SetAuditCriteriaStatusReferredBack(int ID)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AUDIT_CRITERIA a SET a.APPROVAL_STATUS=2 WHERE a.ID = "+ID;
+                cmd.ExecuteReader();
+                AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
+                alog.ID = 0;
+                alog.C_ID = ID;
+                alog.STATUS_ID = 2;
+                alog.REMARKS = "REFERRED BACK";
+                var loggedInUser = sessionHandler.GetSessionUser();
+                alog.CREATEDBY_ID = loggedInUser.ID;
+                alog.CREATED_ON = DateTime.Now;
+                alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
+                alog.LAST_UPDATED_ON = DateTime.Now;
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID+"','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool SetAuditCriteriaStatusApprove(int ID)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AUDIT_CRITERIA a SET a.APPROVAL_STATUS=4 WHERE a.ID = " + ID;
+                cmd.ExecuteReader();
+                AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
+                alog.ID = 0;
+                alog.C_ID = ID;
+                alog.STATUS_ID = 4;
+                alog.REMARKS = "APPROVED";
+                var loggedInUser = sessionHandler.GetSessionUser();
+                alog.CREATEDBY_ID = loggedInUser.ID;
+                alog.CREATED_ON = DateTime.Now;
+                alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
+                alog.LAST_UPDATED_ON = DateTime.Now;
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
             }
             con.Close();

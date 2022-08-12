@@ -48,6 +48,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ReferedBackAuditCriteriaList"] = dBConnection.GetRefferedBackAuditCriterias();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -66,6 +67,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ToAuthorizeAuditCriteriaList"] = dBConnection.GetAuditCriteriasToAuthorize();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -313,6 +315,30 @@ namespace AIS.Controllers
         public List<AuditEmployeeModel> audit_employees(int dept_code=0)
         {
             return dBConnection.GetAuditEmployees(dept_code);
+        }
+        [HttpPost]
+        public bool referredBack_auditCriteria(int[] IDs)
+        {
+            if (IDs.Length > 0)
+            {
+                foreach (var id in IDs)
+                {
+                    dBConnection.SetAuditCriteriaStatusReferredBack(id);
+                }
+            }
+            return true;
+        }
+        [HttpPost]
+        public bool authorize_auditCriteria(int[] IDs)
+        {
+            if (IDs.Length > 0)
+            {
+                foreach (var id in IDs)
+                {
+                    dBConnection.SetAuditCriteriaStatusApprove(id);
+                }
+            }
+            return true;
         }
         [HttpPost]
         public List<AuditTeamModel> audit_team(int dept_code)

@@ -116,52 +116,48 @@
         <thead>
             <tr>
                 <td class="col-md-1">Period</td>
-                <td class="col-md-2">Entity</td>
-                <td class="col-md-2">Risk Category</td>
-                <td class="col-md-1">Frequency</td>
+                <td class="col-md-1">Entity</td>
+                <td class="col-md-1">Risk Category</td>
+                <td class="col-md-2">Frequency</td>
                 <td class="col-md-1">Size</td>
-                <td class="col-md-1">No. of Days</td>
-                <td class="col-md-1">Spot Visit</td>
-                <td class="col-md-2">Reffered Back Comments</td>
+                <td class="col-md-1">No of Days</td>
+                <td class="col-md-1">Visit</td>
+                <td class="col-md-3">Comments</td>
                 <td class="col-md-1"></td>
             </tr>
         </thead>
         <tbody>
         @{
-            if (ViewData["TransactionsList"] != null)
+            if (ViewData["ReferedBackAuditCriteriaList"] != null)
             {
-                foreach (var item in (dynamic)(ViewData["TransactionsList"]))
+                foreach (var item in (dynamic)(ViewData["ReferedBackAuditCriteriaList"]))
                 {
 
                     <tr id="div_@item.ID">
                         <td>
-                            <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
+                            <p class="fw-normal mb-1">@item.PERIOD</p>
                         </td>
                         <td>
-                            <p class="fw-normal mb-1">@item.SUB_PROCESS_NAME</p>
+                            <p class="fw-normal mb-1">@item.ENTITY</p>
                         </td>
                         <td>
-                            <p class="fw-normal mb-1">@item.DESCRIPTION</p>
+                            <p class="fw-normal mb-1">@item.RISK</p>
                         </td>
                         <td>
-                            <p class="fw-normal mb-1">@item.DIV_NAME</p>
+                            <p class="fw-normal mb-1">@item.FREQUENCY</p>
                         </td>
                         <td>
-                            <p class="fw-normal mb-1"></p>
+                            <p class="fw-normal mb-1">@item.SIZE</p>
                         </td>
                         <td>
-                            @{
-                                if (item.RISK_WEIGHTAGE == 3)
-                                {<p class="fw-normal mb-1">High</p>}
-                                else if (item.RISK_WEIGHTAGE == 2)
-                                {<p class="fw-normal mb-1">Medium</p>}
-                                else
-                                {<p class="fw-normal mb-1">Low</p>}
-                            }
+                            <p class="fw-normal mb-1">@item.NO_OF_DAYS</p>
                         </td>
                         <td>
-                            <p class="fw-normal mb-1">@item.PROCESS_COMMENTS</p>
+                            <p class="fw-normal mb-1">@item.VISIT</p>
                         </td>
+                        <td>
+                            <p class="fw-normal mb-1">@item.COMMENTS</p>
+                        </td>                      
                         <td>
                             <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
                                 Details
@@ -175,7 +171,7 @@
 </div>
 
 <div id="recommendReferProcTransactionModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Transaction Details</h5>
@@ -185,48 +181,135 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="viewerMainProcNameModalField">Process Name</label>
-                        <input type="text" disabled class="form-control" id="viewerMainProcNameModalField" aria-describedby="Process Name" placeholder="Process Name">
 
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerNameModalField">Sub Process Name</label>
-                        <input type="text" disabled class="form-control" id="viewerNameModalField" aria-describedby="Process Name" placeholder="Process Name">
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Audit Period</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="auditCriteriaPeriodField" class="form-select form-control" aria-label="Default select example">
+                                <option value="0" id="0" selected>--Select Audit Period--</option>
+                                @{
+                                    if (ViewData["AuditPeriodList"] != null)
+                                    {
 
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerDescModalField">Description</label>
-                        <textarea class="form-control" disabled id="viewerDescModalField" aria-describedby="Enter Description here..." placeholder="Enter Description here..."></textarea>
+                                        foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
+                                        {
+                                            <option id="@period.ID" value="@period.ID">@period.DESCRIPTION</option>
+                                        }
 
+                                    }
+                                }
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="viewerControlModalField">Control Owner</label>
-                        <input type="text" disabled class="form-control" id="viewerControlModalField" aria-describedby="Control Owner" placeholder="Control Owner">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerDivModalField">Division</label>
-                        <input type="text" disabled class="form-control" id="viewerDivModalField" aria-describedby="Control Owner" placeholder="Control Owner">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerActionModalField">Action</label>
-                        <input type="text" disabled class="form-control" id="viewerActionModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerRiskModalField">Risk Weightage</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerRiskMaxModalField">Risk Max Number</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskMaxModalField" aria-describedby="Control Owner">
+                    <div class="row mt-3 col-md-12">
+                        <div class="row col-md-4">
+                            <h5>Select Entity</h5>
+                        </div>
+                        <div class="row col-md-8">
+                               <select id="auditCriteriaEntityField" onchange="enitityChangeEvent();" class="form-select form-control">
+                                    <option value="0" id="0" selected>--Select Entity--</option>
+                                    @{
+                                        if (ViewData["AuditEntities"] != null)
+                                        {
+                                            foreach (var item in (dynamic)(ViewData["AuditEntities"]))
+                                            {
+                                                <option value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                             
+                        </div>
                     </div>
 
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Risk Category</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+                                <option value="0" id="0" selected>--Select Risk Category--</option>
+                                @{
+                                    if (ViewData["RiskList"] != null)
+                                    {
+
+                                        foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                                        {
+                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Frequency</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="auditCriteriaFreqField" class="form-select form-control" aria-label="Default select example">
+                                <option value="0" id="0" selected>--Select Frequency--</option>
+                                @{
+                                    if (ViewData["AuditFrequencies"] != null)
+                                    {
+
+                                        foreach (var period in (dynamic)(ViewData["AuditFrequencies"]))
+                                        {
+                                            <option id="@period.FREQUENCY_ID" value="@period.FREQUENCY_ID">@period.FREQUENCY_DISCRIPTION</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3 brField">
+                        <div class="row col-md-4">
+                            <h5>Size</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="auditCriteriaSizeField" class="form-select form-control" aria-label="Default select example">
+                                <option value="0" id="0" selected>--Select Size--</option>
+                                @{
+                                    if (ViewData["BranchSizesList"] != null)
+                                    {
+                                        foreach (var item in (dynamic)(ViewData["BranchSizesList"]))
+                                        {
+                                            <option value="@item.BR_SIZE_ID" id="@item.BR_SIZE_ID">@item.DESCRIPTION</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>No. of Days</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="auditCriteriaDaysField" class="form-control" type="number" />
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Spot/Field Visit</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
+                        </div>
+                    </div>
+                  
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="refferedBackProcTransaction();" type="button" class="btn btn-danger">Refer Back</button>
-                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Recommend</button>
+                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Recommend Again</button>
 
             </div>
         </div>
