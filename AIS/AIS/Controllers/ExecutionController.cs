@@ -214,6 +214,29 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult Sub_voilation_audit_observation()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["Voilation_Sub_Cat"] = dBConnection.GetVoilationSubGroup(1);
+
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -238,6 +261,26 @@ namespace AIS.Controllers
         {
             return dBConnection.GetRiskActivities(rsg.S_GR_ID);
         }
+
+
+
+
+
+
+        public List<AuditSubVoilationcatModel> sub_voilation(AuditSubVoilationcatModel vsg)
+        {
+            return dBConnection.GetVoilationSubGroup(vsg.V_ID);
+        }
+
+
+
+
+
+
+
+
+
+
         [HttpPost]
         public List<AuditObservationTemplateModel> audit_observation_template(RiskActivityModel ra)
         {

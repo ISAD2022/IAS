@@ -1755,5 +1755,57 @@ namespace AIS
             con.Close();
             return remarks;
         }
+        public List<AuditVoilationcatModel> GetAuditVoilationcats()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditVoilationcatModel> voilationList = new List<AuditVoilationcatModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "select * from t_control_violation V order by V.ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditVoilationcatModel voilationcat = new AuditVoilationcatModel();
+                    voilationcat.ID = Convert.ToInt32(rdr["ID"]);
+                    voilationcat.V_NAME = rdr["V_Name"].ToString();
+                    voilationcat.MAX_NUMBER = Convert.ToInt32(rdr["MAX_Number"]);
+                    voilationcat.STATUS = rdr["Status"].ToString();
+                    voilationList.Add(voilationcat);
+                }
+            }
+            con.Close();
+            return voilationList;
+        }
+        public List<AuditSubVoilationcatModel> GetVoilationSubGroup(int group_id)
+        {
+            var con = this.DatabaseConnection();
+            List<AuditSubVoilationcatModel> voilationsubgroupList = new List<AuditSubVoilationcatModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                if (group_id == 0)
+                    cmd.CommandText = "select * from t_control_violation_sub S order by S.ID";
+                else
+
+
+                    cmd.CommandText = "select * from t_control_violation_sub S where s.p_id= " + group_id + "  order by s.p_ID, s.ID asc";
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditSubVoilationcatModel vsgm = new AuditSubVoilationcatModel();
+                    vsgm.ID = Convert.ToInt32(rdr["ID"]);
+                    vsgm.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    vsgm.SUB_V_NAME = rdr["SUB_V_NAME"].ToString();
+                    vsgm.RISK_ID = rdr["RISK_ID"].ToString();
+                    vsgm.STATUS = rdr["STATUS"].ToString();
+
+                    voilationsubgroupList.Add(vsgm);
+                }
+            }
+            con.Close();
+            return voilationsubgroupList;
+        }
+
     }
 }
