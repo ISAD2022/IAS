@@ -1100,15 +1100,18 @@ namespace AIS
             List<AuditTeamModel> teamList = new List<AuditTeamModel>();
             string where_clause = "";
             string select_clause = "";
+            bool checkdeptcode = false;
             if (loggedInUser.UserLocationType == "H")
             {
                 where_clause = "inner join V_SERVICE_DEPARTMENT d on t.PLACE_OF_POSTING=d.ID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingDept;
                 select_clause = ", d.NAME as AUDIT_DEPARTMENT ";
+                checkdeptcode = true;
             }
             else if (loggedInUser.UserLocationType == "B")
             { 
                 where_clause = "inner join V_SERVICE_BRANCH b on t.PLACE_OF_POSTING=b.BRANCHID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingBranch;
                 select_clause = ", b.BRANCHNAME as AUDIT_DEPARTMENT ";
+                checkdeptcode = true;
             }
             else if (loggedInUser.UserLocationType == "Z")
             {
@@ -1116,22 +1119,24 @@ namespace AIS
                 { 
                     where_clause = "left join V_SERVICE_AUDITZONE az on t.PLACE_OF_POSTING=az.ID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingAuditZone;
                     select_clause = ", az.ZONENAME as AUDIT_DEPARTMENT ";
+                    checkdeptcode = true;
                 }
                 else
                 {
                     where_clause = "left join V_SERVICE_ZONES z on t.PLACE_OF_POSTING=z.ZONEID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingZone;
                     select_clause = ", z.ZONENAME as AUDIT_DEPARTMENT ";
+                    checkdeptcode = true;
                 }
             }
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                if (dept_code == 0)
-                    // cmd.CommandText = "select t.*,tm.*, e.*, t.ID as TEAMID from t_ap_teamconstitute t inner join t_ap_team_members tm on t.id=tm.plan_id inner join t_audit_emp e on tm.teammember_id=e.ppno order by t.ID asc, tm.is_teamlead desc";
-                    cmd.CommandText = "select t.* " + select_clause + " from t_au_team_members t " + where_clause + " order by t.T_CODE asc, t.ISTEAMLEAD desc";
+                if (dept_code != 0 && checkdeptcode == false)
+                    cmd.CommandText = "select t.* " + select_clause + " from t_au_team_members t " + where_clause + " and t.PLACE_OF_POSTING=" + dept_code + " order by t.T_CODE asc, t.ISTEAMLEAD desc";
                 else
-                    // cmd.CommandText = "select t.*,tm.*, e.*, t.ID as TEAMID from t_ap_teamconstitute t inner join t_ap_team_members tm on t.id=tm.plan_id inner join t_audit_emp e on tm.teammember_id=e.ppno WHERE t.AUDIT_DEPARTMENT=" + dept_code+ " order by t.ID asc, tm.is_teamlead desc";
-                    cmd.CommandText = "select t.* "+select_clause+" from t_au_team_members t "+where_clause+" and t.PLACE_OF_POSTING="+dept_code+" order by t.T_CODE asc, t.ISTEAMLEAD desc";
+                    cmd.CommandText = "select t.* " + select_clause + " from t_au_team_members t " + where_clause + " order by t.T_CODE asc, t.ISTEAMLEAD desc";
+                // cmd.CommandText = "select t.*,tm.*, e.*, t.ID as TEAMID from t_ap_teamconstitute t inner join t_ap_team_members tm on t.id=tm.plan_id inner join t_audit_emp e on tm.teammember_id=e.ppno WHERE t.AUDIT_DEPARTMENT=" + dept_code+ " order by t.ID asc, tm.is_teamlead desc";
+
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
