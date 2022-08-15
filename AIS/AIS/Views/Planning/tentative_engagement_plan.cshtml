@@ -281,10 +281,10 @@
         <h3 style="color: #45c545;">Create Audit Plan</h3>
        <select id="deptSelectionBox" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
            @{
-                if (ViewData["AuditDepartments"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
-                    {
+               if (ViewData["AuditDepartments"] != null)
+               {
+                   foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                   {
                         <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
                     }
                 }
@@ -673,6 +673,19 @@
     var g_teams = [];
     var g_branches = [];
     $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        var periodName = url.searchParams.get("period");
+        var risk = url.searchParams.get("risk");
+        var size = url.searchParams.get("size");
+        var entityName = url.searchParams.get("name");
+        var freq = url.searchParams.get("freq");
+        $('#auditperiod_label').text(periodName);
+        $('#auditentity_label').text(entityName);
+        $('#risk_label').text(risk);
+        $('#size_label').text(size);
+        $('#frequency_label').text(freq);
+
         $('#deptSelectionBox').addClass('d-none');
         $('.hiddenContainers').addClass('d-none');
         $('.fieldAuditFields').addClass('d-none');
@@ -940,10 +953,51 @@
 
     }
 </script>
-
 <div class="row col-md-12">
     <h3 style="color: #45c545;">Tentative Engagement Plan</h3>
 </div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>Audit Period</h5>
+    </div>
+    <div class="col-md-9">
+       <label id="auditperiod_label"></label>
+    </div>
+</div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>Audit Entity</h5>
+    </div>
+    <div class="col-md-9">
+        <label id="auditentity_label"></label>
+    </div>
+</div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>Risk</h5>
+    </div>
+    <div class="col-md-9">
+        <label id="risk_label"></label>
+    </div>
+</div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>Size</h5>
+    </div>
+    <div class="col-md-9">
+        <label id="size_label"></label>
+    </div>
+</div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>Frequency</h5>
+    </div>
+    <div class="col-md-9">
+        <label id="frequency_label"></label>
+    </div>
+</div>
+
+
 <div class="row mt-5 col-md-12">
     <div class="row col-md-3">
         <h5>Select Audit Plan</h5>

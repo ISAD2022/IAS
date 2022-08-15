@@ -1072,7 +1072,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_au_plan p WHERE 1 =1 "+query+ " order by decode(p.risk, 'High', 1, 'Medium', 2, 'Low', 3 ), p.ZONENAME asc";
+                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.ID WHERE 1 =1 "+query+ " order by decode(p.risk, 'High', 1, 'Medium', 2, 'Low', 3 ), p.ZONENAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1087,6 +1087,7 @@ namespace AIS
                     tplan.ZONE_NAME = rdr["ZONENAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
                     tplan.BR_NAME = rdr["BR_NAME"].ToString();
+                    tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
                     tplansList.Add(tplan);
                 }
             }
