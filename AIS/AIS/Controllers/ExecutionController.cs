@@ -311,6 +311,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

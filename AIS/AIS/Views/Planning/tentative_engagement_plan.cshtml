@@ -696,6 +696,45 @@
         ShowDepartmentAuditPeriods();
 
     });
+    function getAutoEndDate() {
+        var numAdd = $('#days_label').text();
+        var dataAvui = new Date($('#startplan_date').val());
+        for (var i = 0; i < numAdd; i++) {
+            var dataTemp = dataAvui
+            console.dir(dataTemp.toString())
+            dataTemp.setDate(dataTemp.getDate() + 1)
+            if (dataTemp.getDay() == 6) {
+                dataTemp.setDate(dataTemp.getDate() + 2)
+            } else if (dataTemp.getDay() == 0) {
+                dataTemp.setDate(dataTemp.getDate() + 1)
+            }
+
+            dataAvui = dataTemp;
+
+        }
+        var month = (dataAvui.getMonth() + 1);
+        var day = dataAvui.getDate();
+        if (month < 10)
+            month = "0" + month;
+        if (day < 10)
+            day = "0" + day;
+        var today = dataAvui.getFullYear() + '-' + month + '-' + day;
+        $('#endplan_date').val(today);
+
+
+        var date = new Date($('#startplan_date').val());
+        const lastDayPrevMonth = new Date(date.getFullYear(), date.getMonth(), 0);
+        var month = (lastDayPrevMonth.getMonth() + 1);
+        var day = lastDayPrevMonth.getDate();
+        if (month < 10)
+            month = "0" + month;
+        if (day < 10)
+            day = "0" + day;
+
+        var today = lastDayPrevMonth.getFullYear() + '-' + month + '-' + day;
+        $('#endop_date').val(today);
+        
+    }
     function getBusinessDateCount(startDate, endDate) {
         var elapsed, daysBeforeFirstSaturday, daysAfterLastSunday;
         var ifThen = function (a, b, c) {
@@ -1007,59 +1046,69 @@
     </div>
 </div>
 
-
-<div class="row mt-5 col-md-12">
-    <div class="row col-md-3">
-        <h5>Select Audit Plan</h5>
-    </div>
-    <div class="row col-md-9">
-        <select id="audit plan" onchange="enitityChangeEvent();" class="form-select form-control">
-            <option value="0" id="0" selected>--Select Audit Plan--</option>
-            <!-- @{
-            if (ViewData["AuditEntities"] != null)
-            {
-            foreach (var item in (dynamic)(ViewData["AuditEntities"]))
-            {
-            <option value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
-            }
-            }
-            }-->
-        </select>
-    </div>
-    <!--<div class="col-md-4 pl-0">
-        <button onclick="setupAuditEntitiesModal();;" class="btn btn-danger">Add New Entity</button>
-    </div>-->
-</div>
-
-
 <div class="row col-md-12 mt-3">
-    <div class="row col-md-3">
+    <div class="col-md-3">
         <h5>Start Date</h5>
     </div>
-    <div class="row col-md-9">
-        <input type="date" class="form-control form-select">
+    <div class="col-md-9">
+        <input id="startplan_date" onchange="getAutoEndDate();" type="date" class="form-control form-select">
     </div>
 </div>
 
 <div class="row col-md-12 mt-3">
-    <div class="row col-md-3">
+    <div class="col-md-3">
+        <h5>End Date</h5>
+    </div>
+    <div class="col-md-9">
+        <input id="endplan_date" type="date" disabled="disabled" class="form-control form-select">
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="col-md-3">
+        <h5>Operational Start Date</h5>
+    </div>
+    <div class="col-md-9">
+        <input id="startop_date" disabled="disabled" type="date" class="form-control form-select">
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="col-md-3">
+        <h5>Operational End Date</h5>
+    </div>
+    <div class="col-md-9">
+        <input id="endop_date" disabled="disabled" type="date" class="form-control form-select">
+    </div>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="col-md-3">
         <h5>Team Assigned</h5>
     </div>
-    <div class="row col-md-9">
+    <div class="col-md-9">
         <select id="Audit Team" class="form-select form-control">
             <option value="0" id="0" selected>Select Audit Team</option>
-            <option value="1">Team 1</option>
-            <option value="2">Team 2</option>
-            <option value="3">Team 3</option>
+            @{
+                if (ViewData["AuditTeamsList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["AuditTeamsList"]))
+                    {
+                        if (item.IS_TEAMLEAD == "Y")
+                        {
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        }
+                    }
+                }
+              }
+
         </select>
     </div>
 </div>
 
 <div class="row col-md-12 mt-3">
-    <div class="row col-md-3">
+    <div class="col-md-3">
         <h5>Travelling Required</h5>
     </div>
-    <div class="row col-md-9">
+    <div class="col-md-9">
         <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
     </div>
 </div>

@@ -102,17 +102,18 @@
             <h5>Violation</h5>
         </div>
         <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected="selected">--Select Risk Group--</option>
+            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
             @{
-                if (ViewData["RISK_GROUPS"] != null)
+                if (ViewData["Voilation_Cat"] != null)
                 {
-                    foreach (var item in (dynamic)(ViewData["RISK_GROUPS"]))
+                    foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
                     {
-                        <option value="@item.GR_ID" id="@item.GR_ID">@item.DESCRIPTION</option>
+                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
                     }
                 }
             }
         </select>
+        
     </div>
     <div id="div_risksubcategory" style="display:none;" class="col-md-12 mt-3">
         <h5>Nature/Area</h5>
