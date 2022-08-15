@@ -680,11 +680,13 @@
         var size = url.searchParams.get("size");
         var entityName = url.searchParams.get("name");
         var freq = url.searchParams.get("freq");
+        var days = url.searchParams.get("days");
         $('#auditperiod_label').text(periodName);
         $('#auditentity_label').text(entityName);
         $('#risk_label').text(risk);
         $('#size_label').text(size);
         $('#frequency_label').text(freq);
+        $('#days_label').text(days);
 
         $('#deptSelectionBox').addClass('d-none');
         $('.hiddenContainers').addClass('d-none');
@@ -996,6 +998,14 @@
         <label id="frequency_label"></label>
     </div>
 </div>
+<div class="row col-md-12  mt-3">
+    <div class="col-md-3">
+        <h5>No of Days</h5>
+    </div>
+    <div class="col-md-9">
+        <label id="days_label"></label>
+    </div>
+</div>
 
 
 <div class="row mt-5 col-md-12">
@@ -1019,17 +1029,6 @@
     <!--<div class="col-md-4 pl-0">
         <button onclick="setupAuditEntitiesModal();;" class="btn btn-danger">Add New Entity</button>
     </div>-->
-</div>
-
-<div class="row col-md-12  mt-3">
-    <div class="row col-md-3">
-        <h5>Audit Entity</h5>
-    </div>
-    <div class="row col-md-9">
-        <select id="audit entity" onchange="enitityChangeEvent();" class="form-select form-control">
-            <option id="0" selected>--Select Audit Entity--</option>
-        </select>
-    </div>
 </div>
 
 

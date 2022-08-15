@@ -4,9 +4,8 @@
 }
 
 <script type="text/javascript">
-    function createAuditEngagement(name, size , risk, freq, auditperiodid) {
-        console.log(name, size, risk, freq, auditperiodid);
-        window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiodid;
+    function createAuditEngagement(name, size, risk, freq, days, auditperiodid) {
+        window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiodid + '&days=' + days;
     }
   
 </script>
@@ -46,7 +45,7 @@
                                     <td>@item.RISK</td>
                                     <td>@item.FREQUENCY_DESCRIPTION</td>
                                     <td>@item.NO_OF_DAYS</td>
-                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION', '@item.PERIOD_NAME');" class="text-center text-danger text-hover">Create</small></td>
+                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME');" class="text-center text-danger text-hover">Create</small></td>
                                 </tr>
                             sr = sr + 1;
                         }
