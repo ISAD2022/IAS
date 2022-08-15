@@ -461,6 +461,11 @@ namespace AIS.Controllers
             return dBConnection.GetAuditTeams(dept_code);
         }
         [HttpPost]
+        public string get_operational_start_date(int periodId, int entityCode)
+        {
+            return dBConnection.GetAuditOperationalStartDate(periodId,entityCode);
+        }
+        [HttpPost]
         public List<AuditTeamModel> add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
         {
             List<AuditTeamModel> aTeams = new List<AuditTeamModel>();

@@ -30,7 +30,7 @@
             $('#div_activityContainer').hide();
             $('#riskSubGroupSelectBox').empty();
             $.ajax({
-                url: "/Execution/risk_sub_group",
+                url: "/Execution/sub_voilation",
                 type: "POST",
                 data: {
                     'GR_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -39,7 +39,7 @@
                 success: function (data) {
                     $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
-                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.s_GR_ID + "\"> " + item.description + "</option>");
+                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.v_ID + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
                     });
 
                 },
@@ -122,8 +122,23 @@
     </div>
     <div id="div_activityContainer" style="display:none;" class="col-md-12 mt-3">
         <h5>Risk</h5>
-        <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
+        <!--  <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
+    </select>-->
+        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Risk Category--</option>
+            @{
+                if (ViewData["RiskList"] != null)
+                {
+
+                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                    {
+                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                    }
+
+                }
+            }
         </select>
+
     </div>
     <div class="col-md-12 mt-3">
         <div class="page-wrapper box-content">

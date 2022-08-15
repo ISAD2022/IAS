@@ -1094,6 +1094,25 @@ namespace AIS
             con.Close();
             return tplansList;
         }
+        public String GetAuditOperationalStartDate(int auditPeriodId=0, int entityCode=0)
+        {
+            string result = "";
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select EXTRACT(year FROM d.audit_enddate) as year, EXTRACT(month FROM d.audit_enddate) as month, EXTRACT(day FROM d.audit_enddate) as day  FROM T_AUDITEE_ENTITIES_AUDIT_DATES d WHERE d.ENTITY_CODE=" + entityCode+ " and d.AUDIT_PERIOD_ID= "+auditPeriodId;
+                
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    result = rdr["YEAR"].ToString() + "-";
+                    result += rdr["MONTH"].ToString() + "-";
+                    result += rdr["DAY"].ToString();
+                }
+            }
+            con.Close();
+            return result;
+        }
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
         {
             var loggedInUser = sessionHandler.GetSessionUser();

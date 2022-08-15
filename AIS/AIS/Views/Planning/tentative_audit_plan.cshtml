@@ -4,16 +4,16 @@
 }
 
 <script type="text/javascript">
-    function createAuditEngagement(name, size, risk, freq, days, auditperiodid) {
-        window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiodid + '&days=' + days;
+    function createAuditEngagement(name, size, risk, freq, days, auditperiod, periodId, code) {
+        window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code;
     }
-  
+      
 </script>
-<div class="row text-center" style="margin-top:10px;">
+<div class="row text-center mt-3">
     <h3>Tentative Audit Plan </h3>
 </div>
 <div>
-    <div class="row" style="margin-top:10px;">
+    <div class="row mt-3">
         <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="Plan Review">
             <thead>
                 <tr>
@@ -45,7 +45,7 @@
                                     <td>@item.RISK</td>
                                     <td>@item.FREQUENCY_DESCRIPTION</td>
                                     <td>@item.NO_OF_DAYS</td>
-                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME');" class="text-center text-danger text-hover">Create</small></td>
+                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE');" class="text-center text-danger text-hover">Create</small></td>
                                 </tr>
                             sr = sr + 1;
                         }
