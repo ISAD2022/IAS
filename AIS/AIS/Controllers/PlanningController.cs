@@ -466,6 +466,11 @@ namespace AIS.Controllers
             return dBConnection.GetAuditOperationalStartDate(periodId,entityCode);
         }
         [HttpPost]
+        public AuditEngagementPlanModel add_engagement_plan(AuditEngagementPlanModel eng)
+        {
+            return dBConnection.AddAuditEngagementPlan(eng);
+        }
+        [HttpPost]
         public List<AuditTeamModel> add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
         {
             List<AuditTeamModel> aTeams = new List<AuditTeamModel>();

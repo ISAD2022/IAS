@@ -8,6 +8,8 @@
     var g_branches = [];
     var g_code = 0;
     var g_periodId = 0;
+    var g_entityType = 0;
+    var g_zoneId = 0;
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -19,6 +21,9 @@
         var days = url.searchParams.get("days");
         g_code = url.searchParams.get("code");
         g_periodId = url.searchParams.get("periodId");
+        g_entityType = url.searchParams.get("entityType");
+        g_zoneId = url.searchParams.get("zoneId");
+        
         $('#auditperiod_label').text(periodName);
         $('#auditentity_label').text(entityName);
         $('#risk_label').text(risk);
@@ -135,51 +140,27 @@
     }
     function publishNewAuditPlanChanges() {
 
-        alert("Under Construction");
-        return false;
-        var periodId = $('#periodSelectionBox option:selected').val();
-        var stDate = $('#executionPeriodFromField').val();
-        var edDate = $('#executionPeriodToField').val();
-        var period_stDate = $('#auditPeriodFromField').val();
-        var period_edDate = $('#auditPeriodToField').val();
-        var conducted_by = $('#deptSelectionBox option:selected').val();
-        var no_days = getBusinessDateCount(new Date(stDate), new Date(edDate));
-        var zoneId = $('#auditZoneSelectionBox option:selected').val();
-        var branchId = 0;
-        if (zoneId != 0)
-            branchId = $('#branchSelectionBox option:selected').val();
-
-        var divId = $('#divSelectionBox option:selected').val();
-        var deptId = 0;
-        if (divId != 0)
-            deptId = $('#divDeptSelectionBox option:selected').val();
-
-        var teamId = $('#teamSelectionBox option:selected').val();
         var status = 1;
         var desc = $('#descriptionAuditPlanField').val();
 
         $.ajax({
-            url: "/Planning/add_audit_plan",
+            url: "/Planning/add_engagement_plan",
             type: "POST",
             data: {
-                'AUDITPERIOD_ID': periodId,
-                'AUDIT_STARTDATE': stDate,
-                'AUDIT_ENDDATE': edDate,
-                'AUDITPERIOD_FROM': period_stDate,
-                'AUDITPERIOD_TO': period_edDate,
-                'AUDIT_CONDUCTBY_DEPT': conducted_by,
-                'NO_OF_DAYS_AUDIT': no_days,
-                'AUDIT_ZONEID': zoneId,
-                'BRANCHID': branchId,
-                'DIVISION_ID': divId,
-                'DEPARTMENT_ID': deptId,
-                'TEAM_CONST_ID': teamId,
-                'STATUS': status,
-                'DESCRIPTION': desc
+                'PERIOD_ID': g_periodId,
+                'ENTITY_TYPE': g_entityType,
+                'AUDIT_ZONEID': g_zoneId,
+                'AUDIT_STARTDATE': $('#startplan_date').val(),
+                'AUDIT_ENDDATE': $('#endplan_date').val(),
+                'TEAM_NAME': $('#auditTeam_box option:selected').text(),
+                'STATUS': 1,
+                'TEAM_ID': $('#auditTeam_box').val(),
+                
             },
             cache: false,
             success: function (data) {
-                window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
+                alert('Plan has been Created');
+                window.location.href = "/Planning/tentative_audit_plan";
             },
             dataType: "json",
         });
@@ -277,7 +258,7 @@
         <h5>Team Assigned</h5>
     </div>
     <div class="col-md-9">
-        <select id="Audit Team" class="form-select form-control">
+        <select id="auditTeam_box" class="form-select form-control">
             <option value="0" id="0" selected>Select Audit Team</option>
             @{
                 if (ViewData["AuditTeamsList"] != null)
@@ -286,7 +267,7 @@
                     {
                         if (item.IS_TEAMLEAD == "Y")
                         {
-                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.ID" id="@item.ID">@item.NAME</option>
                         }
                     }
                 }
@@ -305,9 +286,8 @@
     </div>
 </div>
 <div class="row col-md-12 mt-4">
-    <center class="w-100"><button onclick="previewAuditPlan();" class="col-md-2 btn btn-primary">Preview</button></center>
-
-</div>
+   <button onclick="publishNewAuditPlanChanges();" class="col-md-2 btn btn-primary">Save Changes</button>
+  </div>
 
 <div id="previewAuditPlan" class="modal"  tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
