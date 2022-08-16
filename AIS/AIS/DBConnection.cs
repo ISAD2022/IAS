@@ -698,15 +698,16 @@ namespace AIS
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Select v.* FROM t_control_violation v order by v.ID asc";
+                cmd.CommandText = "Select v.* FROM t_r_sub_group v order by v.S_GR_ID asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     ControlViolationsModel v = new ControlViolationsModel();
-                    v.ID = Convert.ToInt32(rdr["ID"]);
-                    v.V_NAME = rdr["V_NAME"].ToString();
+                    v.ID = Convert.ToInt32(rdr["S_GR_ID"]);
+                    v.V_NAME = rdr["DESCRIPTION"].ToString();
+                    if(rdr["MAX_NUMBER"].ToString()!=null && rdr["MAX_NUMBER"].ToString() != "")
                     v.MAX_NUMBER = Convert.ToInt32(rdr["MAX_NUMBER"]);
-                    v.STATUS = rdr["STATUS"].ToString();
+                    v.STATUS = "Y";
                     controlViolationList.Add(v);
                 }
             }
@@ -715,16 +716,16 @@ namespace AIS
         }
         public ControlViolationsModel AddControlViolation(ControlViolationsModel cv)
         {
-            var con = this.DatabaseConnection();
+            /*var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if(cv.ID==0)
-                cmd.CommandText = "INSERT INTO t_control_violation cv (cv.ID,cv.V_NAME, cv.MAX_NUMBER, cv.STATUS) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM t_control_violation PP), '" + cv.V_NAME + "','" + cv.MAX_NUMBER+"','"+cv.STATUS+"')";
+                cmd.CommandText = "INSERT INTO t_r_sub_group cv (cv.ID,cv.V_NAME, cv.MAX_NUMBER) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM t_control_violation PP), '" + cv.V_NAME + "','" + cv.MAX_NUMBER+"','"+cv.STATUS+"')";
                 else
                     cmd.CommandText = "UPDATE t_control_violation cv SET cv.V_NAME = '"+cv.V_NAME+"', cv.MAX_NUMBER='"+cv.MAX_NUMBER+"', cv.STATUS= '"+cv.STATUS+"' WHERE cv.ID="+cv.ID;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Close();*/
             return cv;
         }
         public List<DivisionModel> GetDivisions(bool sessionCheck=true)
