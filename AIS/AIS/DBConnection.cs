@@ -698,7 +698,7 @@ namespace AIS
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Select v.* FROM t_r_sub_group v order by v.S_GR_ID asc";
+                cmd.CommandText = "Select v.* FROM t_r_sub_group v WHERE v.gr_id in (1,3) order by v.S_GR_ID asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1276,7 +1276,19 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             ePlan.CREATED_ON = System.DateTime.Now;
             int createdbyId = loggedInUser.ID;
-
+            int placeofposting = 0;
+            if (loggedInUser.UserLocationType == "H")
+                placeofposting = Convert.ToInt32(loggedInUser.UserPostingDept);
+            else if (loggedInUser.UserLocationType == "B")
+                placeofposting = Convert.ToInt32(loggedInUser.UserPostingBranch);
+            else if (loggedInUser.UserLocationType == "Z")
+            {
+                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    placeofposting = Convert.ToInt32(loggedInUser.UserPostingAuditZone);
+                else
+                    placeofposting = Convert.ToInt32(loggedInUser.UserPostingZone);
+               
+            }
             ePlan.CREATEDBY = Convert.ToInt32(loggedInUser.PPNumber);
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1285,6 +1297,9 @@ namespace AIS
                 cmd.ExecuteReader();
 
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
+                cmd.ExecuteReader();
+
+                cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', "+placeofposting+",1)";
                 cmd.ExecuteReader();
 
             }

@@ -51,8 +51,9 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["BranchList"] = dBConnection.GetBranches();
-            ViewData["ZoneList"] = dBConnection.GetZones();
+            ViewData["ZoneList"] = dBConnection.GetAuditZones();
             ViewData["BranchSizeList"] = dBConnection.GetBranchSizes();
+            ViewData["AuditZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

@@ -85,7 +85,7 @@
     }
     function ShowSelectedZonesBranches() {
         if ($('#auditZoneSelectionBox option:selected').val() == 0) {
-            $('#branchSelectionBox').empty();
+            $('#branchSelectionBox').empty(); 
             $('#branchInfoArea').hide();
             $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
         }
@@ -114,6 +114,13 @@
             });
         }
     }
+
+    
+
+
+
+
+
     function ShowSelectedDivisionDepartments() {
         if ($('#divSelectionBox option:selected').val() == 0) {
             $('#divDeptSelectionBox').empty();
@@ -241,8 +248,17 @@
         <h5>Audit Zone *</h5>
     </div>
     <div class="row col-md-8">
-        <select id="EntitySelectionBox" class="form-select form-control">
-            <option value="0" selected>Select Audit Zone</option>
+       <select id="auditZoneSelectionBox1"  class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Zone--</option>
+            @{
+                if (ViewData["ZoneList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["ZoneList"]))
+                    {
+                        <option value="@item.ID" id="@item.ID">@item.ZONENAME</option>
+                    }
+                }
+            }
         </select>
     </div>
 </div>
@@ -252,9 +268,22 @@
         <h5>Zone *</h5>
     </div>
     <div class="row col-md-8">
-        <select id="subentitySelectionBox" class="form-select form-control">
-            <option value="0" selected>Select Zone</option>
+        
+
+        <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Zone--</option>
+            
+            @{
+                if (ViewData["AuditZonesList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
+                    {
+                        <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                    }
+                }
+            }
         </select>
+       
     </div>
 </div>
 
@@ -263,8 +292,11 @@
         <h5>List of Branches</h5>
     </div>
     <div class="row col-md-8">
-        <select id="RiskCategorySelectionBox" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>List of Branches</option>
+       
+        <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example" multiple autofocus size="15">
+            
+            <option value="0" id="0">--Select Audit Branch--</option>
+
         </select>
     </div>
 </div>
@@ -275,7 +307,7 @@
     <button class="btn-primary" style="float:right">Save</button>
     </div>
     <div class="row col-md-6 mt-3">
-        <button class="btn-primary" style="float:left">Clear Selection</button>
+        <button type="reset" class="btn-primary" style="float:left" >Clear Selection</button>
     </div>
 </div>
 
