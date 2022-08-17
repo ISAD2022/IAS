@@ -1068,24 +1068,27 @@ namespace AIS
             {
                 var loggedInUser = sessionHandler.GetSessionUser();
                 if (loggedInUser.UserPostingAuditZone != 0)
-                    query = query + " and p.AUDITZONEID=" + loggedInUser.UserPostingAuditZone;
+                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
             }
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.ID WHERE 1 =1 "+query+ " order by decode(p.risk, 'High', 1, 'Medium', 2, 'Low', 3 ), p.ZONENAME asc";
+                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.ID WHERE 1 =1 "+query+ " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     TentativePlanModel tplan = new TentativePlanModel();
+                    tplan.CRITERIA_ID = Convert.ToInt32(rdr["CRITERIA_ID"]);
                     tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
-                    tplan.AUDIT_ZONE_ID = Convert.ToInt32(rdr["AUDITZONEID"]);
-                    tplan.BR_SIZE = rdr["BR_SIZE"].ToString();
-                    tplan.RISK = rdr["RISK"].ToString();
+                    tplan.AUDIT_ZONE_ID = Convert.ToInt32(rdr["AUDITEDBY"]);
+                    tplan.BR_SIZE = rdr["AUDITEE_SIZE"].ToString();
+                    tplan.RISK = rdr["AUDITEE_RISK"].ToString();
                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
-                    tplan.CODE = rdr["CODE"].ToString();
-                    tplan.ZONE_NAME = rdr["ZONENAME"].ToString();
+                    tplan.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    tplan.CODE = rdr["ENTITY_CODE"].ToString();
+                    tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
+                    tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
                     tplan.BR_NAME = rdr["BR_NAME"].ToString();
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
@@ -1293,7 +1296,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ")";
+                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", 1,"+ePlan.ENTITY_CODE+")";
                 cmd.ExecuteReader();
 
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
@@ -1791,6 +1794,14 @@ namespace AIS
                 alog.LAST_UPDATED_ON = DateTime.Now;
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
+                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, DIVISION_ZONE_NAME, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) Select a.id, a.AUDITPERIODID, az.AUDITZONEID,d.org_unitid as Entity_ID, z.ZONENAME,d.CODE,d.DESCRIPTION as Entity_name,rs.description as risk,bs.description as Entity_Size, a.NO_OF_DAYS,f.frequency_discription  From t_audit_criteria a,t_branch_risk_rating b,t_branch_size s,t_az_branches az,v_service_branch vb,t_auditee_entities d, v_service_zones z, t_audit_frequency f, t_br_size bs, t_risk_status rs, t_au_period p Where a.ENTITY_ID = d.ORG_UNIT_TYPEID  And b.RISK_RATING = a.RISK_ID and b.branch_code = az.branchcode and b.branch_id = d.org_unitid And b.AUDIT_PERIOD_ID = a.AUDITPERIODID  And s.BR_SIZE = a.SIZE_ID  and s.br_code = az.branchcode And d.CODE = az.BRANCHCODE and f.frequency_id = a.frequency_id and az.zoneid = z.ZONEID and bs.br_size_id = a.size_id and rs.r_id = a.risk_id and p.auditperiodid = a.auditperiodid and p.status_id = '2' and a.approval_status = '4' Group By a.id, a.AUDITPERIODID, az.AUDITZONEID, d.org_unitid, z.ZONENAME, d.CODE, d.DESCRIPTION, rs.description, a.NO_OF_DAYS, bs.description, f.frequency_discription";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                   
+
+                }
+
             }
             con.Close();
             return true;
