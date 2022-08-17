@@ -1090,7 +1090,7 @@ namespace AIS
                     tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
                     tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
-                    tplan.BR_NAME = rdr["BR_NAME"].ToString();
+                    tplan.BR_NAME = rdr["AUDITEE_SIZE"].ToString();
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
                     tplansList.Add(tplan);
                 }
