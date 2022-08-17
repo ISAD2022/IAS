@@ -1073,7 +1073,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.ID WHERE 1 =1 "+query+ " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
+                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.ID WHERE not EXISTS (select * from t_au_plan_eng e where e.period_id= p.auditperiodid and e.entity_code= p.entity_code and e.entity_id= p.entity_id) "+query+ " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1296,7 +1296,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", 1,"+ePlan.ENTITY_CODE+")";
+                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", (select ae.Org_Unitid from t_auditee_entities ae WHERE ae.Code='"+ ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE+")";
                 cmd.ExecuteReader();
 
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
