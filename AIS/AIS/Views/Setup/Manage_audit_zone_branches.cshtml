@@ -106,7 +106,7 @@
                     $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
                     console.log(data);
                     $.each(data, function (index, branch) {
-                        $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
+                        $('#branchSelectionBox').append('<option value="' + branch.description + '" id="' + branch.id + '">' + branch.description + '</option>')
                     });
 
                 },
@@ -189,7 +189,38 @@
         $('#teamMembers_field').html(teamMembersFields);
 
     }
-    function publishNewAuditPlanChanges(){
+
+
+    function addRecordToZoneBranchMap() {
+        var AZN = '';
+        if ($('#auditZoneSelectionBox1 option:selected').val() != 0)
+            AZN = $('#auditZoneSelectionBox1 option:selected').text();
+
+        var ZN = '';
+        if ($('#auditZoneSelectionBox option:selected').val() != 0)
+            ZN = $('#auditZoneSelectionBox option:selected').text();
+
+       
+        //var BN = '';
+        //if ($('#branchSelectionBox option:selected').val() != 0)
+          //  BN = $('#branchSelectionBox option:selected').text(); 
+        $('#ZoneBranchmap tbody').empty();
+        var selectedBr = $('#branchSelectionBox').val();
+        $.each(selectedBr, function (i, br) {
+            if (br !=0)
+            $('#ZoneBranchmap tbody').append('<tr><td value="' + $('#auditZoneSelectionBox1 option:selected').val() + '">' + AZN + '</td><td value="' + $('#auditZoneSelectionBox option:selected').val() + '">' + ZN + '</td><td value="' + $('#branchSelectionBox option:selected').val() + '">' + br + '</td><td><a onclick=DeleteAZMRecordFromGrid(this); class="text-hover text-danger">Delete</a></td></tr>')
+
+        });
+
+       // $('#ZoneBranchmap tbody').append('<tr><td value="' + $('#auditZoneSelectionBox1 option:selected').val() + '">' + AZN + '</td><td value="' + $('#auditZoneSelectionBox option:selected').val() + '">' + ZN + '</td><td value="' + $('#branchSelectionBox option:selected').val() + '">' + BN + '</td><td><a onclick=DeleteAZMRecordFromGrid(this); class="text-hover text-danger">Delete</a></td></tr>')
+
+    }
+    function DeleteAZMRecordFromGrid(e) {
+        $(e).parent().parent().remove();
+    }
+
+
+    function publishNewAuditPlanChanges() {
         var periodId = $('#periodSelectionBox option:selected').val();
         var stDate = $('#executionPeriodFromField').val();
         var edDate = $('#executionPeriodToField').val();
@@ -270,22 +301,22 @@
     <div class="row col-md-8">
         
 
-        <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>--Select Audit Zone--</option>
-            
-            @{
-                if (ViewData["AuditZonesList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
+            <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Operational Audit Zone--</option>
+
+                @{
+                    if (ViewData["AuditZonesList"] != null)
                     {
-                        <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                        foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
+                        {
+                            <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                        }
                     }
                 }
-            }
-        </select>
-       
+            </select>
+
+        </div>
     </div>
-</div>
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-4">
@@ -304,10 +335,54 @@
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-6 mt-3">
-    <button class="btn-primary" style="float:right">Save</button>
+        <!--  <button class="btn-primary" style="float:right">Save</button>
+        <div class="row col-md-12 mt-3">-->
+        <button onclick="addRecordToZoneBranchMap();" class="col-md-2 btn btn-danger">Save</button>
     </div>
-    <div class="row col-md-6 mt-3">
-        <button type="reset" class="btn-primary" style="float:left" >Clear Selection</button>
+
+</div>
+
+<div class="row w-100">
+    <table id="ZoneBranchmap" class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr>
+                <td width="250"><h5>Audit Zone</h5></td>
+                <td width="250"><h5>Zone</h5></td>
+                <td width="250"><h5>Branches</h5></td>
+                <td width="100"></td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  <div class="row col-md-6 mt-3">
+        <button type="reset" class="btn-primary" style="float:left">Clear Selection</button>
     </div>
 </div>
 
@@ -353,8 +428,8 @@
             </tr>
         </tbody>
     </table>
-</div>
+</div>-->
 <div class="row col-md-12 mt-3">
-    <button class="btn-primary">Submit</button>
+    <button class="col-md-2 btn btn-danger">Submit</button>
 </div>
 

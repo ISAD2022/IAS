@@ -273,7 +273,7 @@
 </script>
 
 <div class="row text-center" style="margin-top:30px;">
-    <h3>SPECIAL ASSIGNMENT</h3>
+    <h3 style=" display:block;color: #45c545;">SPECIAL ASSIGNMENT</h3>
 
 
 </div>
@@ -294,31 +294,38 @@ List group
 </ul>
 -->
 
-<div class="row w-100 mt-3">
-    <div class="col-md-8">
-        <h5>Select Entity</h5>
-        <select id="entity" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
-            <option value="0" id="0" selected>--Select Entity--</option>
-            <option value="1" id="1">Branch Special Audit</option>
-            <option value="2" id="2">SAM Protfolio</option>
-            <option value="3" id="3">Budget Assesment</option>
-            <option value="4" id="4">Profitabilty Assesment of the branches</option>
-            <option value="5" id="5">Inspection</option>
-            @{
-                if (ViewData["AuditDepartments"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+<div class="row mt-3 col-md-12">
+    <div class="row col-md-4">
+        <h4>Select Entity</h4>
+    </div>
+    <div class="row col-md-8">
+        <select id="entity" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
+
+                <option value="0" id="0" selected>--Select Entity--</option>
+                <option value="1" id="1">Branch Special Audit</option>
+                <option value="2" id="2">SAM Protfolio</option>
+                <option value="3" id="3">Budget Assesment</option>
+                <option value="4" id="4">Profitabilty Assesment of the branches</option>
+                <option value="5" id="5">Inspection</option>
+                @{
+                    if (ViewData["AuditDepartments"] != null)
                     {
-                        <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                        {
+                            <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        }
                     }
                 }
-            }
 
-        </select>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <h5>Select Audit Zone</h5>
-                <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
+            </select>
+    </div>
+    </div>
+        <div class="row mt-3 col-md-12">
+            <div class="row col-md-4">
+                <h4>Select Audit Zone</h4>
+            </div>
+            <div class="row col-md-8">
+                <select id="auditZoneSelectionBox" class="form-select form-control" onchange="ShowSelectedZonesBranches();"  aria-label="Default select example">
                     <option value="0" id="0" selected>--Select Audit Zone--</option>
                     @{
                         if (ViewData["AuditZonesList"] != null)
@@ -330,101 +337,118 @@ List group
                         }
                     }
                 </select>
-
-            </div>
-            <div class="col-md-6">
-                <h5>Select Audit Branch</h5>
-                <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0">--Select Audit Branch--</option>
-                </select>
             </div>
         </div>
-        <div class="row nonFieldAuditFields mt-3">
-            <div class="col-md-6">
-                <h5>Select Audit Division</h5>
-                <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Audit Division--</option>
-                    @{
-                        if (ViewData["DivisionsList"] != null)
+
+        <div class="row mt-3 col-md-12">
+            <div class="row col-md-4">
+            <h4>Select Audit Branch</h4>
+            </div>
+            <div class="row col-md-8">
+            <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0">--Select Audit Branch--</option>
+            </select>
+            </div>
+        </div>
+
+    <div class="row nonFieldAuditFields mt-3 col-md-12">
+        <div class="row col-md-4">
+            <h4>Select Audit Division</h4>
+        </div>
+        <div class="row col-md-8">
+            <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Audit Division--</option>
+                @{
+                    if (ViewData["DivisionsList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["DivisionsList"]))
                         {
-                            foreach (var item in (dynamic)(ViewData["DivisionsList"]))
-                            {
-                                <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                            }
+                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
                         }
                     }
-                </select>
-
-            </div>
-            <div class="col-md-6">
-                <h5>Select Audit Department</h5>
-                <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0">--Select Audit Department--</option>
-                </select>
-            </div>
+                }
+            </select>
         </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-12"><h5>Sub Entities</h5></div>
-            <div class="col-md-12">
-                <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Sub Entity--</option>
-
-                </select>
-            </div>
-        </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-12"><h5>Execution Period</h5></div>
-            <div class="col-md-6">
-                Start Date:<input id="executionPeriodFromField" class="form-control" type="date" />
-            </div>
-            <div class="col-md-6">
-                End Date:<input id="executionPeriodToField" class="form-control" type="date" />
-            </div>
-        </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-12"><h5>Operational Period</h5></div>
-            <div class="col-md-6">
-                Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
-            </div>
-            <div class="col-md-6">
-                End Date:<input id="auditPeriodToField" class="form-control" type="date" />
-            </div>
-        </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-12">
-                <h5>Select Audit Team</h5>
-            </div>
-            <div class="col-md-12">
-                <select id="teamSelectionBox" class="form-select form-control" aria-label="Default select example">
-                </select>
-            </div>
-        </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-12">
-                <h5>Remarks/Instructions for Auditors</h5>
-            </div>
-            <div class="col-md-12">
-                <textarea id="remarksAdditionalInfoField" rows="4" class="form-control"></textarea>
-            </div>
-        </div>
-        <div class="row mt-3 w-100">
-            <div class="col-md-4">
-                <h5>Is Traveling Required</h5>
-            </div>
-            <div class="col-md-8">
-                <input id="isTravelingRequiredField" type="checkbox" style="font-size:20px;" />
-            </div>
-        </div>
-
-
     </div>
-</div>
 
-<div class="row col-md-12 w-100 mt-3">
-    <button class="btn btn-primary">Cancel</button>
+    <div class="row mt-3 col-md-12">
+        <div class="row col-md-4">
+            <h4>Select Audit Department</h4>
+        </div>
+        <div class="row col-md-8">
+            <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0">--Select Audit Department--</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="row mt-3 col-md-12">
+        <div class="row col-md-4">
+        <h4>Sub Entities</h4>
+        </div>
+        <div class="row col-md-8">
+            <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Sub Entity--</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3 col-md-12">
+        <div class="row col-md-4">
+            <h4>Select Audit Team</h4>
+        </div>
+        <div class="row col-md-8">
+            <select id="teamSelectionBox" class="form-select form-control" aria-label="Default select example">
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3 col-md-12">
+        <h4>Execution Period</h4>
+    </div>
+    <div class="row col-md-12">
+        <div class="row mr-2 col-md-5">
+            Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
+        </div>
+        <div class="row ml-2 col-md-5">
+            End Date:<input id="auditPeriodToField" class="form-control" type="date" />
+        </div>
+    </div>
+    <div class="row mt-3 col-md-12">
+        <h4>Operational Period</h4>
+    </div>
+    <div class="row col-md-12">
+        <div class="row mr-2 col-md-5">
+            Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
+        </div>
+        <div class="row ml-2 col-md-5">
+            End Date:<input id="auditPeriodToField" class="form-control" type="date" />
+        </div>
+    </div>
+    
+    
+    <div class="row mt-3 col-md-12">
+        <div class="row col-md-12">
+            <h4>Remarks</h4>
+        </div>
+        <div class="row col-md-12">
+            <textarea id="remarksAdditionalInfoField" rows="4" class="form-control"></textarea>
+        </div>
+    </div>
+    <div class="row mt-3 w-100">
+        <div class="col-md-3">
+            <h4>Is Traveling Required</h4>
+        </div>
+        <div class="col-md-9">
+            <input id="isTravelingRequiredField" type="checkbox" style="font-size:20px;" />
+        </div>
+    </div>
+
+
+<div class="row col-md-12 mt-3">
+    <button  class="btn btn-primary">Cancel</button>
     <button style="margin-left:50px; margin-right:50px;" class="btn btn-primary">Reset</button>
     <button onclick="previewAuditPlan();" class="btn btn-primary">Preview</button>
-
 </div>
 
 
