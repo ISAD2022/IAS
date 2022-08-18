@@ -15,6 +15,7 @@ namespace AIS
         public void SetSessionUser(UserModel user)
         {
             smodel.Email = user.Email;
+            smodel.Name = user.Name;
             smodel.PPNumber = user.PPNumber;
             smodel.ID = user.ID;
             smodel.UserPostingAuditZone = user.UserPostingAuditZone;

@@ -51,13 +51,13 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //con.Open();
-                cmd.CommandText = "Select U.*, UM.* FROM v_service_user u inner join t_user_maping um on u.USERID = um.userid WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'"; 
+                cmd.CommandText = "Select U.*, UM.*, e.Employeefirstname,  e.employeelastname FROM v_service_user u inner join t_user_maping um on u.USERID = um.userid left join t_audit_emp e on u.PPNO=e.ppno WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'"; 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     
                     user.ID = Convert.ToInt32(rdr["USERID"]);
-                    user.Name = rdr["LOGIN_NAME"].ToString();
+                    user.Name = rdr["Employeefirstname"].ToString() + " "+ rdr["employeelastname"].ToString();
                     user.Email = rdr["LOGIN_NAME"].ToString();
                     user.PPNumber = rdr["PPNO"].ToString();
                     user.UserLocationType = rdr["USER_LOCATION_TYPE"].ToString();
@@ -1872,6 +1872,34 @@ namespace AIS
             }
             con.Close();
             return voilationsubgroupList;
+        }
+        public List<TaskListModel> GetTaskList()
+        {
+            var con = this.DatabaseConnection();
+            List<TaskListModel> tasklist = new List<TaskListModel>();
+            var loggedInUser=sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select e.*,tm.Team_Name as TEAM_NAME ,ae.NAME as ENTITY_NAME, es.status as ENG_STATUS from t_au_plan_eng e inner join t_au_team_members tm on e.team_id=tm.t_id inner join t_auditee_entities ae on e.Entity_Id=ae.org_unitid  inner join t_au_plan_eng_status es on e.Status=es.id  WHERE tm.member_ppno like '%" + loggedInUser.PPNumber+ "%' order by tm.t_code";
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    TaskListModel tlist = new TaskListModel();
+                    tlist.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    tlist.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    tlist.PP_NUMBER = Convert.ToInt32(loggedInUser.PPNumber);
+                    tlist.TEAM_NAME = rdr["TEAM_NAME"].ToString();
+                    tlist.EMP_NAME = loggedInUser.Name.ToString();
+                    tlist.START_DATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
+                    tlist.END_DATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
+                    tlist.STATUS_ID = Convert.ToInt32(rdr["STATUS"]);
+                    tlist.STATUS = rdr["ENG_STATUS"].ToString();
+                    tasklist.Add(tlist);
+                }
+            }
+            con.Close();
+            return tasklist;
         }
 
     }

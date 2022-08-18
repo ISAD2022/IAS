@@ -43,6 +43,16 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+           // ViewData["TaskList"] = dBConnection.GetTaskList();
+            var loggedInUser=sessionHandler.GetSessionUser();
+            ViewData["PPNumber"] = loggedInUser.PPNumber;
+            ViewData["EMP_NAME"] = loggedInUser.Name;
+            List <TaskListModel> tlist = dBConnection.GetTaskList();
+            foreach(var item in tlist)
+            {
+                ViewData["TEAM_NAME"] = item.TEAM_NAME.ToString();
+            }
+            ViewData["TaskList"] = tlist;
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
