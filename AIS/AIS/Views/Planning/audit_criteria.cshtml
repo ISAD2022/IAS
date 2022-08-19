@@ -6,10 +6,7 @@
 <script type="text/javascript">
     g_status = 'Created';
 
-    $(document).ready(function () {
-        $('.brField').addClass('d-none');
-    });
-    function addRecordToauditCriteriaListBox() {
+       function addRecordToauditCriteriaListBox() {
         var entityName = '';
         if ($('#auditCriteriaEntityField option:selected').val() != 0)
             entityName = $('#auditCriteriaEntityField option:selected').text();
@@ -44,10 +41,10 @@
     }
     function enitityChangeEvent() {
         if ($('#auditCriteriaEntityField option:selected').val() == 6) {
-            $('.brField').removeClass('d-none');
+           // $('.brField').removeClass('d-none');
             $('#auditCriteriaSizeField option:selected').val(0);
         } else
-            $('.brField').addClass('d-none');
+           // $('.brField').addClass('d-none');
         $('#auditCriteriaSizeField option:selected').val(0);
     }
     function addAuditEntitiesModal() {
@@ -62,7 +59,7 @@
                     criteria.push($(d).attr('value'));
                 }
             });
-            criteria_list.push(criteria);            
+            criteria_list.push(criteria);
         });
         if (criteria_list.length > 0) {
             $.ajax({
@@ -160,7 +157,7 @@
             </select>
         </div>
         <div class="col-md-3 pr-0">
-            <button onclick="addAuditEntitiesModal();" class="btn btn-danger float-right" >Add New Entity</button>
+            <button onclick="addAuditEntitiesModal();" class="btn btn-danger float-right">Add New Entity</button>
         </div>
     </div>
 </div>
@@ -189,27 +186,6 @@
     </div>
 </div>
 
-<div class="row col-md-12 mt-3">
-    <div class="row col-md-4">
-        <h5>Frequency</h5>
-    </div>
-    <div class="row col-md-8">
-        <select id="auditCriteriaFreqField" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>--Select Frequency--</option>
-            @{
-                if (ViewData["AuditFrequencies"] != null)
-                {
-
-                    foreach (var period in (dynamic)(ViewData["AuditFrequencies"]))
-                    {
-                        <option id="@period.FREQUENCY_ID" value="@period.FREQUENCY_ID">@period.FREQUENCY_DISCRIPTION</option>
-                    }
-
-                }
-            }
-        </select>
-    </div>
-</div>
 
 <div class="row col-md-12 mt-3 brField">
     <div class="row col-md-4">
@@ -239,6 +215,27 @@
     </div>
 </div>
 
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-4">
+        <h5>Frequency</h5>
+    </div>
+    <div class="row col-md-8">
+        <select id="auditCriteriaFreqField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Frequency--</option>
+            @{
+                if (ViewData["AuditFrequencies"] != null)
+                {
+
+                    foreach (var period in (dynamic)(ViewData["AuditFrequencies"]))
+                    {
+                        <option id="@period.FREQUENCY_ID" value="@period.FREQUENCY_ID">@period.FREQUENCY_DISCRIPTION</option>
+                    }
+
+                }
+            }
+        </select>
+    </div>
+</div>
 <div class="row col-md-12 mt-3">
     <div class="row col-md-4">
         <h5>Field Visit</h5>
@@ -287,10 +284,10 @@
             <div class="modal-body">
                 <form>
                     <!--  <div class="form-group">
-          <label for="auditeeEntTypesCodeModelField">Code</label>
-          <input type="text" class="form-control" id="auditeeEntTypesCodeModelField" aria-describedby="brcode" placeholder="Entity Code">
+                        <label for="auditeeEntTypesCodeModelField">Code</label>
+                        <input type="text" class="form-control" id="auditeeEntTypesCodeModelField" aria-describedby="brcode" placeholder="Entity Code">
 
-      </div> -->
+                    </div> -->
                     <div class="form-group">
                         <label for="auditeeEntTypesDescModelField">Description</label>
                         <textarea id="auditeeEntTypesDescModelField" class="form-control" rows="3"></textarea>
@@ -299,31 +296,17 @@
                         <label for="auditeeEntTypesIsAuditableModelField">Is Auditable</label>  <div class="row col-md-12">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsAuditableModelField" value="option1" />
-                                <label class="form-check-label" for="branchActiveModalField">Active</label>
+                                <label class="form-check-label" for="branchActiveModalField">Yes</label>
                             </div>
 
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="inlineRadioOptions" id="auditeeEntTypesIsNotAuditableModelField" value="option2" />
-                                <label class="form-check-label" for="branchInactiveModalField">Inactive</label>
+                                <label class="form-check-label" for="branchInactiveModalField">No</label>
                             </div>
                         </div>
 
                     </div>
-                    <div class="form-group">
-                        <label for="auditeeEntTypesIsActiveModelField">Status</label>
-                        <div class="row col-md-12">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineStatusRadioOptions" id="auditeeEntTypesIsActiveModelField" value="option1" />
-                                <label class="form-check-label" for="branchActiveModalField">Active</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineStatusRadioOptions" id="auditeeEntTypesIsInactiveModelField" value="option2" />
-                                <label class="form-check-label" for="branchInactiveModalField">Inactive</label>
-                            </div>
-                        </div>
-                    </div>
-
+                   
 
                 </form>
             </div>

@@ -353,18 +353,6 @@ namespace AIS
                     entity.AUTID = Convert.ToInt32(rdr["AUTID"]);
                     entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
-                    if (rdr["EFFECTIVE_FROM"].ToString() != null && rdr["EFFECTIVE_FROM"].ToString() != "")
-                        entity.EFFECTIVE_FROM = Convert.ToDateTime(rdr["EFFECTIVE_FROM"].ToString());
-
-                    if (rdr["VALIDUNTIL"].ToString() != null && rdr["VALIDUNTIL"].ToString() != "")
-                        entity.VALIDUNTIL = Convert.ToDateTime(rdr["VALIDUNTIL"].ToString()); 
-                    entity.ACTIVE = rdr["ACTIVE"].ToString();
-                    entity.CREATED_BY = rdr["CREATED_BY"].ToString();
-                    if (rdr["CREATED_ON"].ToString() != null && rdr["CREATED_ON"].ToString() != "")
-                        entity.CREATED_ON = Convert.ToDateTime(rdr["CREATED_ON"].ToString());
-
-                    if (rdr["RECORD_TIMESTAMP"].ToString() != null && rdr["RECORD_TIMESTAMP"].ToString() != "")
-                        entity.RECORD_TIMESTAMP = Convert.ToDateTime(rdr["RECORD_TIMESTAMP"].ToString());
                     entity.AUDITABLE = rdr["AUDITABLE"].ToString();
                     entitiesList.Add(entity);
                 }
@@ -378,7 +366,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO t_auditee_ent_types et ( et.AUTID, et.ENTITYCODE, et.ENTITYTYPEDESC, et.EFFECTIVE_FROM, et.ACTIVE, et.CREATED_BY, et.CREATED_ON, et.RECORD_TIMESTAMP, et.AUDITABLE ) VALUES ( (select COALESCE(max(p.AUTID)+1,1) from t_auditee_ent_types p) , '"+am.ENTITYCODE+"', '"+am.ENTITYTYPEDESC+"', to_date('"+am.EFFECTIVE_FROM+ "', 'dd/mm/yyyy HH:MI:SS AM'), '" + am.ACTIVE+"', '"+am.CREATED_BY+"', to_date('"+am.CREATED_ON+ "', 'dd/mm/yyyy HH:MI:SS AM'), to_date('" + am.RECORD_TIMESTAMP+ "', 'dd/mm/yyyy HH:MI:SS AM'), '" + am.AUDITABLE+"') ";
+                cmd.CommandText = "INSERT INTO t_auditee_ent_types et ( et.AUTID, et.ENTITYCODE, et.ENTITYTYPEDESC, et.AUDITABLE ) VALUES ( (select COALESCE(max(p.AUTID)+1,1) from t_auditee_ent_types p) , LPAD((select COALESCE(max(p.AUTID)+1,1) from t_auditee_ent_types p),3,0), '" + am.ENTITYTYPEDESC+"', '" + am.AUDITABLE+"') ";
                 cmd.ExecuteReader();
                
             }
@@ -804,9 +792,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.org_unit_typeid = 4 and d.ISACTIVE ='Y' " + query + " order by d.CODE asc";
+                cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.type_id = 4 and d.ISACTIVE ='Y' " + query + " order by d.CODE asc";
                 else
-                    cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.org_unit_typeid = 4 and d.ISACTIVE ='Y' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
+                    cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE e.type_id = 4 and d.ISACTIVE ='Y' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1296,7 +1284,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", (select ae.Org_Unitid from t_auditee_entities ae WHERE ae.Code='"+ ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE+")";
+                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='"+ ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE+")";
                 cmd.ExecuteReader();
 
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
@@ -1794,7 +1782,7 @@ namespace AIS
                 alog.LAST_UPDATED_ON = DateTime.Now;
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
-                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, DIVISION_ZONE_NAME, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) Select a.id, a.AUDITPERIODID, az.AUDITZONEID,d.org_unitid as Entity_ID, z.ZONENAME,d.CODE,d.DESCRIPTION as Entity_name,rs.description as risk,bs.description as Entity_Size, a.NO_OF_DAYS,f.frequency_discription  From t_audit_criteria a,t_branch_risk_rating b,t_branch_size s,t_az_branches az,v_service_branch vb,t_auditee_entities d, v_service_zones z, t_audit_frequency f, t_br_size bs, t_risk_status rs, t_au_period p Where a.ENTITY_ID = d.ORG_UNIT_TYPEID  And b.RISK_RATING = a.RISK_ID and b.branch_code = az.branchcode and b.branch_id = d.org_unitid And b.AUDIT_PERIOD_ID = a.AUDITPERIODID  And s.BR_SIZE = a.SIZE_ID  and s.br_code = az.branchcode And d.CODE = az.BRANCHCODE and f.frequency_id = a.frequency_id and az.zoneid = z.ZONEID and bs.br_size_id = a.size_id and rs.r_id = a.risk_id and p.auditperiodid = a.auditperiodid and p.status_id = '1' and a.approval_status = '4' Group By a.id, a.AUDITPERIODID, az.AUDITZONEID, d.org_unitid, z.ZONENAME, d.CODE, d.DESCRIPTION, rs.description, a.NO_OF_DAYS, bs.description, f.frequency_discription";
+                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, DIVISION_ZONE_NAME, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) Select a.id, a.AUDITPERIODID, az.AUDITZONEID,d.entity_id as Entity_ID, z.ZONENAME,d.CODE,d.DESCRIPTION as Entity_name,rs.description as risk,bs.description as Entity_Size, a.NO_OF_DAYS,f.frequency_discription  From t_audit_criteria a,t_branch_risk_rating b,t_branch_size s,t_az_branches az,v_service_branch vb,t_auditee_entities d, v_service_zones z, t_audit_frequency f, t_br_size bs, t_risk_status rs, t_au_period p Where a.ENTITY_ID = d.TYPE_ID  And b.RISK_RATING = a.RISK_ID and b.branch_code = az.branchcode and b.branch_id = d.entity_id And b.AUDIT_PERIOD_ID = a.AUDITPERIODID  And s.BR_SIZE = a.SIZE_ID  and s.br_code = az.branchcode And d.CODE = az.BRANCHCODE and f.frequency_id = a.frequency_id and az.zoneid = z.ZONEID and bs.br_size_id = a.size_id and rs.r_id = a.risk_id and p.auditperiodid = a.auditperiodid and p.status_id = '1' and a.approval_status = '4' Group By a.id, a.AUDITPERIODID, az.AUDITZONEID, d.entity_id, z.ZONENAME, d.CODE, d.DESCRIPTION, rs.description, a.NO_OF_DAYS, bs.description, f.frequency_discription";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1880,7 +1868,7 @@ namespace AIS
             var loggedInUser=sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select e.*,tm.Team_Name as TEAM_NAME ,ae.NAME as ENTITY_NAME, es.status as ENG_STATUS from t_au_plan_eng e inner join t_au_team_members tm on e.team_id=tm.t_id inner join t_auditee_entities ae on e.Entity_Id=ae.org_unitid  inner join t_au_plan_eng_status es on e.Status=es.id  WHERE tm.member_ppno like '%" + loggedInUser.PPNumber+ "%' order by tm.t_code";
+                cmd.CommandText = "select e.*,tm.Team_Name as TEAM_NAME ,ae.NAME as ENTITY_NAME, es.status as ENG_STATUS from t_au_plan_eng e inner join t_au_team_members tm on e.team_id=tm.t_id inner join t_auditee_entities ae on e.Entity_Id=ae.ENTITY_ID  inner join t_au_plan_eng_status es on e.Status=es.id  WHERE tm.member_ppno like '%" + loggedInUser.PPNumber+ "%' order by tm.t_code";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

@@ -158,10 +158,6 @@ namespace AIS.Controllers
         {
             var userLoggedIn=sessionHandler.GetSessionUser();
             am.AUTID = 0;
-            am.CREATED_BY = userLoggedIn.PPNumber;
-            am.CREATED_ON = DateTime.Now;
-            am.EFFECTIVE_FROM = DateTime.Now;
-            am.RECORD_TIMESTAMP = DateTime.Now;
             dBConnection.AddAuditEntity(am);
             return am;
 
