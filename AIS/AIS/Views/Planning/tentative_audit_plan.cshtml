@@ -7,19 +7,32 @@
     function createAuditEngagement(name, size, risk, freq, days, auditperiod, periodId, code, zoneId) {
         window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=6' + '&zoneId=' + zoneId;
     }
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tentative_plan_list tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
       
 </script>
 <div class="row text-center mt-3">
     <h3>Tentative Audit Plan </h3>
 </div>
 <div>
+    <div class="row">
+        <div class="col-md-12">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+    </div>
+    <br>
     <div class="row mt-3">
-        <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="Plan Review">
+        <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="tentative_plan_list">
             <thead>
                 <tr>
                     <th class="font-weight-bold">Sr No</th>
                     <th class="font-weight-bold">Audit Period</th>
-                    <th class="font-weight-bold">Operation Zone</th>
                     <th class="font-weight-bold">Branch</th>
                     <th class="font-weight-bold">Entity Name</th>
                     <th class="font-weight-bold">Risk</th>
@@ -32,21 +45,20 @@
                 @{
                     if (ViewData["TentativePlansList"] != null)
                     {
-                        int sr= 1;
+                        int sr = 1;
 
                         foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
                         {
-                                <tr>
-                                    <td>@sr</td>
-                                    <td>@item.PERIOD_NAME</td>
-                                    <td>@item.ZONE_NAME</td>
-                                    <td>@item.BR_NAME</td>
-                                    <td>@item.ENTITY_NAME</td>
-                                    <td>@item.RISK</td>
-                                    <td>@item.FREQUENCY_DESCRIPTION</td>
-                                    <td>@item.NO_OF_DAYS</td>
-                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
-                                </tr>
+                            <tr>
+                                <td>@sr</td>
+                                <td>@item.PERIOD_NAME</td>
+                                <td>@item.BR_NAME</td>
+                                <td>@item.ENTITY_NAME</td>
+                                <td>@item.RISK</td>
+                                <td>@item.FREQUENCY_DESCRIPTION</td>
+                                <td>@item.NO_OF_DAYS</td>
+                                <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
+                            </tr>
                             sr = sr + 1;
                         }
 
