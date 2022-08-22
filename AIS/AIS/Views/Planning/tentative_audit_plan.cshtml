@@ -33,8 +33,8 @@
                 <tr>
                     <th class="font-weight-bold">Sr No</th>
                     <th class="font-weight-bold">Audit Period</th>
-                    <th class="font-weight-bold">Branch</th>
                     <th class="font-weight-bold">Entity Name</th>
+                    <th class="font-weight-bold">Entity Size</th>
                     <th class="font-weight-bold">Risk</th>
                     <th class="font-weight-bold">Frequency</th>
                     <th class="font-weight-bold">No. of Days</th>
@@ -49,16 +49,16 @@
 
                         foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
                         {
-                            <tr>
-                                <td>@sr</td>
-                                <td>@item.PERIOD_NAME</td>
-                                <td>@item.BR_NAME</td>
-                                <td>@item.ENTITY_NAME</td>
-                                <td>@item.RISK</td>
-                                <td>@item.FREQUENCY_DESCRIPTION</td>
-                                <td>@item.NO_OF_DAYS</td>
-                                <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
-                            </tr>
+                                <tr>
+                                    <td>@sr</td>
+                                    <td>@item.PERIOD_NAME</td>
+                                    <td>@item.ENTITY_NAME</td>
+                                    <td>@item.BR_SIZE</td>
+                                    <td>@item.RISK</td>
+                                    <td>@item.FREQUENCY_DESCRIPTION</td>
+                                    <td>@item.NO_OF_DAYS</td>
+                                    <td><small onclick="createAuditEngagement('@item.BR_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
+                                </tr>
                             sr = sr + 1;
                         }
 

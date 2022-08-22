@@ -37,8 +37,8 @@
                         var index = 1;
                         foreach (var item in (dynamic)(ViewData["TaskList"]))
                         {
-                            var sDate = item.AUDIT_STARTDATE.ToString();
-                            var eDate = item.AUDIT_ENDDATE.ToString();
+                            var sDate = item.START_DATE.ToString();
+                            var eDate = item.END_DATE.ToString();
 
                             <tr>
                                 <td>@index</td>
