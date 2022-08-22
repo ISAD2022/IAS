@@ -189,7 +189,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult observation_status()
+        public IActionResult memo_status()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
