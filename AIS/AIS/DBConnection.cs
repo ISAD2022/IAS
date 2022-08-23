@@ -1431,16 +1431,16 @@ namespace AIS
                 if (procDetailId == 0)
                 {
                     if(transactionId==0)
-                    cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID  order by pt.id asc"; 
+                    cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.DESCRIPTION as V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID  order by pt.id asc"; 
                     else
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID WHERE pt.ID=" + transactionId + " order by pt.id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.DESCRIPTION as V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID WHERE pt.ID=" + transactionId + " order by pt.id asc";
                 }
                 else
                 {
                     if (transactionId == 0) 
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from  t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID where pt.pd_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.DESCRIPTION as V_NAME from  t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID where pt.pd_id = " + procDetailId + " order by pt.Id asc";
                     else
-                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_control_violation vc on vc.ID=pt.V_ID where pt.ID=" + transactionId+" pt.pd_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select pt.*,pd.TITLE, p.P_NAME, vc.DESCRIPTION as V_NAME from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID=pd.ID inner join t_r_m_process p on pd.P_ID = p.P_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID where pt.ID=" + transactionId+" pt.pd_id = " + procDetailId + " order by pt.Id asc";
 
                 }
                     OracleDataReader rdr = cmd.ExecuteReader();
