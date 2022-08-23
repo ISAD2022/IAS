@@ -44,7 +44,7 @@
                 cache: false,
                 success: function (data) {
                     alert("Audit Criteria selected Cases Referred Back");
-                    location.reload();
+                    onAlertCallback(reloadLocation);
                 },
                 dataType: "json",
             });
@@ -68,13 +68,15 @@
                 cache: false,
                 success: function (data) {
                     alert("Audit Criteria selected Cases Successfully Approved");
-                    location.reload();
+                    onAlertCallback(reloadLocation);
                 },
                 dataType: "json",
             });
         }
     }
-
+    function reloadLocation() {
+        location.reload();
+    }
    
 </script>
 
