@@ -1264,7 +1264,7 @@ namespace AIS
                         periodExists = true;
                 }
                 if (!periodExists) {
-                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID,p.DESCRIPTION,p.START_DATE,p.END_DATE,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + periodModel.STATUS_ID + ")";
+                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID, p.AUDITPERIODID, p.DESCRIPTION,p.START_DATE,p.END_DATE,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),(SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + periodModel.STATUS_ID + ")";
                     cmd.ExecuteReader();
                     result = true;
                 }
@@ -1313,8 +1313,20 @@ namespace AIS
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
                 cmd.ExecuteReader();
 
-                cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', "+placeofposting+",1)";
-                cmd.ExecuteReader();
+                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID=" + ePlan.ENG_ID + " and TEAM_ID=" + ePlan.TEAM_ID;
+                OracleDataReader ardr = cmd.ExecuteReader();
+                bool teamentry = false;
+                while (ardr.Read())
+                {
+                    if (ardr["ID"].ToString() != "" && ardr["ID"].ToString() != null)
+                        teamentry = true;
+                }
+                if(!teamentry)
+                {
+                    cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', " + placeofposting + ",1)";
+                    cmd.ExecuteReader();
+                }
+                   
                 cmd.CommandText = "select tmm.member_ppno from T_AU_TEAM_MEMBERS tmm where tmm.t_code = ( select tm.t_code from T_AU_TEAM_MEMBERS tm where tm.t_id =" + ePlan.TEAM_ID+")";
                 int sequence_no = 1;
                 OracleDataReader rdr = cmd.ExecuteReader();
