@@ -18,15 +18,15 @@
             </center>
         </div>
 
-        <table class="table table-responsive table-sm table-bordered mb-0 mt-3 bg-white table-striped">
+        <table class="table table-bordered mb-0 mt-3 bg-white table-striped">
             <thead>
                 <tr>
                     <th class="col-md-1 font-weight-bold">Sr. No</th>
-                    <th class="col-md-3 font-weight-bold">Audit Entity</th>
+                    <th class="col-md-4 font-weight-bold">Audit Entity</th>
                     <th class="col-md-2 font-weight-bold" >Start Date</th>
                     <th class="col-md-2 font-weight-bold" >End Date</th>
-                    <th class="col-md-3 font-weight-bold" >Status</th>
-                    <th class="col-md-1 font-weight-bold" >Joining</th>
+                    <th class="col-md-1 font-weight-bold text-center" >Status</th>
+                    <th class="col-md-2 font-weight-bold" ></th>
                 </tr>
             </thead>
             <tbody>
@@ -37,16 +37,24 @@
                         var index = 1;
                         foreach (var item in (dynamic)(ViewData["TaskList"]))
                         {
-                            var sDate = item.START_DATE.ToString();
-                            var eDate = item.END_DATE.ToString();
+                            var sDate = item.AUDIT_START_DATE.ToString();
+                            var eDate = item.AUDIT_END_DATE.ToString();
 
                             <tr>
                                 <td>@index</td>
                                 <td>@item.ENTITY_NAME</td>
                                 <td>@sDate.Split(" ")[0]</td>
                                 <td>@eDate.Split(" ")[0]</td>
-                                <td>@item.STATUS</td>                               
-                                <td class="text-hover text-danger">Join Now</td>
+                                <td class="text-center">
+                                    @{
+                                        if (item.ENG_STATUS == "Completed")
+
+                                        { <span class="badge badge-success rounded-pill d-inline">@item.ENG_STATUS</span>}
+                                    else
+                                    { <span class="badge badge-danger rounded-pill d-inline">@item.ENG_STATUS</span>}
+                                    }
+                                </td>                                
+                                <td class="text-hover text-danger text-center"><a href="/Engagement/Join?id">Join Now</a></td>
                             </tr>
                             index++;
                         }

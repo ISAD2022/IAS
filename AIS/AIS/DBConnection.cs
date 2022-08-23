@@ -1292,7 +1292,18 @@ namespace AIS
 
                 cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', "+placeofposting+",1)";
                 cmd.ExecuteReader();
-
+                cmd.CommandText = "select tmm.member_ppno from T_AU_TEAM_MEMBERS tmm where tmm.t_code = ( select tm.t_code from T_AU_TEAM_MEMBERS tm where tm.t_id =" + ePlan.TEAM_ID+")";
+                int sequence_no = 1;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if(rdr["member_ppno"].ToString()!="" && rdr["member_ppno"].ToString() !=null)
+                    {
+                        string member_pp = rdr["member_ppno"].ToString();
+                        cmd.CommandText = "insert into T_AU_AUDIT_TEAM_TASKLIST t (t.ID,t.ENG_PLAN_ID, t.TEAM_ID, t.SEQUENCE_NO, t.TEAMMEMBER_PPNO, t.ENTITY_ID, t.ENTITY_CODE , t.ENTITY_NAME , t.AUDIT_START_DATE , t.AUDIT_END_DATE, t.STATUS_ID, t.ISACTIVE ) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAM_TASKLIST ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + "," + sequence_no + ",'" + member_pp + "', (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE + ",(select ae.NAME from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "'), to_date('" + ePlan.AUDIT_STARTDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','dd/mm/yyyy HH:MI:SS AM'), 1,'Y')";
+                        cmd.ExecuteReader();
+                    }
+                }
             }
             con.Close();
             return ePlan;
@@ -1696,26 +1707,37 @@ namespace AIS
         }
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
         {
+            bool isAlreadyAdded = false; 
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_ID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_ID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "' )";
-                cmd.ExecuteReader();
-                AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
-                alog.ID = 0;
-                alog.C_ID = 0;
-                alog.STATUS_ID = 1;
-                alog.REMARKS = "AUDIT CRITERIA CREATED";
-                var loggedInUser=sessionHandler.GetSessionUser();
-                alog.CREATEDBY_ID = loggedInUser.ID;
-                alog.CREATED_ON = DateTime.Now;
-                alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
-                alog.LAST_UPDATED_ON = DateTime.Now;
-                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
-                cmd.ExecuteReader();
+            {                
+                cmd.CommandText = "SELECT a.ID FROM T_AUDIT_CRITERIA a WHERE  a.ENTITY_ID ="+acm.ENTITY_ID+" and a.SIZE_ID="+acm.SIZE_ID+" and a.RISK_ID="+acm.RISK_ID;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
+                        isAlreadyAdded = true;
+                }
+                if (!isAlreadyAdded)
+                {
+                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_ID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_ID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "' )";
+                    cmd.ExecuteReader();
+                    AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
+                    alog.ID = 0;
+                    alog.C_ID = 0;
+                    alog.STATUS_ID = 1;
+                    alog.REMARKS = "AUDIT CRITERIA CREATED";
+                    var loggedInUser = sessionHandler.GetSessionUser();
+                    alog.CREATEDBY_ID = loggedInUser.ID;
+                    alog.CREATED_ON = DateTime.Now;
+                    alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
+                    alog.LAST_UPDATED_ON = DateTime.Now;
+                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
+                    cmd.ExecuteReader();
+                }
             }
             con.Close();
-            return true;
+            return !isAlreadyAdded;
         }
         public bool UpdateAuditCriteria(AddAuditCriteriaModel acm, string COMMENTS)
         {
@@ -1868,21 +1890,28 @@ namespace AIS
             var loggedInUser=sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select e.*,tm.Team_Name as TEAM_NAME ,ae.NAME as ENTITY_NAME, es.status as ENG_STATUS from t_au_plan_eng e inner join t_au_team_members tm on e.team_id=tm.t_id inner join t_auditee_entities ae on e.Entity_Id=ae.ENTITY_ID  inner join t_au_plan_eng_status es on e.Status=es.id  WHERE tm.member_ppno like '%" + loggedInUser.PPNumber+ "%' order by tm.t_code";
+                cmd.CommandText = "select t.*, ta.T_NAME, ts.DESCRIPTION as ENG_STATUS from T_AU_AUDIT_TEAM_TASKLIST t inner join T_AU_AUDIT_TEAMS ta on t.TEAM_ID=ta.TEAM_ID inner join T_AU_AUDIT_TEAM_TASKLIST_STATUS ts on t.STATUS_ID = ts.STATUS_ID   WHERE t.teammember_ppno = " + loggedInUser.PPNumber+ " order by t.SEQUENCE_NO";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     TaskListModel tlist = new TaskListModel();
+                    tlist.ID= Convert.ToInt32(rdr["ID"]);
+                    tlist.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"]);
+                    tlist.TEAM_ID = Convert.ToInt32(rdr["TEAM_ID"]);
+                    tlist.SEQUENCE_NO = Convert.ToInt32(rdr["SEQUENCE_NO"]);
+                    tlist.TEAMMEMBER_PPNO = Convert.ToInt32(rdr["TEAMMEMBER_PPNO"]);
                     tlist.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    tlist.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     tlist.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    tlist.PP_NUMBER = Convert.ToInt32(loggedInUser.PPNumber);
-                    tlist.TEAM_NAME = rdr["TEAM_NAME"].ToString();
+                    //tlist.TEAMMEMBER_PPNO = Convert.ToInt32(loggedInUser.PPNumber);
+                    tlist.TEAM_NAME = rdr["T_NAME"].ToString();
                     tlist.EMP_NAME = loggedInUser.Name.ToString();
-                    tlist.START_DATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
-                    tlist.END_DATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
-                    tlist.STATUS_ID = Convert.ToInt32(rdr["STATUS"]);
-                    tlist.STATUS = rdr["ENG_STATUS"].ToString();
+                    tlist.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"]);
+                    tlist.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"]);
+                    tlist.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
+                    tlist.ENG_STATUS = rdr["ENG_STATUS"].ToString();
+                    tlist.ISACTIVE = rdr["ISACTIVE"].ToString();
                     tasklist.Add(tlist);
                 }
             }

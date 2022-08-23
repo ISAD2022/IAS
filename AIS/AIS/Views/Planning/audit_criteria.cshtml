@@ -51,6 +51,7 @@
         $('#setupAuditEntitiesModal').modal('show');
     }
     function submitAuditCriteria() {
+
         var criteria_list = [];
         $.each($('#auditCriteriaListBox tbody tr'), function (index, row) {
             var criteria = [];
@@ -59,8 +60,15 @@
                     criteria.push($(d).attr('value'));
                 }
             });
+            criteria.push($($(row).find('td').eq(0)).html()); //[period]
+            criteria.push($($(row).find('td').eq(1)).html()); //[entname]
+            criteria.push($($(row).find('td').eq(2)).html()); //[risk]
+            criteria.push($($(row).find('td').eq(4)).html()); //[size]
+            criteria.push($($(row).find('td').eq(3)).html()); //[freq]
             criteria_list.push(criteria);
         });
+        //console.log(criteria_list);
+      //  return;
         if (criteria_list.length > 0) {
             $.ajax({
                 url: "/Engagement/add_audit_criteria",
@@ -70,8 +78,14 @@
                 },
                 cache: false,
                 success: function (data) {
-                    alert('Audit Criteria Added Successfully');
-                    location.reload();
+                    var row = "";
+                    $.each(data, function (i,v) {
+                        row += "<p>Criteria = " + v[0] + " | " + v[1] + " | " + v[2] + " | " + v[3] + " | " + v[4] + "  " + v[5] +"</p>";
+                    });
+
+                    //console.log('criteria res=',row);
+                    alert(row);
+                    //location.reload();
 
                 },
                 dataType: "json",

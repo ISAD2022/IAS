@@ -130,8 +130,9 @@ namespace AIS.Controllers
             }
         }
         [HttpPost]
-        public bool add_audit_criteria(List<List<String>> CRITERIA_LIST)
+        public List<List<String>> add_audit_criteria(List<List<String>> CRITERIA_LIST)
         {
+            List<List<String>> Error = new List<List<String>>();
             foreach(var criteria in CRITERIA_LIST)
             {
                 AddAuditCriteriaModel cm = new AddAuditCriteriaModel();
@@ -142,6 +143,11 @@ namespace AIS.Controllers
                 cm.FREQUENCY_ID = Convert.ToInt32(criteria[3]);
                 cm.SIZE_ID = Convert.ToInt32(criteria[4]);
                 cm.NO_OF_DAYS = Convert.ToInt32(criteria[5]);
+                cm.AUDITPERIOD = criteria[7];
+                cm.ENTITY_NAME = criteria[8];
+                cm.RISK = criteria[9];
+                cm.SIZE = criteria[10];
+                cm.FREQUENCY = criteria[11];
                 if ((criteria[6].ToLower()) == "yes")
                     criteria[6] = "Y";
                 else
@@ -149,9 +155,20 @@ namespace AIS.Controllers
 
                 cm.VISIT = criteria[6];
                 cm.APPROVAL_STATUS = 1;
-                dBConnection.AddAuditCriteria(cm);
+                List<string> arr = new List<string>();
+                arr.Add(cm.AUDITPERIOD);
+                arr.Add(cm.ENTITY_NAME);
+                arr.Add(cm.RISK);
+                arr.Add(cm.SIZE);
+                arr.Add(cm.FREQUENCY);
+                
+                if (!dBConnection.AddAuditCriteria(cm))
+                    arr.Add("Criteria already defined");
+                else
+                    arr.Add("Criteria successfully added");
+                Error.Add(arr);
             }
-            return true;
+            return Error;
         }
         [HttpPost]
         public AuditEntitiesModel add_auditee_entity(AuditEntitiesModel am)
