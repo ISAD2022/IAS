@@ -1054,9 +1054,32 @@ namespace AIS
             string query = "";
             if (sessionCheck)
             {
+
                 var loggedInUser = sessionHandler.GetSessionUser();
-                if (loggedInUser.UserPostingAuditZone != 0)
-                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
+                if (loggedInUser.UserLocationType == "H")
+                {
+                    //query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingDept;
+                 }
+                else if (loggedInUser.UserLocationType == "B")
+                {
+                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingBranch;
+                   
+                }
+                else if (loggedInUser.UserLocationType == "Z")
+                {
+                    if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    {
+                        query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
+                       
+                    }
+                    else
+                    {
+                        query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingZone;
+                      
+                    }
+                }
+
+               
             }
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -1932,6 +1955,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
+                    jm.ENG_PLAN_ID = engId;
                     jm.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     jm.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     jm.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -1952,6 +1976,23 @@ namespace AIS
             }
             con.Close();
             return jm;
+        }
+        public bool AddJoiningReport(AddJoiningModel jm)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            jm.ENTEREDBY =Convert.ToInt32(loggedInUser.PPNumber);
+            jm.ENTEREDDATE = System.DateTime.Now;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + jm.JOINING_DATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + jm.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + jm.COMPLETION_DATE + "','dd/mm/yyyy HH:MI:SS AM'))";
+                cmd.ExecuteReader();
+                cmd.CommandText = cmd.CommandText = "UPDATE T_AU_AUDIT_TEAM_TASKLIST SET STATUS_ID= (select COALESCE(acc.STATUS_ID+1,1) from T_AU_AUDIT_TEAM_TASKLIST acc WHERE acc.ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and acc.TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO+") WHERE ENG_PLAN_ID="+jm.ENG_PLAN_ID+ " and TEAMMEMBER_PPNO= "+jm.TEAM_MEM_PPNO;
+                cmd.ExecuteReader();
+
+            }
+            con.Close();
+            return true;
         }
 
     }

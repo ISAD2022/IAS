@@ -4,6 +4,7 @@
 }
 
 <script type="text/javascript">
+    var g_joinRes = null;
     $('#document').ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -16,6 +17,7 @@
             },
             cache: false,
             success: function (data) {
+                g_joinRes = data;
                 console.log(data);
                 $('#ent_name_field').html(data.entitY_NAME);
                 $('#ent_risk_field').html(data.risk);
@@ -29,13 +31,39 @@
                 $('#ent_team_name_field').html(data.teaM_NAME);
                 $('#ent_period_field').html(data.audiT_PERIOD);
                 $.each(data.teaM_DETAILS, function (i, v) {
-                    $('#teamDetailsPanel tbody').append('<tr><td>' + v.emP_NAME + '</td><td>' + v.pP_NO + '</td><td><input type="date" class="form-control" /></td><td><input type="date" class="form-control" /></td><td>' + v.iS_TEAM_LEAD +'</td></tr>')
+                    $('#teamDetailsPanel tbody').append('<tr><td>' + v.emP_NAME + '</td><td>' + v.pP_NO + '</td><td><input id="joinDate_' + v.pP_NO + '" type="date" class="form-control" /></td><td><input id="completeDate_' + v.pP_NO +'" type="date" class="form-control" /></td><td>' + v.iS_TEAM_LEAD +'</td></tr>')
                 });
 
             },
             dataType: "json",
         });
     });
+
+    function publishJoinReport() {
+        $.each(g_joinRes.teaM_DETAILS, function (i, v) {
+        $.ajax({
+            url: "/Engagement/add_joining_report",
+            type: "POST",
+            data: {
+                'ID': 0,
+                'ENG_PLAN_ID': g_joinRes.enG_PLAN_ID,
+                'TEAM_MEM_PPNO': v.pP_NO,
+                'JOINING_DATE': $('#joinDate_' + v.pP_NO).val(),
+                'COMPLETION_DATE': $('#completeDate_' + v.pP_NO).val()
+            },
+            cache: false,
+            success: function (data) {
+
+            },
+            dataType: "json",
+        });
+        });
+        alert("<p>Succesfully done</p>");
+        onAlertCallback(redirectToTaskList);
+    }
+    function redirectToTaskList() {
+        window.location = "/Engagement/task_list";
+    }
 </script>
 
 <div class="row mt-3">
@@ -136,10 +164,8 @@
         </table>
     </div>
     <div class="row">
+       
         <div class="col-md-6 mt-5">
-            <button class="btn btn-primary" style="float:right;">Save</button>
-        </div>
-        <div class="col-md-6 mt-5">
-            <button class="btn btn-primary" style="float:left;">Submit</button>
+            <button onclick="publishJoinReport();" class="btn btn-primary" style="float:left;">Submit</button>
         </div>
     </div>
