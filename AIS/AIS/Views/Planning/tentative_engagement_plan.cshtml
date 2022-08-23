@@ -161,10 +161,14 @@
             cache: false,
             success: function (data) {
                 alert('Plan has been Created');
-                window.location.href = "/Planning/tentative_audit_plan";
+                onAlertCallback(redirectToLocation);
+                
             },
             dataType: "json",
         });
+    }
+    function redirectToLocation() {
+        window.location.href = "/Planning/tentative_audit_plan";
     }
   
 </script>
