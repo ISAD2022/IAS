@@ -18,6 +18,7 @@ namespace AIS.Models
         public DateTime? AUDIT_END_DATE { get; set; }
         public int STATUS_ID { get; set; }
         public string ENG_STATUS { get; set; }
+        public string ENG_NEXT_STATUS { get; set; }
         public string ISACTIVE { get; set; }
         public string TEAM_NAME { get; set; }
         public string EMP_NAME { get; set; }
