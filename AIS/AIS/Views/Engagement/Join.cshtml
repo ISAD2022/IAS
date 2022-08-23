@@ -5,105 +5,141 @@
 
 <script type="text/javascript">
     $('#document').ready(function () {
-        $('#sidebar_policy').hide();
+        var url_string = window.location;
+        var url = new URL(url_string);
+        var eng_id = url.searchParams.get("id");
+        $.ajax({
+            url: "/Engagement/get_joining_details",
+            type: "POST",
+            data: {
+                'engId': eng_id
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $('#ent_name_field').html(data.entitY_NAME);
+                $('#ent_risk_field').html(data.risk);
+                $('#ent_size_field').html(data.size);
+                var sDate = data.starT_DATE.split('T')[0];
+                var sfromat = sDate.split('-')[2] + "/" + sDate.split('-')[1] + "/" + sDate.split('-')[0];
+                var eDate = data.enD_DATE.split('T')[0];
+                var efromat = eDate.split('-')[2] + "/" + eDate.split('-')[1] + "/" + eDate.split('-')[0];
+                $('#ent_start_field').html(sfromat);
+                $('#ent_end_field').html(efromat);
+                $('#ent_team_name_field').html(data.teaM_NAME);
+                $('#ent_period_field').html(data.audiT_PERIOD);
+                $.each(data.teaM_DETAILS, function (i, v) {
+                    $('#teamDetailsPanel tbody').append('<tr><td>' + v.emP_NAME + '</td><td>' + v.pP_NO + '</td><td><input type="date" class="form-control" /></td><td><input type="date" class="form-control" /></td><td>' + v.iS_TEAM_LEAD +'</td></tr>')
+                });
+
+            },
+            dataType: "json",
+        });
     });
 </script>
 
 <div class="row mt-3">
         <h4 style="display: block; color: #45c545;">Joining Report</h4>
 </div>
-<div>
-    <center class="w-100">
-        <table class="table table-bordered table-sm mb-0 mt-3 bg-white table-hover table-striped" style="width:600px" id="Joining Report">
+<div class="row col-md-12">
+    <div class="col-md-6">
+
+        <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" >
             <thead>
                 <tr>
-                    <td style="text-align:left;" colspan="8"><h6>Audit Plan</h6></td>
+                    <td><h6>Audit Plan</h6></td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td width="600">Entity</td>
-                    <td width="600"></td>
+                    <td>Audit Period</td>
+                    <td id="ent_period_field"></td>
                 </tr>
                 <tr>
-                    <td width="600">Entity Risk</td>
-                    <td width="600"></td>
+                    <td width="150">Entity</td>
+                    <td id="ent_name_field" width="200"></td>
+                </tr>
+                <tr>
+                    <td>Entity Risk</td>
+                    <td id="ent_risk_field"></td>
                 </tr>
                 <tr>
                     <td>Entity Size</td>
-                    <td></td>
+                    <td id="ent_size_field"></td>
                 </tr>
 
                 <tr>
-                    <td width="600">Start Date</td>
-                    <td width="600"></td>
+                    <td>Start Date</td>
+                    <td id="ent_start_field"></td>
                 </tr>
                 <tr>
-                    <td width="600">End Date</td>
-                    <td width="600"></td>
+                    <td>End Date</td>
+                    <td id="ent_end_field"></td>
                 </tr>
-                <!-- <tr>
-         <td width="600">Audit For Audit Zone</td>
-         <td width="600">--</td>
-     </tr>
-     <tr>
-         <td width="600">Audit For Audit Branch</td>
-         <td width="600">--</td>
-     </tr>
-     <tr>
-         <td width="600">Audit For Department</td>
-         <td width="600">--</td>
-     </tr>-->
+
                 <tr>
-                    <td width="600">Audit Conducted by</td>
-                    <td width="600">--</td>
+                    <td>Audit Conducted by</td>
+                    <td id="ent_team_name_field"></td>
                 </tr>
-                <tr>
-                    <td width="600">Audit Period</td>
-                    <td width="600"></td>
-                </tr>
-                <tr>
-                    <td width="600">Status</td>
-                    <td width="600"></td>
-                </tr>
+
             </tbody>
         </table>
-    </center>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <table class="table table-bordered table-sm mb-0 mt-3 bg-white table-hover table-striped" id="Joining Report">
+            <thead>
+                <tr>
+                    <th>Sample Criteria</th>
+                </tr>
+            </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+        </table>
+    </div>
+
 </div>
-<div class="mt-3">
-    <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped"  id="Joining Report">
-        <thead>
-            <tr>
-                <td class="mh-50" style="text-align:left;" colspan="6"><h6>Name</h6></td>
-                <td class="mh-50" style="text-align:left;" colspan="6"><h6>P.P. No.</h6></td>
-                <td style="text-align:left;" colspan="6"><h6>Joining Date</h6></td>
-                <td style="text-align:left;" colspan="6"><h6>Completion Date</h6></td>
-                <td style="text-align:left;" colspan="6"><h6>Is team Lead</h6></td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="text-align:left;" colspan="6"></td>
-                <td style="text-align:left;" colspan="6"></td>
-                <td style="text-align:left;" colspan="6"><input class="form-control" type="date" /></td>
-                <td style="text-align:left;" colspan="6"><input class="form-control" type="date" /></td>
-                <td style="text-align:left;" colspan="6"></td>
-            </tr>
-            <tr>
-                <td style="text-align:left;" colspan="6"></td>
-                <td style="text-align:left;" colspan="6"></td>
-                <td style="text-align:left;" colspan="6"><input class="form-control" type="date" /></td>
-                <td style="text-align:left;" colspan="6"><input class="form-control" type="date" /></td>
-                <td style="text-align:left;" colspan="6"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="row">
-            <div class="col-md-6 mt-5">
-                <button class="btn-primary" style="float:right;">Save</button>
-            </div>
-            <div class="col-md-6 mt-5">
-                <button class="btn-primary" style="float:left;">Submit</button>
-            </div>
-</div>
+
+    <div class="mt-3">
+        <table id="teamDetailsPanel" class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" >
+            <thead>
+                <tr>
+                    <th class="font-weight-bold">Name</th>
+                    <th class="font-weight-bold">P.P. No</th>
+                    <th class="font-weight-bold">Joining Date</th>
+                    <th class="font-weight-bold">Completion Date</th>
+                    <th class="font-weight-bold">Is team Lead</th>
+                </tr>
+</thead>
+           <tbody></tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mt-5">
+            <button class="btn btn-primary" style="float:right;">Save</button>
+        </div>
+        <div class="col-md-6 mt-5">
+            <button class="btn btn-primary" style="float:left;">Submit</button>
+        </div>
+    </div>

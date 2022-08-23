@@ -216,6 +216,12 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        [HttpPost]
+        public JoiningModel get_joining_details(int engId=0)
+        {
+          return dBConnection.GetJoiningDetails(engId);
+        }
+
         public IActionResult acceptance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
