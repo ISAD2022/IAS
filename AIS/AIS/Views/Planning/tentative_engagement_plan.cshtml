@@ -77,10 +77,8 @@
             cache: false,
             success: function (data) {
 
-                console.log('ajaaaxxxx dataaa', data);
                 if (data != "" && data.length > 0) {
                     var date = new Date(data);
-                    console.log('ajaaaxxxx dataaa', date);
                     date.setDate(date.getDate() + 1)
                     var month = (date.getMonth()+1);
                     var day = date.getDate();
@@ -90,7 +88,6 @@
                         day = "0" + day;
 
                     var today = date.getFullYear() + '-' + month + '-' + day;
-                    console.log('ajaaaxxxx',today);
                     $('#startop_date').val(today);
                 }
             }
@@ -239,7 +236,7 @@
         <h5>End Date</h5>
     </div>
     <div class="col-md-7">
-        <input id="endplan_date" type="date"  class="form-control form-select">
+        <input disabled="disabled" id="endplan_date" type="date"  class="form-control form-select">
     </div>
 </div>
 <div class="row col-md-12 mt-3">
@@ -255,7 +252,7 @@
         <h5>Operational Period End Date</h5>
     </div>
     <div class="col-md-7">
-        <input id="endop_date"  type="date" class="form-control form-select">
+        <input disabled="disabled" id="endop_date"  type="date" class="form-control form-select">
     </div>
 </div>
 

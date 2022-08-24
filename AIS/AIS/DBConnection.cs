@@ -36,8 +36,7 @@ namespace AIS
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
                 con.Open();
-                EmailConfiguration email = new EmailConfiguration();
-                email.ConfigEmail();
+               
                 return con;
 
             }
@@ -1313,7 +1312,7 @@ namespace AIS
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
                 cmd.ExecuteReader();
 
-                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID=" + ePlan.ENG_ID + " and TEAM_ID=" + ePlan.TEAM_ID;
+                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll) and TEAM_ID=" + ePlan.TEAM_ID;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 bool teamentry = false;
                 while (ardr.Read())
@@ -1849,6 +1848,8 @@ namespace AIS
 
             }
             con.Close();
+            EmailConfiguration email = new EmailConfiguration();
+            email.ConfigEmail();
             return true;
         }
         public string GetAuditCriteriaLogLastStatus(int Id)

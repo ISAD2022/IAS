@@ -28,18 +28,19 @@ namespace AIS
             {
                 //------WORKING CODE COMMENTED DO NOT DELETE ------
 
-                /*EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
+                EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient(em.Host);
                 mail.From = new MailAddress(em.EMAIL);
                 mail.To.Add("khattak.aqib@ztbl.com.pk");
-                mail.Subject = "Test Mail";
-                mail.Body = "This is testing Email from AIS";
+                mail.CC.Add("svp.isad@ztbl.com.pk");
+                mail.Subject = "Criteria Approval Notification";
+                mail.Body = "<b>Notification from Audit & Inspection System<b><br /><b>(DON’T REPLY THIS EMAIL)</b><br /><br />Criteria has been approved by CIA";
                 SmtpServer.Host = em.Host;
                 SmtpServer.Port = em.Port;
                 SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);
                 SmtpServer.EnableSsl = true;
-                SmtpServer.Send(mail);*/
+                SmtpServer.Send(mail);
                 return true;
             }
             catch (Exception) { return false; }
