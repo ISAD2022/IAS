@@ -60,7 +60,10 @@
         $.each(g_memoObj, function (i, v) {
             if (v.id == g_observationId) {
                 isFound = true;
-                g_memoObj[i] = memo;
+                v.memo = memo.memo;
+                v.id = memo.id;
+                v.loancase = memo.loancase;
+                v.attachments = memo.attachments;
             }
 
         });
@@ -69,19 +72,25 @@
     }
     function viewCreatedMemo(e, id) {
         var value = $($(e).parent().parent().find('.checklistaction').eq(0)).val();
+        var tempobj = {
+            'memo':'',
+            'days': '',
+            'loancase': '',
+            'attachments': ''
+        };
         if (value != 0) {
             $.each(g_memoObj, function (i, v) {
                 if (v.id == id) {
-                    $('#viewMemoModel').modal('show');
-                    $('.richText-editor').html(v.memo);
-                    $('#viewMemo_replydays').val(v.days);
-                    $('#viewMemo_loancase').val(v.loancase);
-                    $('#viewMemo_attachments').val(v.attachments);
-                    return;
+                    tempobj = v;
                 }
 
             });
         }
+        $('#viewMemoModel').modal('show');
+        $('.richText-editor').html(tempobj.memo);
+        $('#viewMemo_replydays').val(tempobj.days);
+        $('#viewMemo_loancase').val(tempobj.loancase);
+        $('#viewMemo_attachments').val(tempobj.attachments);
     }
 
 </script>
