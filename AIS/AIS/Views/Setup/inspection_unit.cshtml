@@ -26,7 +26,7 @@
 
     function setupIC(code, name, desc, status, id) {
         g_ICId = id;
-        console.log(code, name, desc, status, id);
+        //console.log(code, name, desc, status, id);
         $('#ICCodeModalField').val(code);
         $('#ICNameModalField').val(name);
         $('#ICAddressModalField').val(desc);
@@ -71,7 +71,7 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 window.location = window.location.pathname;
 
             },

@@ -61,7 +61,7 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                 $.each(data, function (index, item) {
                     $('#riskActivitiesSelectBox').append("<option value=\"" + item.activitY_ID + "\"> " + item.description + "</option>");

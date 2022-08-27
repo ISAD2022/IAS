@@ -35,7 +35,7 @@ namespace AIS
                 mail.To.Add("khattak.aqib@ztbl.com.pk");
                 mail.CC.Add("svp.isad@ztbl.com.pk");
                 mail.Subject = "Criteria Approval Notification";
-                mail.Body = "<b>Notification from Audit & Inspection System<b><br /><b>(DON’T REPLY THIS EMAIL)</b><br /><br />Criteria has been approved by CIA";
+                mail.Body = "<div><b><u><span style=\"font - size:14.0pt\">Notification from Audit & amp; Inspection System<o:p ></ o:p ></ span ></ u ></ b ></ div >< div >< b >< u > (DON’T REPLY THIS EMAIL)</ u ></ b ></ div > Criteria has been approved by CIA";
                 SmtpServer.Host = em.Host;
                 SmtpServer.Port = em.Port;
                 SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);

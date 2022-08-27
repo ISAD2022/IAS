@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Sub Checklist";
+    Layout = "_Layout";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        var checklist_id = url.searchParams.get("id");
+        $.ajax({
+            url: "/ApiCalls/sub_checklist",
+            type: "POST",
+            data: {
+                'T_ID': checklist_id
+            },
+            cache: false,
+            success: function (data) {
+                console.log('subhcekclist', data);
+                $('#subchecklistPanel tbody').empty();
+                var sr = 1;
+               $.each(data, function (i, v) {
+
+                   $('#subchecklistPanel tbody').append('<tr id="' + v.s_ID + '"><td>' + sr + '</td><td>' + v.t_NAME + '</td><td>' + v.heading + '</td><td class="text-center"><span class="badge badge-success rounded-pill d-inline">' + v.status + '</span></td><td class="text-center"><a href="/Execution/checklist_details?id=' + v.s_ID + '">Checklist Details</a></td></tr>');
+                   sr++;
+                });
+
+            },
+            dataType: "json",
+        });
+    });
+</script>
+<div class="row mt-3">
+    <div>
+        <center>
+            <h3 style="display: block; color: #45c545;">Sub L[ist</h3>
+        </center>
+    </div>
+
+    <table id="subchecklistPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+        <thead>
+            <tr>
+                <th class="col-md-1 font-weight-bold">Sr. No</th>
+                <th class="col-md-2 font-weight-bold">Parent/Process</th>
+                <th class="col-md-6 font-weight-bold">Heading/Sub List</th>
+                <th class="col-md-1 font-weight-bold text-center">Status</th>
+                <th class="col-md-2 font-weight-bold"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

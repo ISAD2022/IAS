@@ -41,7 +41,7 @@
     }
 
     function ShowEmployeeContainer() {
-        console.log($('#deptSelectionBox option:selected').val());
+        //console.log($('#deptSelectionBox option:selected').val());
         if ($('#deptSelectionBox option:selected').val() == 0)
             $('#listofEmployeesContainer').hide();
         else {
@@ -55,7 +55,7 @@
                 cache: false,
                 success: function (data) {
                     $('#listOfEmployee tbody').empty();
-                    console.log(data);
+                    //console.log(data);
                     $.each(data, function (index, emp) {
                         index++;
                         $('#listOfEmployee tbody').append('<tr><td class= "searchable"><p class="fw-normal mb-1">' + index+ '</p></td ><td class="searchable"><p class="fw-normal mb-1">' + emp.ppno + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + emp.employeefirstname + ' ' + emp.employeelastname + '</p></td><td class="searchable"><p class="fw-normal mb-1 userTypeField">' + emp.fuN_DESIGNATION+'</p></td><td><small class="text-danger editRole">Edit</small><select class="selectRole"><option>Auditor</option><option>Implementation Officer</option><option>Planning & Development</option></select></td></tr >')

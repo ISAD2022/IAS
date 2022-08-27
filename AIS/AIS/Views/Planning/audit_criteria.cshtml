@@ -67,7 +67,7 @@
             criteria.push($($(row).find('td').eq(3)).html()); //[freq]
             criteria_list.push(criteria);
         });
-        //console.log(criteria_list);
+        ////console.log(criteria_list);
       //  return;
         if (criteria_list.length > 0) {
             $.ajax({
@@ -83,7 +83,7 @@
                         row += "<p>Criteria = " + v[0] + " | " + v[1] + " | " + v[2] + " | " + v[3] + " | " + v[4] + "  " + v[5] +"</p>";
                     });
 
-                    //console.log('criteria res=',row);
+                    ////console.log('criteria res=',row);
                     alert(row);
                     //location.reload();
 

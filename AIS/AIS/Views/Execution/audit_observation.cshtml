@@ -11,7 +11,7 @@
             videoEmbed: false,
             urls: false
         });
-        $('#sidebar_policy').hide();
+       
     });
 </script>
 <script type="text/javascript">
@@ -61,7 +61,6 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
                 $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                 $.each(data, function (index, item) {
                     $('#riskActivitiesSelectBox').append("<option value=\"" + item.id + "\"> " + item.description + "</option>");

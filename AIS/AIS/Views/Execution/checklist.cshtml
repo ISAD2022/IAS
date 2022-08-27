@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Checklist";
+    Layout = "_Layout";
+}
+<script type="text/javascript">
+
+</script>
+    <div class="row mt-3">
+        <div>
+            <center>
+                <h3 style="display: block; color: #45c545;">Checklist</h3>
+            </center>
+        </div>
+
+        <table class="table table-bordered mb-0 mt-3 bg-white table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-1 font-weight-bold">Sr. No</th>
+                    <th class="col-md-8 font-weight-bold">Heading</th>
+                    <th class="col-md-1 font-weight-bold text-center">Status</th>
+                    <th class="col-md-2 font-weight-bold"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["Checklist"] != null)
+                    {
+
+                        var index = 1;
+                        foreach (var item in (dynamic)(ViewData["Checklist"]))
+                        {
+                           
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.HEADING</td>
+                                <td class="text-center">
+                                    @{
+                                        if (item.STATUS == "Y")
+
+                                        { <span class="badge badge-success rounded-pill d-inline">@item.STATUS</span>}
+                                    else
+                                    { <span class="badge badge-danger rounded-pill d-inline">@item.STATUS</span>}
+                                    }
+                                </td>
+                                <td class="text-hover text-danger text-center"><a href="/Execution/subchecklist?id=@item.T_ID">Sub Checklist</a></td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>

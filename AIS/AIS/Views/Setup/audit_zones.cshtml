@@ -26,7 +26,7 @@
 
     function setupAuditZone(code, name, desc, status, id) {
         g_AZId = id;
-        console.log(code, name, desc, status, id);
+        //console.log(code, name, desc, status, id);
         $('#AZCodeModalField').val(code);
         $('#AZNameModalField').val(name);
         $('#AZAddressModalField').val(desc);
@@ -71,7 +71,7 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 window.location = window.location.pathname;
 
             },

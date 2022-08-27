@@ -262,7 +262,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Executio
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\engagement_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\list_of_observation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\manage_observation.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\Task_list.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Home\Index.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Home\Privacy.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Login\index.cshtml.g.cs
@@ -337,3 +336,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\checklist.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\checklist_details.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\subchecklist.cshtml.g.cs

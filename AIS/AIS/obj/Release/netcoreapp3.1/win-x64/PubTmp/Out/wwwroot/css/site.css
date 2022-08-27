@@ -12,6 +12,12 @@ a {
   color: #0366d6;
 }
 
+.text-hover:hover{
+    font-size:105% !important;
+    cursor:pointer !important;
+    font-weight:bold !important;
+}
+
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;

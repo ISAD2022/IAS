@@ -23,7 +23,7 @@
     });
    
     function ShowEmployeeContainer() {
-        console.log($('#deptSelectionBox option:selected').val());
+        //console.log($('#deptSelectionBox option:selected').val());
         if ($('#deptSelectionBox option:selected').val() == 0)
             $('#listOfEmployeeTeam tbody').empty();
         else {
@@ -36,7 +36,7 @@
                 },
                 cache: false,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var teamId = 0;
                     var srNo = 1;
                     var teamMembers=[];
@@ -120,7 +120,7 @@
             }
         });
         $.each(participants, function (i, p) {
-            console.log(p.PPNO);
+            //console.log(p.PPNO);
             if (p.PPNO == teamLeadID) {
                 p.ISTEAMLEAD = 'Y'
                 teamLeadCheck = 1;

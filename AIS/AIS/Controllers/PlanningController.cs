@@ -345,7 +345,7 @@ namespace AIS.Controllers
             }
             return true;
         }
-        [HttpPost]
+       
         [HttpPost]
         public bool update_audit_criteria(List<String> CRITERIA_LIST)
         {
@@ -369,6 +369,7 @@ namespace AIS.Controllers
             
             return true;
         }
+        [HttpPost]
         public List<AuditTeamModel> audit_team(int dept_code)
         {
             return dBConnection.GetAuditTeams(dept_code);
@@ -422,7 +423,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult tentative_engagement_plan()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

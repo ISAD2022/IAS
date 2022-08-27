@@ -2,6 +2,7 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\css\site.css
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\favicon.ico
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\Images\Home.png
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\Images\profile.png
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\Images\ztbllogo.png
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\js\site.js
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\PubTmp\Out\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css

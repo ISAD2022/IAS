@@ -54,7 +54,7 @@
                 success: function (data) {
                     $('#periodSelectionBox').empty();
                     $('#periodSelectionBox').append('<option value="0" id="0">--Select Audit Period--</option>')
-                    console.log(data);
+                    //console.log(data);
                     $.each(data, function (index, period) {
                         $('#periodSelectionBox').append('<option value="' + period.id + '" id="' + period.id + '">' + period.description + '</option>')
                     });
@@ -104,7 +104,7 @@
                     $('#branchSelectionBox').empty();
                     $('#branchInfoArea').hide();
                     $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-                    console.log(data);
+                    //console.log(data);
                     $.each(data, function (index, branch) {
                         $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
                     });
@@ -131,7 +131,7 @@
                 success: function (data) {
                     $('#divDeptSelectionBox').empty();
                     $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-                    console.log(data);
+                    //console.log(data);
                     $.each(data, function (index, dept) {
                         $('#divDeptSelectionBox').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
                     });

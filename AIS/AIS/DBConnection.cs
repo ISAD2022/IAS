@@ -54,7 +54,6 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    
                     user.ID = Convert.ToInt32(rdr["USERID"]);
                     user.Name = rdr["Employeefirstname"].ToString() + " "+ rdr["employeelastname"].ToString();
                     user.Email = rdr["LOGIN_NAME"].ToString();
@@ -2008,5 +2007,95 @@ namespace AIS
             return true;
         }
 
+        public List<AuditChecklistModel> GetAuditChecklist()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditChecklistModel> list = new List<AuditChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select t.*, e.entitytypedesc as ENTITY_TYPE_NAME from t_audit_checklist t inner join t_auditee_ent_types e on t.entity_type=e.autid where t.STATUS='Y' order by t.t_id asc";
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistModel chk = new AuditChecklistModel();
+                    chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id=0)
+        {
+            var con = this.DatabaseConnection();
+            List<AuditChecklistSubModel> list = new List<AuditChecklistSubModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                if(t_id==0)
+                cmd.CommandText = "select t.*, p.heading as T_NAME, e.entitytypedesc as ENTITY_TYPE_NAME  from t_audit_checklist_sub t inner join t_audit_checklist p on p.t_id=t.t_id inner join t_auditee_ent_types e on t.entity_type=e.autid where t.STATUS='Y' order by t.s_id asc";
+                else
+                    cmd.CommandText = "select t.*, p.heading as T_NAME, e.entitytypedesc as ENTITY_TYPE_NAME from t_audit_checklist_sub t inner join t_audit_checklist p on p.t_id=t.t_id inner join t_auditee_ent_types e on t.entity_type=e.autid where t.STATUS='Y' and t.t_id=" + t_id+ " order by t.s_id asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistSubModel chk = new AuditChecklistSubModel();
+                    chk.S_ID = Convert.ToInt32(rdr["S_ID"]); 
+                    chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
+                    chk.T_NAME = rdr["T_NAME"].ToString();
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<AuditChecklistDetailsModel> GetAuditChecklistDetails(int s_id = 0)
+        {
+            var con = this.DatabaseConnection();
+            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                if (s_id == 0)
+                    cmd.CommandText = "select t.*, p.heading as S_NAME, s.description as V_NAME, r.description as RISK from t_audit_checklist_details t inner join t_audit_checklist_sub p on p.s_id=t.s_id inner join t_r_sub_group s on s.s_gr_id=t.v_id inner join t_risk r on r.r_id=t.risk_id where t.STATUS='Y' order by t.id asc";
+                else
+                    cmd.CommandText = "select t.*, p.heading as S_NAME, s.description as V_NAME, r.description as RISK from t_audit_checklist_details t inner join t_audit_checklist_sub p on p.s_id=t.s_id inner join t_r_sub_group s on s.s_gr_id=t.v_id inner join t_risk r on r.r_id=t.risk_id where t.STATUS='Y' and t.s_id=" + s_id+ " order by t.id asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.S_ID = Convert.ToInt32(rdr["S_ID"]);
+                    chk.S_NAME = rdr["S_NAME"].ToString();
+                    chk.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    chk.V_NAME = rdr["V_NAME"].ToString();
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    chk.RISK = rdr["RISK"].ToString();
+                    if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
+                    {
+                        chk.ROLE_RESP_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
+                       // chk.ROLE_RESP = rdr["ROLE_RESP"].ToString();
+                    }
+                    if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
+                    {
+                        chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["PROCESS_OWNER_ID"]);
+                       // chk.PROCESS_OWNER = rdr["PROCESS_OWNER"].ToString();
+
+                    }
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
     }
 }

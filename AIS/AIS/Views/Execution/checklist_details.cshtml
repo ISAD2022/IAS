@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "Sub Checklist";
+    Layout = "_Layout";
+}
+<script type="text/javascript">
+    var g_memoObj = [];
+    var g_observationId = 0;
+    $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        var checklistsub_id = url.searchParams.get("id");
+        $.ajax({
+            url: "/ApiCalls/checklist_details",
+            type: "POST",
+            data: {
+                'S_ID': checklistsub_id
+            },
+            cache: false,
+            success: function (data) {
+                console.log('subhcekclist', data);
+                $('#checklistDetailsPanel tbody').empty();
+                var sr = 1;
+                $.each(data, function (i, v) {
+
+                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="0" id="0" selected>No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
+                    sr++;
+                });
+
+            },
+            dataType: "json",
+        });
+        $('#viewMemo_memo').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+    });
+    function showObservationArea(value, id) {
+        g_observationId = id;
+        if (value != 0) {
+            $('#viewMemoModel').modal('show');
+            $('.richText-editor').html('');
+            $('#viewMemo_replydays').val(1);
+            $('#viewMemo_loancase').val('');
+            $('#viewMemo_attachments').val('');
+        }
+
+    }
+
+    function saveMemoContent() {
+        var memo = {
+            'memo': $('.richText-editor').html(),
+            'id': g_observationId,
+            'days': $('#viewMemo_replydays option:selected').val(),
+            'loancase': $('#viewMemo_loancase').val(),
+            'attachments': $('#viewMemo_attachments').val()
+        };
+        var isFound = false;
+        $.each(g_memoObj, function (i, v) {
+            if (v.id == g_observationId) {
+                isFound = true;
+                g_memoObj[i] = memo;
+            }
+
+        });
+        if (!isFound)
+            g_memoObj.push(memo);
+    }
+    function viewCreatedMemo(e, id) {
+        var value = $($(e).parent().parent().find('.checklistaction').eq(0)).val();
+        if (value != 0) {
+            $.each(g_memoObj, function (i, v) {
+                if (v.id == id) {
+                    $('#viewMemoModel').modal('show');
+                    $('.richText-editor').html(v.memo);
+                    $('#viewMemo_replydays').val(v.days);
+                    $('#viewMemo_loancase').val(v.loancase);
+                    $('#viewMemo_attachments').val(v.attachments);
+                    return;
+                }
+
+            });
+        }
+    }
+
+</script>
+<div class="row mt-3">
+    <div>
+        <center>
+            <h3 style="display: block; color: #45c545;">Sub List Details</h3>
+        </center>
+    </div>
+
+    <table id="checklistDetailsPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+        <thead>
+            <tr>
+                <th class="col-md-1 font-weight-bold">Sr. No</th>
+                <th class="col-md-3 font-weight-bold">Parent/Sub Process</th>
+                <th class="col-md-3 font-weight-bold">Voilation</th>
+                <th class="col-md-3 font-weight-bold">Heading/Sublist Detail</th>
+                <th class="col-md-2 font-weight-bold text-center">Yes/No</th>
+                <th class="col-md-1 font-weight-bold"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Memo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Memo</label>
+                        <textarea id="viewMemo_memo" style="height:300px;" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_loancase">Responsible Loan Case</label>
+                        <input id="viewMemo_loancase" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_replydays">No of Days to reply</label>
+                        <select id="viewMemo_replydays" class="form-control form-select">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_attachments">Attachments</label>
+                        <input id="viewMemo_attachments" class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="saveMemoContent();" type="button" data-dismiss="modal" class="btn btn-danger">Save Memo</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -30,7 +30,7 @@
 
     function recommendReferredBackAuditCriterias(id, period_id, ent_id, size_id, risk_id, freq_id, visit, nodays) {
         g_trId = id;
-        console.log(id, period_id, ent_id, size_id, risk_id,freq_id, nodays, visit);
+        //console.log(id, period_id, ent_id, size_id, risk_id,freq_id, nodays, visit);
         $('#recommendReferredBackAuditCriteriasModal').modal('show');
         $('#auditCriteriaPeriodField').val(period_id);
         $('#auditCriteriaEntityField').val(ent_id);
@@ -97,7 +97,7 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferredBackAuditCriteriasModal').modal('hide');
-                console.log(data);
+                //console.log(data);
                 window.location = window.location.pathname;
             },
             dataType: "json",

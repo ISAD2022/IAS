@@ -29,7 +29,7 @@
                 cache: false,
                 success: function (data) {
                     $('#listOfAuditPeriods tbody').empty();
-                    console.log(data);
+                    //console.log(data);
                     var srNo = 1;
                     $.each(data, function (index, period) {
                         var status = 'Approved';
@@ -83,7 +83,7 @@
         var mm = de.getMonth() + 1;
         var yy = de.getFullYear();
         var endDate = ("0" + mm).slice(-2) + "/" + dd + "/" + yy;
-        console.log(desc, stDate, edDate, deptIds);
+        //console.log(desc, stDate, edDate, deptIds);
         $.ajax({
             url: "/Planning/add_audit_period",
             type: "POST",
