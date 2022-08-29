@@ -45,7 +45,6 @@
             $('#viewMemo_loancase').val('');
             $('#viewMemo_attachments').val('');
         }
-
     }
 
     function saveMemoContent() {
@@ -59,22 +58,25 @@
         var isFound = false;
         $.each(g_memoObj, function (i, v) {
             if (v.id == g_observationId) {
-                alert('found', v.id, g_observationId);
                 isFound = true;
-                v.memo = memo.memo;
-                v.id = memo.id;
-                v.loancase = memo.loancase;
-                v.attachments = memo.attachments;
+                g_memoObj[i].memo = memo.memo;
+                g_memoObj[i].id = memo.id;
+                g_memoObj[i].loancase = memo.loancase;
+                g_memoObj[i].days = memo.days;
+                g_memoObj[i].attachments = memo.attachments;
             }
 
         });
-        alert('Notfound', g_observationId);
+        
         if (!isFound)
             g_memoObj.push(memo);
     }
     function viewCreatedMemo(e, id) {
+        g_observationId = id;
         var value = $($(e).parent().parent().find('.checklistaction').eq(0)).val();
+        
         var tempobj = {
+            id:'0',
             'memo':'',
             'days': '',
             'loancase': '',
@@ -83,17 +85,21 @@
         if (value != 0) {
             $.each(g_memoObj, function (i, v) {
                 if (v.id == id) {
-                    alert('found',id);
                     tempobj = v;
                 }
 
             });
         }
-        $('#viewMemoModel').modal('show');
-        $('.richText-editor').html(tempobj.memo);
-        $('#viewMemo_replydays').val(tempobj.days);
-        $('#viewMemo_loancase').val(tempobj.loancase);
-        $('#viewMemo_attachments').val(tempobj.attachments);
+        if (tempobj.id != 0) {
+            $('#viewMemoModel').modal('show');
+            $('.richText-editor').html(tempobj.memo);
+            $('#viewMemo_replydays').val(tempobj.days);
+            $('#viewMemo_loancase').val(tempobj.loancase);
+            $('#viewMemo_attachments').val(tempobj.attachments);
+        } else {
+            alert("Please select Yes to create Observation");
+            return;
+        }
     }
 
 </script>
@@ -143,12 +149,12 @@
                     <div class="form-group">
                         <label for="viewMemo_replydays">No of Days to reply</label>
                         <select id="viewMemo_replydays" class="form-control form-select">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
+                            <option id="1" value="1">1</option>
+                            <option id="2" value="2">2</option>
+                            <option id="3" value="3">3</option>
+                            <option id="4" value="4">4</option>
+                            <option id="5" value="5">5</option>
+                            <option id="6" value="6">6</option>
                             <option value="7">7</option>
                         </select>
                     </div>

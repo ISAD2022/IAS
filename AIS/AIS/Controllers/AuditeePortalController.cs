@@ -16,6 +16,7 @@ namespace AIS.Controllers
     {
         private readonly ILogger<AuditeePortalController> _logger;
         private readonly TopMenus tm = new TopMenus();
+        private readonly DBConnection dBConnection = new DBConnection();
         private readonly SessionHandler sessionHandler = new SessionHandler();
 
         public AuditeePortalController(ILogger<AuditeePortalController> logger)
@@ -38,6 +39,15 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+
+
+
+
+
+
+
+
         public IActionResult old_outstanding_paras()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -106,6 +116,9 @@ namespace AIS.Controllers
         public IActionResult dashboard()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments(0,false);
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");

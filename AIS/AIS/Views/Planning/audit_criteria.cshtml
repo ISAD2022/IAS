@@ -15,7 +15,9 @@
         if ($('#auditCriteriaPeriodField option:selected').val() != 0)
             period = $('#auditCriteriaPeriodField option:selected').text();
 
-        var days = $('#auditCriteriaDaysField').val();
+           var days = 0;
+           if ($('#auditCriteriaDaysField').val() != 0)
+               days = $('#auditCriteriaDaysField').val();
         var risk = '';
         if ($('#auditCriteriaRiskField option:selected').val() != 0)
             risk = $('#auditCriteriaRiskField option:selected').text();
@@ -31,14 +33,43 @@
 
         var visit = 'No';
         if ($('#auditCriteriaVisitField').is(':checked'))
-            visit = "Yes";
+               visit = "Yes";
 
+           if (entityName == '' || period == '' || days == 0 || risk == '' || freq == '' || size == '') {
+
+
+
+               if (period == '') {
+                   alert('Audit Period Not Selected');
+                   return;
+               }
+              if (entityName == '') { alert('Entity Name Not Selected'); 
+                   return;
+               }
+               if (risk == '') { alert('Risk Category Not Selected'); return; }
+               if (size == '') { alert('Branch Size Not Selected'); return;}
+               if (days == 0) { alert('Number Of Days Not Selected'); return;}
+               if (freq == '') { alert('Audit Frequency Not Selected'); return;}
+
+               return; 
+           }
+
+           
+
+           else {
         $('#auditCriteriaListBox tbody').append('<tr><td value="' + $('#auditCriteriaPeriodField option:selected').val() + '">' + period + '</td><td value="' + $('#auditCriteriaEntityField option:selected').val() + '">' + entityName + '</td><td value="' + $('#auditCriteriaRiskField option:selected').val() + '">' + risk + '</td><td value="' + $('#auditCriteriaFreqField option:selected').val() + '">' + freq + '</td><td value="' + $('#auditCriteriaSizeField option:selected').val() + '">' + size + '</td><td value="' + days + '">' + days + '</td><td value="' + visit + '">' + visit + '</td><td><a class="text-hover text-danger">' + g_status + '</a></td><td><a onclick=DeleteCriteriaRecordFromGrid(this); class="text-hover text-danger">Delete</a></td></tr>')
-
+           }
     }
     function DeleteCriteriaRecordFromGrid(e) {
         $(e).parent().parent().remove();
     }
+
+
+    function reloadLocation() {
+        location.reload();
+    }
+
+
     function enitityChangeEvent() {
         if ($('#auditCriteriaEntityField option:selected').val() == 6) {
            // $('.brField').removeClass('d-none');
@@ -79,8 +110,8 @@
                 cache: false,
                 success: function (data) {
                     var row = "";
-                    $.each(data, function (i,v) {
-                        row += "<p>Criteria = " + v[0] + " | " + v[1] + " | " + v[2] + " | " + v[3] + " | " + v[4] + "  " + v[5] +"</p>";
+                    $.each(data, function (i, v) {
+                        row += "<p>Criteria = " + v[0] + " | " + v[1] + " | " + v[2] + " | " + v[3] + " | " + v[4] + "  " + v[5] + "</p>";
                     });
 
                     ////console.log('criteria res=',row);
@@ -88,8 +119,13 @@
                     //location.reload();
 
                 },
+
                 dataType: "json",
             });
+        }
+        else {
+
+            alert('No Audit Criteria Defined'); return;
         }
     }
     function publishAuditeeEntity() {
@@ -119,7 +155,7 @@
             cache: false,
             success: function (data) {
                 alert('Entity Added Successfully');
-                location.reload();
+                onAlertCallback(reloadLocation);
 
             },
             dataType: "json",
@@ -225,7 +261,7 @@
         <h5>No. of Days</h5>
     </div>
     <div class="row col-md-8">
-        <input id="auditCriteriaDaysField" class="form-control" type="number" />
+        <input id="auditCriteriaDaysField" min="0" class="form-control" type="number" />
     </div>
 </div>
 

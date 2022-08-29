@@ -33,6 +33,64 @@
 
         return Math.ceil(elapsed);
     }
+
+
+    function div_risksubcategoryShowHide() {
+        if ($('#riskGroupSelectBox option:selected').val() == 0) {
+            $('#div_risksubcategory').hide();
+            $('#div_activityContainer').hide();
+        }
+        else {
+            $('#div_risksubcategory').show();
+            $('#div_activityContainer').hide();
+            $('#riskSubGroupSelectBox').empty();
+            $.ajax({
+                url: "/Execution/sub_voilation",
+                type: "POST",
+                data: {
+                    'GR_ID': $('#riskGroupSelectBox option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                    $.each(data, function (index, item) {
+                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.v_ID + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+
+    function div_activityContainerShowHide() {
+        if ($('#riskSubGroupSelectBox option:selected').val() == 0)
+            $('#div_activityContainer').hide();
+        else
+            $('#div_activityContainer').show();
+        $('#riskActivitiesSelectBox').empty();
+        $.ajax({
+            url: "/Execution/risk_activities",
+            type: "POST",
+            data:
+            {
+                'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                $.each(data, function (index, item) {
+                    $('#riskActivitiesSelectBox').append("<option value=\"" + item.activitY_ID + "\"> " + item.description + "</option>");
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+
+
     function ShowDepartmentAuditPeriods() {
         if ($('#deptSelectionBox option:selected').val() == 0)
             $('.hiddenContainers').addClass('d-none');
@@ -55,7 +113,7 @@
                 success: function (data) {
                     $('#periodSelectionBox').empty();
                     $('#periodSelectionBox').append('<option value="0" id="0">--Select Audit Period--</option>')
-                    //console.log(data);
+                    console.log(data);
                     $.each(data, function (index, period) {
                         $('#periodSelectionBox').append('<option value="' + period.id + '" id="' + period.id + '">' + period.description + '</option>')
                     });
@@ -106,7 +164,7 @@
                     $('#branchSelectionBox').empty();
                     $('#branchInfoArea').hide();
                     $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-                    //console.log(data);
+                    console.log(data);
                     $.each(data, function (index, branch) {
                         $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
                     });
@@ -133,7 +191,7 @@
                 success: function (data) {
                     $('#divDeptSelectionBox').empty();
                     $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-                    //console.log(data);
+                    console.log(data);
                     $.each(data, function (index, dept) {
                         $('#divDeptSelectionBox').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
                     });
@@ -271,119 +329,74 @@
     }
 </script>
 <div class="row w-100">
+    <br />
     <div class="col-md-8">
+        <br />
         <h3 style="color: #45c545;">Dashboard for Divisional Head</h3>
 
         <div class="row col-md-12 mt-3">
             <h5>Select Department</h5>
             <select id="department" class="form-select form-control">
                 <option value="0" id="0" selected>--Select Department--</option>
+
+                @{
+                    if (ViewData["AuditDepartments"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                        {
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        }
+                    }
+                }
+
+
             </select>
         </div>
         <div class="row col-md-12 mt-3">
             <h5>Nature of Violation</h5>
-            <select id="natureofviolation" class="form-select form-control" aria-label="Default select example">
+            <select id="natureofviolation" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
                 <option value="0" id="0" selected>Nature of Violation</option>
-                <!--@{
-                if (ViewData["AuditZonesList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
+                @{
+                    if (ViewData["Voilation_Cat"] != null)
                     {
-                        <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                        foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
+                        {
+                            <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                        }
                     }
                 }
-                }-->
             </select>
         </div>
-    </div>
-    <!--      <div class="col-md-6">
-                    <h5>Select Audit Branch</h5>
-                    <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
-                        <option value="0" id="0">--Select Audit Branch--</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row nonFieldAuditFields mt-3">
-                <div class="col-md-6">
-                    <h5>Select Audit Division</h5>
-                    <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
-                        <option value="0" id="0" selected>--Select Audit Division--</option>
-                        @{
-                            if (ViewData["DivisionsList"] != null)
-                            {
-                                foreach (var item in (dynamic)(ViewData["DivisionsList"]))
-                                {
-                                    <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                                }
-                            }
-                        }
-                    </select>
 
-                </div>
-                <div class="col-md-6">
-                    <h5>Select Audit Department</h5>
-                    <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
-                        <option value="0" id="0">--Select Audit Department--</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-12"><h5>Entities</h5></div>
-                <div class="col-md-12">
-                    <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                        <option value="0" id="0" selected>--Select Sub Entity--</option>
 
-                    </select>
-                </div>
-               </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-12"><h5>Execution Period</h5></div>
-                <div class="col-md-6">
-                    Start Date:<input id="executionPeriodFromField" class="form-control" type="date" />
-                </div>
-                <div class="col-md-6">
-                    End Date:<input id="executionPeriodToField" class="form-control" type="date" />
-                </div>
-            </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-12"><h5>Operational/Audit Period</h5></div>
-                <div class="col-md-6">
-                    Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
-                </div>
-                <div class="col-md-6">
-                    End Date:<input id="auditPeriodToField" class="form-control" type="date" />
-                </div>
-            </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-12">
-                    <h5>Select Audit Team</h5>
-                </div>
-                <div class="col-md-12">
-                    <select id="teamSelectionBox" class="form-select form-control" aria-label="Default select example">
-                    </select>
-                </div>
-            </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-12">
-                    <h5>Remarks/Instructions for Auditors</h5>
-                </div>
-                <div class="col-md-12">
-                    <textarea id="remarksAdditionalInfoField" rows="4" class="form-control"></textarea>
-                </div>
-            </div>
-            <div class="row mt-3 w-100">
-                <div class="col-md-4">
-                    <h5>Is Traveling Required</h5>
-                </div>
-                <div class="col-md-8">
-                    <input id="isTravelingRequiredField" type="checkbox" style="font-size:20px;" />
-                </div>
-            </div>
-
+        <div id="div_risksubcategory" style="display:none;" class="row col-md-12 mt-3">
+            <h5>Nature/Area</h5>
+            <select id="riskSubGroupSelectBox" onchange="div_activityContainerShowHide();" class="form-select form-control" aria-label="Default select example">
+            </select>
 
         </div>
-    </div>-->
+        <div id="div_activityContainer" style="display:none;" class="row col-md-12 mt-3">
+            <h5>Risk</h5>
+            <!--  <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
+        </select>-->
+            <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Risk Category--</option>
+                @{
+                    if (ViewData["RiskList"] != null)
+                    {
 
+                        foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                        {
+                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                        }
+
+                    }
+                }
+            </select>
+
+        </div>
+
+    </div>
     <div class="mt-3 col-md-12">
         <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
             <thead>
