@@ -26,9 +26,10 @@ namespace AIS
         {
             try
             {
+                return true;
                 //------WORKING CODE COMMENTED DO NOT DELETE ------
 
-                EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
+               /* EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient(em.Host);
                 mail.From = new MailAddress(em.EMAIL);
@@ -41,7 +42,7 @@ namespace AIS
                 SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);
                 SmtpServer.EnableSsl = true;
                 SmtpServer.Send(mail);
-                return true;
+                return true;*/
             }
             catch (Exception) { return false; }
         }

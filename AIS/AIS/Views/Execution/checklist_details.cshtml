@@ -59,6 +59,7 @@
         var isFound = false;
         $.each(g_memoObj, function (i, v) {
             if (v.id == g_observationId) {
+                alert('found', v.id, g_observationId);
                 isFound = true;
                 v.memo = memo.memo;
                 v.id = memo.id;
@@ -67,6 +68,7 @@
             }
 
         });
+        alert('Notfound', g_observationId);
         if (!isFound)
             g_memoObj.push(memo);
     }
@@ -81,6 +83,7 @@
         if (value != 0) {
             $.each(g_memoObj, function (i, v) {
                 if (v.id == id) {
+                    alert('found',id);
                     tempobj = v;
                 }
 

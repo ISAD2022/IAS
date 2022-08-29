@@ -26,7 +26,9 @@
             });
         });
     });
-
+    function reloadLocation() {
+        location.reload();
+    }
     function referredBackAuditCriterias() {
         var ids = [];
         $.each($('.actionCriteria'), function (i, v) {
@@ -74,9 +76,7 @@
             });
         }
     }
-    function reloadLocation() {
-        location.reload();
-    }
+   
    
 </script>
 
