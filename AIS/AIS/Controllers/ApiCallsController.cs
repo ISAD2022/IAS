@@ -141,14 +141,29 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditChecklistSubModel> sub_checklist(int T_ID)
+        public List<AuditChecklistSubModel> sub_checklist(int T_ID, int ENG_ID)
         {
-            return dBConnection.GetAuditChecklistSub(T_ID);
+            return dBConnection.GetAuditChecklistSub(T_ID,ENG_ID);
         }
         [HttpPost]
         public List<AuditChecklistDetailsModel> checklist_details(int S_ID)
         {
             return dBConnection.GetAuditChecklistDetails(S_ID);
+        }
+        [HttpPost]
+        public bool save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID )
+        {
+            foreach(ListObservationModel m in LIST_OBS)
+            {
+                ObservationModel ob = new ObservationModel();
+                ob.SUBCHECKLIST_ID = S_ID;
+                ob.ENGPLANID = ENG_ID;
+                ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
+                ob.OBSERVATION_TEXT = m.MEMO;
+                ob.STATUS = 1;
+                dBConnection.SaveAuditObservation(ob);
+            }
+            return true;
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -5,10 +5,14 @@
 <script type="text/javascript">
     var g_memoObj = [];
     var g_observationId = 0;
+    var g_endId = 0;
+    var S_ID = 0;
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
         var checklistsub_id = url.searchParams.get("id");
+        S_ID = checklistsub_id;
+        g_endId = url.searchParams.get("engId");
         $.ajax({
             url: "/ApiCalls/checklist_details",
             type: "POST",
@@ -21,7 +25,6 @@
                 $('#checklistDetailsPanel tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-
                     $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="0" id="0" selected>No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
                     sr++;
                 });
@@ -47,23 +50,48 @@
         }
     }
 
+    function saveChecklistObservations() {
+       $.ajax({
+            url: "/ApiCalls/save_observations",
+            type: "POST",
+            data: {
+                'LIST_OBS': g_memoObj,
+                'ENG_ID': g_endId,
+                'S_ID':S_ID
+            },
+            cache: false,
+            success: function (data) {
+                console.log('subhcekclist', data);
+                $('#checklistDetailsPanel tbody').empty();
+                var sr = 1;
+                $.each(data, function (i, v) {
+                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="0" id="0" selected>No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
+                    sr++;
+                });
+
+            },
+            dataType: "json",
+        });
+
+    }
+
     function saveMemoContent() {
         var memo = {
-            'memo': $('.richText-editor').html(),
-            'id': g_observationId,
-            'days': $('#viewMemo_replydays option:selected').val(),
-            'loancase': $('#viewMemo_loancase').val(),
-            'attachments': $('#viewMemo_attachments').val()
+            'MEMO': $('.richText-editor').html(),
+            'ID': g_observationId,
+            'DAYS': $('#viewMemo_replydays option:selected').val(),
+            'LOANCASE': $('#viewMemo_loancase').val(),
+            'ATTACHMENTS': $('#viewMemo_attachments').val()
         };
         var isFound = false;
         $.each(g_memoObj, function (i, v) {
-            if (v.id == g_observationId) {
+            if (v.ID == g_observationId) {
                 isFound = true;
-                g_memoObj[i].memo = memo.memo;
-                g_memoObj[i].id = memo.id;
-                g_memoObj[i].loancase = memo.loancase;
-                g_memoObj[i].days = memo.days;
-                g_memoObj[i].attachments = memo.attachments;
+                g_memoObj[i].MEMO = memo.MEMO;
+                g_memoObj[i].ID = memo.ID;
+                g_memoObj[i].LOANCASE = memo.LOANCASE;
+                g_memoObj[i].DAYS = memo.DAYS;
+                g_memoObj[i].ATTACHMENTS = memo.ATTACHMENTS;
             }
 
         });
@@ -76,26 +104,26 @@
         var value = $($(e).parent().parent().find('.checklistaction').eq(0)).val();
         
         var tempobj = {
-            id:'0',
-            'memo':'',
-            'days': '',
-            'loancase': '',
-            'attachments': ''
+            ID:'0',
+            'MEMO':'',
+            'DAYS': '',
+            'LOANCASE': '',
+            'ATTACHMENTS': ''
         };
         if (value != 0) {
             $.each(g_memoObj, function (i, v) {
-                if (v.id == id) {
+                if (v.ID == id) {
                     tempobj = v;
                 }
 
             });
         }
-        if (tempobj.id != 0) {
+        if (tempobj.ID != 0) {
             $('#viewMemoModel').modal('show');
-            $('.richText-editor').html(tempobj.memo);
-            $('#viewMemo_replydays').val(tempobj.days);
-            $('#viewMemo_loancase').val(tempobj.loancase);
-            $('#viewMemo_attachments').val(tempobj.attachments);
+            $('.richText-editor').html(tempobj.MEMO);
+            $('#viewMemo_replydays').val(tempobj.DAYS);
+            $('#viewMemo_loancase').val(tempobj.LOANCASE);
+            $('#viewMemo_attachments').val(tempobj.ATTACHMENTS);
         } else {
             alert("Please select Yes to create Observation");
             return;
@@ -114,16 +142,20 @@
         <thead>
             <tr>
                 <th class="col-md-1 font-weight-bold">Sr. No</th>
-                <th class="col-md-3 font-weight-bold">Parent/Sub Process</th>
+                <th class="col-md-2 font-weight-bold">Parent/Sub Process</th>
                 <th class="col-md-3 font-weight-bold">Voilation</th>
                 <th class="col-md-3 font-weight-bold">Heading/Sublist Detail</th>
                 <th class="col-md-2 font-weight-bold text-center">Yes/No</th>
-                <th class="col-md-1 font-weight-bold"></th>
+                <th class="col-md-2 font-weight-bold"></th>
             </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
+</div>
+<div class="row mt-3">
+    <button class="col-md-2 btn btn-secondary">Back to Sub Process</button>
+    <button onclick="saveChecklistObservations();" class="col-md-2 btn btn-success" style="margin-left:10px;">Save</button>
 </div>
 
 
