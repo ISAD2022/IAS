@@ -61,14 +61,7 @@
             },
             cache: false,
             success: function (data) {
-                console.log('subhcekclist', data);
-                $('#checklistDetailsPanel tbody').empty();
-                var sr = 1;
-                $.each(data, function (i, v) {
-                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="0" id="0" selected>No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
-                    sr++;
-                });
-
+                alert("Memos are successfully submitted to concerned quarters");               
             },
             dataType: "json",
         });
@@ -154,8 +147,8 @@
     </table>
 </div>
 <div class="row mt-3">
-    <button class="col-md-2 btn btn-secondary">Back to Sub Process</button>
-    <button onclick="saveChecklistObservations();" class="col-md-2 btn btn-success" style="margin-left:10px;">Save</button>
+    <button class="col-md-3 btn btn-secondary">Back to Sub Process</button>
+    <button onclick="saveChecklistObservations();" class="col-md-3 btn btn-success" style="margin-left:10px;">Save & Submit to Auditee</button>
 </div>
 
 
