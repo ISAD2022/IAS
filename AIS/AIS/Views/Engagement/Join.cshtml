@@ -21,7 +21,10 @@
                 $('#ent_name_field').html(data.entitY_NAME);
                 $('#ent_risk_field').html(data.risk);
                 $('#ent_size_field').html(data.size);
+                var today = new Date();
+                var jDate = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
                 var sDate = data.starT_DATE.split('T')[0];
+               
                 var sfromat = sDate.split('-')[2] + "/" + sDate.split('-')[1] + "/" + sDate.split('-')[0];
                 var eDate = data.enD_DATE.split('T')[0];
                 var efromat = eDate.split('-')[2] + "/" + eDate.split('-')[1] + "/" + eDate.split('-')[0];
@@ -30,7 +33,7 @@
                 $('#ent_team_name_field').html(data.teaM_NAME);
                 $('#ent_period_field').html(data.audiT_PERIOD);
                 $.each(data.teaM_DETAILS, function (i, v) {
-                    $('#teamDetailsPanel tbody').append('<tr><td>' + v.emP_NAME + '</td><td>' + v.pP_NO + '</td><td><input id="joinDate_' + v.pP_NO + '" type="date" class="form-control" /></td><td><input id="completeDate_' + v.pP_NO +'" type="date" class="form-control" /></td><td>' + v.iS_TEAM_LEAD +'</td></tr>')
+                    $('#teamDetailsPanel tbody').append('<tr><td>' + v.emP_NAME + '</td><td>' + v.pP_NO + '</td><td>' + jDate + '</td> <td>' + efromat + '</td> <td>' + v.iS_TEAM_LEAD + '</td></tr>')
                 });
 
             },
@@ -116,33 +119,43 @@
 
     <div class="col-md-6">
 
-        <table class="table table-bordered table-sm mb-0 mt-3 bg-white table-hover table-striped" id="Joining Report">
+        <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped" >
             <thead>
                 <tr>
-                    <th>Sample Criteria</th>
+                    <th><h6>Sample Criteria</h6></th>
                 </tr>
             </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
+            <tbody>
+                <tr>
+                    <td width="150">Branch Code</td>
+                    <td width="200">22301</td>
+                </tr>
+                <tr>
+                    <td>Branch Name</td>
+                    <td>Bahawalpur</td>
+                </tr>
+                <tr>
+                    <td>Loan Case</td>
+                    <td>585598</td>
+                </tr>
+                <tr>
+                    <td>Principle Amount</td>
+                    <td>80000</td>
+                </tr>
+                <tr>
+                    <td>Interest</td>
+                    <td>10679</td>
+                </tr>
+                <tr>
+                    <td>Outstanding</td>
+                    <td>90679</td>
+                </tr>
+                <tr>
+                    <td>Disbursement Date</td>
+                    <td>19/01/2018</td>
+                </tr>
 
-                </tbody>
+            </tbody>
         </table>
     </div>
 

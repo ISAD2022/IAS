@@ -273,7 +273,7 @@
 </script>
 
 <div class="row text-center" style="margin-top:30px;">
-    <h3>Risk Wise Observation</h3>
+    <h4 style="color: #45c545;">Risk Wise Observation</h4>
 
 
 </div>
@@ -294,19 +294,19 @@ List group
 </ul>
 -->
 
-<div class="row w-100 mt-3">
-    <div class="col-md-8">
-        <h5>Select Risk Category</h5>
+<div class="row col-md-12 mt-3">
+    <div class=" row col-md-12">
+        <h5 >Select Risk Category</h5>
         <select id="entity" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
             <option value="0" id="0" selected>--Select Risk Category--</option>
             <option value="1" id="1">High</option>
             <option value="2" id="2">Medium</option>
             <option value="3" id="3">Low</option>
         </select>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <h5>Select Zone</h5>
-                <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
+     </div>   
+    <div class="row col-md-6 mr-2 mt-3">
+        <h5>Select Zone</h5>
+        <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
                     <option value="0" id="0" selected>--Select Zone--</option>
                     @{
                         if (ViewData["AuditZonesList"] != null)
@@ -317,57 +317,52 @@ List group
                             }
                         }
                     }
-                </select>
-            </div>
-            <div class="col-md-6">
-                <h5>Select Branch</h5>
-                <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
+        </select>
+    </div>
+    <div class="row col-md-6 mt-3">
+        <h5>Select Branch</h5>
+        <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
                     <option value="0" id="0">--Select Branch--</option>
-                </select>
-            </div>
-        </div>
-        <div class="row nonFieldAuditFields mt-3">
-            <div class="col-md-6">
-                <h5>Select Division</h5>
-                <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Division--</option>
-                    @{
-                        if (ViewData["DivisionsList"] != null)
+        </select>
+     </div>
+    </div>
+        
+    <div class="row col-md-12 mt-3">
+        <div class="row col-md-6 mr-2">
+            <h5>Select Division</h5>
+            <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Division--</option>
+                @{
+                    if (ViewData["DivisionsList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["DivisionsList"]))
                         {
-                            foreach (var item in (dynamic)(ViewData["DivisionsList"]))
-                            {
-                                <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                            }
+                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
                         }
                     }
-                </select>
-
-            </div>
-            <div class="col-md-6">
-                <h5>Select Department</h5>
-                <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0">--Select Department--</option>
-                </select>
-            </div>
+                }
+            </select>
+        </div>
+        <div class="row col-md-6">
+            <h5>Select Department</h5>
+            <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0">--Select Department--</option>
+            </select>
         </div>
         <div class="row mt-3 col-md-12">
-            <div class="col-md-12"><h5>Select Entities</h5></div>
-            <div class="col-md-12">
-                <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Entity--</option>
-                </select>
-            </div>
+            <h5>Select Entities</h5>
+            <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Entity--</option>
+            </select>
         </div>
         <div class="row mt-3 col-md-12">
-            <div class="col-md-12"><h5>Audit Year</h5></div>
-            <div class="col-md-12">
-                <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Audit Year--</option>
-                </select>
-            </div>
+            <h5>Audit Year</h5>
+            <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Audit Year--</option>
+            </select>
         </div>
     </div>
-</div>
+    
 
 <div class="row col-md-12 w-100 mt-3">
     <button class="btn btn-primary">Find</button>
