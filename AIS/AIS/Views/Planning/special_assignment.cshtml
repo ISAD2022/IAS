@@ -154,11 +154,47 @@
     }
     function previewAuditPlan() {
 
+        if ($('#entitySelectionBox option:selected').val() == 0 && $('#auditZoneSelectionBox option:selected').val() == 0 && $('#branchSelectionBox option:selected').val() == 0 && $('#divSelectionBox option:selected').val() == 0) 
+        {
+            alert('No Field Selected'); return;
+
+        }
+
+        if ($('#auditZoneSelectionBox option:selected').val() == 0 && $('#divSelectionBox option:selected').val() == 0) {
+
+            alert('Division or Audit Zone  Team Not Selected'); return;
+        }
+
+        if ($('#branchSelectionBox option:selected').val() == 0 && $('#divDeptSelectionBox option:selected').val() == 0) {
+
+            alert('Department or Branch Not Selected'); return;
+
+        }
+
+        if ($('#teamSelectionBox option:selected').val() == 0) {
+
+            alert('Audit Team Not Selected'); return;
+        }
+
+        if ($('#executionPeriodFromField').val() == "" || $('#executionPeriodToField').val() == "") 
+        {
+            alert('Execution Period Not Selected'); return;
+
+        }
+
+        
+
+        if ($('#auditPeriodFromField').val() == "" || $('#auditPeriodToField').val() == "")
+
+        {
+            alert('Operational Period Not Selected'); return;
+
+        }
         $('#previewAuditPlan').modal('show');
         $('#auditorDept').text($('#deptSelectionBox option:selected').text());
         $('#auditorPlan').text($('#periodSelectionBox option:selected').text());
         $('#descModal_field').html($('#entitySelectionBox option:selected').text());
-        if ($('#deptSelectionBox option:selected').val() == '473') {
+        if ($('#auditZoneSelectionBox option:selected').val() != 0) {
             $('#divzone_field').text($('#auditZoneSelectionBox option:selected').text());
             $('#deptBranch_field').text($('#branchSelectionBox option:selected').text());
 
@@ -245,7 +281,7 @@
     function getSubEntities() {
         if ($('#divSelectionBox option:selected').val() != 0) {
             $('#entitySelectionBox').empty();
-            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
+            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Not Applicable--</option>');
             $.ajax({
                 url: "/Setup/get_sub_entities",
                 type: "POST",
@@ -265,7 +301,7 @@
 
         } else {
             $('#entitySelectionBox').empty();
-            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
+            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Not Applicable--</option>');
         }
 
 
@@ -312,7 +348,7 @@ List group
                     {
                         foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
                         {
-                            <option selected="selected" value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                         }
                     }
                 }
@@ -388,7 +424,7 @@ List group
         </div>
         <div class="row col-md-8">
             <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Sub Entity--</option>
+                <option value="0" id="0" selected>--Not Applicable--</option>
             </select>
         </div>
     </div>
@@ -408,10 +444,10 @@ List group
     </div>
     <div class="row col-md-12">
         <div class="row mr-2 col-md-5">
-            Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
+            Start Date:<input value="0" id="executionPeriodFromField" class="form-control" type="date" />
         </div>
         <div class="row ml-2 col-md-5">
-            End Date:<input id="auditPeriodToField" class="form-control" type="date" />
+            End Date:<input value="0" id="executionPeriodToField" class="form-control" type="date" />
         </div>
     </div>
     <div class="row mt-3 col-md-12">
@@ -419,10 +455,10 @@ List group
     </div>
     <div class="row col-md-12">
         <div class="row mr-2 col-md-5">
-            Start Date:<input id="auditPeriodFromField" class="form-control" type="date" />
+            Start Date:<input value="0" id="auditPeriodFromField" class="form-control" type="date" />
         </div>
         <div class="row ml-2 col-md-5">
-            End Date:<input id="auditPeriodToField" class="form-control" type="date" />
+            End Date:<input value="0" id="auditPeriodToField" class="form-control" type="date" />
         </div>
     </div>
     
