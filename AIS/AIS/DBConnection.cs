@@ -164,6 +164,7 @@ namespace AIS
                     menuPage.Page_Path = rdr["PAGE_PATH"].ToString();
                     menuPage.Page_Order = Convert.ToInt32(rdr["PAGE_ORDER"]);
                     menuPage.Status = rdr["STATUS"].ToString();
+                    menuPage.Hide_Menu = Convert.ToInt32(rdr["HIDE_MENU"]);
                     modelList.Add(menuPage);
                 }
             }

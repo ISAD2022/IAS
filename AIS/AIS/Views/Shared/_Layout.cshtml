@@ -52,7 +52,10 @@
                                                 foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
                                                 {
                                                     if (itemPage.Menu_Id == item.Menu_Id)
-                                                    {<a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>}
+                                                    {
+                                                        if (itemPage.Hide_Menu == 0)
+                                                        {<a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>}
+                                                    }
 
                                             }
                                             }
