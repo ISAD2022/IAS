@@ -403,7 +403,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE appservices.t_qar_users SET PASSWORD = '"+ enc_pass + "' WHERE USERID="+user.USER_ID+" and PPNO='"+user.PPNO+"'";
+                cmd.CommandText = "UPDATE t_user SET PASSWORD = '"+ enc_pass + "' WHERE USERID="+user.USER_ID+" and PPNO='"+user.PPNO+"'";
                 cmd.ExecuteReader();
                 if(user.ROLE_ID!=0)
                 {
