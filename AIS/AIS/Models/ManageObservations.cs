@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
 {
-    public class AssignedObservations
+    public class ManageObservations
     {        
         public int ID { get; set; }
         public int OBS_ID { get; set; }
@@ -22,5 +22,6 @@ namespace AIS.Models
         public string ENTITY_NAME { get; set; }
         public string MEMO_DATE { get; set; }
         public string MEMO_REPLY_DATE{ get; set; }
+        public string MEMO_NO { get; set; }
     }
 }

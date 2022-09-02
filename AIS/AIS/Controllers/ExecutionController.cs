@@ -229,6 +229,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult manage_observations()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AssignedObservations"] = dBConnection.GetAssignedObservations();
+             if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult Sub_voilation_audit_observation()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -271,15 +290,6 @@ namespace AIS.Controllers
         {
             return dBConnection.GetVoilationSubGroup(vsg.V_ID);
         }
-
-
-
-
-
-
-
-
-
 
         [HttpPost]
         public List<AuditObservationTemplateModel> audit_observation_template(RiskActivityModel ra)

@@ -26,6 +26,7 @@ namespace AIS.Models
         public int TRANSACTION_ID { get; set; }
         public int RISKMODEL_ID { get; set; }
         public int SUBCHECKLIST_ID { get; set; }
+        public int CHECKLISTDETAIL_ID { get; set; }
 
     }
 }

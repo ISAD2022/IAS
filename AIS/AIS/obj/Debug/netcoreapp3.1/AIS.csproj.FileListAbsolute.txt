@@ -340,3 +340,4 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Executio
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\checklist_details.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\subchecklist.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\RiskAssessment\_ViewImports.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\manage_observations.cshtml.g.cs

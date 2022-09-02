@@ -157,6 +157,7 @@ namespace AIS.Controllers
             {
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = S_ID;
+                ob.CHECKLISTDETAIL_ID =Convert.ToInt32(m.ID.Split("obs_")[1]);
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;

@@ -26,12 +26,12 @@
         if (status.trim() == "Submitted to Concerned".trim()) {
             $('#replyButton_memoReply').removeClass('d-none');
             $('#viewMemo_responded').parent().addClass('d-none');
-            $('#viewMemo_reply').parent().removeClass('d-none');
+            $('#replyrichTextWrapper').removeClass('d-none');
             $('#viewMemo_responded').html('');
         } else {
             $('#replyButton_memoReply').addClass('d-none');
             $('#viewMemo_responded').parent().removeClass('d-none');
-            $('#viewMemo_reply').parent().addClass('d-none');
+            $('#replyrichTextWrapper').addClass('d-none');
             $('#viewMemo_responded').html(reply_txt);
         }
     }
@@ -125,7 +125,7 @@
                         <label for="viewMemo_responded">Memo</label>
                         <div id="viewMemo_responded" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
-                    <div class="form-group">
+                    <div id="replyrichTextWrapper" class="form-group">
                         <label for="viewMemo_reply">Reply</label>
                         <textarea id="viewMemo_reply" style="max-height:150px; height:auto;" class="form-control"></textarea>
                     </div>

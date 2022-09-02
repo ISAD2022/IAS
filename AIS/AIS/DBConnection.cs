@@ -2124,7 +2124,7 @@ namespace AIS
             String ReplyByQuery = "(select pe.entity_code from t_au_plan_eng pe where pe.eng_id= "+ob.ENGPLANID+")";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + ob.REPLYDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ob.MEMO_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + RiskModelQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "')";
+                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + ob.REPLYDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ob.MEMO_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + RiskModelQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "')";
                 cmd.ExecuteReader();
                 cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) ,  '" + ob.OBSERVATION_TEXT + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
@@ -2137,7 +2137,7 @@ namespace AIS
             con.Close();
             return true;
         }
-        public List<AssignedObservations> GetAssignedObservations(int s_id = 0)
+        public List<AssignedObservations> GetAssignedObservations()
         {
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2212,6 +2212,61 @@ namespace AIS
             }
             con.Close();
             return true;
+        }
+        public List<AssignedObservations> GetManagedObservations()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (loggedInUser.UserLocationType == "H")
+                query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingDept;
+            else if (loggedInUser.UserLocationType == "B")
+                query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingBranch;
+            else if (loggedInUser.UserLocationType == "Z")
+            {
+                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingAuditZone;
+                else
+                    query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingZone;
+            }
+            List<AssignedObservations> list = new List<AssignedObservations>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query + "  order by t.OBS_ID asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AssignedObservations chk = new AssignedObservations();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_TEXT_ID = Convert.ToInt32(rdr["OBS_TEXT_ID"]);
+                    chk.ASSIGNEDTO_ROLE = Convert.ToInt32(rdr["ASSIGNEDTO_ROLE"]);
+                    chk.ASSIGNEDBY = Convert.ToInt32(rdr["ASSIGNEDBY"]);
+                    chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
+                    //chk.LASTUPDATEDBY = Convert.ToInt32(rdr["LASTUPDATEDBY"]);
+                    //chk.LASTUPDATEDDATE = Convert.ToDateTime(rdr["LASTUPDATEDDATE"]);
+                    chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
+                    chk.REPLIED = rdr["REPLIED"].ToString();
+                    if (chk.REPLIED.ToString().ToLower() == "y")
+                    {
+                        cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
+                        OracleDataReader rdr2 = cmd.ExecuteReader();
+                        while (rdr2.Read())
+                        {
+                            if (rdr2["REPLY"].ToString() != "" && rdr2["REPLY"].ToString() != null)
+                                chk.REPLY_TEXT = rdr2["REPLY"].ToString();
+                        }
+                    }
+                    chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
+                    chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
         }
     }
 }
