@@ -2213,55 +2213,29 @@ namespace AIS
             con.Close();
             return true;
         }
-        public List<AssignedObservations> GetManagedObservations()
+        public List<ManageObservations> GetManagedObservations()
         {
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
-            string query = "";
-            if (loggedInUser.UserLocationType == "H")
-                query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingDept;
-            else if (loggedInUser.UserLocationType == "B")
-                query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingBranch;
-            else if (loggedInUser.UserLocationType == "Z")
-            {
-                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
-                    query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingAuditZone;
-                else
-                    query = query + " and t.ASSIGNEDTO_ROLE=" + loggedInUser.UserPostingZone;
-            }
-            List<AssignedObservations> list = new List<AssignedObservations>();
+            List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query + "  order by t.OBS_ID asc";
+                cmd.CommandText = "select  o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observations_auditee_response ar inner join t_au_observation o on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id and t.status_id=2 inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid  Where t.teammember_ppno="+loggedInUser.PPNumber+" order by o.memo_number";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    AssignedObservations chk = new AssignedObservations();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    ManageObservations chk = new ManageObservations();
+
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
-                    chk.OBS_TEXT_ID = Convert.ToInt32(rdr["OBS_TEXT_ID"]);
-                    chk.ASSIGNEDTO_ROLE = Convert.ToInt32(rdr["ASSIGNEDTO_ROLE"]);
-                    chk.ASSIGNEDBY = Convert.ToInt32(rdr["ASSIGNEDBY"]);
-                    chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
-                    //chk.LASTUPDATEDBY = Convert.ToInt32(rdr["LASTUPDATEDBY"]);
-                    //chk.LASTUPDATEDDATE = Convert.ToDateTime(rdr["LASTUPDATEDDATE"]);
-                    chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
-                    chk.REPLIED = rdr["REPLIED"].ToString();
-                    if (chk.REPLIED.ToString().ToLower() == "y")
-                    {
-                        cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
-                        OracleDataReader rdr2 = cmd.ExecuteReader();
-                        while (rdr2.Read())
-                        {
-                            if (rdr2["REPLY"].ToString() != "" && rdr2["REPLY"].ToString() != null)
-                                chk.REPLY_TEXT = rdr2["REPLY"].ToString();
-                        }
-                    }
-                    chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
-                    chk.STATUS = rdr["STATUS"].ToString();
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    
+                    chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.OBS_REPLY = rdr["OBS_REPLY"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
-                    chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     list.Add(chk);
                 }
             }

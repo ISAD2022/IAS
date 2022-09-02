@@ -4,7 +4,19 @@
 }
 
 <script type="text/javascript">
-   
+    $(document).ready(function () {
+        var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
+        $('#entityNameField').val(entName);
+        $.each($('.obs_text'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
+        $.each($('.obs_reply'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
+
+    });
 </script>
 
 
@@ -17,7 +29,7 @@
     </div>
 
     <div class="row col-md-10">
-        <input disabled="disabled" class="form-control ml-1" type="text" />
+        <input id="entityNameField" disabled="disabled" class="form-control ml-1" type="text" />
     </div>
 
 
@@ -36,69 +48,70 @@
 
 
 <div class="row col-md-12 mt-4">
-   
+
 
     <div class="row col-md-12">
         <h3 style="display: block; color: #45c545;">Audit Observations</h3>
-        <table id="checklistPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+        <table id="manageObsPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color:aquamarine;">
                 <tr>
-                    <th class="col-md-2">Memo No.</th>
+                    <th class="col-md-1">Memo No.</th>
                     <th class="col-md-3">Audit Observation</th>
                     <th class="col-md-3">Auditee Response</th>
-                    <th class="col-md-2">Risk Category</th>
-                    <th class="col-md-2">Settlement Status</th>
+                    <th class="col-md-1">Risk Category</th>
+                    <th class="col-md-1">Status</th>
+                    <th class="d-none"></th>
+                    <th class="col-md-3 text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @{
-                    if (ViewData["AssignedObservations"] != null)
+                    if (ViewData["ManageObservations"] != null)
                     {
 
-                        var index = 1;
-                        foreach (var item in (dynamic)(ViewData["AssignedObservations"]))
+                        foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                            string sdate = @item.MEMO_DATE.ToString().Split(" ")[0];
-                            string edate = @item.MEMO_REPLY_DATE.ToString().Split(" ")[0];
                             <tr>
-                                <td class="text-center">@index</td>
-                                <td>@item.ENTITY_NAME</td>
-                                <td>@sdate</td>
-                                <td>@edate</td>
-                                <td>@item.STATUS</td>
-                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS','@item.REPLY_TEXT');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
+                                <td>@item.MEMO_NO</td>
+                                <td class="obs_text" data="@item.OBS_TEXT"></td>
+                                <td class="obs_reply" data="@item.OBS_REPLY"></td>
+                                <td>@item.OBS_RISK</td>
+                                <td>@item.OBS_STATUS</td>
+                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                @if (item.OBS_STATUS_ID == 3)
+                                {
+                                    if (item.OBS_RISK_ID == 1)
+                                    {
+                            <td class="text-center">
+                                <a class="text-hover text-danger mr-5px">Settle</a>
+                                /
+                                <a class="text-hover text-primary ml-5px" >Add to Draft</a>
+                            </td>
+                                    }
+                                    else
+                                    {
+                            <td class="text-center">
+                                
+                                <a class="text-hover text-primary">Add to Draft</a>
+                            </td>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <td>-</td>
+                                }
                             </tr>
-                            index++;
                         }
                     }
                 }
             </tbody>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
 
-                    <td>
-                        <select class="checklistaction form-select form-control" onchange="" aria-label="Default select example">
-                            <option value="0" id="0" selected>No</option>
-                            <option value="1" id="1">Yes</option>
-                        </select>
-                    </td>
-                </tr>
-            </tbody>
         </table>
     </div>
+   
 
 </div>
 
-<div class="row col-md-12">
 
-    <div class="col-md-7 mt-4">
-        <button class="btn btn-primary" style="float:right;">Add To Draft Report</button>
-        <button class="btn btn-primary" style="float:right;">Settle/Resolve</button>
-    </div>
-
-</div>
 

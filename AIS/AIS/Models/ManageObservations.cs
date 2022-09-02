@@ -6,22 +6,14 @@ namespace AIS.Models
 {
     public class ManageObservations
     {        
-        public int ID { get; set; }
         public int OBS_ID { get; set; }
-        public int OBS_TEXT_ID { get; set; }
-        public int ASSIGNEDTO_ROLE { get; set; }
-        public int ASSIGNEDBY { get; set; }
-        public DateTime? ASSIGNED_DATE { get; set; }
-        public int LASTUPDATEDBY { get; set; }
-        public DateTime? LASTUPDATEDDATE { get; set; }
-        public string IS_ACTIVE { get; set; }
-        public string REPLIED { get; set; }
-        public string OBSERVATION_TEXT { get; set; }
-        public string REPLY_TEXT { get; set; }
-        public string STATUS { get; set; }
-        public string ENTITY_NAME { get; set; }
-        public string MEMO_DATE { get; set; }
-        public string MEMO_REPLY_DATE{ get; set; }
-        public string MEMO_NO { get; set; }
+       public string ENTITY_NAME { get; set; }
+        public int MEMO_NO { get; set; }
+        public string OBS_TEXT { get; set; }
+        public string OBS_REPLY { get; set; }
+        public int OBS_RISK_ID { get; set; }
+        public string OBS_RISK { get; set; }
+        public int OBS_STATUS_ID { get; set; }
+        public string OBS_STATUS { get; set; }
     }
 }
