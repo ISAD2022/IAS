@@ -5,12 +5,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#viewMemo_memo111').richText({
-            imageUpload: false,
-            fileUpload: false,
-            videoEmbed: false,
-            urls: false
-        });
+      
         $('#viewMemo_reply').richText({
             imageUpload: false,
             fileUpload: false,
@@ -24,6 +19,25 @@
         //$('#viewMemo_memoTxt').val($('#viewMemo_memo').text());
 
     }
+    function replyMemo() {
+        replyTxt = $('#viewMemo_reply').text();
+        $.ajax({
+            url: "/Setup/process_transactions",
+            type: "POST",
+            data: {
+                'ProcessDetailId': $('#riskSubGroupSelectBox option:selected').val(),
+            },
+            cache: false,
+            success: function (data) {
+                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                $.each(data, function (index, item) {
+                    $('#riskActivitiesSelectBox').append("<option value=\"" + item.id + "\"> " + item.description + "</option>");
+                });
+
+            },
+            dataType: "json",
+        });
+    }
 </script>
 <div class="row col-md-12 mt-3">
 
@@ -35,10 +49,10 @@
             <thead>
                 <tr>
                     <th class="col-md-1">Sr. No</th>
-                    <th class="col-md-5">Entity</th>
-                    <th class="col-md-2">Audit Start Date</th>
-                    <th class="col-md-2">Audit End Date</th>
-                    <th class="col-md-1">Status</th>
+                    <th class="col-md-4">Entity</th>
+                    <th class="col-md-2">Meno Date</th>
+                    <th class="col-md-2">Reply Till </th>
+                    <th class="col-md-2">Status</th>
                     <th class="col-md-1"></th>
                 </tr>
             </thead>
@@ -50,8 +64,8 @@
                         var index = 1;
                         foreach (var item in (dynamic)(ViewData["AssignedObservations"]))
                         {
-                            string sdate = @item.AUDIT_STARTDATE.ToString().Split(" ")[0];
-                            string edate = @item.AUDIT_ENDDATE.ToString().Split(" ")[0];
+                            string sdate = @item.MEMO_DATE.ToString().Split(" ")[0];
+                            string edate = @item.MEMO_REPLY_DATE.ToString().Split(" ")[0];
                             <tr>
                                 <td class="text-center">@index</td>
                                 <td>@item.ENTITY_NAME</td>
@@ -83,17 +97,17 @@
                 <form>
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
-                        <div id="viewMemo_memo" disabled="disabled" style="height:150px;" class="form-control"></div>
+                        <div id="viewMemo_memo" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                    
                     <div class="form-group">
                         <label for="viewMemo_reply">Reply</label>
-                        <textarea id="viewMemo_reply" style="height:150px;" class="form-control"></textarea>
+                        <textarea id="viewMemo_reply" style="max-height:150px; height:auto;" class="form-control"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="saveMemoContent();" type="button" data-dismiss="modal" class="btn btn-danger">Save Memo</button>
+                <button onclick="replyMemo();" type="button" data-dismiss="modal" class="btn btn-danger">Reply</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

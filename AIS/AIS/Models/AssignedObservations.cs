@@ -19,8 +19,8 @@ namespace AIS.Models
         public string OBSERVATION_TEXT { get; set; }
         public string STATUS { get; set; }
         public string ENTITY_NAME { get; set; }
-        public string AUDIT_STARTDATE { get; set; }
-        public string AUDIT_ENDDATE { get; set; }
+        public string MEMO_DATE { get; set; }
+        public string MEMO_REPLY_DATE{ get; set; }
 
 
     }

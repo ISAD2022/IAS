@@ -2157,7 +2157,7 @@ namespace AIS
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query+"  order by t.OBS_ID asc";
+                cmd.CommandText = "select o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query+"  order by t.OBS_ID asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2175,8 +2175,8 @@ namespace AIS
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.AUDIT_STARTDATE = rdr["AUDIT_STARTDATE"].ToString();
-                    chk.AUDIT_ENDDATE = rdr["AUDIT_ENDDATE"].ToString();
+                    chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
+                    chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     list.Add(chk);
                 }
             }
