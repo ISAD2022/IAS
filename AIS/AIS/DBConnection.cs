@@ -15,8 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace AIS
-{
-    
+{ 
     public class DBConnection
     {
         private readonly SessionHandler sessionHandler = new SessionHandler();
@@ -2172,6 +2171,16 @@ namespace AIS
                     //chk.LASTUPDATEDDATE = Convert.ToDateTime(rdr["LASTUPDATEDDATE"]);
                     chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
                     chk.REPLIED = rdr["REPLIED"].ToString();
+                    if(chk.REPLIED.ToString().ToLower() =="y")
+                    {
+                        cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
+                        OracleDataReader rdr2 = cmd.ExecuteReader();
+                        while (rdr2.Read())
+                        {
+                            if (rdr2["REPLY"].ToString() != "" && rdr2["REPLY"].ToString() != null)
+                                chk.REPLY_TEXT = rdr2["REPLY"].ToString();
+                        }
+                    }
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -2182,6 +2191,27 @@ namespace AIS
             }
             con.Close();
             return list;
+        }
+        public bool ResponseAuditObservation(ObservationResponseModel ob)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
+            ob.REPLIEDDATE = System.DateTime.Now;
+            ob.REMARKS = "";
+            ob.SUBMITTED = "Y";
+            ob.REPLY_ROLE = 0;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "','" + ob.REPLY + "','" + ob.REPLIEDBY + "',to_date('" + ob.REPLIEDDATE + "','dd/mm/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE T_AU_OBSERVATION_ASSIGNEDTO SET REPLIED='Y' WHERE OBS_ID="+ob.AU_OBS_ID+" and OBS_TEXT_ID="+ob.OBS_TEXT_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE t_au_observation SET STATUS=3, REPLYBY="+loggedInUser.PPNumber+ ", MEMO_REPLY_DATE = to_date('" + ob.REPLIEDDATE + "','dd/mm/yyyy HH:MI:SS AM') WHERE ID = " + ob.AU_OBS_ID;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
         }
     }
 }

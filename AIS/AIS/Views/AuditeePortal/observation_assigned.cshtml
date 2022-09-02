@@ -4,6 +4,8 @@
 }
 
 <script type="text/javascript">
+    var g_obsId = 0;
+    var g_obsTextId = 0;
     $(document).ready(function () {
       
         $('#viewMemo_reply').richText({
@@ -13,30 +15,50 @@
             urls: false
         });
     });
-    function showMemo(memotxt) {
+    function reloadLocation() {
+        location.reload();
+    }
+    function showMemo(memotxt, obs_id, obs_text_id, status,reply_txt) {
+        g_obsId=obs_id;
+        g_obsTextId=obs_text_id;
         $('#viewMemoModel').modal('show');
         $('#viewMemo_memo').html(memotxt);
-        //$('#viewMemo_memoTxt').val($('#viewMemo_memo').text());
-
+        if (status.trim() == "Submitted to Concerned".trim()) {
+            $('#replyButton_memoReply').removeClass('d-none');
+            $('#viewMemo_responded').parent().addClass('d-none');
+            $('#viewMemo_reply').parent().removeClass('d-none');
+            $('#viewMemo_responded').html('');
+        } else {
+            $('#replyButton_memoReply').addClass('d-none');
+            $('#viewMemo_responded').parent().removeClass('d-none');
+            $('#viewMemo_reply').parent().addClass('d-none');
+            $('#viewMemo_responded').html(reply_txt);
+        }
     }
     function replyMemo() {
-        replyTxt = $('#viewMemo_reply').text();
-        $.ajax({
-            url: "/Setup/process_transactions",
-            type: "POST",
-            data: {
-                'ProcessDetailId': $('#riskSubGroupSelectBox option:selected').val(),
-            },
-            cache: false,
-            success: function (data) {
-                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                $.each(data, function (index, item) {
-                    $('#riskActivitiesSelectBox').append("<option value=\"" + item.id + "\"> " + item.description + "</option>");
-                });
+        var replyTxt = ($('#viewMemo_reply').val()).length;
+        if (replyTxt > 0) {
+            $.ajax({
+                url: "/ApiCalls/reply_observation",
+                type: "POST",
+                data: {
+                    'AU_OBS_ID': g_obsId,
+                    'OBS_TEXT_ID': g_obsTextId,
+                    'REPLY': $('#viewMemo_reply').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert("Reply sent successfuly");
+                    onAlertCallback(reloadLocation);
 
-            },
-            dataType: "json",
-        });
+                },
+                dataType: "json",
+            });
+        } else {
+            alert("Provide your comments to proceed");
+            return false;
+        }
+       
     }
 </script>
 <div class="row col-md-12 mt-3">
@@ -72,7 +94,7 @@
                                 <td>@sdate</td>
                                 <td>@edate</td>
                                 <td>@item.STATUS</td>
-                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
+                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS','@item.REPLY_TEXT');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
                             </tr>
                             index++;
                         }
@@ -99,7 +121,10 @@
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
-                   
+                    <div class="form-group d-none">
+                        <label for="viewMemo_responded">Memo</label>
+                        <div id="viewMemo_responded" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_reply">Reply</label>
                         <textarea id="viewMemo_reply" style="max-height:150px; height:auto;" class="form-control"></textarea>
@@ -107,7 +132,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="replyMemo();" type="button" data-dismiss="modal" class="btn btn-danger">Reply</button>
+                <button id="replyButton_memoReply" onclick="replyMemo();" type="button" data-dismiss="modal" class="btn btn-danger">Reply</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

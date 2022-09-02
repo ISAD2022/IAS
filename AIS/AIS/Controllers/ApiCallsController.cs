@@ -165,6 +165,12 @@ namespace AIS.Controllers
             }
             return true;
         }
+        [HttpPost]
+        public bool reply_observation(ObservationResponseModel or)
+        {
+            return dBConnection.ResponseAuditObservation(or);            
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
