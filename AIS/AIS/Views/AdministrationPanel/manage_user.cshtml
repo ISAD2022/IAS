@@ -235,6 +235,10 @@
             return;
         }
         if ($('#passSaveField').val() == $('#conPassSaveField').val()) {
+            var active = 'N';
+            if ($('#isActiveSaveField').is(":checked"))
+                active = 'Y';
+
             $.ajax({
                 url: "/AdministrationPanel/update_user",
                 type: "POST",
@@ -243,6 +247,7 @@
                     'PPNO': $('#ppnoSaveField').val(),
                     'ROLE_ID': $('#roleSaveField option:selected').val(),
                     'PASSWORD': $('#passSaveField').val(),
+                    'ISACTIVE': active,
                 },
                 cache: false,
                 success: function (data) {
