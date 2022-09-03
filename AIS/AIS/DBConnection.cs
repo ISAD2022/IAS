@@ -1107,7 +1107,7 @@ namespace AIS
             con.Close();
             return tplansList;
         }
-        public String GetAuditOperationalStartDate(int auditPeriodId=0, int entityCode=0)
+        public string GetAuditOperationalStartDate(int auditPeriodId=0, int entityCode=0)
         {
             string result = "";
             var con = this.DatabaseConnection();
@@ -2119,18 +2119,23 @@ namespace AIS
             ob.ENTEREDDATE = System.DateTime.Now;
             ob.MEMO_DATE = System.DateTime.Now;
             ob.RESPONSIBILITY_ASSIGNED = "(select cd.role_resp_id from t_audit_checklist_details cd where cd.id="+ob.SUBCHECKLIST_ID+")";
-            String RiskModelQuery = "(select cd.v_id from t_audit_checklist_details cd where cd.id=" + ob.SUBCHECKLIST_ID + ")";
-            String MemoNumberQuery = "(select COALESCE(max(ob.memo_number)+1,1) from t_au_observation ob where ob.engplanid=" + ob.ENGPLANID+ " and ob.subchecklist_id=" + ob.SUBCHECKLIST_ID+")";
-            String ReplyByQuery = "(select pe.entity_code from t_au_plan_eng pe where pe.eng_id= "+ob.ENGPLANID+")";
+            string RiskModelQuery = "(select cd.v_id from t_audit_checklist_details cd where cd.id=" + ob.SUBCHECKLIST_ID + ")";
+            string MemoNumberQuery = "(select COALESCE(max(ob.memo_number)+1,1) from t_au_observation ob where ob.engplanid=" + ob.ENGPLANID+ " and ob.subchecklist_id=" + ob.SUBCHECKLIST_ID+")";
+            string ReplyByQuery = "(select pe.entity_code from t_au_plan_eng pe where pe.eng_id= "+ob.ENGPLANID+")";
+            string SeverityQuery ="";
+            if (ob.SEVERITY != 0)
+                SeverityQuery = ob.SEVERITY.ToString();
+            else
+                SeverityQuery = " (SELECT RISK_ID FROM t_audit_checklist_details WHERE ID = " + ob.CHECKLISTDETAIL_ID + " and S_ID=" + ob.SUBCHECKLIST_ID + ")";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + ob.REPLYDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ob.MEMO_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + RiskModelQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "')";
+                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + ob.REPLYDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + ob.MEMO_DATE + "','dd/mm/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "')";
                 cmd.ExecuteReader();
                 cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) ,  '" + ob.OBSERVATION_TEXT + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
                 cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o), (select max(tt.ID) from T_AU_OBSERVATION_TEXT tt), " + ReplyByQuery + ",'" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'Y','N')";
                 cmd.ExecuteReader();
-                String ObsId = "(SELECT MAX(ID) FROM T_AU_OBSERVATION)";
+                string ObsId = "(SELECT MAX(ID) FROM T_AU_OBSERVATION)";
                 cmd.CommandText = "UPDATE T_AU_OBSERVATION SET STATUS=2 WHERE ID = " + ObsId;
                 cmd.ExecuteReader();
             }
@@ -2220,7 +2225,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select  o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observations_auditee_response ar inner join t_au_observation o on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id and t.status_id=2 inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid  Where t.teammember_ppno="+loggedInUser.PPNumber+" order by o.memo_number";
+                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id Where t.teammember_ppno=" + loggedInUser.PPNumber+" order by o.memo_number";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2236,11 +2241,32 @@ namespace AIS
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
                     list.Add(chk);
                 }
             }
             con.Close();
             return list;
         }
+        public bool UpdateAuditObservationStatus(int OBS_ID, int NEW_STATUS_ID)
+        {
+            string Remarks = "";
+            if (NEW_STATUS_ID == 3)
+                Remarks = "Settled";
+            else
+                Remarks = "Add to Draft Report";
+            var con = this.DatabaseConnection();
+            
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AU_OBSERVATIONS_AUDITEE_RESPONSE  SET REMARKS ='"+ Remarks + "' WHERE AU_OBS_ID=" + OBS_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE t_au_observation SET STATUS="+NEW_STATUS_ID+" WHERE ID = " + OBS_ID;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+
     }
 }

@@ -15,5 +15,6 @@ namespace AIS.Models
         public string OBS_RISK { get; set; }
         public int OBS_STATUS_ID { get; set; }
         public string OBS_STATUS { get; set; }
+        public string PERIOD { get; set; }
     }
 }

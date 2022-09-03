@@ -298,7 +298,7 @@ namespace AIS.Controllers
         {
             if (gItemMap.MENU_ITEM_IDs!=null && gItemMap.MENU_ITEM_IDs.Count > 0)
             {
-                var menu_items_ids = String.Join(",", gItemMap.MENU_ITEM_IDs);
+                var menu_items_ids = string.Join(",", gItemMap.MENU_ITEM_IDs);
                 dBConnection.AddGroupMenuAssignment(gItemMap.GROUP_ID, gItemMap.MENU_ID, menu_items_ids);
                 if (gItemMap.UNLINK_MENU_ITEM_IDs != null && gItemMap.UNLINK_MENU_ITEM_IDs.Count > 0)
                 {
