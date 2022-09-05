@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Authorize Processes";
+    Layout = "_Layout";
+}
+<style type="text/css">
+
+    .listItems:hover {
+        color: blue;
+        text-decoration: underline;
+    }
+
+    .action:hover {
+        font-size: 110%;
+        cursor: pointer;
+        font-weight: 600;
+    }
+</style>
+
+<script type="text/javascript">
+    var g_trId = 0;
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfProcTransactions tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+    function reloadLocation() {
+        location.reload();
+    }
+    function referredBackAuditCriterias() {
+        var ids = [];
+        $.each($('.actionCriteria'), function (i, v) {
+            if ($(v).is(':checked')){
+                ids.push($(v).attr('id'));
+            }
+        });
+        if (ids.length > 0) {
+            $.ajax({
+                url: "/Planning/referredBack_auditCriteria",
+                type: "POST",
+                data: {
+                    'IDs': ids
+                },
+                cache: false,
+                success: function (data) {
+                    alert("Audit Criteria selected Cases Referred Back");
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+    function approveAuditCriterias() {
+        var ids = [];
+        $.each($('.actionCriteria'), function (i, v) {
+            if ($(v).is(':checked')){
+                ids.push($(v).attr('id'));
+            }
+        });
+        if (ids.length > 0) {
+            $.ajax({
+                url: "/Planning/authorize_auditCriteria",
+                type: "POST",
+                data: {
+                    'IDs': ids
+                },
+                cache: false,
+                success: function (data) {
+                    alert("Audit Criteria selected Cases Successfully Approved");
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }
+    }
+   
+   
+</script>
+
+<div class="col-md-12" style="margin-top:20px;">
+    <h3>List of Inspection Criteria To Authorize </h3>
+    <div class="row">
+        <div class="col-md-12">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+    </div>
+    <br>
+    <table id="listOfProcTransactions" class="table align-middle table-bordered mb-0 bg-white table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="min-width:150px;" class="col-md-1">Period</th>
+                <th style="min-width:150px;" class="col-md-1">Entity</th>
+                <th style="min-width:50px;" class="col-md-1">Risk</th>
+                <th style="min-width:50px;" class="col-md-1">Size</th>
+                <th style="min-width:150px;" class="col-md-1">No of Days</th>
+                <th style="min-width:100px;" class="col-md-2">Frequency</th>
+                <th class="col-md-1">Visit</th>
+                <th class="col-md-3">Comments</th>
+                <th class="col-md-1"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["ToAuthorizeAuditCriteriaList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["ToAuthorizeAuditCriteriaList"]))
+                    {
+
+                        <tr id="div_@item.ID">
+                            <td>
+                                <p class="fw-normal mb-1">@item.PERIOD</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.ENTITY</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.RISK</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.SIZE</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.NO_OF_DAYS</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.FREQUENCY</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.VISIT</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.COMMENTS</p>
+                            </td>
+                            <td>
+                               <input class="actionCriteria" type="checkbox" id="@item.ID" />
+                            </td>
+                        </tr>
+                    }
+                }}
+        </tbody>
+    </table>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="col-md-12">
+        <button onclick="approveAuditCriterias();" style="float:right; margin-left:15px;" class="btn btn-success col-md-2">Approved</button>
+        <button onclick="referredBackAuditCriterias();" style="float:right;" class="btn btn-danger col-md-2">Refer Back</button>
+
+    </div>
+    
+</div>

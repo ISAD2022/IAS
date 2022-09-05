@@ -281,11 +281,7 @@ namespace AIS.Controllers
             return dBConnection.GetRiskActivities(rsg.S_GR_ID);
         }
 
-
-
-
-
-
+        [HttpPost]
         public List<AuditSubVoilationcatModel> sub_voilation(AuditSubVoilationcatModel vsg)
         {
             return dBConnection.GetVoilationSubGroup(vsg.V_ID);
@@ -360,6 +356,50 @@ namespace AIS.Controllers
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             ViewData["RiskList"]= dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult pre_audit_info()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult pre_audit_info_detail()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

@@ -172,17 +172,17 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);            
         }
         [HttpPost]
-        public string update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID)
+        public bool update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID)
         {
 
             if (NEW_STATUS_ID == 4)
                 if (RISK_ID != 1)
-                    return "{success:\"Failed\", message:\"Only Low Risk Para can be settled at Memo Level\"}";
+                    return false;
 
-            if(dBConnection.UpdateAuditObservationStatus(OBS_ID,NEW_STATUS_ID))
-                return "{success:\"Success\", message:\"Observation Status updated Successfully\"}";
+            if (dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID))
+                return true;
             else
-                return "{success:\"Failed\", message:\"Failed to update Observation Status\"}";
+                return false;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
