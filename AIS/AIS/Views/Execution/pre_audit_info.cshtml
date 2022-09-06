@@ -36,34 +36,53 @@
     <table class="table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-2">Branch</th>
+                <th class="col-md-2">Branch ID</th>
                 <th class="col-md-1">LC #</th>
-                <th class="col-md-3">LC File/Booklet #</th>
-                <th class="col-md-2">Application Date</th>
+                <th class="col-md-1">CNIC</th>
+                <th class="col-md-1">CUSTOMER NAME</th>
+                <th class="col-md-1">DISSBURMENT AMOUNT</th>
+                <th class="col-md-1">PRINCIPLE</th>
+                <th class="col-md-1">MARKUP</th>
+                <th class="col-md-1">DISSBURMENT DATE</th>
+
+                <!--<th class="col-md-3">LC File/Booklet #</th>
+    <th class="col-md-2">Application Date</th>
                 <th class="col-md-1">Status</th>
                 <th class="col-md-3">Development Amount</th>
                 <th class="col-md-3">Production Amount</th>
                 <th class="col-md-2">Sanction Date</th>
-                <th class="col-md-2">Detail</th>
+
+
+                <th class="col-md-2">Detail</th>-->
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
+            @{
+                if (ViewData["Loan_CaseList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["Loan_CaseList"]))
+                    {
+                        <tr>
+
+                            <td>@item.BRANCHID</td>
+                            <td>@item.LOAN_CASE_NO</td>
+                            <td>@item.CNIC</td>
+                            <td>@item.CUSTOMERNAME</td>
+                            <td>@item.DISBURSED_AMOUNT</td>
+                            <td>@item.PRIN</td>
+                            <td>@item.MARKUP</td>
+                            <td>@item.DISB_DATE</td>
+                            <!-- <td>
+                                    <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
                         Details
                     </button>
-                </td>
-            </tr>
-        </tbody>
+                                </td>-->
+                        </tr>
+                        }
+                    }
+                }
+
+                    </tbody>
     </table>
 </div>
 

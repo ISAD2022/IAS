@@ -261,9 +261,12 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Executio
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\audit_observation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\checklist.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\checklist_details.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\closing.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\engagement_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\list_of_observation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\manage_observations.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\pre_audit_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\pre_audit_info_detail.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\subchecklist.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Home\Index.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Home\Privacy.cshtml.g.cs
@@ -291,6 +294,10 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\aging_observations.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\approved_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\department_performance.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\draft_audit_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\glhead_summary.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure_report.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\riskwise_observations.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\role_wise_user.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\significant_finding.cshtml.g.cs
@@ -339,11 +346,4 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.CopyCompl
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\pre_audit_info.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\pre_audit_info_detail.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\glhead_summary.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure_report.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\draft_audit_report.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\closing.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\glhead_details.cshtml.g.cs

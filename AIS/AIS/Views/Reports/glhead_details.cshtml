@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "GL HEAD DETAILS";
+    ViewData["Title"] = "GL Head Detials";
     Layout = "_Layout";
 }
 
@@ -8,18 +8,18 @@
     $('#document').ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
-        var gl_id = url.searchParams.get("GLCODE");
+        var gl_id = url.searchParams.get("glcode");
         $.ajax({
-            url: "/Reports/Get_Glhead_Sub_Details",
+            url: "/ApiCalls/Glhead_Sub_Details",
             type: "POST",
             data: {
-                'gl_code': gl_id
+                'GL_CODE': gl_id
             },
             cache: false,
             success: function (data) {
                 //v = data;
-                
-               // console.log(data);
+
+                // console.log(data);
 
                 $.each(data.gL_SUBDETAILS, function (i, v) {
 
@@ -39,7 +39,7 @@
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-12">
-        <table id="gldetailtab"  class="col-md-12 table-bordered table-hover mt-1 table-striped">
+        <table id="gldetailtab" class="col-md-12 table-bordered table-hover mt-1 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-2">GL Head</th>
@@ -48,29 +48,11 @@
                     <th class="col-md-2">Credit</th>
                     <th class="col-md-2">Debit</th>
                     <th class="col-md-1">Balance</th>
-                   
-                 
+
+
                 </tr>
             </thead>
-            <!-- <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                     <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
-               Action
-               </button>
-               </td>
-               </tr>
-               </tbody>-->
-
-
             <tbody>
-              
             </tbody>
 
 

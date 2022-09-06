@@ -396,6 +396,7 @@ namespace AIS.Controllers
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["Loan_CaseList"] = dBConnection.GetLoanCaseDetails();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

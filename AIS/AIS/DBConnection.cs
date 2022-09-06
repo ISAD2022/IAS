@@ -2111,6 +2111,108 @@ namespace AIS
             con.Close();
             return list;
         }
+        public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
+        {
+            var con = this.DatabaseConnection();
+            List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
+            
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from V_GET_GL_SUM";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
+                    GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadDetails.GLDESP = rdr["DESCRIPTION"].ToString();
+                    GlHeadDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    GlHeadDetails.MONTHEND = Convert.ToDateTime(rdr["MONTHEND"]);
+                    GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
+                    GlHeadDetails.RUNNING_DR = Convert.ToDouble(rdr["DEBIT"]);
+                    GlHeadDetails.RUNNING_CR = Convert.ToDouble(rdr["CREDIT"]);
+                    list.Add(GlHeadDetails);
+                }
+            }
+            con.Close();
+            return list;
+
+        }
+        public GlHeadSubDetailsModel GetGlheadSubDetails(int gl_code = 0)
+        {
+            var con = this.DatabaseConnection();
+            GlHeadSubDetailsModel GlHeadSubDetails = new GlHeadSubDetailsModel();
+            List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "select* from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + "";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+
+                    GlHeadSubDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadSubDetails.GL_TYPE_ID = Convert.ToInt32(rdr["GL_TYPE_ID"]);
+                    GlHeadSubDetails.GLSUBID = Convert.ToInt32(rdr["GLSUBID"]);
+                    GlHeadSubDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadSubDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    GlHeadSubDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    GlHeadSubDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
+                    GlHeadSubDetails.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
+                    GlHeadSubDetails.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]);
+                    GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
+
+                    GHSD.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GHSD.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    GHSD.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    GHSD.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
+                    GHSD.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
+                    GHSD.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]);
+                    GlSubHeadList.Add(GHSD);
+                    GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
+                }
+            }
+            con.Close();
+            return GlHeadSubDetails;
+
+        }
+        public List<LoanCaseModel> GetLoanCaseDetails()
+        {
+            var con = this.DatabaseConnection();
+            List<LoanCaseModel> LoanCaseList = new List<LoanCaseModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd WHERE lcd.LOAN_CASE_NO =164726 ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    LoanCaseModel LoanCaseDetails = new LoanCaseModel();
+                    LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
+                    LoanCaseDetails.LOAN_CASE_NO = Convert.ToInt32(rdr["LOAN_CASE_NO"]);
+                    LoanCaseDetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    LoanCaseDetails.FATHERNAME = rdr["FATHERNAME"].ToString();
+                    LoanCaseDetails.DISBURSED_AMOUNT = Convert.ToDouble(rdr["DISBURSED_AMOUNT"]);
+                    LoanCaseDetails.PRIN = Convert.ToDouble(rdr["PRIN"]);
+                    LoanCaseDetails.MARKUP = Convert.ToDouble(rdr["MARKUP"]);
+                    LoanCaseDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
+                    LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
+                    //LoanCaseDetails.VALID_UNTIL = Convert.ToDateTime(rdr["VALID_UNTIL"]);
+                    LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
+
+
+                    //left side if for model and view and right side should be same as DB fields
+
+
+                    LoanCaseList.Add(LoanCaseDetails);
+                }
+            }
+            con.Close();
+            return LoanCaseList;
+        }
+       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();

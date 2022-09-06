@@ -195,6 +195,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetClosingDraftObservations();
         }
+        [HttpPost]
+        public GlHeadSubDetailsModel Glhead_Sub_Details(int GL_CODE)
+        {
+            return dBConnection.GetGlheadSubDetails(GL_CODE);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
