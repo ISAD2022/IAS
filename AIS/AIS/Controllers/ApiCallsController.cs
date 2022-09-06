@@ -185,6 +185,17 @@ namespace AIS.Controllers
                 return false;
         }
 
+        [HttpPost]
+        public List<ManageObservations> draft_report_summary()
+        {
+           return dBConnection.GetManagedObservations();
+        }
+        [HttpPost]
+        public List<ClosingDraftAuditObservationsModel> closing_draft_report()
+        {
+            return dBConnection.GetClosingDraftObservations();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

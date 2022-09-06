@@ -1,0 +1,150 @@
+﻿@{
+    ViewData["Title"] = "Closing";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        $.ajax({
+            url: "/ApiCalls/closing_draft_report",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                $('#totalObsLabel').text(data.length);
+                var highP = 0;
+                var medP = 0;
+                var lowP = 0;
+                var settled = 0;
+                var atdraft = 0;
+                $.each(data, function (i, v) {
+                    if (v.obS_RISK_ID == 1)
+                        lowP++;
+                    else if (v.obS_RISK_ID == 2)
+                        medP++;
+                    else if (v.obS_RISK_ID == 3)
+                        highP++;
+                    if (v.obS_STATUS_ID == 4)
+                        settled++;
+                    else if (v.obS_STATUS_ID == 5)
+                        atdraft++;
+                });
+
+                $('#highObsLabel').text(highP);
+                $('#mediumObsLabel').text(medP);
+                $('#lowObsLabel').text(lowP);
+                $('#resolvedObsLabel').text(settled);
+                $('#addToDraftLabel').text(atdraft);
+            },
+            dataType: "json",
+        });
+
+
+
+    });
+</script>
+<div class="row col-md-12 mt-3">
+    <h4 style="display: block; color: #45c545;">Close Audit</h4>
+</div>
+
+
+
+<div class="row col-md-12 mt-3">
+    <div>
+        <h5 style="display: block; color: #45c545;">Auditor Wise Memo Status</h5>
+    </div>
+    <table class="table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-3">Auditor</th>
+                <th class="col-md-1">TL</th>
+                <th class="col-md-2">Total Memos</th>
+                <th class="col-md-2">Pending</th>
+                <th class="col-md-2">Submitted to Auditee</th>
+                <th class="col-md-2">Responded by Auditee</th>
+                <th class="col-md-2">Partially Responded</th>
+                <th class="col-md-2">Add to Draft Report</th>
+                <th class="col-md-2">Settled in Discussion</th>
+                <th class="col-md-2">Add to Final Report</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-12 mt-3">
+        <h5 style="display: block; color: #45c545;">Joining and Closing Dates</h5>
+    </div>
+    <div class="row col-md-12 mt-3">
+        <table class="col-md-12 table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-3">P.P. Number</th>
+                    <th class="col-md-4">Name</th>
+                    <th class="col-md-3">Joining Date</th>
+                    <th class="col-md-3">Completion Date </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

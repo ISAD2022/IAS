@@ -2120,7 +2120,7 @@ namespace AIS
             ob.MEMO_DATE = System.DateTime.Now;
             ob.RESPONSIBILITY_ASSIGNED = "(select cd.role_resp_id from t_audit_checklist_details cd where cd.id="+ob.SUBCHECKLIST_ID+")";
             string RiskModelQuery = "(select cd.v_id from t_audit_checklist_details cd where cd.id=" + ob.SUBCHECKLIST_ID + ")";
-            string MemoNumberQuery = "(select COALESCE(max(ob.memo_number)+1,1) from t_au_observation ob where ob.engplanid=" + ob.ENGPLANID+ " and ob.subchecklist_id=" + ob.SUBCHECKLIST_ID+")";
+            string MemoNumberQuery = "(select COALESCE(max(ob.memo_number)+1,1) from t_au_observation ob where ob.engplanid=" + ob.ENGPLANID+")";
             string ReplyByQuery = "(select pe.entity_code from t_au_plan_eng pe where pe.eng_id= "+ob.ENGPLANID+")";
             string SeverityQuery ="";
             if (ob.SEVERITY != 0)
@@ -2225,7 +2225,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id Where t.teammember_ppno=" + loggedInUser.PPNumber+" order by o.memo_number";
+                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id inner join t_au_audit_team_tasklist tl on tl.eng_plan_id=t.eng_plan_id  Where t.teammember_ppno=" + loggedInUser.PPNumber+ " and tl.teammember_ppno=" + loggedInUser.PPNumber + " and tl.status_id=2 order by o.memo_number";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2266,6 +2266,36 @@ namespace AIS
             }
             con.Close();
             return true;
+        }
+        public List<ClosingDraftAuditObservationsModel> GetClosingDraftObservations()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ClosingDraftAuditObservationsModel> list = new List<ClosingDraftAuditObservationsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id inner join t_au_audit_team_tasklist tl on tl.eng_plan_id=t.eng_plan_id  Where t.teammember_ppno=" + loggedInUser.PPNumber + " and tl.teammember_ppno=" + loggedInUser.PPNumber + " and tl.status_id=2 order by o.memo_number";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ClosingDraftAuditObservationsModel chk = new ClosingDraftAuditObservationsModel();
+
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
+                    chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.OBS_REPLY = rdr["OBS_REPLY"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
         }
 
     }

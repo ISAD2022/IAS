@@ -208,7 +208,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult audit_observation()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -235,6 +234,25 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ManageObservations"] = dBConnection.GetManagedObservations();
              if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult closing()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ManageObservations"] = dBConnection.GetManagedObservations();
+            if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
             }

@@ -55,7 +55,7 @@
                                                     {
                                                         if (itemPage.Hide_Menu == 0)
                                                         {<a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>}
-                                                    }
+                                                }
 
                                             }
                                             }
@@ -170,7 +170,7 @@
             @RenderBody()
         </main>
     </div>
-   
+
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; ZTBL INTERNAL AUDIT & INSPECTION DIVISION
@@ -181,6 +181,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
+    <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
+    <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

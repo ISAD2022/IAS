@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "Draft Audit Report";
+    Layout = "_Layout";
+}
+
+
+<script type="text/javascript">
+    var g_obsList = [];
+   
+    function reloadLocation() {
+        location.reload();
+    }
+
+    $(document).ready(function () {
+        $.each($('.obs_text'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
+        $.each($('.obs_reply'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
+        $.ajax({
+            url: "/ApiCalls/draft_report_summary",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                $('#totalObsLabel').text(data.length);
+                var highP = 0;
+                var medP = 0;
+                var lowP = 0;
+                var settled = 0;
+                var atdraft = 0;
+                $.each(data, function (i, v) {
+                    if (v.obS_RISK_ID == 1)
+                        lowP++;
+                    else if (v.obS_RISK_ID == 2)
+                        medP++;
+                    else if (v.obS_RISK_ID == 3)
+                        highP++;
+                    if (v.obS_STATUS_ID == 4)
+                        settled++;
+                    else if (v.obS_STATUS_ID == 5)
+                        atdraft++;
+                });
+
+                $('#highObsLabel').text(highP);
+                $('#mediumObsLabel').text(medP);
+                $('#lowObsLabel').text(lowP);
+                $('#resolvedObsLabel').text(settled);
+                $('#addToDraftLabel').text(atdraft);
+            },
+            dataType: "json",
+        });
+       
+
+
+    });
+</script>
+
+<div class="row">
+    <div class="col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">Report Summary</h3>
+        <table id="reportSummaryTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+            <tr>
+                <td><b>Total Observations</b></td>
+                <td id="totalObsLabel" class="text-center"></td>
+            </tr>
+            <tr>
+                <td><b>High Risk</b></td>
+                <td id="highObsLabel" class="text-center"></td>
+            </tr>
+
+            <tr>
+                <td><b>Medium Risk</b></td>
+                <td id="mediumObsLabel" class="text-center"></td>
+            </tr>
+            <tr>
+                <td><b>Low Risk</b></td>
+                <td id="lowObsLabel" class="text-center"></td>
+            </tr>
+            <tr>
+                <td><b>Resolved</b></td>
+                <td id="resolvedObsLabel" class="text-center"></td>
+            </tr>
+            <tr>
+                <td><b>Add to Draft</b></td>
+                <td id="addToDraftLabel" class="text-center"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="row col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">Audit Observations</h3>
+        <table id="manageObsPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+            <thead style="background-color:aquamarine;">
+                <tr>
+                    <th class="col-md-1 text-center">Memo No.</th>
+                    <th class="col-md-3">Observation</th>
+                    <th class="col-md-1">Risk Category</th>
+                    <th class="col-md-3">Auditee Response</th>                    
+                    <th class="col-md-1">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["ObservationsList"] != null)
+                    {
+
+                        foreach (var item in (dynamic)(ViewData["ObservationsList"]))
+                        {
+                                <tr>
+                                    <td class="text-center">@item.MEMO_NO</td>
+                                    <td class="obs_text" data="@item.OBS_TEXT"></td>
+                                    <td>@item.OBS_RISK</td>
+                                    <td class="obs_reply" data="@item.OBS_REPLY"></td>
+                                    <td>@item.OBS_STATUS</td>
+                                </tr>
+                        }
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
