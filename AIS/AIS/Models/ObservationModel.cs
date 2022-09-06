@@ -27,6 +27,7 @@ namespace AIS.Models
         public int RISKMODEL_ID { get; set; }
         public int SUBCHECKLIST_ID { get; set; }
         public int CHECKLISTDETAIL_ID { get; set; }
+        public string TEAM_LEAD { get; set; }
 
     }
 }

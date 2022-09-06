@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Manage Observations";
+    ViewData["Title"] = "Manage Draft Report Paras";
     Layout = "_Layout";
 }
 
@@ -53,7 +53,7 @@
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Manage Audit Observations</h3>
+        <h3 style=" display:block;color: #45c545;">Manage Draft Report Paras</h3>
     </div>
     <div class="row col-md-12 mt-3">
         <div class="col-md-2">
@@ -100,29 +100,16 @@
                                 <td>@item.OBS_STATUS</td>
                                 <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
                                 <td class="d-none period_name_field">@item.PERIOD</td>
-                                @if (item.OBS_STATUS_ID == 3)
+                                @if (item.OBS_STATUS_ID == 5)
                                 {
-                                    if (item.OBS_RISK_ID == 1)
-                                    {
-                                        <td class="text-center">
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
-                                            /
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-center">
-
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
-                                        </td>
-
-                                    }
+                                    <td class="text-center">
+                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,9, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
+                                        /
+                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,8, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Final Report</a>
+                                    </td>
+                                    
                                 }
-                                else
-                                {
-                                    <td class="text-center"><a href="#" class="text-hover">-</a></td>
-                                }
+                               
                             </tr>
                         }
                     }

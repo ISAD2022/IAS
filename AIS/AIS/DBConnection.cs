@@ -406,18 +406,9 @@ namespace AIS
                 cmd.ExecuteReader();
                 if(user.ROLE_ID!=0)
                 {
-                    cmd.CommandText = "Select um.USERID FROM t_user_maping um WHERE um.ROLE_ID=" + user.ROLE_ID + " and um.USERID=" + user.USER_ID;
-                    OracleDataReader rdr = cmd.ExecuteReader();
-                    bool isAlreadyAdded = false;
-                    while (rdr.Read())
-                    {
-                        if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
-                            isAlreadyAdded = true;
-                    }
-                    if (!isAlreadyAdded)
-                        cmd.CommandText = "INSERT INTO t_user_maping ( USERID,PPNO,GROUP_ID, ROLE_ID) VALUES ("+user.USER_ID+", '"+user.PPNO+"',"+user.ROLE_ID+", "+user.ROLE_ID+" )";
-                    else
-                        cmd.CommandText = "UPDATE t_user_maping SET GROUP_ID = " + user.ROLE_ID + ", ROLE_ID=" + user.ROLE_ID + " WHERE USERID=" + user.USER_ID + " and PPNO='" + user.PPNO + "'";
+                    cmd.CommandText = "DELETE FROM t_user_maping um WHERE um.USERID=" + user.USER_ID;
+                    cmd.ExecuteReader();
+                    cmd.CommandText = "INSERT INTO t_user_maping ( USERID,PPNO,GROUP_ID, ROLE_ID) VALUES ("+user.USER_ID+", '"+user.PPNO+"',"+user.ROLE_ID+", "+user.ROLE_ID+" )";
                     cmd.ExecuteReader();
                 }
             }
@@ -1962,7 +1953,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select t.team_id, tm.member_name,tm.member_ppno, tm.team_name as TEAM_NAME, t.entity_id, t.entity_code, t.entity_name, t.audit_start_date, t.audit_end_date, rt.description as RISK, st.description as ENT_SIZE ,p.description as AUDIT_PERIOD, tm.isteamlead from t_au_audit_team_tasklist t inner join t_au_plan_eng pe    on t.eng_plan_id = pe.eng_id    inner join t_au_period p on pe.period_id=p.auditperiodid    inner join t_au_team_members tm on t.teammember_ppno=tm.member_ppno    inner join t_auditee_entities_risk r on t.entity_id=r.entity_id    inner join t_risk rt on r.risk_rating=rt.r_id    inner join t_auditee_entities_size s on t.entity_id=s.entity_id    inner join t_auditee_entities_size_disc st on s.entity_size=st.entity_size where t.eng_plan_id = " + engId;
+                cmd.CommandText = "select t.team_id, tm.member_name,tm.member_ppno, tm.team_name as TEAM_NAME, t.entity_id, t.entity_code, t.entity_name, t.audit_start_date, t.audit_end_date, rt.description as RISK, st.description as ENT_SIZE ,p.description as AUDIT_PERIOD, tm.isteamlead from t_au_audit_team_tasklist t inner join t_au_plan_eng pe    on t.eng_plan_id = pe.eng_id    inner join t_au_period p on pe.period_id=p.auditperiodid    inner join t_au_team_members tm on t.teammember_ppno=tm.member_ppno    inner join t_auditee_entities_risk r on t.entity_id=r.entity_id    inner join t_risk rt on r.risk_rating=rt.r_id    inner join t_auditee_entities_size s on t.entity_id=s.entity_id    inner join t_auditee_entities_size_disc st on s.entity_size=st.entity_size where t.eng_plan_id = " + engId+ " and tm.member_ppno="+loggedInUser.PPNumber;
                
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1997,7 +1988,7 @@ namespace AIS
             jm.ENTEREDDATE = System.DateTime.Now;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + jm.JOINING_DATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + jm.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + jm.COMPLETION_DATE + "','dd/mm/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE, al.STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + jm.JOINING_DATE + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + jm.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + jm.COMPLETION_DATE + "','dd/mm/yyyy HH:MI:SS AM'), 'I')";
                 cmd.ExecuteReader();
                 cmd.CommandText = cmd.CommandText = "UPDATE T_AU_AUDIT_TEAM_TASKLIST SET STATUS_ID= (select COALESCE(acc.STATUS_ID+1,1) from T_AU_AUDIT_TEAM_TASKLIST acc WHERE acc.ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and acc.TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO+") WHERE ENG_PLAN_ID="+jm.ENG_PLAN_ID+ " and TEAMMEMBER_PPNO= "+jm.TEAM_MEM_PPNO;
                 cmd.ExecuteReader();
@@ -2212,7 +2203,6 @@ namespace AIS
             con.Close();
             return LoanCaseList;
         }
-       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();
@@ -2350,37 +2340,18 @@ namespace AIS
             con.Close();
             return list;
         }
-        public bool UpdateAuditObservationStatus(int OBS_ID, int NEW_STATUS_ID)
-        {
-            string Remarks = "";
-            if (NEW_STATUS_ID == 3)
-                Remarks = "Settled";
-            else
-                Remarks = "Add to Draft Report";
-            var con = this.DatabaseConnection();
-            
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "UPDATE T_AU_OBSERVATIONS_AUDITEE_RESPONSE  SET REMARKS ='"+ Remarks + "' WHERE AU_OBS_ID=" + OBS_ID;
-                cmd.ExecuteReader();
-                cmd.CommandText = "UPDATE t_au_observation SET STATUS="+NEW_STATUS_ID+" WHERE ID = " + OBS_ID;
-                cmd.ExecuteReader();
-            }
-            con.Close();
-            return true;
-        }
-        public List<ClosingDraftAuditObservationsModel> GetClosingDraftObservations()
+        public List<ManageObservations> GetManagedDraftObservations()
         {
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ClosingDraftAuditObservationsModel> list = new List<ClosingDraftAuditObservationsModel>();
+            List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_audit_team_tasklist t on e.eng_id=t.eng_plan_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id inner join t_au_audit_team_tasklist tl on tl.eng_plan_id=t.eng_plan_id  Where t.teammember_ppno=" + loggedInUser.PPNumber + " and tl.teammember_ppno=" + loggedInUser.PPNumber + " and tl.status_id=2 order by o.memo_number";
+                cmd.CommandText = "select p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, ar.reply as OBS_REPLY, cd.risk_id as OBS_RISK_ID, osr.name as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS  from t_au_observation o left join t_au_observations_auditee_response ar on ar.au_obs_id=o.id inner join t_au_plan_eng e on o.engplanid=e.eng_id inner join t_au_observation_text ot on o.id=ot.observatsion_id inner join t_auditee_entities aee on e.entity_id=aee.entity_id inner join t_audit_checklist_details cd on  o.checklistdetail_id=cd.id inner join t_au_observation_severity osr on osr.id=cd.risk_id inner join t_au_observation_status ost on o.status=ost.statusid inner join t_au_period p on p.id=e.period_id  Where o.status=5 order by o.memo_number";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ClosingDraftAuditObservationsModel chk = new ClosingDraftAuditObservationsModel();
+                    ManageObservations chk = new ManageObservations();
 
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -2398,6 +2369,109 @@ namespace AIS
             }
             con.Close();
             return list;
+        }
+        public bool UpdateAuditObservationStatus(int OBS_ID, int NEW_STATUS_ID)
+        {
+            string Remarks = "";
+            if (NEW_STATUS_ID == 4)
+                Remarks = "Settled";
+            else if (NEW_STATUS_ID == 5)
+                Remarks = "Add to Draft Report";
+            else if (NEW_STATUS_ID == 8)
+                Remarks = "Add to Final Report";
+            else if (NEW_STATUS_ID == 9)
+                Remarks = "Para settle in discussion";
+            var con = this.DatabaseConnection();
+            
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AU_OBSERVATIONS_AUDITEE_RESPONSE  SET REMARKS ='"+ Remarks + "' WHERE AU_OBS_ID=" + OBS_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE t_au_observation SET STATUS="+NEW_STATUS_ID+" WHERE ID = " + OBS_ID;
+                cmd.ExecuteReader();
+                if (NEW_STATUS_ID < 6)
+                {
+                    cmd.CommandText = " UPDATE t_au_audit_team_tasklist set STATUS_ID =4 WHERE ENG_PLAN_ID IN (SELECT ENGPLANID FROM t_au_observation WHERE ID = " + OBS_ID + " ) ";
+                    cmd.ExecuteReader();
+                }
+            }
+            con.Close();
+            return true;
+        }
+        public List<ObservationModel> GetClosingDraftObservations()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ObservationModel> list = new List<ObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from t_au_observation o where o.enteredby in (select jj.team_mem_ppno from  t_au_audit_joining jj where jj.eng_plan_id IN (select j.eng_plan_id from t_au_audit_joining j where j.team_mem_ppno=" + loggedInUser.PPNumber + ")) and o.engplanid in (select j.eng_plan_id from t_au_audit_joining j where j.team_mem_ppno=" + loggedInUser.PPNumber+ ") and o.engplanid IN (select r.eng_plan_id from t_au_audit_joining r where r.status='I' and r.team_mem_ppno="+loggedInUser.PPNumber+") order by o.memo_number";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationModel chk = new ObservationModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENGPLANID = Convert.ToInt32(rdr["ENGPLANID"]);
+                    chk.STATUS = Convert.ToInt32(rdr["STATUS"]);
+                    chk.ENTEREDBY = Convert.ToInt32(rdr["ENTEREDBY"]);
+                    chk.REPLYBY = Convert.ToInt32(rdr["REPLYBY"]);
+                    chk.SEVERITY = Convert.ToInt32(rdr["SEVERITY"]);
+
+                    cmd.CommandText = "select tmm.isteamlead from t_au_team_members tmm where tmm.t_code IN(select tm.t_code from t_au_team_members tm where tm.t_id IN (select aut.team_id  from t_au_audit_teams aut where aut.eng_id="+ chk.ENGPLANID + ")) and tmm.member_ppno = "+chk.ENTEREDBY;
+                    OracleDataReader rdr2 = cmd.ExecuteReader();
+                    while (rdr2.Read())
+                    {
+                        if (rdr2["isteamlead"].ToString() != "" && rdr2["isteamlead"].ToString() != null)
+                            chk.TEAM_LEAD = rdr2["isteamlead"].ToString();
+                    }
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<ClosingDraftTeamDetailsModel> GetClosingDraftTeamDetails()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select jo.*, tm.isteamlead, tm.member_name from t_au_audit_joining jo inner join t_au_team_members tm on tm.member_ppno=jo.team_mem_ppno where jo.eng_plan_id IN (select j.eng_plan_id from t_au_audit_joining j where j.team_mem_ppno="+loggedInUser.PPNumber+" and j.status='I') ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"]);
+                    chk.TEAM_MEM_PPNO = Convert.ToInt32(rdr["TEAM_MEM_PPNO"]);
+                    chk.JOINING_DATE = Convert.ToDateTime(rdr["ENTEREDDATE"]);
+                    chk.COMPLETION_DATE = Convert.ToDateTime(rdr["COMPLETION_DATE"]);
+                    chk.ISTEAMLEAD = rdr["ISTEAMLEAD"].ToString();
+                    chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public bool CloseDraftAuditReport(int ENG_ID)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                DateTime UpdatedDate = System.DateTime.Now;
+                cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY="+loggedInUser.PPNumber+ ", LASTUPDATEDDATE = to_date('" + UpdatedDate + "','dd/mm/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID;
+                cmd.ExecuteReader();
+
+
+            }
+            con.Close();
+            return true;
         }
 
     }

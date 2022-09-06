@@ -4,47 +4,85 @@
 }
 
 <script type="text/javascript">
+    var g_teamMembers = [];
+    var g_engId = 0;
     $(document).ready(function () {
-       
         $.ajax({
-            url: "/ApiCalls/closing_draft_report",
+            url: "/ApiCalls/get_team_details",
             type: "POST",
             data: {
             },
             cache: false,
             success: function (data) {
-                g_obsList = data;
-                $('#totalObsLabel').text(data.length);
-                var highP = 0;
-                var medP = 0;
-                var lowP = 0;
-                var settled = 0;
-                var atdraft = 0;
-                $.each(data, function (i, v) {
-                    if (v.obS_RISK_ID == 1)
-                        lowP++;
-                    else if (v.obS_RISK_ID == 2)
-                        medP++;
-                    else if (v.obS_RISK_ID == 3)
-                        highP++;
-                    if (v.obS_STATUS_ID == 4)
-                        settled++;
-                    else if (v.obS_STATUS_ID == 5)
-                        atdraft++;
+                $.each(data, function (i, v)
+                {
+                    g_teamMembers.push(v.teaM_MEM_PPNO);
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td>' + v.teaM_MEM_PPNO + '</td><td>' + v.membeR_NAME + '</td><td>' + v.joininG_DATE.split('T')[0] + '</td><td>' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
+
                 });
 
-                $('#highObsLabel').text(highP);
-                $('#mediumObsLabel').text(medP);
-                $('#lowObsLabel').text(lowP);
-                $('#resolvedObsLabel').text(settled);
-                $('#addToDraftLabel').text(atdraft);
+                $.ajax({
+                    url: "/ApiCalls/closing_draft_report_status",
+                    type: "POST",
+                    data: {
+                    },
+                    cache: false,
+                    success: function (data) {
+                        g_obsList = data;
+                        g_engId = g_obsList[0].engplanid;
+                        $.each(g_teamMembers, function (i, v) {
+                            var totalObs = 0;
+                            var sendToAuditee = 0;
+                            var noresByAuditee = 0;
+                            var settled = 0;
+                            var addToDraft = 0;
+                            var teamLead = 'N';
+                            $.each(g_obsList, function (k, ob) {
+                                if (ob.enteredby == v) {
+                                    totalObs++;
+                                    sendToAuditee++;
+                                    if (ob.status == 4)
+                                        settled++;
+                                    if (ob.status == 5)
+                                        addToDraft++;
+                                    if (ob.status == 2)
+                                        noresByAuditee++;
+                                    if (ob.teaM_LEAD == 'Y')
+                                        teamLead = 'Y';
+                                }
+
+                            });
+                            $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center">' + v + '</td><td class="text-center">' + teamLead + '</td><td class="text-center">' + totalObs + '</td><td class="text-center">' + sendToAuditee + '</td><td class="text-center">' + (totalObs - noresByAuditee) + '</td><td class="text-center">' + settled + '</td><td class="text-center">' + addToDraft + '</td></tr>')
+                        });
+
+                    },
+                    dataType: "json",
+                });
+
+
+               
             },
             dataType: "json",
         });
-
-
-
     });
+    function reloadLocationToUrl() {
+        window.location.href ="/Engagement/task_list"
+    }
+    function closeDraftAudit() {
+        $.ajax({
+            url: "/ApiCalls/close_draft_audit",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId
+            },
+            cache: false,
+            success: function () {
+                alert("Audit Closed Successfully");
+                onAlertCallback(reloadLocationToUrl);
+            },
+            dataType: "json",
+        });
+    }
 </script>
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Close Audit</h4>
@@ -56,61 +94,19 @@
     <div>
         <h5 style="display: block; color: #45c545;">Auditor Wise Memo Status</h5>
     </div>
-    <table class="table-bordered table-hover mt-3 table-striped">
+    <table id="auditorWiseProgessTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-3">Auditor</th>
-                <th class="col-md-1">TL</th>
+                <th class="col-md-2">Auditor</th>
+                <th class="col-md-1">Team Lead</th>
                 <th class="col-md-2">Total Memos</th>
-                <th class="col-md-2">Pending</th>
                 <th class="col-md-2">Submitted to Auditee</th>
                 <th class="col-md-2">Responded by Auditee</th>
-                <th class="col-md-2">Partially Responded</th>
+                <th class="col-md-1">Resolved</th>
                 <th class="col-md-2">Add to Draft Report</th>
-                <th class="col-md-2">Settled in Discussion</th>
-                <th class="col-md-2">Add to Final Report</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
         </tbody>
     </table>
 </div>
@@ -119,32 +115,22 @@
     <div class="row col-md-12 mt-3">
         <h5 style="display: block; color: #45c545;">Joining and Closing Dates</h5>
     </div>
-    <div class="row col-md-12 mt-3">
-        <table class="col-md-12 table-bordered table-hover mt-3 table-striped">
+   <table id="joiningAuditorDetailsTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-3">P.P. Number</th>
-                    <th class="col-md-4">Name</th>
+                    <th class="col-md-3">Name</th>
                     <th class="col-md-3">Joining Date</th>
                     <th class="col-md-3">Completion Date </th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
             </tbody>
         </table>
-    </div>
+        <div class="w-100">
+            <button onclick="closeDraftAudit();" class="col-md-2 mt-3 mb-3 btn btn-danger float-right"> Close Audit</button>
+        </div>
 </div>
+
 
 
