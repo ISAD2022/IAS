@@ -62,32 +62,25 @@
 </script>
 
 <div class="row">
-    <div class="col-md-12 mt-3">
+    <div class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Report Summary</h3>
         <table id="reportSummaryTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+            <thead style="background-color:aquamarine;">
+                <tr>
+                    <th>Total Observations</th>
+                    <th>High Risk</th>
+                    <th>Medium Risk</th>
+                    <th>Low Risk</th>
+                    <th>Resolved</th>
+                    <th>Add to Draft</th>
+                </tr>
+            </thead>
             <tr>
-                <td><b>Total Observations</b></td>
                 <td id="totalObsLabel" class="text-center"></td>
-            </tr>
-            <tr>
-                <td><b>High Risk</b></td>
                 <td id="highObsLabel" class="text-center"></td>
-            </tr>
-
-            <tr>
-                <td><b>Medium Risk</b></td>
                 <td id="mediumObsLabel" class="text-center"></td>
-            </tr>
-            <tr>
-                <td><b>Low Risk</b></td>
                 <td id="lowObsLabel" class="text-center"></td>
-            </tr>
-            <tr>
-                <td><b>Resolved</b></td>
                 <td id="resolvedObsLabel" class="text-center"></td>
-            </tr>
-            <tr>
-                <td><b>Add to Draft</b></td>
                 <td id="addToDraftLabel" class="text-center"></td>
             </tr>
         </table>
@@ -99,9 +92,11 @@
             <thead style="background-color:aquamarine;">
                 <tr>
                     <th class="col-md-1 text-center">Memo No.</th>
+                    <th class="col-md-2 text-center">Process</th>
+                    <th class="col-md-2 text-center">Violation</th>
                     <th class="col-md-3">Observation</th>
                     <th class="col-md-1">Risk Category</th>
-                    <th class="col-md-3">Auditee Response</th>                    
+                    <th class="col-md-2">Auditee Response</th>
                     <th class="col-md-1">Status</th>
                 </tr>
             </thead>
@@ -114,6 +109,8 @@
                         {
                                 <tr>
                                     <td class="text-center">@item.MEMO_NO</td>
+                                    <td></td>
+                                    <td></td>
                                     <td class="obs_text" data="@item.OBS_TEXT"></td>
                                     <td>@item.OBS_RISK</td>
                                     <td class="obs_reply" data="@item.OBS_REPLY"></td>

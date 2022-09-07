@@ -8,7 +8,7 @@
     $('#document').ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
-        var eng_id = url.searchParams.get("id");
+        var eng_id = url.searchParams.get("engId");
         $.ajax({
             url: "/Engagement/get_joining_details",
             type: "POST",

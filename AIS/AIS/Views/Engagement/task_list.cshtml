@@ -60,7 +60,7 @@
 
                                         if (item.STATUS_ID == 1)
                                         {
-                                            <a href="/Engagement/Join?id=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            <a href="/Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                         }
                                         else if (item.STATUS_ID == 2)
                                         {
@@ -68,11 +68,11 @@
                                         }
                                         else if (item.STATUS_ID == 3)
                                         {
-                                            <a href="/Execution/manage_observations">@item.ENG_NEXT_STATUS</a>
+                                            <a href="/Execution/manage_observations/@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                         }
                                         else if (item.STATUS_ID == 4)
                                         {
-                                            <a href="/Reports/draft_audit_report">@item.ENG_NEXT_STATUS</a>
+                                            <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                         }
                                         else if (item.STATUS_ID == 5)
                                         {

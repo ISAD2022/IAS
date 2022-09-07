@@ -172,14 +172,14 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);            
         }
         [HttpPost]
-        public bool update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID)
+        public bool update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID, string AUDITOR_COMMENT)
         {
 
             if (NEW_STATUS_ID == 4)
                 if (RISK_ID != 1)
                     return false;
 
-            if (dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID))
+            if (dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID,AUDITOR_COMMENT))
                 return true;
             else
                 return false;
