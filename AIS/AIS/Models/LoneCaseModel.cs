@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
@@ -22,9 +23,6 @@ namespace AIS.Models
         public DateTime VALID_UNTIL { get; set; }
 
         public int DISB_STATUSID { get; set; }
-
-
-
 
 
     }

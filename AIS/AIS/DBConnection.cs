@@ -2109,7 +2109,7 @@ namespace AIS
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM";
+                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2137,12 +2137,12 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "select* from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + "";
+                cmd.CommandText = "select* from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + " order by gh.GLSUBNAME, gh.DATETIME";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
 
-                    GlHeadSubDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                   /* GlHeadSubDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     GlHeadSubDetails.GL_TYPE_ID = Convert.ToInt32(rdr["GL_TYPE_ID"]);
                     GlHeadSubDetails.GLSUBID = Convert.ToInt32(rdr["GLSUBID"]);
                     GlHeadSubDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
@@ -2150,7 +2150,7 @@ namespace AIS
                     GlHeadSubDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GlHeadSubDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
                     GlHeadSubDetails.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
-                    GlHeadSubDetails.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]);
+                    GlHeadSubDetails.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]); */
                     GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
 
                     GHSD.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
@@ -2167,14 +2167,13 @@ namespace AIS
             return GlHeadSubDetails;
 
         }
-        public List<LoanCaseModel> GetLoanCaseDetails()
+        public List<LoanCaseModel> GetLoanCaseDetails(int lid =0)
         {
+           List<LoanCaseModel> list = new List<LoanCaseModel>();
             var con = this.DatabaseConnection();
-            List<LoanCaseModel> LoanCaseList = new List<LoanCaseModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-
-                cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd WHERE lcd.LOAN_CASE_NO =164726 ";
+                cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.LOAN_CASE_NO= " + lid + " order by lcd.DISB_DATE ";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2190,19 +2189,54 @@ namespace AIS
                     LoanCaseDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
                     LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
-                    //LoanCaseDetails.VALID_UNTIL = Convert.ToDateTime(rdr["VALID_UNTIL"]);
                     LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
-
-
-                    //left side if for model and view and right side should be same as DB fields
-
-
-                    LoanCaseList.Add(LoanCaseDetails);
+                    list.Add(LoanCaseDetails);
                 }
             }
             con.Close();
-            return LoanCaseList;
+            return list;
         }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+        public List<DepositAccountModel> GetDepositAccountdetails()
+        {
+
+            var con = this.DatabaseConnection();
+            List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DepositAccountModel depositaccdetails = new DepositAccountModel();
+                    depositaccdetails.NAME = rdr["NAME"].ToString();
+                    depositaccdetails.ACC_NUMBER = Convert.ToDouble(rdr["ACC_NUMBER"]);
+                    depositaccdetails.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
+                    depositaccdetails.OPENINGDATE = Convert.ToDateTime(rdr["ACCOUNTCATEGORY"]);
+                    depositaccdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
+                    depositaccdetails.ACC_TITLE = rdr["ACC_TITLE"].ToString();
+                    depositaccdetails.CUST_NAME = rdr["ACC_TITLE"].ToString();
+                    depositaccdetails.OLDACCOUNTNO = Convert.ToDouble(rdr["OLDACCOUNTNO"]);
+                    depositaccdetails.ACCOUNTSTATUS = rdr["ACCOUNTSTATUS"].ToString();
+                    depositaccdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
+                    depositaccdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
+
+                    depositacclist.Add(depositaccdetails);
+                }
+            }
+                con.Close();
+                return depositacclist;
+        }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+    
+       
+       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();

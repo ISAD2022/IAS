@@ -13,7 +13,7 @@
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-12">
-        <table class="col-md-12 table-bordered table-hover mt-1 table-striped">
+        <table class="col-md-12 table table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-2">GL Head</th>
@@ -29,8 +29,12 @@
                 @{
                     if (ViewData["GlHeadDetails"] != null)
                     {
+
+
                         foreach (var item in (dynamic)(ViewData["GlHeadDetails"]))
                         {
+
+                            String date = @item.MONTHEND.ToString();
 
                                 <tr id="Branch_@item.BRANCHID">
                                     <td class="gl_id">
@@ -40,7 +44,7 @@
                                         <p class="fw-normal mb-1">@item.GLDESP</p>
                                     </td>
                                     <td class="date">
-                                        <p class="fw-normal mb-1">@item.MONTHEND</p>
+                                        <p class="fw-normal mb-1">@date.Split(" ")[0]</p>
 
                                     </td>
                                     <td class="run_cr">

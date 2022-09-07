@@ -205,6 +205,11 @@ namespace AIS.Controllers
         {
             return dBConnection.CloseDraftAuditReport(ENG_ID);
         }
+ 		[HttpPost]
+        public List<LoanCaseModel> Loan_Case_Details(int Loan_case)
+        {
+          return dBConnection.GetLoanCaseDetails(Loan_case);
+        }
         [HttpPost]
         public GlHeadSubDetailsModel Glhead_Sub_Details(int GL_CODE)
         {
