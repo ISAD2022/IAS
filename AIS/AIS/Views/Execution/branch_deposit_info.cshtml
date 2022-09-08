@@ -1,52 +1,97 @@
 ﻿@{
-    ViewData["Title"] = "Pre Audit Information";
+    ViewData["Title"] = "Branch Deposit Information";
     Layout = "_Layout";
 }
+
+
+
+<script>
+
+    function getb_depositinfo() {
+
+        var bid = $('#b_n').val();
+        if (bid != 0) {
+            $.ajax({
+                url: "/ApiCalls/GetDepositAccountSubdetails",
+                type: "POST",
+                data: {
+                    'b_name': bid
+                },
+                cache: false,
+                success: function (data) {
+
+                    console.log(data);
+                    $('#b_d_det tbody').empty();
+                    $.each(data, function (i, v) {
+                        $('#b_d_det tbody').append('<tr><td >' + v.name + ' ' + '</td><td >' + v.cusT_NAME + '</td><td >' + v.acC_TITLE + '</td><td class="pl-1 pr-1">' + v.acC_NUMBER + ' ' + '</td> <td>' + v.accountcategory + '</td><td>' + v.accountstatus + '</td><td>' + v.cnic + ' ' + '</td><td>' + v.cnicexpirydate.split('T')[0] + '</td><td class="pl-1 pr-1">' + v.oldaccountno + ' ' + '</td><td>' + v.openingdate.split('T')[0] + '</td>  <td>' + v.lasttransactiondate.split('T')[0] + '</td> </tr>')
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+
+
+
+</script>
 
 <script type="text/javascript">
    
 </script>
 <div class="row col-md-12 mt-3">
-    <h4 style="display: block; color: #45c545;">Pre Audit Information</h4>
+    <h4 style="display: block; color: #45c545;">Branch Deposit Information</h4>
 </div>
 
-<div class="row col-md-12 mt-1">
+
+<div class="row col-md-12 mt-3">
     <div class="row col-md-6 mt-1">
-        <label><b>Zone</b></label>
-        <input disabled="disabled" class="form-control mr-1" type="text" />
-    </div>
-    <div class="row col-md-6 mt-1">
-        <label><b>Branch</b></label>
-        <input disabled="disabled" class="form-control ml-1" type="text" />
-    </div>
+        <label><b>BRANCH NAME</b></label>
+        <select id="b_n" class="form-control mr-1" type="number">
+            <option value="0" id="0" selected>--Select Branch Name--</option>
+
+            @{
+                if (ViewData["D_Branch_Name"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["D_Branch_Name"]))
+                    {
+                        <option id="">@item.NAME</option>
+                    }
+                }
+            }
+
+
+        </select>
 </div>
-<div class="row col-md-12 mt-1">
-    <div class="row col-md-6 mt-1">
-        <label><b>Loan Case No.</b></label>
-        <input class="form-control mr-1" type="number" />
-    </div>
 </div>
 <div class="row col-md-12 mt-3">
-    <button class="btn btn-primary">Find</button>
+    <button onclick="getb_depositinfo();" class ="btn btn-primary">Find</button>
 </div>
 
 <div class="row col-md-12 mt-3">
-    <table class="table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+    <table id="b_d_det" class="table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; font-size:small">
             <tr>
-                <th class="col-md-2">Branch</th>
-                <th class="col-md-1">LC #</th>
-                <th class="col-md-3">LC File/Booklet #</th>
-                <th class="col-md-2">Application Date</th>
-                <th class="col-md-1">Status</th>
-                <th class="col-md-3">Development Amount</th>
-                <th class="col-md-3">Production Amount</th>
-                <th class="col-md-2">Sanction Date</th>
-                <th class="col-md-2">Detail</th>
+                <th class="col-md-1">BRANCH</th>
+                <th class="col-md-1">CUSTOMER NAME</th>
+                <th class="col-md-2">ACC TITLE</th>
+                <th class="col-md-1">ACCOUNT #</th>
+
+                <th class="col-md-1">ACC CATEGORY</th>
+                <th class="col-md-1">ACC STATUS</th>
+                <th class="col-md-1">CNIC</th>
+                <th class="col-md-1">CNIC EXP</th>
+
+                <th class="col-md-1">OLD ACC #</th>
+                <th class="col-md-1">ACC OPEN Date</th>
+                <th class="col-md-1">Last TR Date</th>
+           
+
+                <!-- <th class="col-md-2">Detail</th>-->
             </tr>
         </thead>
-        <tbody>
-            <tr>
+        <tbody style="font-size:small">
+            <!--   <tr>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -56,11 +101,21 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
-                        Details
-                    </button>
-                </td>
-            </tr>
+        <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
+            Details
+        </button>
+    </td>
+            </tr>-->
         </tbody>
     </table>
+
+
+
+    <div class="row col-md-12 mt-3">
+
+        <button onclick="history.back()" class="bg-primary" style="color:white">Return</button>
+
+    </div>
+
+
 </div>

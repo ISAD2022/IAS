@@ -216,6 +216,14 @@ namespace AIS.Controllers
             return dBConnection.GetGlheadSubDetails(GL_CODE);
         }
 
+       
+        [HttpPost]
+        public List<DepositAccountModel> GetDepositAccountSubdetails(string b_name)
+        {
+            return dBConnection.GetDepositAccountSubdetails(b_name);
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

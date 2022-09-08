@@ -480,6 +480,8 @@ namespace AIS.Controllers
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["D_Branch_Name"] = dBConnection.GetDepositAccountdetails();
+
             ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {

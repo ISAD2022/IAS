@@ -2100,7 +2100,7 @@ namespace AIS
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.MONTHEND";
+                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.DESCRIPTION, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2133,15 +2133,7 @@ namespace AIS
                 while (rdr.Read())
                 {
 
-                   /* GlHeadSubDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
-                    GlHeadSubDetails.GL_TYPE_ID = Convert.ToInt32(rdr["GL_TYPE_ID"]);
-                    GlHeadSubDetails.GLSUBID = Convert.ToInt32(rdr["GLSUBID"]);
-                    GlHeadSubDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
-                    GlHeadSubDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadSubDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
-                    GlHeadSubDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GlHeadSubDetails.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
-                    GlHeadSubDetails.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]); */
+                 
                     GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
 
                     GHSD.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
@@ -2216,7 +2208,62 @@ namespace AIS
             }
                 con.Close();
                 return depositacclist;
-        }       
+        }
+           
+        public List<DepositAccountModel> GetDepositAccountSubdetails(string bname="")
+        {
+
+            var con = this.DatabaseConnection();
+            List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d where d.NAME = '"+ bname + "' order by d.OPENINGDATE ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DepositAccountModel depositaccsubdetails = new DepositAccountModel();
+
+                    depositaccsubdetails.NAME = rdr["NAME"].ToString();
+                    if (rdr["ACC_NUMBER"].ToString() != null && rdr["ACC_NUMBER"].ToString() != "")
+                        depositaccsubdetails.ACC_NUMBER = Convert.ToDouble(rdr["ACC_NUMBER"]);
+                    if (rdr["ACCOUNTCATEGORY"].ToString() != null && rdr["ACCOUNTCATEGORY"].ToString() != "")
+                        depositaccsubdetails.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
+
+                    if (rdr["CUST_NAME"].ToString() != null && rdr["CUST_NAME"].ToString() != "")
+                        depositaccsubdetails.CUST_NAME = rdr["CUST_NAME"].ToString();
+
+
+                    if (rdr["OPENINGDATE"].ToString() != null && rdr["OPENINGDATE"].ToString() != "")
+                     {
+                         depositaccsubdetails.OPENINGDATE = Convert.ToDateTime(rdr["OPENINGDATE"]);
+                     }
+                     if (rdr["CNIC"].ToString() != null && rdr["CNIC"].ToString() != "")
+                     {
+                         depositaccsubdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
+                     }
+                    if (rdr["ACC_TITLE"].ToString() != null && rdr["ACC_TITLE"].ToString() != "")
+                        depositaccsubdetails.ACC_TITLE = rdr["ACC_TITLE"].ToString();
+                  
+                    if (rdr["OLDACCOUNTNO"].ToString() != null && rdr["OLDACCOUNTNO"].ToString() != "")
+                        depositaccsubdetails.OLDACCOUNTNO = Convert.ToDouble(rdr["OLDACCOUNTNO"]);
+                    if (rdr["ACCOCUNTSTATUS"].ToString() != null && rdr["ACCOCUNTSTATUS"].ToString() != "")
+                        depositaccsubdetails.ACCOUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
+                     if (rdr["LASTTRANSACTIONDATE"].ToString() != null && rdr["LASTTRANSACTIONDATE"].ToString() != "")
+                     { 
+                         depositaccsubdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
+                     }
+                     if (rdr["CNICEXPIRYDATE"].ToString() != null && rdr["CNICEXPIRYDATE"].ToString() != "")
+                     {
+                         depositaccsubdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
+                     }
+                    depositaccsublist.Add(depositaccsubdetails);
+                }
+            }
+            con.Close();
+            return depositaccsublist;
+        }
+
+       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();
