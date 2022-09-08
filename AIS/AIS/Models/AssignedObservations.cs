@@ -17,6 +17,8 @@ namespace AIS.Models
         public string IS_ACTIVE { get; set; }
         public string REPLIED { get; set; }
         public string OBSERVATION_TEXT { get; set; }
+        public string PROCESS { get; set; }
+        public string VIOLATION { get; set; }
         public string REPLY_TEXT { get; set; }
         public string STATUS { get; set; }
         public string ENTITY_NAME { get; set; }

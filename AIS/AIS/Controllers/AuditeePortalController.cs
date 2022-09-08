@@ -40,15 +40,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-
-
-
-
-
-
-
-
         public IActionResult old_outstanding_paras()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

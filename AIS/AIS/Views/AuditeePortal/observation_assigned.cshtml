@@ -18,11 +18,13 @@
     function reloadLocation() {
         location.reload();
     }
-    function showMemo(memotxt, obs_id, obs_text_id, status,reply_txt) {
+    function showMemo(memotxt, obs_id, obs_text_id, status,reply_txt,process,violation) {
         g_obsId=obs_id;
         g_obsTextId=obs_text_id;
         $('#viewMemoModel').modal('show');
         $('#viewMemo_memo').html(memotxt);
+        $('#viewMemo_process').html(process);
+        $('#viewMemo_violation').html(violation);
         if (status.trim() == "Submitted to Concerned".trim()) {
             $('#replyButton_memoReply').removeClass('d-none');
             $('#viewMemo_responded').parent().addClass('d-none');
@@ -94,7 +96,7 @@
                                 <td>@sdate</td>
                                 <td>@edate</td>
                                 <td>@item.STATUS</td>
-                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS','@item.REPLY_TEXT');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
+                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS','@item.REPLY_TEXT','@item.PROCESS','@item.VIOLATION');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
                             </tr>
                             index++;
                         }
@@ -117,6 +119,14 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Process</label>
+                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Violation</label>
+                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>

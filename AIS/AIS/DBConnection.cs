@@ -1293,7 +1293,7 @@ namespace AIS
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
                 cmd.ExecuteReader();
 
-                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll) and TEAM_ID=" + ePlan.TEAM_ID;
+                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP) and TEAM_ID=" + ePlan.TEAM_ID;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 bool teamentry = false;
                 while (ardr.Read())
@@ -1303,7 +1303,7 @@ namespace AIS
                 }
                 if(!teamentry)
                 {
-                    cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', " + placeofposting + ",1)";
+                    cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAMS ll), (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', " + placeofposting + ",1)";
                     cmd.ExecuteReader();
                 }
                    
@@ -2187,8 +2187,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
 
@@ -2218,16 +2216,7 @@ namespace AIS
             }
                 con.Close();
                 return depositacclist;
-        }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-    
-       
-       
+        }       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();
@@ -2278,7 +2267,7 @@ namespace AIS
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query+"  order by t.OBS_ID asc";
+                cmd.CommandText = "select ced.heading as PROCESS,  g.description  as VIOLATION, o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.assignedto_role inner join t_audit_checklist_details cd on o.checklistdetail_id = cd.id inner join t_r_sub_group g on cd.v_id=g.s_gr_id inner join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id inner join t_audit_checklist ced on sd.t_id = ced.t_id inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query+"  order by t.OBS_ID asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2304,6 +2293,8 @@ namespace AIS
                         }
                     }
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
+                    chk.PROCESS = rdr["PROCESS"].ToString();
+                    chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
@@ -2335,7 +2326,6 @@ namespace AIS
             con.Close();
             return true;
         }
-
         public int GetLoggedInUserEngId()
         {
             var con = this.DatabaseConnection();
