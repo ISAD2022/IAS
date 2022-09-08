@@ -228,11 +228,11 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult manage_observations()
+        public IActionResult manage_observations(int engId= 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ManageObservations"] = dBConnection.GetManagedObservations();
+            ViewData["ManageObservations"] = dBConnection.GetManagedObservations(engId);
              if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -247,11 +247,11 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult manage_draft_report_paras()
+        public IActionResult manage_draft_report_paras(int engId = 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations();
+            ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -266,11 +266,10 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult closing()
+        public IActionResult closing(int engId = 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ManageObservations"] = dBConnection.GetManagedObservations();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

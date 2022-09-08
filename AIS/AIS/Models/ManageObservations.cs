@@ -13,6 +13,7 @@ namespace AIS.Models
         public int MEMO_NO { get; set; }
         public string OBS_TEXT { get; set; }
         public string OBS_REPLY { get; set; }
+        public string AUD_REPLY { get; set; }
         public int OBS_RISK_ID { get; set; }
         public string OBS_RISK { get; set; }
         public int OBS_STATUS_ID { get; set; }

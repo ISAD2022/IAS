@@ -191,14 +191,14 @@ namespace AIS.Controllers
            return dBConnection.GetManagedObservations();
         }
         [HttpPost]
-        public List<ObservationModel> closing_draft_report_status()
+        public List<ObservationModel> closing_draft_report_status(int ENG_ID = 0)
         {
-            return dBConnection.GetClosingDraftObservations();
+            return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
-        public List<ClosingDraftTeamDetailsModel> get_team_details()
+        public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID=0)
         {
-            return dBConnection.GetClosingDraftTeamDetails();
+            return dBConnection.GetClosingDraftTeamDetails(ENG_ID);
         }
         [HttpPost]
         public bool close_draft_audit(int ENG_ID)
