@@ -140,7 +140,7 @@
                     $('#roleSaveField').val(user.userGroupID);
                 else
                     $('#roleSaveField').val(0);
-                if (user.isActive == "A")
+                if (user.isActive == "Y")
                     $('#isActiveSaveField').attr('checked', true);
                 else
                     $('#isActiveSaveField').attr('checked', false);
@@ -230,10 +230,7 @@
         $('#isActiveSaveField').attr('checked', false);
     }
     function saveButtonClickHandler() {
-        if ($('#passSaveField').val() == '') {
-            alert('Please Enter Password');
-            return;
-        }
+        
         if ($('#passSaveField').val() == $('#conPassSaveField').val()) {
             var active = 'N';
             if ($('#isActiveSaveField').is(":checked"))
@@ -252,15 +249,16 @@
                 cache: false,
                 success: function (data) {
                     alert('User Successfully Updated');
-                  
+
                 },
                 dataType: "json",
             });
 
-        } else {
+        }
+        else {
             alert('Password and Confirm Password should be Same');
             return;
-        }
+        }        
     }
 
 </script>

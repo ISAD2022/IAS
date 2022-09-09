@@ -293,7 +293,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select  u.USERID, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join v_service_division d on e.CURRENTDIVISIONCODE=d.CODE left join v_service_department dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE "+whereClause+" ORDER BY u.USERID";
+                cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join v_service_division d on e.CURRENTDIVISIONCODE=d.CODE left join v_service_department dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE "+whereClause+" ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -319,7 +319,7 @@ namespace AIS
                     um.BranchName = rdr["BRANCHNAME"].ToString();
                     um.UserRole = rdr["group_name"].ToString();
                     um.UserGroup = rdr["group_name"].ToString();
-                    um.IsActive= rdr["STATUSTYPE"].ToString();
+                    um.IsActive= rdr["ISACTIVE"].ToString();
                     userList.Add(um);
                 }
             }
@@ -389,15 +389,24 @@ namespace AIS
         }
         public UpdateUserModel UpdateUser(UpdateUserModel user)
         {
-            var enc_pass = getMd5Hash(user.PASSWORD);
+           
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE t_user SET PASSWORD = '"+ enc_pass + "', ISACTIVE='"+user.ISACTIVE+"' WHERE USERID="+user.USER_ID+" and PPNO='"+user.PPNO+"'";
-                cmd.ExecuteReader();
+                if (user.PASSWORD != null && user.PASSWORD != "")
+                {
+                    var enc_pass = getMd5Hash(user.PASSWORD);
+                    cmd.CommandText = "UPDATE t_user SET PASSWORD = '" + enc_pass + "', ISACTIVE='" + user.ISACTIVE + "' WHERE PPNO='" + user.PPNO + "'";
+                    cmd.ExecuteReader();
+                }else
+                {
+                   cmd.CommandText = "UPDATE t_user SET ISACTIVE='" + user.ISACTIVE + "' WHERE PPNO='" + user.PPNO + "'";
+                    cmd.ExecuteReader();
+                }
+
                 if(user.ROLE_ID!=0)
                 {
-                    cmd.CommandText = "DELETE FROM t_user_maping um WHERE um.USERID=" + user.USER_ID;
+                    cmd.CommandText = "DELETE FROM t_user_maping um WHERE um.PPNO=" + user.PPNO;
                     cmd.ExecuteReader();
                     cmd.CommandText = "INSERT INTO t_user_maping ( USERID,PPNO,GROUP_ID, ROLE_ID) VALUES ("+user.USER_ID+", '"+user.PPNO+"',"+user.ROLE_ID+", "+user.ROLE_ID+" )";
                     cmd.ExecuteReader();
