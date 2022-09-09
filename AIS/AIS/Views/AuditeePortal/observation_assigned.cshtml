@@ -25,7 +25,7 @@
         $('#viewMemo_memo').html(memotxt);
         $('#viewMemo_process').html(process);
         $('#viewMemo_violation').html(violation);
-        if (status.trim() == "Submitted to Concerned".trim()) {
+        if (status == 2) {
             $('#replyButton_memoReply').removeClass('d-none');
             $('#viewMemo_responded').parent().addClass('d-none');
             $('#replyrichTextWrapper').removeClass('d-none');
@@ -96,7 +96,7 @@
                                 <td>@sdate</td>
                                 <td>@edate</td>
                                 <td>@item.STATUS</td>
-                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS','@item.REPLY_TEXT','@item.PROCESS','@item.VIOLATION');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
+                                <td class="text-center"><a onclick="showMemo('@item.OBSERVATION_TEXT',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS_ID','@item.REPLY_TEXT','@item.PROCESS','@item.VIOLATION');" data="@item.OBSERVATION_TEXT" class="text-hover font-weight-bold text-success">View</a></td>
                             </tr>
                             index++;
                         }
