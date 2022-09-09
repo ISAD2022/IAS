@@ -280,7 +280,7 @@
             <label>login Name</label>
         </div>
         <div class="col-md-4">
-            <input id="loginSearchField" class="form-control" type="text" />
+            <input id="loginSearchField" autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" class="form-control" type="text" />
         </div>
     </div>
     <div class="row col-md-12 mt-1">
@@ -386,7 +386,7 @@
             <label>login Name</label>
         </div>
         <div class="col-md-4">
-            <input id="loginSaveField" class="form-control" type="text" />
+            <input id="loginSaveField" autocomplete="false" class="form-control" type="text" />
         </div>
     </div>
     <div class="row col-md-12 mt-1">
@@ -449,13 +449,13 @@
             <label>Password</label>
         </div>
         <div class="col-md-4">
-            <input id="passSaveField" type="password" class="form-control" />
+            <input id="passSaveField" autocomplete="false" type="password" class="form-control" />
         </div>
         <div class="col-md-2">
             <label>Confirm Password</label>
         </div>
         <div class="col-md-4">
-            <input id="conPassSaveField" class="form-control" type="password" />
+            <input id="conPassSaveField" autocomplete="false" class="form-control" type="password" />
         </div>
     </div>
     <div class="row col-md-12 mt-1">
