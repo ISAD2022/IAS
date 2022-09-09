@@ -137,8 +137,14 @@
     }
     function publishNewAuditPlanChanges() {
 
+        if ($('#auditTeam_box').val() == 0) {
+            alert('Select audit team');
+            return;
+        }
+
         var status = 1;
         var desc = $('#descriptionAuditPlanField').val();
+
 
         $.ajax({
             url: "/Planning/add_engagement_plan",

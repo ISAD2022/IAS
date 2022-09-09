@@ -2,22 +2,19 @@
     ViewData["Title"] = "Annexure - B";
     Layout = "_Layout";
 }
-<script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
+
 <script type="text/javascript">
+    var g_engId = 0;
     $('#document').ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_engId= url.searchParams.get("engId");
         $('#template_box').richText({
             imageUpload: false,
             fileUpload: false,
             videoEmbed: false,
             urls: false
         });
-        $('#sidebar_policy').hide();
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        $('#sidebar_policy').hide();
     });
 
     function div_risksubcategoryShowHide() {
@@ -94,6 +91,48 @@
         }
     }
 
+    function saveChecklistObservations() {
+        if ($('#riskGroupSelectBox').val() == 0) {
+            alert('Select Violation Category');
+            return;
+        }
+        if ($('#riskSubGroupSelectBox').val() == 0) {
+            alert('Select Violation Nature');
+            return;
+        }
+        if ($('#auditCriteriaRiskField').val() == 0) {
+            alert('Select Risk');
+            return;
+        }
+        var g_memoObj = [];
+        var memo = {
+            'MEMO': $('.richText-editor').html(),
+            'ID': 'obs_0',
+            'DAYS': $('#viewMemo_replydays option:selected').val(),
+            'LOANCASE': '',
+            'ATTACHMENTS': ''
+        };
+        g_memoObj.push(memo);
+        $.ajax({
+            url: "/ApiCalls/save_observations",
+            type: "POST",
+            data: {
+                'LIST_OBS': g_memoObj,
+                'ENG_ID': g_engId,
+                'S_ID': 0,
+                'V_CAT_NATURE_ID': $('#riskSubGroupSelectBox').val(),
+                'V_CAT_ID': $('#riskGroupSelectBox').val(),
+                'RISK_ID': $('#auditCriteriaRiskField').val()
+            },
+            cache: false,
+            success: function (data) {
+                alert("Memo successfully submitted to Auditee");
+            },
+            dataType: "json",
+        });
+
+    }
+
 </script>
 <div class="row col-md-12">
     <div class="col-md-12 mt-3">
@@ -152,7 +191,7 @@
                 <label><h5>No. of Days to Reply</h5></label>
             </div>
             <div class="col-md-3">
-                <select class="form-control form-select">
+                <select id="viewMemo_replydays" class="form-control form-select">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -172,9 +211,7 @@
 
 
         <div class="row col-md-12 mt-5">
-            <button class="btn btn-primary">Save</button> 
-            <button class="btn btn-primary" style="margin-left: 10px;">Submit to Auditee  </button>
-
+            <button onclick="saveChecklistObservations();" class="btn btn-success" style="margin-left: 10px;">Submit to Auditee  </button>
         </div>
 
     </div>

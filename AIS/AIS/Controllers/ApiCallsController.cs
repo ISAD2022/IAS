@@ -151,16 +151,19 @@ namespace AIS.Controllers
             return dBConnection.GetAuditChecklistDetails(S_ID);
         }
         [HttpPost]
-        public bool save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID )
+        public bool save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID=0, int V_CAT_NATURE_ID=0, int RISK_ID=0 )
         {
             foreach(ListObservationModel m in LIST_OBS)
             {
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = S_ID;
                 ob.CHECKLISTDETAIL_ID =Convert.ToInt32(m.ID.Split("obs_")[1]);
+                ob.V_CAT_ID = V_CAT_ID;
+                ob.V_CAT_NATURE_ID = V_CAT_NATURE_ID;
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
+                ob.SEVERITY = RISK_ID;
                 ob.STATUS = 1;
                 dBConnection.SaveAuditObservation(ob);
             }

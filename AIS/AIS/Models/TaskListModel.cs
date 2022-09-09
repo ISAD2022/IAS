@@ -13,6 +13,7 @@ namespace AIS.Models
         public int TEAMMEMBER_PPNO { get; set; }
         public int ENTITY_ID { get; set; }
         public int ENTITY_CODE { get; set; }
+        public int ENTITY_TYPE { get; set; }
         public string ENTITY_NAME { get; set; }
         public DateTime? AUDIT_START_DATE { get; set; }
         public DateTime? AUDIT_END_DATE { get; set; }

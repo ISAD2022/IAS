@@ -56,18 +56,27 @@
                                 </td>                                
                                 <td class="text-hover text-danger text-center">
                                     @{
-                                       
+
                                         if (item.STATUS_ID == 1)
                                         {
                                             <a href="/Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                         }
                                         else if (item.STATUS_ID == 2)
                                         {
-                                            <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            if (item.ENTITY_TYPE == 6)
+                                            {
+                                                <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+
                                         }
                                         else if (item.STATUS_ID == 3)
                                         {
                                             <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+
                                         }
                                         else if (item.STATUS_ID == 4)
                                         {
