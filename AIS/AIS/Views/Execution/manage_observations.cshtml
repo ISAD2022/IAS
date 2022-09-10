@@ -118,7 +118,7 @@
                                     <td class="d-none period_name_field">@item.PERIOD</td>
                                     @if (item.OBS_STATUS_ID == 3)
                                     {
-                                        if (item.OBS_RISK_ID == 1)
+                                        if (item.OBS_RISK_ID == 3)
                                         {
                                             <td class="text-center">
                                                 <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>

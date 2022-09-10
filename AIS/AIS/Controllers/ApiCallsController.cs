@@ -179,7 +179,7 @@ namespace AIS.Controllers
         {
 
             if (NEW_STATUS_ID == 4)
-                if (RISK_ID != 1)
+                if (RISK_ID != 3)
                     return false;
 
             if (dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID,AUDITOR_COMMENT))
