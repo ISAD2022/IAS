@@ -2431,7 +2431,24 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select  r.reply from t_au_observations_auditor_response  r where r.au_obs_id= "+obs_id+"  order by r.replieddate desc FETCH NEXT 1 ROWS ONLY";
+                cmd.CommandText = "select  r.reply from t_au_observations_auditor_response  r where r.au_obs_id= "+obs_id+" and r.reply_role IN ('Team Lead', 'Team Member') order by r.replieddate desc FETCH NEXT 1 ROWS ONLY";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    response = rdr["reply"].ToString();
+                }
+            }
+            con.Close();
+            return response;
+        }
+        public string GetLatestDepartmentalHeadResponse(int obs_id = 0)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string response = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select  r.reply from t_au_observations_auditor_response  r where r.au_obs_id= " + obs_id + " and r.reply_role IN ('Departmental Head / Incharge AZ') order by r.replieddate desc FETCH NEXT 1 ROWS ONLY";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2531,6 +2548,7 @@ namespace AIS
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
+                    chk.AUD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();

@@ -102,6 +102,7 @@
                     <th class="col-md-3">Observation</th>
                     <th class="col-md-3">Auditee Response</th>
                     <th class="col-md-3">Auditor Response</th>
+                    <th class="col-md-3">Head Response</th>
                     <th class="col-md-1">Risk Category</th>
                     <th class="col-md-1">Status</th>
                     <th class="d-none"></th>
@@ -116,33 +117,34 @@
 
                         foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                            <tr>
-                                <td class="text-center">@item.MEMO_NO</td>
-                                <td>@item.PROCESS</td>
-                                <td>@item.VIOLATION</td>
-                                <td class="obs_text" data="@item.OBS_TEXT"></td>
-                                <td class="obs_reply" data="@item.OBS_REPLY"></td>
-                                <td>@item.AUD_REPLY</td>
-                                <td>@item.OBS_RISK</td>
-                                <td>@item.OBS_STATUS</td>
-                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                <td class="d-none period_name_field">@item.PERIOD</td>
-                                @if (item.OBS_STATUS_ID == 5)
-                                {
-                                    <td class="text-center">
-                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,9, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px"><small>Settle</small></a>
-                                        /
-                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,8, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a>
-                                    </td>
+                                <tr>
+                                    <td class="text-center">@item.MEMO_NO</td>
+                                    <td>@item.PROCESS</td>
+                                    <td>@item.VIOLATION</td>
+                                    <td class="obs_text" data="@item.OBS_TEXT"></td>
+                                    <td class="obs_reply" data="@item.OBS_REPLY"></td>
+                                    <td>@item.AUD_REPLY</td>
+                                    <td>@item.HEAD_REPLY</td>
+                                    <td>@item.OBS_RISK</td>
+                                    <td>@item.OBS_STATUS</td>
+                                    <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                    <td class="d-none period_name_field">@item.PERIOD</td>
+                                    @if (item.OBS_STATUS_ID == 5)
+                                    {
+                                        <td class="text-center">
+                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,9, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px"><small>Settle</small></a>
+                                            /
+                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,8, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a>
+                                        </td>
 
-                                }
-                                else
-                                {
-                                    <td class="text-center"><small>-</small></td>
+                                    }
+                                    else
+                                    {
+                                        <td class="text-center"><small>-</small></td>
 
-                                }
+                                    }
 
-                            </tr>
+                                </tr>
                         }
                     }
                 }
