@@ -36,11 +36,11 @@
                 var atdraft = 0;
                 $.each(data, function (i, v) {
                     if (v.obS_RISK_ID == 1)
-                        lowP++;
+                        highP++;
                     else if (v.obS_RISK_ID == 2)
                         medP++;
                     else if (v.obS_RISK_ID == 3)
-                        highP++;
+                         lowP++;
                     if (v.obS_STATUS_ID == 4)
                         settled++;
                     else if (v.obS_STATUS_ID == 5)
@@ -109,8 +109,8 @@
                         {
                                 <tr>
                                     <td class="text-center">@item.MEMO_NO</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>@item.PROCESS</td>
+                                    <td>@item.VIOLATION</td>
                                     <td class="obs_text" data="@item.OBS_TEXT"></td>
                                     <td>@item.OBS_RISK</td>
                                     <td class="obs_reply" data="@item.OBS_REPLY"></td>
