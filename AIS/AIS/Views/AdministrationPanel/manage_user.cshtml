@@ -29,7 +29,7 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (index, branch) {
-                        $('#brSearchField').append('<option value="' + branch.branchid + '" id="' + branch.branchid + '">' + branch.description + '</option>')
+                        $('#brSearchField').append('<option value="' + branch.branchcode + '" id="' + branch.branchcode + '">' + branch.description + '</option>')
                     });
 
                 },
@@ -320,7 +320,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["ZoneList"]))
                         {
-                            <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
                         }
                     }
                 }

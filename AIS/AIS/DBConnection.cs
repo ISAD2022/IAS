@@ -279,7 +279,7 @@ namespace AIS
             if (user.ZONEID != 0)
                 whereClause = whereClause + " and e.CURRENTZONECODE =" + user.ZONEID;
             if (user.BRANCHID != 0)
-                whereClause = whereClause + " and e.CURRENTZONECODE =" + user.BRANCHID;
+                whereClause = whereClause + " and e.CURRENTBRANCHCODE =" + user.BRANCHID;
             if (user.EMAIL != "" && user.EMAIL != null)
                 whereClause = whereClause + " and e.EMAIL like  %'" + user.EMAIL+"'%";
             if (user.GROUPID != 0)
@@ -551,9 +551,9 @@ namespace AIS
             if (sessionCheck)
             {
                 if (loggedInUser.UserPostingZone != 0)
-                    query = query + " and z.ZONEID=" + loggedInUser.UserPostingZone;
+                    query = query + " and z.ZONECODE=" + loggedInUser.UserPostingZone;
                 if (loggedInUser.UserPostingBranch != 0)
-                    query = query + " and b.ZONEID=" + loggedInUser.UserPostingBranch;
+                    query = query + " and b.BRANCHID=" + loggedInUser.UserPostingBranch;
             }
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -562,7 +562,7 @@ namespace AIS
                     cmd.CommandText = "Select b.*, z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE 1=1 "+query+" order by b.BRANCHNAME asc";
                 //cmd.CommandText = "Select b.*, s.DESCRIPTION as BRANCH_SIZE,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join T_BR_SIZE s on b.BRANCH_SIZE_ID=s.BR_SIZE_ID inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid  order by b.BRANCHNAME asc";
                 else
-                    cmd.CommandText = "Select b.*,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONEID=" + zone_code + query+ " order by b.BRANCHNAME asc";
+                    cmd.CommandText = "Select b.*,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONECODE=" + zone_code + query+ " order by b.BRANCHNAME asc";
                 //cmd.CommandText = "Select b.*, s.DESCRIPTION as BRANCH_SIZE,  z.ZONENAME   FROM V_SERVICE_BRANCH b inner join T_BR_SIZE s on b.BRANCH_SIZE_ID=s.BR_SIZE_ID inner join V_SERVICE_ZONES z on b.zoneid=z.zoneid WHERE z.ZONECODE="+zone_code+" order by b.BRANCHNAME asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
