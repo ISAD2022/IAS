@@ -237,6 +237,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
+        [HttpPost]
+        public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID)
+        {
+            return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

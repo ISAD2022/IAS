@@ -2729,20 +2729,20 @@ namespace AIS
             con.Close();
             return true;
         }
-        public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE)
+        public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID)
         {
             var con = this.DatabaseConnection();
-            var loggedInUser = sessionHandler.GetSessionUser();
             int count = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                DateTime UpdatedDate = System.DateTime.Now;
-                cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY=" + loggedInUser.PPNumber + ", LASTUPDATEDDATE = to_date('" + UpdatedDate + "','dd/mm/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
-                cmd.ExecuteReader();
-                cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID + " and TEAMMEMBER_PPNO=" + loggedInUser.PPNumber;
-                cmd.ExecuteReader();
+                cmd.CommandText = "select count(e.entity_id) as TOTAL_ENTITIES from t_auditee_entities e inner join t_auditee_entities_risk r on e.code=r.entity_code inner join t_auditee_entities_size s on e.code=s.entity_code where e.type_id=" + ENTITY_TYPE_ID + " and r.risk_rating=" + RISK_ID + " and s.entity_size=" + SIZE_ID;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["TOTAL_ENTITIES"].ToString() != null && rdr["TOTAL_ENTITIES"].ToString() != "")
+                        count = Convert.ToInt32(rdr["TOTAL_ENTITIES"]);
 
-
+                }
             }
             con.Close();
             return count;
