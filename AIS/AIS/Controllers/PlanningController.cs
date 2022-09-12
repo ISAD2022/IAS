@@ -4,11 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
-
-
 namespace AIS.Controllers
 {
     public class PlanningController : Controller
@@ -322,25 +318,25 @@ namespace AIS.Controllers
             return dBConnection.GetAuditEmployees(dept_code);
         }
         [HttpPost]
-        public bool referredBack_auditCriteria(int[] IDs)
+        public bool referredBack_auditCriteria(List<CriteriaIDComment> DATALIST)
         {
-            if (IDs.Length > 0)
+            if (DATALIST.Count > 0)
             {
-                foreach (var id in IDs)
+                foreach (var criteria in DATALIST)
                 {
-                    dBConnection.SetAuditCriteriaStatusReferredBack(id);
+                    dBConnection.SetAuditCriteriaStatusReferredBack(criteria.ID, criteria.COMMENT);
                 }
             }
             return true;
         }
         [HttpPost]
-        public bool authorize_auditCriteria(int[] IDs)
+        public bool authorize_auditCriteria(List<CriteriaIDComment> DATALIST)
         {
-            if (IDs.Length > 0)
+            if (DATALIST.Count > 0)
             {
-                foreach (var id in IDs)
+                foreach (var criteria in DATALIST)
                 {
-                    dBConnection.SetAuditCriteriaStatusApprove(id);
+                    dBConnection.SetAuditCriteriaStatusApprove(criteria.ID, criteria.COMMENT);
                 }
             }
             return true;

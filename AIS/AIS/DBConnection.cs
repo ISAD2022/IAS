@@ -1786,7 +1786,7 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool SetAuditCriteriaStatusReferredBack(int ID)
+        public bool SetAuditCriteriaStatusReferredBack(int ID, string REMARKS)
         {
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1797,7 +1797,11 @@ namespace AIS
                 alog.ID = 0;
                 alog.C_ID = ID;
                 alog.STATUS_ID = 2;
-                alog.REMARKS = "REFERRED BACK";
+                if(REMARKS=="")
+                    alog.REMARKS = "REFERRED BACK";
+                else
+                    alog.REMARKS = REMARKS;
+
                 var loggedInUser = sessionHandler.GetSessionUser();
                 alog.CREATEDBY_ID = loggedInUser.ID;
                 alog.CREATED_ON = DateTime.Now;
@@ -1809,7 +1813,7 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool SetAuditCriteriaStatusApprove(int ID)
+        public bool SetAuditCriteriaStatusApprove(int ID, string REMARKS)
         {
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1820,7 +1824,11 @@ namespace AIS
                 alog.ID = 0;
                 alog.C_ID = ID;
                 alog.STATUS_ID = 4;
-                alog.REMARKS = "APPROVED";
+                if (REMARKS == "")
+                    alog.REMARKS = "APPROVED";
+                else
+                    alog.REMARKS = REMARKS;
+                
                 var loggedInUser = sessionHandler.GetSessionUser();
                 alog.CREATEDBY_ID = loggedInUser.ID;
                 alog.CREATED_ON = DateTime.Now;
@@ -1829,12 +1837,7 @@ namespace AIS
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
                 cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid, e.auditby_id, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e, t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id       and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                   
-
-                }
+                cmd.ExecuteReader();               
 
             }
             con.Close();
@@ -2192,8 +2195,7 @@ namespace AIS
             return list;
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
+       public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
             var con = this.DatabaseConnection();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
@@ -2628,7 +2630,7 @@ namespace AIS
                 cmd.ExecuteReader();
                 if (NEW_STATUS_ID < 6)
                 {
-                    cmd.CommandText = " UPDATE t_au_audit_team_tasklist set STATUS_ID =4 WHERE ENG_PLAN_ID IN (SELECT ENGPLANID FROM t_au_observation WHERE ID = " + OBS_ID + " ) ";
+                    cmd.CommandText = " UPDATE t_au_audit_team_tasklist set STATUS_ID =4 WHERE ENG_PLAN_ID IN (SELECT ENGPLANID FROM t_au_observation WHERE ID = " + OBS_ID + " ) and TEAMMEMBER_PPNO= "+loggedInUser.PPNumber;
                     cmd.ExecuteReader();
                 }
                 string remarks = "";
@@ -2719,7 +2721,7 @@ namespace AIS
                 DateTime UpdatedDate = System.DateTime.Now;
                 cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY="+loggedInUser.PPNumber+ ", LASTUPDATEDDATE = to_date('" + UpdatedDate + "','dd/mm/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
                 cmd.ExecuteReader();
-                cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID;
+                cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID+ " and TEAMMEMBER_PPNO="+loggedInUser.PPNumber;
                 cmd.ExecuteReader();
 
 
@@ -2727,6 +2729,23 @@ namespace AIS
             con.Close();
             return true;
         }
+        public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            int count = 0;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                DateTime UpdatedDate = System.DateTime.Now;
+                cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY=" + loggedInUser.PPNumber + ", LASTUPDATEDDATE = to_date('" + UpdatedDate + "','dd/mm/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID + " and TEAMMEMBER_PPNO=" + loggedInUser.PPNumber;
+                cmd.ExecuteReader();
 
+
+            }
+            con.Close();
+            return count;
+        }
     }
 }
