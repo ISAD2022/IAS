@@ -5,15 +5,12 @@
 
 
 <script type="text/javascript">
-
-
-
     function get_gl_details() {
 
         var bid = $('#b_i').val();
         if (bid != 0) {
             $.ajax({
-                url: "/ApiCalls/Getincomeexpencedetails",
+                url: "/ApiCalls/GetIncomeExpenceDetails",
                 type: "POST",
                 data: {
                     'b_id': bid
@@ -24,18 +21,14 @@
                     $('#b_d_T tbody').empty();
                     console.log(data);
                     $.each(data, function (i, v) {
+                        console.log(v);
                         $('#b_d_T tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.glcode + '</td><td class="pr-2">' + v.gldesp + '</td><td class="pl-1, pr-1">' + v.monthend.split('T')[0] + '</td><td>' + v.runninG_CR + '</td><td>' + v.runninG_DR + '</td><td>' + v.balance + '</td> </tr>')
                     });
                 },
                 dataType: "json",
             });
         }
-    }
-
-
-
-
-</script>
+    }</script>
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Branch Wise Income And Expenditure Information</h4>
 </div>

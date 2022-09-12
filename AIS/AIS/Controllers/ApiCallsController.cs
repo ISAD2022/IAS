@@ -233,9 +233,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<GlHeadDetailsModel> Getincomeexpencedetails(int b_id)
+        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int b_id)
         {
-            return dBConnection.Getincomeexpencedetails(b_id);
+            return dBConnection.GetIncomeExpenceDetails(b_id);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

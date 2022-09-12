@@ -2193,14 +2193,14 @@ namespace AIS
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public List<GlHeadDetailsModel> Getincomeexpencedetails(int bid = 0)
+        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
             var con = this.DatabaseConnection();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + bid + " and GH.DESCRIPTION = 'INCOME' or GH.DESCRIPTION = 'EXPENSE'  order by GH.DESCRIPTION, GH.MONTHEND";
+                cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + bid + " and GH.DESCRIPTION IN  ('INCOME','EXPENSE')  order by GH.DESCRIPTION, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
