@@ -4,7 +4,7 @@
 }
 
 <script type="text/javascript">
-  
+
 </script>
 
 <div class="row col-md-12 mt-3">
@@ -13,7 +13,7 @@
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-12">
-        <table class="col-md-12 table table-bordered mb-0 mt-3 bg-white table-striped">
+        <table class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-2">GL Head</th>
@@ -36,35 +36,35 @@
 
                             String date = @item.MONTHEND.ToString();
 
-                                <tr id="Branch_@item.BRANCHID">
-                                    <td class="gl_id">
-                                        <p class="fw-normal mb-1">@item.GLCODE</p>
-                                    </td>
-                                    <td class="gl_des">
-                                        <p class="fw-normal mb-1">@item.GLDESP</p>
-                                    </td>
-                                    <td class="date">
-                                        <p class="fw-normal mb-1">@date.Split(" ")[0]</p>
+                            <tr id="Branch_@item.BRANCHID">
+                                <td class="gl_id">
+                                    <p class="fw-normal mb-1">@item.GLCODE</p>
+                                </td>
+                                <td class="gl_des">
+                                    <p class="fw-normal mb-1">@item.GLDESP</p>
+                                </td>
+                                <td class="date">
+                                    <p class="fw-normal mb-1">@date.Split(" ")[0]</p>
 
-                                    </td>
-                                    <td class="run_cr">
-                                        <p class="fw-normal mb-1">@item.RUNNING_CR</p>
+                                </td>
+                                <td class="run_cr">
+                                    <p class="fw-normal mb-1">@item.RUNNING_CR</p>
 
-                                    </td>
-                                    <td class="run_deb">
-                                        <p class="fw-normal mb-1">@item.RUNNING_DR</p>
-                                    </td>
-                                    <td class="bal">
-                                        <p class="fw-normal mb-1">@item.BALANCE</p>
+                                </td>
+                                <td class="run_deb">
+                                    <p class="fw-normal mb-1">@item.RUNNING_DR</p>
+                                </td>
+                                <td class="bal">
+                                    <p class="fw-normal mb-1">@item.BALANCE</p>
 
-                                    </td>
+                                </td>
 
 
-                                    <td>
-                                     <a href = '/Reports/glhead_details?glcode=@item.GLCODE'>Details</a>
-                                    </td>
+                                <td>
+                                    <a href='/Reports/glhead_details?glcode=@item.GLCODE'>Details</a>
+                                </td>
 
-                                </tr>
+                            </tr>
                         }
                     }}
             </tbody>
@@ -72,4 +72,9 @@
 
         </table>
     </div>
+</div>
+<div class="row col-md-12 mt-3">
+
+    <button onclick="history.back()" class="btn btn-primary" style="color:white">Return</button>
+
 </div>

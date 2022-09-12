@@ -226,7 +226,17 @@ namespace AIS.Controllers
             return dBConnection.GetDepositAccountSubdetails(b_name);
         }
 
+        [HttpPost]
+        public List<LoanCaseModel> GetBranchDesbursementaccountdetails(int b_id)
+        {
+            return dBConnection.GetBranchDesbursementAccountdetails(b_id);
+        }
 
+        [HttpPost]
+        public List<GlHeadDetailsModel> Getincomeexpencedetails(int b_id)
+        {
+            return dBConnection.Getincomeexpencedetails(b_id);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

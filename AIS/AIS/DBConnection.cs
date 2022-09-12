@@ -2112,7 +2112,7 @@ namespace AIS
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.DESCRIPTION, GH.MONTHEND";
+                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.GLSUBNAME, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2191,6 +2191,35 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        public List<GlHeadDetailsModel> Getincomeexpencedetails(int bid = 0)
+        {
+            var con = this.DatabaseConnection();
+            List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + bid + " and GH.DESCRIPTION = 'INCOME' or GH.DESCRIPTION = 'EXPENSE'  order by GH.DESCRIPTION, GH.MONTHEND";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
+                    GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadDetails.GLDESP = rdr["DESCRIPTION"].ToString();
+                    GlHeadDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    GlHeadDetails.MONTHEND = Convert.ToDateTime(rdr["MONTHEND"]);
+                    GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
+                    GlHeadDetails.RUNNING_DR = Convert.ToDouble(rdr["DEBIT"]);
+                    GlHeadDetails.RUNNING_CR = Convert.ToDouble(rdr["CREDIT"]);
+                    list.Add(GlHeadDetails);
+                }
+            }
+            con.Close();
+            return list;
+
+        }
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
 
@@ -2198,23 +2227,12 @@ namespace AIS
             List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS";
+                cmd.CommandText = "select distinct NAME from V_GET_BRANCH_DEPOSIT_ACCOUNTS n order by  n.NAME ";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     DepositAccountModel depositaccdetails = new DepositAccountModel();
                     depositaccdetails.NAME = rdr["NAME"].ToString();
-                    depositaccdetails.ACC_NUMBER = Convert.ToDouble(rdr["ACC_NUMBER"]);
-                    depositaccdetails.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
-                    depositaccdetails.OPENINGDATE = Convert.ToDateTime(rdr["ACCOUNTCATEGORY"]);
-                    depositaccdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
-                    depositaccdetails.ACC_TITLE = rdr["ACC_TITLE"].ToString();
-                    depositaccdetails.CUST_NAME = rdr["ACC_TITLE"].ToString();
-                    depositaccdetails.OLDACCOUNTNO = Convert.ToDouble(rdr["OLDACCOUNTNO"]);
-                    depositaccdetails.ACCOUNTSTATUS = rdr["ACCOUNTSTATUS"].ToString();
-                    depositaccdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
-                    depositaccdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
-
                     depositacclist.Add(depositaccdetails);
                 }
             }
@@ -2274,8 +2292,36 @@ namespace AIS
             con.Close();
             return depositaccsublist;
         }
+        public List<LoanCaseModel> GetBranchDesbursementAccountdetails(int bid = 0)
+        {
+            List<LoanCaseModel> list = new List<LoanCaseModel>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID= " + bid + " order by lcd.DISB_DATE ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    LoanCaseModel LoanCaseDetails = new LoanCaseModel();
+                    LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
+                    LoanCaseDetails.LOAN_CASE_NO = Convert.ToInt32(rdr["LOAN_CASE_NO"]);
+                    LoanCaseDetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    LoanCaseDetails.FATHERNAME = rdr["FATHERNAME"].ToString();
+                    LoanCaseDetails.DISBURSED_AMOUNT = Convert.ToDouble(rdr["DISBURSED_AMOUNT"]);
+                    LoanCaseDetails.PRIN = Convert.ToDouble(rdr["PRIN"]);
+                    LoanCaseDetails.MARKUP = Convert.ToDouble(rdr["MARKUP"]);
+                    LoanCaseDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
+                    LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
+                    LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
+                    list.Add(LoanCaseDetails);
+                }
+            }
+            con.Close();
+            return list;
+        }
 
-       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             var con = this.DatabaseConnection();
@@ -2385,7 +2431,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
         public bool ResponseAuditObservation(ObservationResponseModel ob)
         {
             var con = this.DatabaseConnection();

@@ -3,95 +3,77 @@
     Layout = "_Layout";
 }
 
+
+<script type="text/javascript">
+
+
+
+    function get_gl_details() {
+
+        var bid = $('#b_i').val();
+        if (bid != 0) {
+            $.ajax({
+                url: "/ApiCalls/Getincomeexpencedetails",
+                type: "POST",
+                data: {
+                    'b_id': bid
+                },
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    $('#b_d_T tbody').empty();
+                    console.log(data);
+                    $.each(data, function (i, v) {
+                        $('#b_d_T tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.glcode + '</td><td class="pr-2">' + v.gldesp + '</td><td class="pl-1, pr-1">' + v.monthend.split('T')[0] + '</td><td>' + v.runninG_CR + '</td><td>' + v.runninG_DR + '</td><td>' + v.balance + '</td> </tr>')
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+
+
+
+</script>
 <div class="row col-md-12 mt-3">
-    <h4 style="display: block; color: #45c545;">Expenditure/Income</h4>
+    <h4 style="display: block; color: #45c545;">Branch Wise Income And Expenditure Information</h4>
+</div>
+
+<div class="row col-md-12 mt-1">
+
+    <div class="row col-md-6 mt-1">
+        <label><b>Branch ID</b></label>
+        <input id="b_i" class="form-control ml-1" type="number" />
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <button onclick="get_gl_details();" class="btn btn-primary">Find</button>
 </div>
 
 <div class="row col-md-12 mt-3">
-<div class="row col-md-12">
-<label><b>Income</b></label>
-</div>
-    <div class="row col-md-12">
-        <table class="col-md-12 table-bordered table-hover mt-1 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-2">GL Head</th>
-                    <th class="col-md-3">GL Description</th>
-                    <th class="col-md-2">Budget</th>
-                    <th class="col-md-3">Revenue Amount</th>
-                    <th class="col-md-2">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Details
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="row col-md-12 mt-3">
-    <div class="row col-md-12">
-        <label><b>Expenditure</b></label>
-    </div>
-    <div class="row col-md-12">
-        <table class="col-md-12 table-bordered table-hover mt-1 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-2">GL Head</th>
-                    <th class="col-md-3">GL Description</th>
-                    <th class="col-md-2">Budget</th>
-                    <th class="col-md-3">Expenditure</th>
-                    <th class="col-md-2">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Details
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <table id="b_d_T" class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
 
-<div class="row col-md-12 mt-3">
-    <div class="row col-md-12">
-        <label><b>Profitablity</b></label>
+                <th class="col-md-2">BRANCH ID</th>
+                <th class="col-md-2">GL Head</th>
+                <th class="col-md-2">GL Description</th>
+                <th class="col-md-2">Date</th>
+                <th class="col-md-1">Credit</th>
+                <th class="col-md-2">Debit</th>
+                <th class="col-md-1">Balance</th>
+
+
+            </tr>
+        </thead>
+        <tbody style="font-size:medium">
+        </tbody>
+    </table>
+
+    <div class="row col-md-12 mt-3">
+
+        <button onclick="history.back()" class="btn btn-primary" style="color:white">Return</button>
+
     </div>
-    <center>
-        <div class="row col-md-12">
-            <table class="col-md-12 table-bordered table-hover mt-1 table-striped">
-                <thead class="col-md-12">
-                    <tr>
-                        <th class="col-md-4">Total Revenue Generated</th>
-                        <td class="col-md-4"></td>
-                    </tr>
-                    <tr>
-                        <th class="col-md-4">Total Expenditure</th>
-                        <td class="col-md-4"></td>
-                    </tr>
-                    <tr>
-                        <th class="col-md-4">Profit/Loss</th>
-                        <td class="col-md-4"></td>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </center>
 </div>

@@ -5,10 +5,10 @@
 
 <script type="text/javascript">
 
-   
+
 
     function getloancase() {
-       
+
         var lid = $('#LCN').val();
         if (lid != 0) {
             $.ajax({
@@ -19,10 +19,10 @@
                 },
                 cache: false,
                 success: function (data) {
-                   
+
                     console.log(data);
                     $('#Loancasetable tbody').empty();
-                    $.each(data, function (i, v) {                                               
+                    $.each(data, function (i, v) {
                         $('#Loancasetable tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.loaN_CASE_NO + '</td><td>' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
                     });
                 },
@@ -50,7 +50,7 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <table id="Loancasetable" class="table table-bordered table-hover mb-0 mt-3 bg-white table-striped">
+    <table id="Loancasetable" class="table table-hover table-bordered table-hover mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th class="col-md-2">Branch ID</th>
@@ -65,10 +65,12 @@
             </tr>
         </thead>
         <tbody>
-
-            
         </tbody>
     </table>
 </div>
+<div class="row col-md-12 mt-3">
 
+    <button onclick="history.back()" class="btn btn-primary" style="color:white">Return</button>
+
+</div>
 

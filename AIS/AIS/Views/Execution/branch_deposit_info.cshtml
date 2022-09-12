@@ -23,7 +23,7 @@
                     console.log(data);
                     $('#b_d_det tbody').empty();
                     $.each(data, function (i, v) {
-                        $('#b_d_det tbody').append('<tr><td >' + v.name + ' ' + '</td><td >' + v.cusT_NAME + '</td><td >' + v.acC_TITLE + '</td><td class="pl-1 pr-1">' + v.acC_NUMBER + ' ' + '</td> <td>' + v.accountcategory + '</td><td>' + v.accountstatus + '</td><td>' + v.cnic + ' ' + '</td><td>' + v.cnicexpirydate.split('T')[0] + '</td><td class="pl-1 pr-1">' + v.oldaccountno + ' ' + '</td><td>' + v.openingdate.split('T')[0] + '</td>  <td>' + v.lasttransactiondate.split('T')[0] + '</td> </tr>')
+                        $('#b_d_det tbody').append('<tr><td >' + v.name + ' ' + '</td><td >' + v.cusT_NAME + '</td><td >' + v.acC_TITLE + '</td><td>' + v.acC_NUMBER + ' ' + '</td> <td>' + v.accountcategory + '</td><td>' + v.accountstatus + '</td><td>' + v.cnic + ' ' + '</td><td>' + v.cnicexpirydate.split('T')[0] + '</td><td>' + v.oldaccountno + ' ' + '</td><td>' + v.openingdate.split('T')[0] + '</td>  <td>' + v.lasttransactiondate.split('T')[0] + '</td> </tr>')
                     });
                 },
                 dataType: "json",
@@ -69,7 +69,7 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <table id="b_d_det" class="table-bordered table-hover mt-3 table-striped">
+    <table id="b_d_det" class="col-md-12 table table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; font-size:small">
             <tr>
                 <th class="col-md-1">BRANCH</th>
@@ -85,27 +85,27 @@
                 <th class="col-md-1">OLD ACC #</th>
                 <th class="col-md-1">ACC OPEN Date</th>
                 <th class="col-md-1">Last TR Date</th>
-           
+
 
                 <!-- <th class="col-md-2">Detail</th>-->
             </tr>
         </thead>
         <tbody style="font-size:small">
             <!--   <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-        <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
-            Details
-        </button>
-    </td>
-            </tr>-->
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                <button type="button" onclick="window.location.href = './pre_audit_info_detail';" class="btn btn-link text-danger btn-sm btn-rounded">
+                    Details
+                </button>
+            </td>
+                    </tr>-->
         </tbody>
     </table>
 

@@ -21,9 +21,5 @@ namespace AIS.Models
         
         public DateTime CNICEXPIRYDATE { get; set; }
 
-     
-        public List<DepositAccountModel> D_A_D { get; set; }
-
-
     }
 }
