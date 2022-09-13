@@ -46,6 +46,11 @@
                             wa_total = 0;
                             nob_total = 0;
                             was_total = 0;
+                            sf_total += v.suB_FACTORS;
+                            ms_total += v.maX_SCORE;
+                            wa_total += v.weighT_ASSIGNED;
+                            nob_total += v.nO_OF_OBSERVATIONS;
+                            was_total += v.weighteD_AVERAGE_SCORE;
                             $('#COSORiskTable tbody').append('<tr id="rowspan_' + unique + '"><td class="rowspancol" rowspan="' + rowSpan + '">' + v.depT_NAME + '</td></tr>');
                             $('#COSORiskTable tbody').append('<tr><td>' + v.ratinG_FACTORS + '</td><td>' + v.suB_FACTORS + '</td><td>' + v.maX_SCORE + '</td><td>' + v.weighT_ASSIGNED + '</td><td>' + v.nO_OF_OBSERVATIONS + '</td><td>' + v.weighteD_AVERAGE_SCORE + '</td><td>' + v.audiT_RATING + '</td></tr>');
                             rowSpan++;
