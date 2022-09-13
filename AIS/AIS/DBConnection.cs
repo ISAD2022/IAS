@@ -2747,5 +2747,32 @@ namespace AIS
             con.Close();
             return count;
         }
+        public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
+        {
+            var con = this.DatabaseConnection();
+           List<COSORiskModel> list = new List<COSORiskModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select cr.* from T_COSO_RATING_DEPARTMENT cr inner join t_au_period p on cr.AUDIT_PERIOD=p.DESCRIPTION where p.AUDITPERIODID= " + PERIOD_ID+" order by cr.DEPT_NAME ASC" ;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    COSORiskModel chk = new COSORiskModel();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.DEPT_NAME = rdr["DEPT_NAME"].ToString(); 
+                    chk.RATING_FACTORS = rdr["RATING_FACTORS"].ToString();
+
+                    chk.SUB_FACTORS = Convert.ToInt32(rdr["SUB_FACTORS"]);
+                    chk.MAX_SCORE = Convert.ToInt32(rdr["MAX_SCORE"]);
+                    chk.NO_OF_OBSERVATIONS = Convert.ToInt32(rdr["NO_OF_OBSERVATIONS"]);
+                    chk.WEIGHTED_AVERAGE_SCORE = Convert.ToInt32(rdr["WEIGHTED_AVERAGE_SCORE"]);
+                    chk.AUDIT_RATING = rdr["AUDIT_RATING"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
     }
 }

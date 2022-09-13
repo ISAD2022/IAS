@@ -242,6 +242,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID);
         }
+        [HttpPost]
+        public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID=0)
+        {
+            return dBConnection.GetCOSORiskForDepartment(PERIOD_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
