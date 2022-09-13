@@ -21,5 +21,6 @@ namespace AIS.Models
         public int AUDITPERIODID { get; set; }
         public string PERIOD { get; set; }
         public string COMMENTS { get; set; }
+        public int ENTITIES_COUNT { get; set; }
     }
 }

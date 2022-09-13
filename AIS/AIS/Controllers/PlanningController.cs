@@ -67,7 +67,7 @@ namespace AIS.Controllers
         public IActionResult audit_criteria_approval()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
             ViewData["ToAuthorizeAuditCriteriaList"] = dBConnection.GetAuditCriteriasToAuthorize();
             if (!sessionHandler.IsUserLoggedIn())
             {

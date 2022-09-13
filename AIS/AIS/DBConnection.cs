@@ -1723,6 +1723,7 @@ namespace AIS
                     acr.RISK = rdr["RISK"].ToString();
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.COMMENTS = this.GetAuditCriteriaLogLastStatus(acr.ID);
+                    acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.RISK_ID, acr.SIZE_ID, acr.ENTITY_ID);
                     criteriaList.Add(acr);
                 }
             }
