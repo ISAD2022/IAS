@@ -243,6 +243,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["AuditableEntityTypes"] = dBConnection.GetAuditEntities();
             ViewData["ControlViolationsList"] = dBConnection.GetControlViolations();
             if (!sessionHandler.IsUserLoggedIn())
             {

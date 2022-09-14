@@ -1383,16 +1383,16 @@ namespace AIS
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-              cmd.CommandText = "select * from t_r_m_process pd order by pd.P_ID";
+              cmd.CommandText = "select * from t_audit_checklist t order by t.T_ID";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
-                    proc.P_ID = Convert.ToInt32(rdr["P_ID"]);
-                    if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
-                        proc.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
-                    proc.P_NAME = rdr["P_NAME"].ToString();
+                    proc.P_ID = Convert.ToInt32(rdr["T_ID"]);
+                    if (rdr["ENTITY_TYPE"].ToString() != null && rdr["ENTITY_TYPE"].ToString() != "")
+                        proc.RISK_ID = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    proc.P_NAME = rdr["HEADING"].ToString();
                     pdetails.Add(proc);
                 }
             }
@@ -1406,17 +1406,18 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if(procId==0)
-                    cmd.CommandText = "select * from t_r_m_process_sub pd order by pd.p_id asc";
+                    cmd.CommandText = "select * from t_audit_checklist_sub pd order by pd.s_id asc";
                 else
-                    cmd.CommandText = "select * from t_r_m_process_sub pd where pd.p_id = "+procId+" order by pd.P_ID,pd.ID asc";
+                    cmd.CommandText = "select * from t_audit_checklist_sub pd where pd.t_id = " + procId+ " order by pd.s_id asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     RiskProcessDetails pdetail = new RiskProcessDetails();
-                    pdetail.ID = Convert.ToInt32(rdr["ID"]);
-                    pdetail.P_ID = Convert.ToInt32(rdr["P_ID"]);
-                    pdetail.TITLE = rdr["TITLE"].ToString();
-                    pdetail.ACTIVE = rdr["ACTIVE"].ToString();
+                    pdetail.ID = Convert.ToInt32(rdr["S_ID"]);
+                    pdetail.P_ID = Convert.ToInt32(rdr["T_ID"]);
+                    pdetail.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    pdetail.TITLE = rdr["HEADING"].ToString();
+                    pdetail.ACTIVE = rdr["STATUS"].ToString();
                     riskProcList.Add(pdetail);
                 }
             }
@@ -1531,7 +1532,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into t_r_m_process p (p.P_ID,p.P_NAME,p.RISK_ID) VALUES ( (select COALESCE(max(pp.P_ID)+1,1) from t_r_m_process pp),'" + proc.P_NAME + "','"+proc.RISK_ID+"')";
+                cmd.CommandText = "insert into t_audit_checklist p (p.T_ID,p.HEADING,p.ENTITY_TYPE, p.STATUS) VALUES ( (select COALESCE(max(pp.T_ID)+1,1) from t_audit_checklist pp),'" + proc.P_NAME + "','"+proc.RISK_ID+"', 'Y')";
                 OracleDataReader rdr = cmd.ExecuteReader();
             }
             con.Close();
@@ -1542,7 +1543,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into t_r_m_process_sub p (p.ID,p.P_ID,p.TITLE,p.ACTIVE) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_sub pp)," + subProc.P_ID + ",'" + subProc.TITLE + "','Y')";
+                cmd.CommandText = "insert into t_audit_checklist_sub p (p.S_ID,p.T_ID,p.HEADING, p.ENTITY_TYPE, p.STATUS) VALUES ( (select COALESCE(max(pp.S_ID)+1,1) from t_audit_checklist_sub pp)," + subProc.P_ID + ",'" + subProc.TITLE + "','" + subProc.ENTITY_TYPE + "','Y')";
                 OracleDataReader rdr = cmd.ExecuteReader();
             }
             con.Close();

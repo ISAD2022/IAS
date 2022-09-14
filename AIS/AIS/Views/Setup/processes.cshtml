@@ -83,6 +83,9 @@
         cursor:pointer;
         font-weight:600;
     }
+    .container{
+        min-width:80% !important;
+    }
 </style>
 <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
 <script type="text/javascript">
@@ -213,7 +216,8 @@
     }
     function publishNewSubProcess() {
         var title = $('#subProcTitleModalField').val();
-        if (title == "" ) {
+        var ent_type = $('#subProcRiskModalField option:selected').val();
+        if (title == "" || ent_type==0) {
             alert('Please provide all the details');
             return false;
         }
@@ -223,7 +227,8 @@
             type: "POST",
             data: {
                 'TITLE': title,
-                'P_ID': g_proc_id
+                'P_ID': g_proc_id,
+                'ENTITY_TYPE': $('#subProcRiskModalField option:selected').val()
             },
             cache: false,
             success: function (data) {
@@ -294,7 +299,7 @@
 </script>
 <div class="row col-md-12">
     <div class="col-md-6 mt-4">
-        <div class="treeview-colorful w-20 border border-secondary mx-4 my-4">
+        <div class="treeview-colorful w-20 border border-secondary mx-4 my-4" style="margin:0px !important">
             <button onclick="addNewProcess();" class="btn btn-md btn-success ml-4 mt-4">Add New Process</button>
             <hr>
             <ul id="processList" class="mt-4 ml-4 mb-4">
@@ -371,12 +376,20 @@
                     </div>
                   
                     <div class="form-group">
-                        <label for="procRiskModalField">Risk</label>
+                        <label for="procRiskModalField">Entity Type</label>
                         <select id="procRiskModalField" class="form-select form-control">
-                            <option value="0" id="0">--Select Process Risk--</option>
-                            <option value="1" id="1">Low</option>
-                            <option value="2" id="2">Medium</option>
-                            <option value="3" id="3">High</option>
+                            <option value="0">--Select Entity Type--</option>
+                            @{
+                                if (ViewData["AuditableEntityTypes"] != null)
+                                {
+
+                                    foreach (var item in (dynamic)(ViewData["AuditableEntityTypes"]))
+                                    {
+                                       <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                                    }
+
+                                }
+                            }
                         </select>
                     </div>
 
@@ -408,8 +421,25 @@
                     <div class="form-group">
                         <label for="subProcTitleModalField">Sub Process Title</label>
                         <input type="text" class="form-control" id="subProcTitleModalField" aria-describedby="brcode" placeholder="Sub Process Title">
-
                     </div>
+                    <div class="form-group">
+                        <label for="subProcRiskModalField">Entity Type</label>
+                        <select id="subProcRiskModalField" class="form-select form-control">
+                            <option value="0">--Select Entity Type--</option>
+                            @{
+                                if (ViewData["AuditableEntityTypes"] != null)
+                                {
+
+                                    foreach (var item in (dynamic)(ViewData["AuditableEntityTypes"]))
+                                    {
+                                        <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
