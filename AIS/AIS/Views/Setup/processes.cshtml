@@ -130,6 +130,8 @@
                 },
                 cache: false,
                 success: function (data) {
+
+                    console.log('tranc', data);
                     $.each(data, function (index, child) {
                         $('#procTrans_' + procDetailId).append('<ul class="grandchildLevel"><li  class="listItems"><span id="transactionspan_' + child.id + '" onclick="showTransactionDetail(this);" class="icon">' + child.description + '</span></li></ul>');
 
@@ -167,13 +169,14 @@
                 success: function (data) {
                     g_trList = data;
                     var tr = data[0];
-                    $('#viewerNameModalField').val(tr.suB_PROCESS_NAME);
+                    $('#viewerNameModalField').val(tr.procesS_NAME);
+                    $('#viewerViolationNameModalField').val(tr.violatioN_NAME);
                     $('#viewerDescModalField').val(tr.description);
-                    $('#viewerControlModalField').val(tr.violatioN_NAME);
+                    $('#viewerControlModalField').val(tr.controL_OWNER);
                     $('#viewerDivModalField').val(tr.diV_NAME);
-                    $('#viewerActionModalField').val(tr.action);
-                    $('#viewerRiskModalField').val(tr.risK_WEIGHTAGE);
-                    $('#viewerRiskMaxModalField').val(tr.risK_MAX_NUMBER);
+                   // $('#viewerActionModalField').val(tr.action);
+                    $('#viewerRiskModalField').val(tr.risk);
+                   // $('#viewerRiskMaxModalField').val(tr.risK_MAX_NUMBER);
                 },
                 dataType: "json",
             });
@@ -246,7 +249,7 @@
         $('#tranDescModalField').val('');
         $('#tranControlOwnerModalField').val(0);
         $('#tranDivModalField').val(0);
-        $('#tranActionModalField').val('');
+        $('#tranActionModalField').val(0);
         $('#tranRiskModalField').val(0);
         $('#tranRiskMaxNumberModalField').val(0);
     }
@@ -255,11 +258,9 @@
         var control = $('#tranControlOwnerModalField').val();
         var div_id = $('#tranDivModalField option:selected').val();
         var action = $('#tranActionModalField').val();
-        var div_id = $('#tranDivModalField option:selected').val();
         var div_name = $('#tranDivModalField option:selected').text();
-        var risk_max = $('#tranRiskMaxNumberModalField').val();
         var risk = $('#tranRiskModalField option:selected').val();
-        if (control == "" || action == "" || risk_max == "" || risk == 0 || div_id == 0) {
+        if (control == 0|| action == 0 || risk == 0 || div_id == 0) {
             alert('Please provide all the details');
             return false;
         }
@@ -271,12 +272,11 @@
                 'PD_ID': g_sub_proc_id,
                 'V_ID': control,
                 'DESCRIPTION': desc,
-                'CONTROL_OWNER': control,
+                'CONTROL_OWNER': div_id,
                 'DIV_ID': div_id,
                 'DIV_NAME': div_name,
                 'ACTION': action,
-                'RISK_WEIGHTAGE': risk,
-                'RISK_MAX_NUMBER': risk_max
+                'RISK_WEIGHTAGE': risk
             },
             cache: false,
             success: function (data) {
@@ -324,8 +324,13 @@
             <h5>Process Transaction Detail</h5>
             <form>
                 <div class="form-group">
-                    <label for="viewerNameModalField">Sub Process Name</label>
+                    <label for="viewerNameModalField">Process Name</label>
                     <input type="text" disabled class="form-control" id="viewerNameModalField" aria-describedby="Process Name" placeholder="Process Name">
+
+                </div>
+                <div class="form-group">
+                    <label for="viewerViolationNameModalField">Violation</label>
+                    <input type="text" disabled class="form-control" id="viewerViolationNameModalField" aria-describedby="Violation" placeholder="Violation">
 
                 </div>
                 <div class="form-group">
@@ -334,14 +339,14 @@
 
                 </div>
                 <div class="form-group">
-                    <label for="viewerControlModalField">Control Owner</label>
+                    <label for="viewerControlModalField">Function Responsible</label>
                     <input type="text" disabled class="form-control" id="viewerControlModalField" aria-describedby="Control Owner" placeholder="Control Owner">
                 </div>
                 <div class="form-group">
-                    <label for="viewerDivModalField">Division</label>
+                    <label for="viewerDivModalField">Role Responsible</label>
                     <input type="text" disabled class="form-control" id="viewerDivModalField" aria-describedby="Control Owner" placeholder="Control Owner">
                 </div>
-                <div class="form-group">
+                <div class="form-group d-none">
                     <label for="viewerActionModalField">Action</label>
                     <input type="text" disabled class="form-control" id="viewerActionModalField" aria-describedby="Action" placeholder="Action">
                 </div>
@@ -349,7 +354,7 @@
                     <label for="viewerRiskModalField">Risk Weightage</label>
                     <input type="text" disabled class="form-control" id="viewerRiskModalField" aria-describedby="Action" placeholder="Action">
                 </div>
-                <div class="form-group">
+                <div class="form-group d-none">
                     <label for="viewerRiskMaxModalField">Risk Max Number</label>
                     <input type="text" disabled class="form-control" id="viewerRiskMaxModalField" aria-describedby="Control Owner">
                 </div>
@@ -480,13 +485,13 @@
 
                                     foreach (var item in (dynamic)(ViewData["ControlViolationsList"]))
                                     {
-                                       <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                        <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                     }
 
                                 }
                             }
                         </select>
-                      
+
                     </div>
                     <div class="form-group">
                         <label for="tranDivModalField">Function Responsible</label>
@@ -505,21 +510,43 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="tranActionModalField">Action</label>
-                        <input type="text" class="form-control" id="tranActionModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
+                        <label for="tranActionModalField">Role Responsible</label>
+                        <select id="tranActionModalField" class="form-select form-control">
+                            <option selected="selected" value="0" id="0">--Select Role Responsible--</option>
+                            @{
+                                if (ViewData["RoleRespList"] != null)
+                                {
+
+                                    foreach (var item in (dynamic)(ViewData["RoleRespList"]))
+                                    {
+                                        <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+
+                    </div>                   
                     <div class="form-group">
                         <label for="tranRiskModalField">Risk Weightage</label>
                         <select id="tranRiskModalField" class="form-select form-control">
                             <option value="0" id="0" selected="selected">--Select Process Risk--</option>
-                            <option value="1" id="1">Low</option>
-                            <option value="2" id="2">Medium</option>
-                            <option value="3" id="3">High</option>
+                            @{
+                                if (ViewData["RiskList"] != null)
+                                {
+
+                                    foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                    {
+                                        <option  id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                    }
+
+                                }
+                            }
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="tranRiskMaxNumberModalField">Risk Max Number</label>
-                        <input type="number" disabled="disabled" class="form-control" id="tranRiskMaxNumberModalField" aria-describedby="Control Owner" >
+                        <input type="number" disabled="disabled" class="form-control" id="tranRiskMaxNumberModalField" aria-describedby="Control Owner">
                     </div>
 
                 </form>

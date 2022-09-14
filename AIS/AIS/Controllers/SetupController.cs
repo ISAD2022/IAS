@@ -245,6 +245,8 @@ namespace AIS.Controllers
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["AuditableEntityTypes"] = dBConnection.GetAuditEntities();
             ViewData["ControlViolationsList"] = dBConnection.GetControlViolations();
+            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibilities();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

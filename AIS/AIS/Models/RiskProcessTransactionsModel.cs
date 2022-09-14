@@ -14,6 +14,7 @@ namespace AIS.Models
         public string CONTROL_OWNER { get; set; }
         public string ACTION { get; set; }
         public int RISK_WEIGHTAGE { get; set; }
+        public string RISK { get; set; }
         public int RISK_MAX_NUMBER { get; set; }
         [NotMapped]
         public string SUB_PROCESS_NAME { get; set; }
