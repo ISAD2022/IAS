@@ -28,6 +28,7 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"d886c552f889c9f2f8a937f3d88351e59867d413", @"/Views/RiskAssessment/archived/audit_criteria.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
+    [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"55a5612a483914c0ca2f8e8f7a380dade0d90ed8", @"/Views/RiskAssessment/_ViewImports.cshtml")]
     public class Views_RiskAssessment_archived_audit_criteria : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
     {
         #pragma warning disable 1998

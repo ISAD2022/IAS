@@ -43,16 +43,10 @@
                 $('#viewerMainProcNameModalField').val(tr.procesS_NAME);
                 $('#viewerNameModalField').val(tr.suB_PROCESS_NAME);
                 $('#viewerDescModalField').val(tr.description);
+                $('#viewerViolationNameModalField').val(tr.violatioN_NAME);
                 $('#viewerControlModalField').val(tr.controL_OWNER);
                 $('#viewerDivModalField').val(tr.diV_NAME);
-                $('#viewerActionModalField').val(tr.action);
-                if (tr.risK_WEIGHTAGE==3)
-                $('#viewerRiskModalField').val('High');
-                if (tr.risK_WEIGHTAGE == 3)
-                    $('#viewerRiskModalField').val('Medium');
-                else
-                    $('#viewerRiskModalField').val('Low');
-                $('#viewerRiskMaxModalField').val(tr.risK_MAX_NUMBER);
+                $('#viewerRiskModalField').val(tr.risk);               
             },
             dataType: "json",
         });
@@ -118,9 +112,10 @@
                 <th>Process Name</th>
                 <th>Sub Process Name</th>
                 <th>Description</th>
+                <th>Violation</th>
                 <th>Function Responsible</th>
-                <th>Control Violation</th>
-                <th>Risk Weightage</th>
+                <th>Role Responsible</th>
+                <th>Risk</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -143,20 +138,16 @@
                                 <p class="fw-normal mb-1">@item.DESCRIPTION</p>
                             </td>
                             <td>
+                                <p class="fw-normal mb-1">@item.VIOLATION_NAME</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.CONTROL_OWNER</p>
+                            </td>
+                            <td>
                                 <p class="fw-normal mb-1">@item.DIV_NAME</p>
                             </td>
                             <td>
-                                <p class="fw-normal mb-1"></p>
-                            </td>
-                            <td>
-                                @{
-                                    if (item.RISK_WEIGHTAGE == 3)
-                                    {<p class="fw-normal mb-1">High</p>}
-                                    else if (item.RISK_WEIGHTAGE == 2)
-                                    {<p class="fw-normal mb-1">Medium</p>}
-                                    else
-                                    {<p class="fw-normal mb-1">Low</p>}
-                                }
+                                <p class="fw-normal mb-1">@item.RISK</p>
                             </td>
                             <td>
                                 <p class="fw-normal mb-1">@item.PROCESS_COMMENTS</p>
@@ -200,26 +191,22 @@
 
                     </div>
                     <div class="form-group">
-                        <label for="viewerControlModalField">Control Owner</label>
+                        <label for="viewerViolationNameModalField">Violation</label>
+                        <textarea class="form-control" disabled id="viewerViolationNameModalField" aria-describedby="Enter Description here..." placeholder="Enter Description here..."></textarea>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="viewerControlModalField">Function Responsible</label>
                         <input type="text" disabled class="form-control" id="viewerControlModalField" aria-describedby="Control Owner" placeholder="Control Owner">
                     </div>
                     <div class="form-group">
-                        <label for="viewerDivModalField">Division</label>
+                        <label for="viewerDivModalField">Role Responsible</label>
                         <input type="text" disabled class="form-control" id="viewerDivModalField" aria-describedby="Control Owner" placeholder="Control Owner">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerActionModalField">Action</label>
-                        <input type="text" disabled class="form-control" id="viewerActionModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
+                    </div>                   
                     <div class="form-group">
                         <label for="viewerRiskModalField">Risk Weightage</label>
                         <input type="text" disabled class="form-control" id="viewerRiskModalField" aria-describedby="Action" placeholder="Action">
                     </div>
-                    <div class="form-group">
-                        <label for="viewerRiskMaxModalField">Risk Max Number</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskMaxModalField" aria-describedby="Control Owner">
-                    </div>
-
                 </form>
             </div>
             <div class="modal-footer">

@@ -1063,11 +1063,10 @@ namespace AIS
             string query = "";
             if (sessionCheck)
             {
-
                 var loggedInUser = sessionHandler.GetSessionUser();
                 if (loggedInUser.UserLocationType == "H")
                 {
-                    //query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingDept;
+                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingDept;
                  }
                 else if (loggedInUser.UserLocationType == "B")
                 {
@@ -1472,7 +1471,7 @@ namespace AIS
                         pTran.ID = Convert.ToInt32(rdr["ID"]);
                         pTran.PD_ID = Convert.ToInt32(rdr["S_ID"]);
                         pTran.V_ID = Convert.ToInt32(rdr["V_ID"]);
-                    if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
+                        if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
                             pTran.DIV_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
                         if (rdr["DIV_NAME"].ToString() != null && rdr["DIV_NAME"].ToString() != "")
                             pTran.DIV_NAME = rdr["DIV_NAME"].ToString();
@@ -1480,15 +1479,14 @@ namespace AIS
                             pTran.DESCRIPTION = rdr["HEADING"].ToString();
                         if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
                             pTran.CONTROL_OWNER = rdr["CONTROL_OWNER"].ToString();
-                      //  if (rdr["RISK_MAX_NUMBER"].ToString() != null && rdr["RISK_MAX_NUMBER"].ToString() != "")
-                           // pTran.RISK_MAX_NUMBER = Convert.ToInt32(rdr["RISK_MAX_NUMBER"]);
-                    //pTran.ACTION = rdr["ACTION"].ToString();
-                    pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_ID"]);
-                    pTran.RISK = this.GetRiskDescByID(pTran.RISK_WEIGHTAGE);
-                    pTran.SUB_PROCESS_NAME = rdr["TITLE"].ToString();
-                    pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
-                    pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
-                    riskTransList.Add(pTran);
+                        pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_ID"]);
+                        pTran.RISK = this.GetRiskDescByID(pTran.RISK_WEIGHTAGE);
+                        pTran.SUB_PROCESS_NAME = rdr["TITLE"].ToString();
+                        pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
+                        pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
+                        pTran.PROCESS_STATUS = rdr["STATUS"].ToString();
+                        pTran.PROCESS_COMMENTS = this.GetLatestCommentsOnProcess(pTran.ID);
+                        riskTransList.Add(pTran);
                     }
                 }
             con.Close();
@@ -1501,9 +1499,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (statusId.Length == 0)
-                cmd.CommandText = "select pt.*, pd.TITLE, p.P_NAME, s.status from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID = pd.ID inner join t_r_m_process p on pd.ID = p.P_ID inner join t_r_m_process_transaction_status_mapping sm on pt.id = sm.T_ID inner join t_r_m_process_transaction_status s on s.ID = sm.STATUS_ID order by pt.id asc";
+                cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID order by pt.id asc";
                 else
-                    cmd.CommandText = "select pt.*, pd.TITLE, p.P_NAME, s.status from t_r_m_process_transaction pt inner join t_r_m_process_sub pd on pt.PD_ID = pd.ID inner join t_r_m_process p on pd.ID = p.P_ID inner join t_r_m_process_transaction_status_mapping sm on pt.id = sm.T_ID inner join t_r_m_process_transaction_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
+                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
 
 
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -1511,42 +1509,28 @@ namespace AIS
                 {
                     RiskProcessTransactions pTran = new RiskProcessTransactions();
                     pTran.ID = Convert.ToInt32(rdr["ID"]);
-                    pTran.PD_ID = Convert.ToInt32(rdr["PD_ID"]);
-                    if (rdr["DIV_ID"].ToString() != null && rdr["DIV_ID"].ToString() != "")
-                        pTran.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
+                    pTran.PD_ID = Convert.ToInt32(rdr["S_ID"]);
+                    pTran.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
+                        pTran.DIV_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
                     if (rdr["DIV_NAME"].ToString() != null && rdr["DIV_NAME"].ToString() != "")
                         pTran.DIV_NAME = rdr["DIV_NAME"].ToString();
-                    if (rdr["DESCRIPTION"].ToString() != null && rdr["DESCRIPTION"].ToString() != "")
-                        pTran.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    if (rdr["CONTROL_OWNER"].ToString() != null && rdr["CONTROL_OWNER"].ToString() != "")
+                    if (rdr["HEADING"].ToString() != null && rdr["HEADING"].ToString() != "")
+                        pTran.DESCRIPTION = rdr["HEADING"].ToString();
+                    if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
                         pTran.CONTROL_OWNER = rdr["CONTROL_OWNER"].ToString();
-                    if (rdr["RISK_MAX_NUMBER"].ToString() != null && rdr["RISK_MAX_NUMBER"].ToString() != "")
-                        pTran.RISK_MAX_NUMBER = Convert.ToInt32(rdr["RISK_MAX_NUMBER"]);
-                    pTran.ACTION = rdr["ACTION"].ToString();
-                    pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_WEIGHTAGE"]);
+                    pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_ID"]);
+                    pTran.RISK = this.GetRiskDescByID(pTran.RISK_WEIGHTAGE);
                     pTran.SUB_PROCESS_NAME = rdr["TITLE"].ToString();
                     pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
-                    pTran.PROCESS_STATUS = rdr["STATUS"].ToString();
+                    pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
+                    pTran.PROCESS_STATUS= rdr["STATUS"].ToString();
+                    pTran.PROCESS_COMMENTS = this.GetLatestCommentsOnProcess(pTran.ID);
                     riskTransList.Add(pTran);
                 }
             }
             con.Close();
             return riskTransList;
-        }
-        public RiskProcessTransactions GetRiskProcessTransactionLastStatus(RiskProcessTransactions tr)
-        {
-            var con = this.DatabaseConnection();
-           using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "select comments from t_r_m_process_transaction_log l where l.t_id="+ tr.ID+ " order by l.created_on desc FETCH NEXT 1 ROWS ONLY";
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    tr.PROCESS_COMMENTS = rdr["comments"].ToString();
-                }
-            }
-            con.Close();
-            return tr;
         }
         public RiskProcessDefinition AddRiskProcess(RiskProcessDefinition proc)
         {
@@ -1593,9 +1577,9 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " Update t_r_m_process_transaction_status_mapping tm SET tm.STATUS_ID = 3 WHERE tm.T_ID=" + T_ID;
+                cmd.CommandText = " Update t_audit_checklist_details_status_mapping tm SET tm.STATUS_ID = 3 WHERE tm.T_ID=" + T_ID;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                cmd.CommandText = "insert into t_r_m_process_transaction_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction_log pp), "+T_ID+" ,'3'," + loggedInUser.ID + ",'"+COMMENTS+"')";
+                cmd.CommandText = "insert into t_audit_checklist_details_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_audit_checklist_details_log pp), " + T_ID+" ,'3'," + loggedInUser.PPNumber + ",'"+COMMENTS+"')";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1607,9 +1591,9 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " Update t_r_m_process_transaction_status_mapping tm SET tm.STATUS_ID = 2 WHERE tm.T_ID=" + T_ID;
+                cmd.CommandText = " Update t_audit_checklist_details_status_mapping tm SET tm.STATUS_ID = 2 WHERE tm.T_ID=" + T_ID;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                cmd.CommandText = "insert into t_r_m_process_transaction_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction_log pp), " + T_ID + " ,'2'," + loggedInUser.ID + ",'" + COMMENTS + "')";
+                cmd.CommandText = "insert into t_audit_checklist_details_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_audit_checklist_details_log pp), " + T_ID + " ,'2'," + loggedInUser.PPNumber + ",'" + COMMENTS + "')";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1621,9 +1605,9 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " Update t_r_m_process_transaction_status_mapping tm SET tm.STATUS_ID = 5 WHERE tm.T_ID=" + T_ID;
+                cmd.CommandText = " Update t_audit_checklist_details_status_mapping tm SET tm.STATUS_ID = 5 WHERE tm.T_ID=" + T_ID;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                cmd.CommandText = "insert into t_r_m_process_transaction_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction_log pp), " + T_ID + " ,'5'," + loggedInUser.ID + ",'" + COMMENTS + "')";
+                cmd.CommandText = "insert into t_audit_checklist_details_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_audit_checklist_details_log pp), " + T_ID + " ,'5'," + loggedInUser.PPNumber + ",'" + COMMENTS + "')";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1635,9 +1619,9 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " Update t_r_m_process_transaction_status_mapping tm SET tm.STATUS_ID = 4 WHERE tm.T_ID=" + T_ID;
+                cmd.CommandText = " Update t_audit_checklist_details_status_mapping tm SET tm.STATUS_ID = 4 WHERE tm.T_ID=" + T_ID;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                cmd.CommandText = "insert into t_r_m_process_transaction_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_r_m_process_transaction_log pp), " + T_ID + " ,'4'," + loggedInUser.ID + ",'" + COMMENTS + "')";
+                cmd.CommandText = "insert into t_audit_checklist_details_log p (p.ID,p.T_ID,p.STATUS_ID,p.USER_ID,p.COMMENTS) VALUES ( (select COALESCE(max(pp.ID)+1,1) from t_audit_checklist_details_log pp), " + T_ID + " ,'4'," + loggedInUser.PPNumber + ",'" + COMMENTS + "')";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -2544,6 +2528,22 @@ namespace AIS
             con.Close();
             return response;
         }
+        public string GetLatestCommentsOnProcess(int procId = 0)
+        {
+            var con = this.DatabaseConnection();
+            string response = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select l.comments from t_audit_checklist_details_log l where l.t_id= " + procId + "  order by l.created_on desc FETCH NEXT 1 ROWS ONLY";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    response = rdr["comments"].ToString();
+                }
+            }
+            con.Close();
+            return response;
+        }
         public string GetLatestAuditeeResponse(int obs_id = 0)
         {
             var con = this.DatabaseConnection();
@@ -2800,7 +2800,7 @@ namespace AIS
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.DEPT_NAME = rdr["DEPT_NAME"].ToString(); 
                     chk.RATING_FACTORS = rdr["RATING_FACTORS"].ToString();
-
+                    chk.WEIGHT_ASSIGNED = Convert.ToInt32(rdr["WEIGHT_ASSIGNED"]);
                     chk.SUB_FACTORS = Convert.ToInt32(rdr["SUB_FACTORS"]);
                     chk.MAX_SCORE = Convert.ToInt32(rdr["MAX_SCORE"]);
                     chk.NO_OF_OBSERVATIONS = Convert.ToInt32(rdr["NO_OF_OBSERVATIONS"]);

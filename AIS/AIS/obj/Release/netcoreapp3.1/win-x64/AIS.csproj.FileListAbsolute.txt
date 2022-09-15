@@ -416,7 +416,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\View
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\Audit_Execution.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\audit_observation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\engagement_plan.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\Task_list.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Home\Index.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Home\Privacy.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Login\index.cshtml.g.cs
@@ -491,7 +490,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\View
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\AuditeePortal\Reply.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\AuditeePortal\Reply_new.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\list_of_observation.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\manage_observation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Planning\audit_criteria_approval.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Planning\audit_criteria_old.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Planning\refferedback_audit_criteria.cshtml.g.cs
@@ -499,3 +497,20 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\View
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Planning\tentative_audit_plan_archieve.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Planning\tentative_engagement_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\RiskAssessment\risk_model_old.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\branch_deposit_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\checklist.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\checklist_details.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\closing.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\disb_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\loan_case_details.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\manage_draft_report_paras.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\manage_observations.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\pre_audit_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\pre_audit_info_detail.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Execution\subchecklist.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Reports\draft_audit_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Reports\glhead_details.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Reports\glhead_summary.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Reports\income_expenditure.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\Reports\income_expenditure_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\win-x64\Razor\Views\RiskAssessment\_ViewImports.cshtml.g.cs

@@ -287,7 +287,6 @@
             dataType: "json",
         });
     }
-
     function getControlViolationMaxNumber() {
         if ($('#tranControlOwnerModalField option:selected').val() == 0) {
             $('#tranRiskMaxNumberModalField').val(0);
@@ -358,7 +357,10 @@
                     <label for="viewerRiskMaxModalField">Risk Max Number</label>
                     <input type="text" disabled class="form-control" id="viewerRiskMaxModalField" aria-describedby="Control Owner">
                 </div>
-
+                <div class="form-group" style="height:40px; margin-bottom:0px;">
+                    <button class="btn btn-success col-md-3 float-right">Update Details</button>
+                </div>
+                
             </form>
         </div>
     </div>

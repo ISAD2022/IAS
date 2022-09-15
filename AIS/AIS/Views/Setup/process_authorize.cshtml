@@ -112,15 +112,16 @@
         </div>
     </div>
     <br>
-    <table id="listOfProcTransactions" class="table align-middle mb-0 bg-white table-hover table-striped">
+    <table id="listOfProcTransactions" class="table align-middle mb-0 bg-white table-hover table-striped">       
         <thead class="bg-light">
             <tr>
                 <th>Process Name</th>
                 <th>Sub Process Name</th>
                 <th>Description</th>
+                <th>Violation</th>
                 <th>Function Responsible</th>
-                <th>Control Violation</th>
-                <th>Risk Weightage</th>
+                <th>Role Responsible</th>
+                <th>Risk</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -143,20 +144,16 @@
                                 <p class="fw-normal mb-1">@item.DESCRIPTION</p>
                             </td>
                             <td>
+                                <p class="fw-normal mb-1">@item.VIOLATION_NAME</p>
+                            </td>
+                            <td>
+                                <p class="fw-normal mb-1">@item.CONTROL_OWNER</p>
+                            </td>
+                            <td>
                                 <p class="fw-normal mb-1">@item.DIV_NAME</p>
                             </td>
                             <td>
-                                <p class="fw-normal mb-1"></p>
-                            </td>
-                            <td>
-                                @{
-                                    if (item.RISK_WEIGHTAGE == 3)
-                                    {<p class="fw-normal mb-1">High</p>}
-                                    else if (item.RISK_WEIGHTAGE == 2)
-                                    {<p class="fw-normal mb-1">Medium</p>}
-                                    else
-                                    {<p class="fw-normal mb-1">Low</p>}
-                                }
+                                <p class="fw-normal mb-1">@item.RISK</p>
                             </td>
                             <td>
                                 <p class="fw-normal mb-1">@item.PROCESS_COMMENTS</p>

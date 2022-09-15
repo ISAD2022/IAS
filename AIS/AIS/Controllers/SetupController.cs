@@ -266,14 +266,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             int[] statusIds = { 1, 4 };
-            List<RiskProcessTransactions> trList = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);
-            foreach(var item in trList)
-            {
-                RiskProcessTransactions pt = new RiskProcessTransactions();
-                pt = dBConnection.GetRiskProcessTransactionLastStatus(item);
-                item.PROCESS_COMMENTS = pt.PROCESS_COMMENTS;
-            }
-            ViewData["TransactionsList"] = trList;
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);            
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -293,14 +286,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             int[] statusIds = {3};
-            List<RiskProcessTransactions> trList = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);
-            foreach (var item in trList)
-            {
-                RiskProcessTransactions pt = new RiskProcessTransactions();
-                pt = dBConnection.GetRiskProcessTransactionLastStatus(item);
-                item.PROCESS_COMMENTS = pt.PROCESS_COMMENTS;
-            }
-            ViewData["TransactionsList"] = trList;
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

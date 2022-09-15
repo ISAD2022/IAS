@@ -28,6 +28,7 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"64c1e8e093fda5827a86200135dfcf2173a27dac", @"/Views/RiskAssessment/archived/holiday_calendar.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
+    [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"55a5612a483914c0ca2f8e8f7a380dade0d90ed8", @"/Views/RiskAssessment/_ViewImports.cshtml")]
     public class Views_RiskAssessment_archived_holiday_calendar : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
     {
         #pragma warning disable 1998

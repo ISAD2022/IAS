@@ -50,7 +50,7 @@ namespace AIS
             var pagesToView = dBConnection.GetTopMenuPages();
             foreach(var item in pagesToView)
             {
-                if(page_name.ToLower()==(item.Page_Path.Split('/')[1]).ToLower())
+                if(page_name.ToLower()==(item.Page_Path.Split('/')[item.Page_Path.Split('/').Length-1]).ToLower())
                     permission = true;
             }
             if (page_name.ToLower() == "home")
