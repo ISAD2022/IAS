@@ -10,7 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\CommercialAudit\" />
+    <Folder Include="Models\CAU\" />
+    <Folder Include="Views\Inspection\" />
   </ItemGroup>
 
 </Project>
