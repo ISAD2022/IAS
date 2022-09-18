@@ -7,13 +7,13 @@ using System.Diagnostics;
 using System.Reflection;
 namespace AIS.Controllers
 {
-    public class INS_PlanningController : Controller
+    public class InspectionController : Controller
     {
-        private readonly ILogger<INS_PlanningController> _logger;
+        private readonly ILogger<InspectionController> _logger;
         private readonly TopMenus tm = new TopMenus();
         private readonly DBConnection dBConnection = new DBConnection();
         private readonly SessionHandler sessionHandler = new SessionHandler();
-        public INS_PlanningController(ILogger<INS_PlanningController> logger)
+        public InspectionController(ILogger<InspectionController> logger)
         {
             _logger = logger;
         }

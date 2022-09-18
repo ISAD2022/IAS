@@ -10,14 +10,14 @@ using System.Reflection;
 namespace AIS.Controllers
 {
     
-    public class OMController : Controller
+    public class CAUController : Controller
     {
-        private readonly ILogger<OMController> _logger;
+        private readonly ILogger<CAUController> _logger;
         private readonly TopMenus tm = new TopMenus();
         private readonly DBConnection dBConnection = new DBConnection();
         private readonly SessionHandler sessionHandler = new SessionHandler();
 
-        public OMController(ILogger<OMController> logger)
+        public CAUController(ILogger<CAUController> logger)
         {
             _logger = logger;
         }

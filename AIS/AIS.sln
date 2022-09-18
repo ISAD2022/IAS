@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.32630.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIS", "AIS\AIS.csproj", "{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InspectionSolution", "InspectionSolution\InspectionSolution.csproj", "{1EBC5B41-367B-4511-8D6A-6B1A89C361E5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EBC5B41-367B-4511-8D6A-6B1A89C361E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EBC5B41-367B-4511-8D6A-6B1A89C361E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EBC5B41-367B-4511-8D6A-6B1A89C361E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EBC5B41-367B-4511-8D6A-6B1A89C361E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

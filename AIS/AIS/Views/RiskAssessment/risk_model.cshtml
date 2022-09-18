@@ -3,8 +3,45 @@
     Layout = "_Layout";
 }
 
-<div class="row text-center mt-3">
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
+<div class="row text-center mt-3 pl-2">
     <h4 style=" display:block;color: #45c545;">Risk Model</h4>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-2">
+        <h5>Audit Period</h5>
+    </div>
+<div class="row col-md-6">
+        <select id="auditCriteriaPeriodField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Audit Period--</option>
+            @{
+                if (ViewData["AuditPeriodList"] != null)
+                {
+
+                    foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
+                    {
+                        <option id="@period.ID" value="@period.ID">@period.DESCRIPTION</option>
+                    }
+
+                }
+            }
+        </select>
+    </div>
 </div>
 <!--  <div class="row col-md-12">
         <center class="w-100">
@@ -108,10 +145,10 @@
     </table>
 </div>
 -->
-<div class="row w-100 mt-3">
+<div class="row w-100 mt-3 pl-2">
     <table class="table table-bordered bg-white table-hover table-striped" id="criteria">
         <thead>
-            <tr style="background-color: #0c5ef3;">
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <th width="600px" rowspan="3" style="text-align:center;">Audit Entity</th>
                 <th colspan="7" style="text-align:center;">Internal Control Risk Assessment</th>
                 <!--<th colspan="5" style="text-align:center;">Risks in Key Perforamance Indicators</th>
@@ -120,11 +157,11 @@
     <th style="text-align:center;">Security Arrangements</th>-->
                 <th colspan="6" style="text-align:center;">Preventive & Detection Risk</th>
             </tr>
-            <tr style="background-color: #509ceb !important;">
-                <td colspan="4" style="text-align:center;">i.Non Compliance of Bank’s policies /procedures /SBP directives</td>
-                <td rowspan="2" style="text-align:center;">ii.Lapses in Management Information System (MIS)</td>
-                <td colspan="1" style="text-align:center;">iii.Cash Related Violations</td>
-                <td rowspan="2" style="text-align:center;">iv.Branch Control violations</td>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <td colspan="4" style="text-align:center;">Non Compliance of Bank’s policies /procedures /SBP directives</td>
+                <td rowspan="2" style="text-align:center;">Lapses in Management Information System (MIS)</td>
+                <td rowspan="2" style="text-align:center;">Cash Related Violations</td>
+                <td rowspan="2" style="text-align:center;">Branch Control violations</td>
                 <!--<td rowspan="2" style="text-align:center;">i.Increase in NPL</td>
     <td rowspan="2" style="text-align:center;">ii.Increase in SAM</td>
     <td rowspan="2" style="text-align:center;">iii.Recovery Lapses</td>
@@ -142,12 +179,12 @@
                 <td rowspan="2" style="text-align:center;">Non Balancing of Branches</td>
                 <td rowspan="2" style="text-align:center;">SBP Penalty</td>
             </tr>
-            <tr style="background-color: #7bb3ed !important;">
-                <td>a)NON  Compliance of SBP Directives</td>
-                <td>b)NON Compliance of   ZTBL directives</td>
-                <td>c)Violations in  Authorization and Approval Procedures</td>
-                <td>d)Internal Controls Violations</td>
-                <td>Cash shortage</td>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <td>NON  Compliance of SBP Directives</td>
+                <td>NON Compliance of   ZTBL directives</td>
+                <td>Violations in  Authorization and Approval Procedures</td>
+                <td>Internal Controls Violations</td>
+                
             </tr>
         </thead>
         <tbody>
