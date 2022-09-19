@@ -38,7 +38,15 @@ namespace AIS.Controllers
              var user=dBConnection.AutheticateLogin(login);
             if (user.ID != 0)
             {
-                return RedirectToAction("Index", "Home");
+                //Inspection User Check
+                if (user.UserPostingDept == 714) 
+                {
+                    return RedirectToAction("Home", "Inspection");
+                }
+                else {
+                    return RedirectToAction("Index", "Home");
+                }
+                
             }else
             {
                 TempData["Message"] = String.Format("Incorrect UserName or Password");

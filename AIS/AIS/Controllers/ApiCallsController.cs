@@ -151,9 +151,11 @@ namespace AIS.Controllers
             return dBConnection.GetAuditChecklistDetails(S_ID);
         }
         [HttpPost]
-        public bool save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID=0, int V_CAT_NATURE_ID=0, int RISK_ID=0 )
+        public string save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID=0, int V_CAT_NATURE_ID=0, int RISK_ID=0 )
         {
-            foreach(ListObservationModel m in LIST_OBS)
+            int success = 0;
+            int failed = 0;
+            foreach (ListObservationModel m in LIST_OBS)
             {
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = S_ID;
@@ -165,9 +167,12 @@ namespace AIS.Controllers
                 ob.OBSERVATION_TEXT = m.MEMO;
                 ob.SEVERITY = RISK_ID;
                 ob.STATUS = 1;
-                dBConnection.SaveAuditObservation(ob);
+                if (dBConnection.SaveAuditObservation(ob))
+                    success++;
+                else
+                    failed++;
             }
-            return true;
+            return "{\"success\":"+success+" , \"failed\":"+failed+"}";
         }
         [HttpPost]
         public bool reply_observation(ObservationResponseModel or)
@@ -186,6 +191,17 @@ namespace AIS.Controllers
                 return true;
             else
                 return false;
+        }
+        [HttpPost]
+        public bool drop_observation(int OBS_ID)
+        {
+            return dBConnection.DropAuditObservation(OBS_ID);
+               
+        }
+        [HttpPost]
+        public bool submit_observation_to_auditee(int OBS_ID)
+        {
+            return dBConnection.SubmitAuditObservationToAuditee(OBS_ID);
         }
 
         [HttpPost]

@@ -5,15 +5,29 @@
 
 <script type="text/javascript">
 
+
+    $(document).ready(function () {
+        var gl_Id = 0;
+        $('#sidebar_policy').hide();
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfGlHead tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
 </script>
 
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">GL Head Summary</h4>
 </div>
-
+<div class="row col-md-11">
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+</div>
 <div class="row col-md-12 mt-3">
     <div class="row col-md-12">
-        <table class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
+        <table id="listOfGlHead" class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-2">GL Head</th>

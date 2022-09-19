@@ -60,8 +60,9 @@
                 'S_ID':S_ID
             },
             cache: false,
-            success: function (data) {
-                alert("Memos are successfully submitted to Auditee");               
+           success: function (data) {
+
+               alert("<p> " + data.success + "  Memo(s) Successfully Saved</p><p>" + data.failed+ " Memo(s) Already Saved</p>");
             },
             dataType: "json",
         });

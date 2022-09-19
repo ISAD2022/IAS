@@ -126,7 +126,10 @@
             },
             cache: false,
             success: function (data) {
-                alert("Memo successfully submitted to Auditee");
+                if (data.failed>0)
+                    alert("<p>Memo Already Saved</p>");
+                else
+                    alert("<p>Memo Successfully Saved</p>");
             },
             dataType: "json",
         });
@@ -211,7 +214,7 @@
 
 
         <div class="row col-md-12 mt-5">
-            <button onclick="saveChecklistObservations();" class="btn btn-success" style="margin-left: 10px;">Submit to Auditee  </button>
+            <button onclick="saveChecklistObservations();" class="btn btn-success" style="margin-left: 10px;">Save Observation</button>
         </div>
 
     </div>

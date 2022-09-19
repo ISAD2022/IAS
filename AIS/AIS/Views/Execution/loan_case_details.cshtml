@@ -5,31 +5,45 @@
 
 <script type="text/javascript">
 
+    $(document).ready(function () {
 
+        getloancase();
 
-    function getloancase() {
-
-        var lid = $('#LCN').val();
-        if (lid != 0) {
-            $.ajax({
-                url: "/ApiCalls/Loan_Case_Details",
-                type: "POST",
-                data: {
-                    'Loan_case': lid
-                },
-                cache: false,
-                success: function (data) {
-
-                    console.log(data);
-                    $('#Loancasetable tbody').empty();
-                    $.each(data, function (i, v) {
-                        $('#Loancasetable tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.loaN_CASE_NO + '</td><td>' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
-                    });
-                },
-                dataType: "json",
+        $('#sidebar_policy').hide();
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#Loancasetable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
+        });
+
+
+    });
+
+        function getloancase() {
+
+            var lid = $('#LCN').val();
+            if (lid != 0) {
+                $.ajax({
+                    url: "/ApiCalls/Loan_Case_Details",
+                    type: "POST",
+                    data: {
+                        'Loan_case': lid
+                    },
+                    cache: false,
+                    success: function (data) {
+
+                        console.log(data);
+                        $('#Loancasetable tbody').empty();
+                        $.each(data, function (i, v) {
+                            $('#Loancasetable tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.loaN_CASE_NO + '</td><td>' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
+                        });
+                    },
+                    dataType: "json",
+                });
+            }
         }
-    }
+    
 
 </script>
 
@@ -38,8 +52,11 @@
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Pre Audit Information</h4>
 </div>
+<div class="row col-md-11">
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+</div>
 
-<div class="row col-md-12 mt-1">
+<!--<div class="row col-md-12 mt-1">
     <div class="row col-md-6 mt-1">
         <label><b>Loan Case No.</b></label>
         <input id="LCN" min="1" class="form-control mr-1" type="number" placeholder="Enter Loan Case #" />
@@ -47,7 +64,7 @@
 </div>
 <div class="row col-md-12 mt-3">
     <button onclick="getloancase();" class="btn btn-primary">Find</button>
-</div>
+</div>-->
 
 <div class="row col-md-12 mt-3">
     <table id="Loancasetable" class="table table-hover table-bordered table-hover mb-0 mt-3 bg-white table-striped">

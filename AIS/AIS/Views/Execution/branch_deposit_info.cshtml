@@ -7,6 +7,22 @@
 
 <script>
 
+    $(document).ready(function () {
+
+        getb_depositinfo();
+
+        $('#sidebar_policy').hide();
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#b_d_det tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+    });
+
+
     function getb_depositinfo() {
 
         var bid = $('#b_n').val();
@@ -37,13 +53,13 @@
 </script>
 
 <script type="text/javascript">
-   
+
 </script>
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Branch Deposit Information</h4>
 </div>
 
-
+<!--
 <div class="row col-md-12 mt-3">
     <div class="row col-md-6 mt-1">
         <label><b>BRANCH NAME</b></label>
@@ -67,7 +83,10 @@
 <div class="row col-md-12 mt-3">
     <button onclick="getb_depositinfo();" class ="btn btn-primary">Find</button>
 </div>
-
+-->
+<div class="row col-md-11">
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+</div>
 <div class="row col-md-12 mt-3">
     <table id="b_d_det" class="col-md-12 table table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; font-size:small">

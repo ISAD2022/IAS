@@ -5,6 +5,21 @@
 
 
 <script type="text/javascript">
+    $(document).ready(function () {
+
+        get_gl_details();
+
+        $('#sidebar_policy').hide();
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#b_d_T tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+    });
+
     function get_gl_details() {
 
         var bid = $('#b_i').val();
@@ -33,7 +48,7 @@
     <h4 style="display: block; color: #45c545;">Branch Wise Income And Expenditure Information</h4>
 </div>
 
-<div class="row col-md-12 mt-1">
+<!--<div class="row col-md-12 mt-1">
 
     <div class="row col-md-6 mt-1">
         <label><b>Branch ID</b></label>
@@ -42,6 +57,10 @@
 </div>
 <div class="row col-md-12 mt-3">
     <button onclick="get_gl_details();" class="btn btn-primary">Find</button>
+</div>
+-->
+<div class="row col-md-11">
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
 </div>
 
 <div class="row col-md-12 mt-3">
