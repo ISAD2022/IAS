@@ -190,3 +190,8 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Report
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\income_expenditure.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\income_expenditure_report.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\RiskAssessment\_ViewImports.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\CAU\OM\om_assignment.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\CAU\OM\om_response.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspection\Home\Index.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspection\Home\Privacy.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspection\Planning\audit_criteria.cshtml.g.cs
