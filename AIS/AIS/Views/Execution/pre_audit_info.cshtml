@@ -3,26 +3,42 @@
     Layout = "_Layout";
 }
 
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
 
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Pre Audit Information</h4>
 </div>
 
 <div class="row col-md-12 btn-group">
-    <div class="row col-md-12">
+    <div class="row col-md-12 mt-2">
         <button type="button" class="col-md-4 btn mt-3 btn-success" onclick="window.location.href = '/reports/glhead_summary';">GL Head Details</button>
     </div>
-    <div class="row col-md-12">
+    <div class="row col-md-12 mt-3">
         <button type="button" class="col-md-4 btn mt-3 btn-success" onclick="window.location.href = '/Execution/loan_case_details';">Loan Case</button>
     </div>
-    <div class="row col-md-12">
+    <div class="row col-md-12 mt-3">
         <button type="button" class="col-md-4 mt-3 btn btn-success" onclick="window.location.href = '/Reports/income_expenditure';">Income/Expenditure</button>
     </div>
-    <div class="row col-md-12">
+    <div class="row col-md-12 mt-3">
         <button type="button" class="col-md-4 mt-3 btn btn-success" onclick="window.location.href = '/Execution/branch_deposit_info';">Deposit</button>
         
     </div>
-    <div class="row col-md-12">
+    <div class="row col-md-12 mt-3">
         <button type="button" class="col-md-4 mt-3 btn btn-success" onclick="window.location.href = '/Execution/disb_info';">Disbursement</button>
     </div>
 </div>

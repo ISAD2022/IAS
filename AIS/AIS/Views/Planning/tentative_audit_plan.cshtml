@@ -3,6 +3,23 @@
     Layout = "_Layout";
 }
 
+
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
 <script type="text/javascript">
     function createAuditEngagement(name, size, risk, freq, days, auditperiod, periodId, code, zoneId) {
         window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=6' + '&zoneId=' + zoneId;
@@ -17,28 +34,29 @@
     });
       
 </script>
-<div class="row text-center mt-3">
-    <h3>Tentative Audit Plan </h3>
+<div class="row col-md-12 mt-3">
+    <h3 style="color: #45c545;">Tentative Audit Plan </h3>
 </div>
 <div>
-    <div class="row">
-        <div class="col-md-12">
+    
+        <div class="row col-md-12">
             <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
         </div>
-    </div>
+ 
     <br>
-    <div class="row mt-3">
-        <table class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped" id="tentative_plan_list">
-            <thead>
+    <div class="row col-md-12 mt-3">
+        <table  id="tentative_plan_list" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="font-weight-bold">Sr No</th>
-                    <th class="font-weight-bold">Audit Period</th>
-                    <th class="font-weight-bold">Entity Name</th>
-                    <th class="font-weight-bold">Entity Size</th>
-                    <th class="font-weight-bold">Risk</th>
-                    <th class="font-weight-bold">Frequency</th>
-                    <th class="font-weight-bold">No. of Days</th>
-                    <th class="font-weight-bold">Actions</th>
+                    <th width="80" style="font-size:large" >Sr No</th>
+                    <th  width="150" style="font-size:large">Audit Period</th>
+                    <th  width="150" style="font-size:large">Entity Name</th>
+                    <th  width="150" style="font-size:large">Entity Size</th>
+                    <th width="80" style="font-size:large">Risk</th>
+                    <th  width="100" style="font-size:large">Frequency</th>
+                    <th  width="150" style="font-size:large">No. of Days</th>
+                    <th  width="250" style="font-size:large">Tentatively Audited On</th>
+                    <th  width="100" style="font-size:large">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,14 +68,15 @@
                         foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
                         {
                                 <tr>
-                                    <td>@sr</td>
-                                    <td>@item.PERIOD_NAME</td>
-                                    <td>@item.ENTITY_NAME</td>
-                                    <td>@item.BR_SIZE</td>
-                                    <td>@item.RISK</td>
-                                    <td>@item.FREQUENCY_DESCRIPTION</td>
-                                    <td>@item.NO_OF_DAYS</td>
-                                    <td><small onclick="createAuditEngagement('@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
+                                    <td align="center">@sr</td>
+                                    <td align="center">@item.PERIOD_NAME</td>
+                                    <td align="center">@item.ENTITY_NAME</td>
+                                    <td align="center">@item.BR_SIZE</td>
+                                    <td align="center">@item.RISK</td>
+                                    <td align="center">@item.FREQUENCY_DESCRIPTION</td>
+                                    <td align="center">@item.NO_OF_DAYS</td>
+                                    <td align="center">NULL</td>
+                                    <td align="center"><small onclick="createAuditEngagement('@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDIT_ZONE_ID');" class="text-center text-danger text-hover">Create</small></td>
                                 </tr>
                             sr = sr + 1;
                         }

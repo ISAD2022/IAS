@@ -2,6 +2,21 @@
     ViewData["Title"] = "Main GL Head Summary";
     Layout = "_Layout";
 }
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
 
 <script type="text/javascript">
 
@@ -22,21 +37,21 @@
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">GL Head Summary</h4>
 </div>
-<div class="row col-md-11">
+<div class="row col-md-12">
     <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
 </div>
 <div class="row col-md-12 mt-3">
-    <div class="row col-md-12">
+   
         <table id="listOfGlHead" class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-2">GL Head</th>
-                    <th class="col-md-3">GL Description</th>
-                    <th class="col-md-2">Date</th>
-                    <th class="col-md-2">Credit</th>
-                    <th class="col-md-2">Debit</th>
-                    <th class="col-md-1">Balance</th>
-                    <th class="col-md-2">Action</th>
+                    <th width="100">GL Head</th>
+                    <th width="300">GL Description</th>
+                    <th width="150">Date</th>
+                    <th width="100">Credit</th>
+                    <th width="100">Debit</th>
+                    <th width="100">Balance</th>
+                    <th width="100">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,7 +101,7 @@
 
         </table>
     </div>
-</div>
+
 <div class="row col-md-12 mt-3">
 
     <button onclick="history.back()" class="btn btn-primary" style="color:white">Return</button>

@@ -13,6 +13,7 @@ namespace AIS
         private readonly SessionHandler sessionHandler = new SessionHandler();
         private readonly LocalIPAddress iPAddress = new LocalIPAddress();
         private readonly DateTimeHandler dtime = new DateTimeHandler();
+        private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         private OracleConnection DatabaseConnection()
         {
             try
@@ -1853,7 +1854,7 @@ namespace AIS
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
                 
-                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid,  et.auditedby, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e,  t_auditee_ent_types          et, t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id  and e.type_id=et.autid  and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
+                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid,  e.auditby_id, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e,  t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id  and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
                 cmd.ExecuteReader();   
             }
             con.Close();
@@ -2277,7 +2278,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d where d.NAME = '" + bname + "' order by d.OPENINGDATE ";
-                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where d.NAME = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE fetch next 50 rows only";
+                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE fetch next 50 rows only";
                 //cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where d.NAME = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2899,6 +2900,19 @@ namespace AIS
             }
             con.Close();
             return list;
+        }
+        public bool CAUOMAssignment(CAUOMAssignmentModel om)
+        {
+            string PASSWORD = "isad@1234";
+            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM, PASSWORD);
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO T_CAU_OM (ID, OM_NO, CONTENTS_OF_OM, DIV_ID, STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_CAU_OM acc), '"+om.OM_NO+ "', '" + encodedMsg + "', '" + om.DIV_ID + "', 1 )";
+                cmd.ExecuteReader();               
+            }
+            con.Close();
+            return true;
         }
     }
 }

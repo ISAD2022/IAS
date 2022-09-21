@@ -263,6 +263,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetCOSORiskForDepartment(PERIOD_ID);
         }
+        [HttpPost]
+        public bool CAU_OM_assignment(CAUOMAssignmentModel caumodel)
+        {
+            return dBConnection.CAUOMAssignment(caumodel);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

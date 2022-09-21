@@ -3,16 +3,18 @@
     Layout = "_Layout";
 }
 <style type="text/css">
-
-    .listItems:hover {
-        color: blue;
-        text-decoration: underline;
+    .container {
+        max-width: 100%;
     }
 
-    .action:hover {
-        font-size: 110%;
-        cursor: pointer;
-        font-weight: 600;
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
     }
 </style>
 
@@ -88,15 +90,15 @@
 </script>
 
 <div class="col-md-12" style="margin-top:20px;">
-    <h3>List of Audit Criteria To Authorize </h3>
+    <h3 style="color: #45c545;">List of Audit Criteria To Authorize </h3>
     <div class="row">
         <div class="col-md-12">
             <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
         </div>
     </div>
     <br>
-    <table id="listOfProcTransactions" class="table align-middle table-bordered mb-0 bg-white table-hover table-striped">
-        <thead>
+    <table id="listOfProcTransactions" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th class="col-md-1">Period</th>
                 <th class="col-md-1">Entity</th>
@@ -105,8 +107,8 @@
                 <th class="col-md-1">No of Days</th>
                 <th class="col-md-1">Frequency</th>
                 <th class="col-md-1">Visit</th>
-                <th class="col-md-2">Comments</th>
-                <th class="col-md-1">Auditable Entities</th>
+                <th class="col-md-1">Comments</th>
+                <th class="col-md-2">Auditable Entities</th>
                 <th class="col-md-1"></th>
                 <th class="col-md-2">Remarks</th>
             </tr>
@@ -164,11 +166,10 @@
         </tbody>
     </table>
 </div>
-<div class="row col-md-12 mt-3">
+
     <div class="col-md-12">
         <button onclick="approveAuditCriterias();" style="float:right; margin-left:15px;" class="btn btn-success col-md-2">Approved</button>
         <button onclick="referredBackAuditCriterias();" style="float:right;" class="btn btn-danger col-md-2">Refer Back</button>
 
     </div>
     
-</div>

@@ -3,11 +3,27 @@
     Layout = "_Layout";
 }
 
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
 <script type="text/javascript">
 
     $(document).ready(function () {
 
-        getloancase();
+        //getloancase();
 
         $('#sidebar_policy').hide();
         $("#searchTableRecord").on("keyup", function () {
@@ -52,7 +68,7 @@
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Pre Audit Information</h4>
 </div>
-<div class="row col-md-11">
+<div class="row col-md-12">
     <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
 </div>
 
@@ -70,15 +86,15 @@
     <table id="Loancasetable" class="table table-hover table-bordered table-hover mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-2">Branch ID</th>
-                <th class="col-md-2">LC #</th>
+                <th class="col-md-1">Branch ID</th>
+                <th class="col-md-1">LC #</th>
                 <th class="col-md-1">CNIC</th>
-                <th class="col-md-4">CUSTOMER NAME</th>
-                <th class="col-md-1">DISSBURMENT AMOUNT</th>
+                <th class="col-md-2">CUSTOMER NAME</th>
+                <th class="col-md-2">DISB AMOUNT</th>
                 <th class="col-md-1">PRINCIPLE</th>
                 <th class="col-md-1">MARKUP</th>
-                <th class="col-md-1">DISSBURMENT DATE</th>
-                <th class="col-md-1">DISSBURMENT STATUS ID</th>
+                <th class="col-md-1">DISB DATE</th>
+                <th class="col-md-2">DISB STATUS ID</th>
             </tr>
         </thead>
         <tbody>

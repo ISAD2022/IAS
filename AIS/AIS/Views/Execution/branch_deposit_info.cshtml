@@ -2,7 +2,21 @@
     ViewData["Title"] = "Branch Deposit Information";
     Layout = "_Layout";
 }
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
 
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
 
 
 <script>
@@ -39,7 +53,7 @@
                     console.log(data);
                     $('#b_d_det tbody').empty();
                     $.each(data, function (i, v) {
-                        $('#b_d_det tbody').append('<tr><td >' + v.name + ' ' + '</td><td >' + v.cusT_NAME + '</td><td >' + v.acC_TITLE + '</td><td>' + v.acC_NUMBER + ' ' + '</td> <td>' + v.accountcategory + '</td><td>' + v.accountstatus + '</td><td>' + v.cnic + ' ' + '</td><td>' + v.cnicexpirydate.split('T')[0] + '</td><td>' + v.oldaccountno + ' ' + '</td><td>' + v.openingdate.split('T')[0] + '</td>  <td>' + v.lasttransactiondate.split('T')[0] + '</td> </tr>')
+                        $('#b_d_det tbody').append('<tr><td >' + v.name + ' ' + '</td><td >' + v.cusT_NAME + '</td><td >' + v.acC_TITLE + '</td><td>' + v.acC_NUMBER + '</td> <td>' + v.accountcategory + '</td><td>' + v.accountstatus + '</td><td>' + v.cnic + ' ' + '</td><td>' + v.cnicexpirydate.split('T')[0] + '</td><td>' + v.oldaccountno + '</td><td>' + v.openingdate.split('T')[0] + '</td>  <td>' + v.lasttransactiondate.split('T')[0] + '</td> </tr>')
                     });
                 },
                 dataType: "json",
@@ -84,26 +98,26 @@
     <button onclick="getb_depositinfo();" class ="btn btn-primary">Find</button>
 </div>
 -->
-<div class="row col-md-11">
+<div class="row col-md-12">
     <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
 </div>
-<div class="row col-md-12 mt-3">
+<div class="row w-100 mt-3 pl-2">
     <table id="b_d_det" class="col-md-12 table table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; font-size:small">
             <tr>
-                <th class="col-md-1">BRANCH</th>
-                <th class="col-md-1">CUSTOMER NAME</th>
-                <th class="col-md-2">ACC TITLE</th>
-                <th class="col-md-1">ACCOUNT #</th>
+                <th width="100">BRANCH</th>
+                <th width="130">CUSTOMER NAME</th>
+                <th width="100">ACC TITLE</th>
+                <th width="80">ACCOUNT #</th>
 
-                <th class="col-md-1">ACC CATEGORY</th>
-                <th class="col-md-1">ACC STATUS</th>
-                <th class="col-md-1">CNIC</th>
-                <th class="col-md-1">CNIC EXP</th>
+                <th width="130">ACC CATEGORY</th>
+                <th width="100">ACC STATUS</th>
+                <th width="100">CNIC</th>
+                <th width="100">CNIC EXP</th>
 
-                <th class="col-md-1">OLD ACC #</th>
-                <th class="col-md-1">ACC OPEN Date</th>
-                <th class="col-md-1">Last TR Date</th>
+                <th width="50">OLD ACC #</th>
+                <th width="150">ACC OPEN DATE</th>
+                <th width="100">LAST TR DATE</th>
 
 
                 <!-- <th class="col-md-2">Detail</th>-->
