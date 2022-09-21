@@ -4,12 +4,15 @@ using AIS.Models;
 using Oracle.ManagedDataAccess.Client;
 using System.Security.Cryptography;
 using System.Text;
+using System.Globalization;
 
 namespace AIS
 { 
     public class DBConnection
     {
         private readonly SessionHandler sessionHandler = new SessionHandler();
+        private readonly LocalIPAddress iPAddress = new LocalIPAddress();
+        private readonly DateTimeHandler dtime = new DateTimeHandler();
         private OracleConnection DatabaseConnection()
         {
             try
@@ -85,7 +88,13 @@ namespace AIS
                     else
                         user.UserRoleID = 0;
 
+
+                    cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, LOGGED_IN_DATE, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress()+ "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' ,TO_DATE('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), 'Y')";
+                    cmd.ExecuteReader();
+
                 }
+
+
             }
             con.Close();
             sessionHandler.SetSessionUser(user);
@@ -1262,7 +1271,8 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ID from t_au_period p where (to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy') <= p.start_date and p.start_date <= to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date) OR (p.start_date <= to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date) or (p.start_date <= to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date  and  p.end_date <= to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM'))   or (to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <=p.start_date and p.end_date <= to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM'))";
+                //cmd.CommandText = "select ID from t_au_period p where (to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy') <= p.start_date and p.start_date <=                                      to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and                           to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date)                        OR (p.start_date <= to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and                      to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date)                            or (p.start_date <= to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') and                     to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <= p.end_date                              and  p.end_date <= to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM'))                       or (to_date('" + periodModel.START_DATE + "', 'mm/dd/yyyy HH:MI:SS AM') <=p.start_date and p.end_date                           <= to_date('" + periodModel.END_DATE + "', 'mm/dd/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = "select ID from t_au_period p where (to_date('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.start_date and p.start_date <= to_date('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) OR (p.start_date <= to_date('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date) or (p.start_date <= to_date('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') and to_date('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') <= p.end_date  and  p.end_date <= to_date('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM'))   or (to_date('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM') <=p.start_date and p.end_date <= to_date('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "', 'dd/mm/yyyy HH:MI:SS AM'))";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 bool periodExists = false;
                 while (rdr.Read())
@@ -1271,7 +1281,7 @@ namespace AIS
                         periodExists = true;
                 }
                 if (!periodExists) {
-                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID, p.AUDITPERIODID, p.DESCRIPTION,p.START_DATE,p.END_DATE,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),(SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + periodModel.START_DATE + "','mm/dd/yyyy HH:MI:SS AM'),TO_DATE('" + periodModel.END_DATE + "','mm/dd/yyyy HH:MI:SS AM'), " + periodModel.STATUS_ID + ")";
+                    cmd.CommandText = "insert into T_AU_PERIOD p (p.ID, p.AUDITPERIODID, p.DESCRIPTION,p.START_DATE,p.END_DATE,p.STATUS_ID) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),(SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_PERIOD PP),'" + periodModel.DESCRIPTION + "', TO_DATE('" + dtime.DateTimeInDDMMYY(periodModel.START_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),TO_DATE('" + dtime.DateTimeInDDMMYY(periodModel.END_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), " + periodModel.STATUS_ID + ")";
                     cmd.ExecuteReader();
                     result = true;
                 }
@@ -1314,10 +1324,10 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + ePlan.AUDIT_STARTDATE + "','mm/dd/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','mm/dd/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + ePlan.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='"+ ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE+")";
+                cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_STARTDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_ENDDATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY+ "',to_date('" + dtime.DateTimeInDDMMYY(ePlan.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='"+ ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE+")";
                 cmd.ExecuteReader();
 
-                cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + ePlan.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
+                cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.STATUS + "," + createdbyId + ", to_date('" + dtime.DateTimeInDDMMYY(ePlan.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'), 'NEW ENGAGEMENT PLAN CREATED')";
                 cmd.ExecuteReader();
 
                 cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP) and TEAM_ID=" + ePlan.TEAM_ID;
@@ -1342,7 +1352,7 @@ namespace AIS
                     if(rdr["member_ppno"].ToString()!="" && rdr["member_ppno"].ToString() !=null)
                     {
                         string member_pp = rdr["member_ppno"].ToString();
-                        cmd.CommandText = "insert into T_AU_AUDIT_TEAM_TASKLIST t (t.ID,t.ENG_PLAN_ID, t.TEAM_ID, t.SEQUENCE_NO, t.TEAMMEMBER_PPNO, t.ENTITY_ID, t.ENTITY_CODE , t.ENTITY_NAME , t.AUDIT_START_DATE , t.AUDIT_END_DATE, t.STATUS_ID, t.ISACTIVE ) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAM_TASKLIST ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + "," + sequence_no + ",'" + member_pp + "', (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE + ",(select ae.NAME from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "'), to_date('" + ePlan.AUDIT_STARTDATE + "','mm/dd/yyyy HH:MI:SS AM'), to_date('" + ePlan.AUDIT_ENDDATE + "','mm/dd/yyyy HH:MI:SS AM'), 1,'Y')";
+                        cmd.CommandText = "insert into T_AU_AUDIT_TEAM_TASKLIST t (t.ID,t.ENG_PLAN_ID, t.TEAM_ID, t.SEQUENCE_NO, t.TEAMMEMBER_PPNO, t.ENTITY_ID, t.ENTITY_CODE , t.ENTITY_NAME , t.AUDIT_START_DATE , t.AUDIT_END_DATE, t.STATUS_ID, t.ISACTIVE ) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAM_TASKLIST ll), (SELECT max(lp.ENG_ID) FROM t_au_plan_eng lp)," + ePlan.TEAM_ID + "," + sequence_no + ",'" + member_pp + "', (select ae.ENTITY_ID from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "')," + ePlan.ENTITY_CODE + ",(select ae.NAME from t_auditee_entities ae WHERE ae.Code='" + ePlan.ENTITY_CODE + "'), to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_STARTDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_ENDDATE) + "','dd/mm/yyyy HH:MI:SS AM'), 1,'Y')";
                         cmd.ExecuteReader();
                     }
                 }
@@ -1762,7 +1772,7 @@ namespace AIS
                     alog.CREATED_ON = DateTime.Now;
                     alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
                     alog.LAST_UPDATED_ON = DateTime.Now;
-                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','mm/dd/yyyy HH:MI:SS AM'))";
+                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                     cmd.ExecuteReader();
                 }
             }
@@ -1786,7 +1796,7 @@ namespace AIS
                 alog.CREATED_ON = DateTime.Now;
                 alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
                 alog.LAST_UPDATED_ON = DateTime.Now;
-                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','mm/dd/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , (select max(acc1.ID) from T_AUDIT_CRITERIA acc1),'" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1813,7 +1823,7 @@ namespace AIS
                 alog.CREATED_ON = DateTime.Now;
                 alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
                 alog.LAST_UPDATED_ON = DateTime.Now;
-                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID+"','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','mm/dd/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID+"','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1840,10 +1850,10 @@ namespace AIS
                 alog.CREATED_ON = DateTime.Now;
                 alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
                 alog.LAST_UPDATED_ON = DateTime.Now;
-                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + alog.CREATED_ON + "','mm/dd/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + alog.LAST_UPDATED_ON + "','mm/dd/yyyy HH:MI:SS AM'))";
+                cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
                 
-                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid, e.auditby_id, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e, t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id       and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
+                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid,  et.auditedby, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e,  t_auditee_ent_types          et, t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id  and e.type_id=et.autid  and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
                 cmd.ExecuteReader();   
             }
             con.Close();
@@ -2000,7 +2010,7 @@ namespace AIS
             jm.ENTEREDDATE = System.DateTime.Now;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE, al.STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + jm.JOINING_DATE + "','mm/dd/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + jm.ENTEREDDATE + "','mm/dd/yyyy HH:MI:SS AM'), to_date('" + jm.COMPLETION_DATE + "','mm/dd/yyyy HH:MI:SS AM'), 'I')";
+                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE, al.STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + dtime.DateTimeInDDMMYY(jm.JOINING_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(jm.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(jm.COMPLETION_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), 'I')";
                 cmd.ExecuteReader();
                 cmd.CommandText = cmd.CommandText = "UPDATE T_AU_AUDIT_TEAM_TASKLIST SET STATUS_ID= (select COALESCE(acc.STATUS_ID+1,1) from T_AU_AUDIT_TEAM_TASKLIST acc WHERE acc.ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and acc.TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO+") WHERE ENG_PLAN_ID="+jm.ENG_PLAN_ID+ " and TEAMMEMBER_PPNO= "+jm.TEAM_MEM_PPNO;
                 cmd.ExecuteReader();
@@ -2208,7 +2218,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2259,7 +2268,6 @@ namespace AIS
                 con.Close();
                 return depositacclist;
         }
-           
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname="")
         {
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2408,12 +2416,12 @@ namespace AIS
                 }
                 if (!alreadyAddedOb)
                 {
-                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID, o.V_CAT_ID, o.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','mm/dd/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + ob.REPLYDATE + "','mm/dd/yyyy HH:MI:SS AM'), to_date('" + ob.MEMO_DATE + "','mm/dd/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "','" + ob.V_CAT_ID + "','" + ob.V_CAT_NATURE_ID + "')";
+                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID, o.V_CAT_ID, o.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + dtime.DateTimeInDDMMYY(ob.REPLYDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ob.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "','" + ob.V_CAT_ID + "','" + ob.V_CAT_NATURE_ID + "')";
                     cmd.ExecuteReader();
-                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) ,  '" + ob.OBSERVATION_TEXT + "','" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','mm/dd/yyyy HH:MI:SS AM'))";
+                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) ,  '" + ob.OBSERVATION_TEXT + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'))";
                     cmd.ExecuteReader();
                     /*
-                      cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , (select max(o.ID) from T_AU_OBSERVATION o), (select max(tt.ID) from T_AU_OBSERVATION_TEXT tt), " + ReplyByQuery + ",'" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','mm/dd/yyyy HH:MI:SS AM'),'Y','N')";
+                      cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , (select max(o.ID) from T_AU_OBSERVATION o), (select max(tt.ID) from T_AU_OBSERVATION_TEXT tt), " + ReplyByQuery + ",'" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'Y','N')";
                       cmd.ExecuteReader();
                       string ObsId = "(SELECT MAX(ID) FROM T_AU_OBSERVATION)";
                       cmd.CommandText = "UPDATE T_AU_OBSERVATION SET STATUS=2 WHERE ID = " + ObsId;
@@ -2501,11 +2509,11 @@ namespace AIS
             ob.REPLY_ROLE = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "','" + ob.REPLY + "','" + ob.REPLIEDBY + "',to_date('" + ob.REPLIEDDATE + "','mm/dd/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
+                cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "','" + ob.REPLY + "','" + ob.REPLIEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
                 cmd.ExecuteReader();
                 cmd.CommandText = "UPDATE T_AU_OBSERVATION_ASSIGNEDTO SET REPLIED='Y' WHERE OBS_ID="+ob.AU_OBS_ID+" and OBS_TEXT_ID="+ob.OBS_TEXT_ID;
                 cmd.ExecuteReader();
-                cmd.CommandText = "UPDATE t_au_observation SET STATUS=3, REPLYBY="+loggedInUser.PPNumber+ ", MEMO_REPLY_DATE = to_date('" + ob.REPLIEDDATE + "','mm/dd/yyyy HH:MI:SS AM') WHERE ID = " + ob.AU_OBS_ID;
+                cmd.CommandText = "UPDATE t_au_observation SET STATUS=3, REPLYBY="+loggedInUser.PPNumber+ ", MEMO_REPLY_DATE = to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM') WHERE ID = " + ob.AU_OBS_ID;
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -2721,7 +2729,7 @@ namespace AIS
             {
                 cmd.CommandText = "UPDATE t_au_observation SET STATUS=" + NEW_STATUS_ID + " WHERE ID = " + OBS_ID;
                 cmd.ExecuteReader();
-                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , "+OBS_ID+ ", (select tt.ID from T_AU_OBSERVATION_TEXT tt WHERE tt.OBSERVATSION_ID = "+OBS_ID+"), " + ReplyByQuery + ",'" + ENTEREDBY + "',to_date('" + ENTEREDDATE + "','mm/dd/yyyy HH:MI:SS AM'),'Y','N')";
+                cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , "+OBS_ID+ ", (select tt.ID from T_AU_OBSERVATION_TEXT tt WHERE tt.OBSERVATSION_ID = "+OBS_ID+"), " + ReplyByQuery + ",'" + ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'),'Y','N')";
                 cmd.ExecuteReader();
             }
             return true;
@@ -2759,9 +2767,9 @@ namespace AIS
                 if (NEW_STATUS_ID != 8)
                 {
                     if(NEW_STATUS_ID==9)
-                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITOR_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + OBS_ID + "','" + AUDITOR_COMMENT + "','" + loggedInUser.PPNumber + "',to_date('" + DateTime.Now + "','mm/dd/yyyy HH:MI:SS AM'),(select ot.id from t_au_observation_text ot WHERE ot.observatsion_id= " + OBS_ID + " ),'Departmental Head / Incharge AZ','" + remarks + "','Y')";
+                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITOR_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + OBS_ID + "','" + AUDITOR_COMMENT + "','" + loggedInUser.PPNumber + "',to_date('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'),(select ot.id from t_au_observation_text ot WHERE ot.observatsion_id= " + OBS_ID + " ),'Departmental Head / Incharge AZ','" + remarks + "','Y')";
                     else
-                        cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITOR_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + OBS_ID + "','" + AUDITOR_COMMENT + "','" + loggedInUser.PPNumber + "',to_date('" + DateTime.Now + "','mm/dd/yyyy HH:MI:SS AM'),(select ot.id from t_au_observation_text ot WHERE ot.observatsion_id= " + OBS_ID + " ),(select case tmm.isteamlead when 'Y' Then 'Team Lead' when 'N' then 'Team Member' end from t_au_team_members tmm where tmm.t_code IN ( select tm.t_code from t_au_team_members tm where tm.t_id IN ( select t.team_id from t_au_audit_teams t where t.eng_id IN ( select o.engplanid from t_au_observation o where o.id = " + OBS_ID + "))) and tmm.member_ppno=" + loggedInUser.PPNumber + "),'" + remarks + "','Y')";
+                        cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITOR_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + OBS_ID + "','" + AUDITOR_COMMENT + "','" + loggedInUser.PPNumber + "',to_date('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'),(select ot.id from t_au_observation_text ot WHERE ot.observatsion_id= " + OBS_ID + " ),(select case tmm.isteamlead when 'Y' Then 'Team Lead' when 'N' then 'Team Member' end from t_au_team_members tmm where tmm.t_code IN ( select tm.t_code from t_au_team_members tm where tm.t_id IN ( select t.team_id from t_au_audit_teams t where t.eng_id IN ( select o.engplanid from t_au_observation o where o.id = " + OBS_ID + "))) and tmm.member_ppno=" + loggedInUser.PPNumber + "),'" + remarks + "','Y')";
                     cmd.ExecuteReader();
                 }
                 
@@ -2837,7 +2845,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 DateTime UpdatedDate = System.DateTime.Now;
-                cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY="+loggedInUser.PPNumber+ ", LASTUPDATEDDATE = to_date('" + UpdatedDate + "','mm/dd/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
+                cmd.CommandText = "UPDATE t_au_audit_joining set STATUS ='P', LASTUPDATEDBY="+loggedInUser.PPNumber+ ", LASTUPDATEDDATE = to_date('" + dtime.DateTimeInDDMMYY(UpdatedDate) + "','dd/mm/yyyy HH:MI:SS AM')  WHERE ENG_PLAN_ID=" + ENG_ID;
                 cmd.ExecuteReader();
                 cmd.CommandText = "UPDATE t_au_audit_team_tasklist set STATUS_ID =5 WHERE ENG_PLAN_ID=" + ENG_ID+ " and TEAMMEMBER_PPNO="+loggedInUser.PPNumber;
                 cmd.ExecuteReader();
