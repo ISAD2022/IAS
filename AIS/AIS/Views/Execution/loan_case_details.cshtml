@@ -20,23 +20,20 @@
 </style>
 
 <script type="text/javascript">
-
+    var g_loanType = '';
     $(document).ready(function () {
-
-        //getloancase();
-
-        $('#sidebar_policy').hide();
-        $("#searchTableRecord").on("keyup", function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_loanType = url.searchParams.get("type");          
+          $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#Loancasetable tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
-        });
-
-
+          });
+        getloancase();
     });
-
-        function getloancase() {
+    function getloancase() {
 
             var lid = $('#LCN').val();
             if (lid != 0) {
@@ -44,7 +41,8 @@
                     url: "/ApiCalls/Loan_Case_Details",
                     type: "POST",
                     data: {
-                        'Loan_case': lid
+                        'Loan_case': lid,
+                        'LOAN_TYPE': g_loanType
                     },
                     cache: false,
                     success: function (data) {
@@ -59,8 +57,6 @@
                 });
             }
         }
-    
-
 </script>
 
 

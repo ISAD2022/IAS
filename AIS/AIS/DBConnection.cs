@@ -2185,7 +2185,7 @@ namespace AIS
             return GlHeadSubDetails;
 
         }
-        public List<LoanCaseModel> GetLoanCaseDetails(int lid =0)
+        public List<LoanCaseModel> GetLoanCaseDetails(int lid =0, string type="")
         {
             var loggedInUser = sessionHandler.GetSessionUser();
             int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
@@ -2194,9 +2194,11 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-              //cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
-               cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd order by lcd.DISB_DATE fetch next 50 rows only";
-
+                if(type.ToLower()=="live" || type.ToLower() == "")
+                    cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
+                else
+                    cmd.CommandText = "select * from v_customer_loan_close lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
+              
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {

@@ -312,6 +312,38 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult tentative_audit_plan_ho_units()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
+            var loggedInUser = sessionHandler.GetSessionUser();
+            if (loggedInUser.UserPostingAuditZone != null && loggedInUser.UserPostingAuditZone != 0)
+                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingAuditZone);
+            else if (loggedInUser.UserPostingBranch != null && loggedInUser.UserPostingBranch != 0)
+                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingBranch);
+            else if (loggedInUser.UserPostingDept != null && loggedInUser.UserPostingDept != 0)
+                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingDept);
+            else if (loggedInUser.UserPostingDiv != null && loggedInUser.UserPostingDiv != 0)
+                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingDiv);
+            else if (loggedInUser.UserPostingZone != null && loggedInUser.UserPostingZone != 0)
+                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingZone);
+
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpPost]
         public List<AuditEmployeeModel> audit_employees(int dept_code=0)
         {

@@ -128,12 +128,12 @@
 <div class="row mt-3">
     <div>
         <center>
-            <h3 style="display: block; color: #45c545;">Sub List Details</h3>
+            <h3 style="color: #45c545;">Sub List Details</h3>
         </center>
     </div>
 
-    <table id="checklistDetailsPanel" class="table table-bordered mb-0 mt-3 bg-white table-striped">
-        <thead>
+    <table id="checklistDetailsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th class="col-md-1 font-weight-bold">Sr. No</th>
                 <th class="col-md-2 font-weight-bold">Parent/Sub Process</th>
@@ -148,8 +148,8 @@
     </table>
 </div>
 <div class="row mt-3">
-    <button class="col-md-3 btn btn-secondary">Back to Sub Process</button>
-    <button onclick="saveChecklistObservations();" class="col-md-3 btn btn-success" style="margin-left:10px;">Save & Submit to Auditee</button>
+    <button onclick="history.back()" class="col-md-3 btn btn-secondary">Back to Sub Process</button>
+    <button onclick="saveChecklistObservations();" class="col-md-3 btn btn-success" style="margin-left:10px;">Save</button>
 </div>
 
 
