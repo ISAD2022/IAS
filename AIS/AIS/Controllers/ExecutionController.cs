@@ -410,11 +410,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
-            ViewData["RiskList"] = dBConnection.GetRisks();
-            ViewData["Loan_CaseList"] = dBConnection.GetLoanCaseDetails();
+          
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -477,12 +473,6 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
-            ViewData["D_Branch_Name"] = dBConnection.GetDepositAccountdetails();
-
-            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

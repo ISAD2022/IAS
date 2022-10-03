@@ -94,55 +94,57 @@
     }
 
 </script>
-<div class="row col-md-12">
-    <div class="col-md-12 mt-3">
-        <center class="w-100"><h3>Observation</h3></center>
-        <div>
+
+    <div class="row col-md-12 mt-3">
+        <h3 style="color: #45c545;">Observation</h3>
+        </div>
+        <div class="row col-md-12 mt-3">
             <h5>Process</h5>
         </div>
-        <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
-            @{
-                if (ViewData["ProcessList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
+        <div class="row col-md-12 mt-3">
+            <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
+                @{
+                    if (ViewData["ProcessList"] != null)
                     {
-                        <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                        foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                        {
+                            <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                        }
                     }
                 }
-            }
-        </select>
-    </div>
-    <div id="div_risksubcategory" style="display:none;" class="col-md-12 mt-3">
+            </select>
+        </div>
+    <div id="div_risksubcategory" style="display:none;" class="row col-md-12 mt-3">
         <h5>Activity</h5>
         <select id="riskSubGroupSelectBox" onchange="div_activityContainerShowHide();" class="form-select form-control" aria-label="Default select example">
         </select>
     </div>
-    <div id="div_activityContainer" style="display:none;" class="col-md-12 mt-3">
+    <div id="div_activityContainer" style="display:none;" class="row col-md-12 mt-3">
         <h5>Observation</h5>
         <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
         </select>
     </div>
-    <div class="col-md-12 mt-3">
-        <div class="page-wrapper box-content">
+    <div class="row col-md-12 mt-3">
+        <div class="row col-md-12 page-wrapper box-content">
             <textarea id="template_box" class="content" name="example"></textarea>
         </div>
     </div>
     <div class="row col-md-12 mt-3">
 
         <div class="row col-md-12 mt-3">
-            <div class="col-md-3 mt-3">
-                <label><h4>Responsible P.P. No.</h4></label>
+            <div class="row col-md-3 mt-3">
+                <label>Responsible P.P. No.</label>
             </div>
-            <div class="col-md-4 mt-3">
-                <input type="number" />
+            <div class="row col-md-3 mt-3">
+                <input class="form-control" />
             </div>
         </div>
         <div class="row col-md-12 mt-3">
-            <div class="col-md-3">
-                <label><h5>No. of Days to Reply</h5></label>
+            <div class="row col-md-3">
+                <label>No. of Days to Reply</label>
             </div>
-            <div class="col-md-3">
+            <div class="row col-md-3">
                 <select class="form-control form-select">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -154,7 +156,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label><h5>Attachments</h5></label>
+                <label>Attachments</label>
             </div>
             <div class="col-md-4">
                 <input class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />

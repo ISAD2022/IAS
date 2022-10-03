@@ -5,6 +5,7 @@ using Oracle.ManagedDataAccess.Client;
 using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
+using System.Net;
 
 namespace AIS
 { 
@@ -1341,7 +1342,7 @@ namespace AIS
                 }
                 if(!teamentry)
                 {
-                    cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAMS ll), (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', " + placeofposting + ",1)";
+                    cmd.CommandText = "insert into T_AU_AUDIT_TEAMS t (t.ID,t.ENG_ID, t.TEAM_ID, t.T_NAME, t.T_CODE, t.PLACE_OF_POSTING, t.STATUS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM T_AU_AUDIT_TEAMS ll), (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP)," + ePlan.TEAM_ID + ",'" + ePlan.TEAM_NAME + "', (SELECT T_CODE FROM T_AU_TEAM_MEMBERS WHERE T_ID = "+ePlan.TEAM_ID+") , " + placeofposting + ",1)";
                     cmd.ExecuteReader();
                 }
                    
@@ -1853,8 +1854,7 @@ namespace AIS
                 alog.LAST_UPDATED_ON = DateTime.Now;
                 cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA_LOG al (al.ID, al.C_ID, al.STATUS_ID,al.CREATEDBY_ID , al.CREATED_ON, al.REMARKS, al.UPDATED_BY, al.LAST_UPDATED_ON ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA_LOG acc) , '" + alog.C_ID + "','" + alog.STATUS_ID + "','" + alog.CREATEDBY_ID + "',to_date('" + dtime.DateTimeInDDMMYY(alog.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + alog.REMARKS + "','" + alog.UPDATED_BY + "',to_date('" + dtime.DateTimeInDDMMYY(alog.LAST_UPDATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'))";
                 cmd.ExecuteReader();
-                
-                cmd.CommandText = "INSERT INTO T_AU_PLAN ( CRITERIA_ID, AUDITPERIODID, AUDITEDBY, ENTITY_ID, ENTITY_CODE, AUDITEE_NAME, AUDITEE_RISK, AUDITEE_SIZE, NO_OF_DAYS, FREQUENCY_DISCRIPTION) select a.id, a.auditperiodid,  e.auditby_id, e.entity_id, e.code, e.name, r.description as Risk, s.description as Entity_size, a.no_of_days, f.frequency_discription as frequency from t_auditee_entities      e,  t_au_period   p, t_auditee_entities_risk er, t_auditee_entities_size es, t_audit_criteria        a, t_risk_status r, t_auditee_entities_size_disc     s, t_audit_frequency       f where a.entity_id = e.type_id  and e.code = er.entity_code       and a.auditperiodid=p.auditperiodid       and er.risk_rating = a.risk_id and a.auditperiodid = er.audit_period_id and er.risk_rating = r.r_id and e.code = es.entity_code and a.size_id = es.entity_size and es.entity_size = s.entity_size and a.frequency_id = f.frequency_id    and a.approval_status=4 and p.status_id=1";
+                cmd.CommandText = "begin tentative_audit_plan; end;";
                 cmd.ExecuteReader();   
             }
             con.Close();
@@ -1976,7 +1976,7 @@ namespace AIS
                 engId = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select t.team_id, tm.member_name,tm.member_ppno, tm.team_name as TEAM_NAME, t.entity_id, t.entity_code, t.entity_name, t.audit_start_date, t.audit_end_date, rt.description as RISK, st.description as ENT_SIZE ,p.description as AUDIT_PERIOD, tm.isteamlead from t_au_audit_team_tasklist t inner join t_au_plan_eng pe    on t.eng_plan_id = pe.eng_id    inner join t_au_period p on pe.period_id=p.auditperiodid    inner join t_au_team_members tm on t.teammember_ppno=tm.member_ppno    inner join t_auditee_entities_risk r on t.entity_code=r.entity_code    inner join t_risk rt on r.risk_rating=rt.r_id    inner join t_auditee_entities_size s on t.entity_code=s.entity_code    inner join t_auditee_entities_size_disc st on s.entity_size=st.entity_size where t.eng_plan_id = " + engId+ " and tm.member_ppno="+loggedInUser.PPNumber;
+                cmd.CommandText = "select t.team_id, tm.member_name,tm.member_ppno, tm.team_name as TEAM_NAME, t.entity_id, t.entity_code, t.entity_name, t.audit_start_date, t.audit_end_date, rt.description as RISK, st.description as ENT_SIZE ,p.description as AUDIT_PERIOD, tm.isteamlead from t_au_audit_team_tasklist t inner join t_au_plan_eng pe    on t.eng_plan_id = pe.eng_id inner join t_au_period p on pe.period_id=p.auditperiodid inner join t_au_team_members tm on t.teammember_ppno=tm.member_ppno inner join t_au_audit_teams audt on audt.t_code = tm.t_code  inner join t_auditee_entities_risk r on t.entity_code=r.entity_code    inner join t_risk rt on r.risk_rating=rt.r_id    inner join t_auditee_entities_size s on t.entity_code=s.entity_code    inner join t_auditee_entities_size_disc st on s.entity_size=st.entity_size where t.eng_plan_id = " + engId+ " and audt.eng_id = " + engId + " and tm.member_ppno=" + loggedInUser.PPNumber;
                
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2127,15 +2127,14 @@ namespace AIS
         }
         public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
         {
-            var loggedInUser = sessionHandler.GetSessionUser();
-            int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
+            int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.GLSUBNAME, GH.MONTHEND";
-				//cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + brId + "order by GH.GLSUBNAME, GH.MONTHEND";
+                //cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.GLSUBNAME, GH.MONTHEND";
+				cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by GH.GLSUBNAME, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2187,18 +2186,17 @@ namespace AIS
         }
         public List<LoanCaseModel> GetLoanCaseDetails(int lid =0, string type="")
         {
-            var loggedInUser = sessionHandler.GetSessionUser();
-            int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
+            int ENG_ID = this.GetLoggedInUserEngId();
 
             List<LoanCaseModel> list = new List<LoanCaseModel>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if(type.ToLower()=="live" || type.ToLower() == "")
-                    cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
+                    cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id="+ENG_ID+" ) order by lcd.DISB_DATE ";
                 else
-                    cmd.CommandText = "select * from v_customer_loan_close lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
-              
+                    cmd.CommandText = "select * from v_customer_loan_close lcd where lcd.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by lcd.DISB_DATE ";
+
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2223,8 +2221,7 @@ namespace AIS
         }
        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
-            var loggedInUser = sessionHandler.GetSessionUser();
-            int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
+            int ENG_ID = this.GetLoggedInUserEngId();
 
             var con = this.DatabaseConnection();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
@@ -2232,7 +2229,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + brId + " and GH.DESCRIPTION IN  ('INCOME','EXPENSE')  order by GH.DESCRIPTION, GH.MONTHEND";
-               cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.DESCRIPTION IN  ('INCOME','EXPENSE')  order by GH.DESCRIPTION, GH.MONTHEND";
+               cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.DESCRIPTION IN  ('INCOME','EXPENSE') and GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " )  order by GH.DESCRIPTION, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2273,14 +2270,14 @@ namespace AIS
         }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname="")
         {
-            var loggedInUser = sessionHandler.GetSessionUser();
-            int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
+            int ENG_ID = this.GetLoggedInUserEngId();
+
             var con = this.DatabaseConnection();
             List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d where d.NAME = '" + bname + "' order by d.OPENINGDATE ";
-                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE fetch next 50 rows only";
+                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT UPPER(BRANCHNAME) FROM V_SERVICE_BRANCH WHERE BRANCHID IN (select e.entity_code from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) ) order by d.OPENINGDATE fetch next 50 rows only";
                 //cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where d.NAME = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2421,8 +2418,19 @@ namespace AIS
                 {
                     cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID, o.V_CAT_ID, o.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + dtime.DateTimeInDDMMYY(ob.REPLYDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ob.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "','" + ob.V_CAT_ID + "','" + ob.V_CAT_NATURE_ID + "')";
                     cmd.ExecuteReader();
-                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) ,  '" + ob.OBSERVATION_TEXT + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'))";
-                    cmd.ExecuteReader();
+ 
+                    string strSQL = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) , :TEXT_DATA,'" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'))";                
+                    OracleParameter parmData = new OracleParameter();
+                    parmData.Direction = System.Data.ParameterDirection.Input;
+                    parmData.OracleDbType = OracleDbType.Clob;
+                    parmData.ParameterName = "TEXT_DATA";
+                    parmData.Value = ob.OBSERVATION_TEXT;
+                    OracleCommand cm = new OracleCommand();
+                    cm.Connection = con;
+                    cm.Parameters.Add(parmData);
+                    cm.CommandText = strSQL;
+                    cm.ExecuteNonQuery();
+
                     /*
                       cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , (select max(o.ID) from T_AU_OBSERVATION o), (select max(tt.ID) from T_AU_OBSERVATION_TEXT tt), " + ReplyByQuery + ",'" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'Y','N')";
                       cmd.ExecuteReader();
@@ -2512,8 +2520,22 @@ namespace AIS
             ob.REPLY_ROLE = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "','" + ob.REPLY + "','" + ob.REPLIEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
-                cmd.ExecuteReader();
+                //cmd.CommandText = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "','" + ob.REPLY + "','" + ob.REPLIEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
+                //cmd.ExecuteReader();
+
+                string strSQL = "INSERT INTO T_AU_OBSERVATIONS_AUDITEE_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.OBS_TEXT_ID, o.REPLY_ROLE, o.REMARKS, o.SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATIONS_AUDITEE_RESPONSE acc) , '" + ob.AU_OBS_ID + "',:REPLY_DATA,'" + ob.REPLIEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ob.OBS_TEXT_ID + "," + ob.REPLY_ROLE + ",'" + ob.REMARKS + "','" + ob.SUBMITTED + "')";
+                OracleParameter parmData = new OracleParameter();
+                parmData.Direction = System.Data.ParameterDirection.Input;
+                parmData.OracleDbType = OracleDbType.Clob;
+                parmData.ParameterName = "REPLY_DATA";
+                parmData.Value = ob.REPLY;
+                OracleCommand cm = new OracleCommand();
+                cm.Connection = con;
+                cm.Parameters.Add(parmData);
+                cm.CommandText = strSQL;
+                cm.ExecuteNonQuery();
+
+
                 cmd.CommandText = "UPDATE T_AU_OBSERVATION_ASSIGNEDTO SET REPLIED='Y' WHERE OBS_ID="+ob.AU_OBS_ID+" and OBS_TEXT_ID="+ob.OBS_TEXT_ID;
                 cmd.ExecuteReader();
                 cmd.CommandText = "UPDATE t_au_observation SET STATUS=3, REPLYBY="+loggedInUser.PPNumber+ ", MEMO_REPLY_DATE = to_date('" + dtime.DateTimeInDDMMYY(ob.REPLIEDDATE) + "','dd/mm/yyyy HH:MI:SS AM') WHERE ID = " + ob.AU_OBS_ID;
