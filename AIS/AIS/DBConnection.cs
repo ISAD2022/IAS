@@ -2477,7 +2477,7 @@ namespace AIS
                     //chk.LASTUPDATEDDATE = Convert.ToDateTime(rdr["LASTUPDATEDDATE"]);
                     chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
                     chk.REPLIED = rdr["REPLIED"].ToString();
-                    if(chk.REPLIED.ToString().ToLower() =="y")
+                    if (chk.REPLIED.ToString().ToLower() =="y")
                     {
                         cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
                         OracleDataReader rdr2 = cmd.ExecuteReader();
@@ -2504,6 +2504,34 @@ namespace AIS
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<object> GetObservationText(int OBS_ID)
+        {
+            var con = this.DatabaseConnection();
+            List<object> list = new List<object>();
+            
+           using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select ot.text from T_AU_OBSERVATION_TEXT ot where ot.OBSERVATSION_ID="+OBS_ID;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    object result = new object();
+                    result = rdr["TEXT"];
+                    list.Add(result);
+
+                }
+                cmd.CommandText = "select ot.reply from t_au_observations_auditee_response ot where ot.au_obs_id=" + OBS_ID;
+                OracleDataReader rdr2 = cmd.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    object result = new object();
+                    result = rdr["reply"];
+                    list.Add(result);
                 }
             }
             con.Close();

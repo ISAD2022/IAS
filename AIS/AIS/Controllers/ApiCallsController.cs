@@ -253,6 +253,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
+      
         [HttpPost]
         public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID)
         {
@@ -267,6 +268,12 @@ namespace AIS.Controllers
         public bool CAU_OM_assignment(CAUOMAssignmentModel caumodel)
         {
             return dBConnection.CAUOMAssignment(caumodel);
+        }
+        [HttpPost]
+        public List<object> get_observation_text(int OBS_ID)
+        {
+            return dBConnection.GetObservationText(OBS_ID);
+            
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
