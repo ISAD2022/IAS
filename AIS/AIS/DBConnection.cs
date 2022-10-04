@@ -2525,12 +2525,12 @@ namespace AIS
                     list.Add(result);
 
                 }
-                cmd.CommandText = "select ot.reply from t_au_observations_auditee_response ot where ot.au_obs_id=" + OBS_ID;
+                cmd.CommandText = "select ot.REPLY from T_AU_OBSERVATIONS_AUDITEE_RESPONSE ot where ot.au_obs_id=" + OBS_ID;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
                 {
                     object result = new object();
-                    result = rdr["reply"];
+                    result = rdr2["REPLY"];
                     list.Add(result);
                 }
             }
