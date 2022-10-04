@@ -2277,7 +2277,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d where d.NAME = '" + bname + "' order by d.OPENINGDATE ";
-                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT UPPER(BRANCHNAME) FROM V_SERVICE_BRANCH WHERE BRANCHID IN (select e.entity_code from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) ) order by d.OPENINGDATE fetch next 50 rows only";
+                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT UPPER(BRANCHNAME) FROM V_SERVICE_BRANCH WHERE BRANCHID IN (select e.entity_code from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) ) order by d.OPENINGDATE";
                 //cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where d.NAME = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2966,5 +2966,37 @@ namespace AIS
             con.Close();
             return true;
         }
+
+
+        public List<AuditCCQModel> GetCCQ()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditCCQModel> list = new List<AuditCCQModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from T_AU_CCQ s order by s.ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditCCQModel chk = new AuditCCQModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+
+                    chk.QUESTIONS = rdr["QUESTIONS"].ToString();
+                  
+                    
+                    chk.CONTROL_VIOLATION_ID = Convert.ToInt32(rdr["CONTROL_VIOLATION_ID"]);
+                    
+                    
+                    chk.RISK_ID = rdr["RISK_ID"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
     }
 }
