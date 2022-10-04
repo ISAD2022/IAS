@@ -811,9 +811,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
+                cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
                 else
-                    cmd.CommandText = "select d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
+                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2873,7 +2873,7 @@ namespace AIS
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select jo.*, tm.isteamlead, tm.member_name from t_au_audit_joining jo inner join t_au_team_members tm on tm.member_ppno=jo.team_mem_ppno where jo.eng_plan_id IN ("+ENG_ID+") ";
+                cmd.CommandText = "select jo.*, tm.isteamlead, tm.member_name from t_au_audit_joining jo inner join t_au_team_members tm inner join t_au_audit_teams aut on tm.t_code=aut.t_code on tm.member_ppno=jo.team_mem_ppno where jo.eng_plan_id IN ("+ENG_ID+") ";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2955,19 +2955,49 @@ namespace AIS
         }
         public bool CAUOMAssignment(CAUOMAssignmentModel om)
         {
-            string PASSWORD = "isad@1234";
-            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM, PASSWORD);
+            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_CAU_OM (ID, OM_NO, CONTENTS_OF_OM, DIV_ID, STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_CAU_OM acc), '"+om.OM_NO+ "', '" + encodedMsg + "', '" + om.DIV_ID + "', 1 )";
-                cmd.ExecuteReader();               
+                string strSQL = "INSERT INTO T_CAU_OM (ID, OM_NO, CONTENTS_OF_OM, DIV_ID, STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_CAU_OM acc), '" +om.OM_NO+ "', :ENCODED_MSG, '" + om.DIV_ID + "', 1 )";
+                OracleParameter parmData = new OracleParameter();
+                parmData.Direction = System.Data.ParameterDirection.Input;
+                parmData.OracleDbType = OracleDbType.Clob;
+                parmData.ParameterName = "ENCODED_MSG";
+                parmData.Value = encodedMsg;
+                OracleCommand cm = new OracleCommand();
+                cm.Connection = con;
+                cm.Parameters.Add(parmData);
+                cm.CommandText = strSQL;
+                cm.ExecuteNonQuery();
             }
             con.Close();
             return true;
         }
+        public List<CAUOMAssignmentModel> CAUGetAssignedOMs()
+        {
+            var con = this.DatabaseConnection();
+            List<CAUOMAssignmentModel> list = new List<CAUOMAssignmentModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select s.*, ts.DISCRIPTION from t_cau_om s inner join t_cau_status ts on s.STATUS=ts.ID order by s.ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    CAUOMAssignmentModel chk = new CAUOMAssignmentModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
+                    chk.STATUS = Convert.ToInt32(rdr["STATUS"]);
+                    chk.OM_NO = rdr["OM_NO"].ToString();
+                    chk.STATUS_DES = rdr["DISCRIPTION"].ToString();
+                    chk.CONTENTS_OF_OM = encoderDecoder.Decrypt(rdr["CONTENTS_OF_OM"].ToString()); 
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
 
-
+        }
         public List<AuditCCQModel> GetCCQ()
         {
             var con = this.DatabaseConnection();

@@ -670,7 +670,7 @@
                     'title': settings.translations.redo
                 }));
             }
-            $bottomToolbar.append($('<a />', { class: 'richText-help', html: '<span class="fa fa-question-circle"></span>' }));
+           // $bottomToolbar.append($('<a />', { class: 'richText-help', html: '<span class="fa fa-question-circle"></span>' }));
             $editor.append($bottomToolbar);
 
             if (settings.maxlength > 0) {

@@ -270,6 +270,11 @@ namespace AIS.Controllers
             return dBConnection.CAUOMAssignment(caumodel);
         }
         [HttpPost]
+        public List<CAUOMAssignmentModel> CAU_Get_OMs()
+        {
+            return dBConnection.CAUGetAssignedOMs();
+        }
+        [HttpPost]
         public List<object> get_observation_text(int OBS_ID)
         {
             return dBConnection.GetObservationText(OBS_ID);
