@@ -39,10 +39,10 @@ namespace AIS
         }
         public bool IsUserLoggedIn()
         {
-            if (smodel.ID == 0)
-                return false;
-            else
+            if (dBConnection.IsLoginSessionExist())
                 return true;
+            else
+                return false;
         }
         public bool HasPermissionToViewPage(string page_name)
         {

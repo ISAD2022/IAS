@@ -90,9 +90,23 @@ namespace AIS
                     else
                         user.UserRoleID = 0;
 
+                    bool isSessionAvailable = false;
 
-                    cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, LOGGED_IN_DATE, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress()+ "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' ,TO_DATE('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), 'Y')";
-                    cmd.ExecuteReader();
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress()+"' and u.SESSION_ACTIVE='Y'";
+                    OracleDataReader rdr2 = cmd.ExecuteReader();
+                    while (rdr2.Read())
+                    {
+                        if (rdr2["ID"].ToString() != null && rdr2["ID"].ToString() != "")
+                        {
+                            isSessionAvailable = !isSessionAvailable;
+                        }
+                    }
+                    if(!isSessionAvailable)
+                    {
+                        cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
+                        cmd.ExecuteReader();
+                    }
+                        
 
                 }
 
@@ -101,6 +115,45 @@ namespace AIS
             con.Close();
             sessionHandler.SetSessionUser(user);
             return user;
+        }
+        public bool DisposeLoginSession()
+        {
+            var sessionUser=sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress() + "' and u.SESSION_ACTIVE='Y'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                int sessionId = 0;
+                while (rdr.Read())
+                {
+                    sessionId = Convert.ToInt32(rdr["ID"]);
+                    cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE ID =" + sessionId;
+                    cmd.ExecuteReader();   
+                }
+            }
+            con.Close();
+            sessionHandler.DisposeUserSession();
+            return true;
+        }
+        public bool IsLoginSessionExist()
+        {
+            var sessionUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            bool isSession = false;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress() + "' and u.SESSION_ACTIVE='Y'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                
+                while (rdr.Read())
+                {
+                    if(rdr["ID"].ToString()!="" && rdr["ID"].ToString()!=null)
+                        isSession = true;
+                }
+            }
+            con.Close();
+            return isSession;
         }
         public static string getMd5Hash(string input)
         {
@@ -323,7 +376,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join v_service_division d on e.CURRENTDIVISIONCODE=d.CODE left join v_service_department dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE "+whereClause+" ORDER BY u.USERID";
+                cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join T_DIVISION d on e.CURRENTDIVISIONCODE=d.CODE left join T_DEPARTMENT dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE "+whereClause+" ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -748,7 +801,7 @@ namespace AIS
             }*/
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from v_service_division d WHERE d.ISACTIVE='A' "+ query + " order by d.CODE asc";
+                cmd.CommandText = "select * from T_DIVISION d WHERE d.ISACTIVE='A' "+ query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -775,7 +828,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO v_Service_Division d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE+"','"+div.NAME+"','"+div.DESCRIPTION+"','"+div.ISACTIVE+"')";
+                cmd.CommandText = "INSERT INTO T_DIVISION d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE+"','"+div.NAME+"','"+div.DESCRIPTION+"','"+div.ISACTIVE+"')";
                 OracleDataReader rdr = cmd.ExecuteReader();
                
             }
@@ -788,7 +841,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE v_Service_Division d SET d.CODE='" + div.CODE + "', d.NAME='" + div.NAME + "', d.DESCRIPTION='" + div.DESCRIPTION + "', d.STATUS='" + div.ISACTIVE + "' WHERE d.ID="+div.DIVISIONID; 
+                cmd.CommandText = "UPDATE T_DIVISION d SET d.CODE='" + div.CODE + "', d.NAME='" + div.NAME + "', d.DESCRIPTION='" + div.DESCRIPTION + "', d.STATUS='" + div.ISACTIVE + "' WHERE d.ID="+div.DIVISIONID; 
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
@@ -811,9 +864,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
+                cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
                 else
-                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  v_service_department d inner join t_auditee_entities e on  d.CODE = e.code inner join v_service_division div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
+                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code +  query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -833,7 +886,7 @@ namespace AIS
                     { 
                        // dept.AUDITED_BY_NAME = rdr["ADUTIED_BY"].ToString();
                         dept.AUDITED_BY_DEPID = Convert.ToInt32(rdr["AUDITED_BY_DEPID"]);
-                        cmd.CommandText = "Select dep.NAME FROM V_SERVICE_DEPARTMENT dep WHERE dep.ID = "+ dept.AUDITED_BY_DEPID;
+                        cmd.CommandText = "Select dep.NAME FROM T_DEPARTMENT dep WHERE dep.ID = "+ dept.AUDITED_BY_DEPID;
                         OracleDataReader rdr2 = cmd.ExecuteReader();
                         while (rdr2.Read())
                         {
@@ -855,16 +908,16 @@ namespace AIS
                 if (div_code == 0)
                 {
                     if (dept_code == 0)
-                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join v_service_division d on s.DIV_ID = d.DIVISIONID inner join v_service_department dp on s.DEP_ID=dp.ID WHERE s.STATUS='Y' order by s.NAME asc";
+                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join T_DIVISION d on s.DIV_ID = d.DIVISIONID inner join T_DEPARTMENT dp on s.DEP_ID=dp.ID WHERE s.STATUS='Y' order by s.NAME asc";
                     else
-                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join v_service_division d on s.DIV_ID = d.DIVISIONID inner join v_service_department dp on s.DEP_ID=dp.ID WHERE s.STATUS='Y' and dp.ID=" + dept_code+" order by s.NAME asc";
+                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join T_DIVISION d on s.DIV_ID = d.DIVISIONID inner join T_DEPARTMENT dp on s.DEP_ID=dp.ID WHERE s.STATUS='Y' and dp.ID=" + dept_code+" order by s.NAME asc";
 
                 }
                 else {
                     if (dept_code == 0)
-                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join v_service_division d on s.DIV_ID = d.DIVISIONID inner join v_service_department dp on s.DEP_ID=dp.ID WHERE d.DIVISIONID="+div_code+ " and s.STATUS='Y' order by s.NAME asc";
+                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join T_DIVISION d on s.DIV_ID = d.DIVISIONID inner join T_DEPARTMENT dp on s.DEP_ID=dp.ID WHERE d.DIVISIONID="+div_code+ " and s.STATUS='Y' order by s.NAME asc";
                     else
-                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join v_service_division d on s.DIV_ID = d.DIVISIONID inner join v_service_department dp on s.DEP_ID=dp.ID WHERE d.DIVISIONID=" + div_code + " and s.STATUS='Y' and dp.ID=" + dept_code + " order by s.NAME asc";
+                        cmd.CommandText = "Select s.*, d.NAME as DIV_NAME, dp.NAME as DEPT_NAME FROM T_SUBENTITY s inner join T_DIVISION d on s.DIV_ID = d.DIVISIONID inner join T_DEPARTMENT dp on s.DEP_ID=dp.ID WHERE d.DIVISIONID=" + div_code + " and s.STATUS='Y' and dp.ID=" + dept_code + " order by s.NAME asc";
 
                 }
 
@@ -920,7 +973,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO v_Service_Department d (d.ID,d.CODE, d.NAME, d.DIV_ID, d.STATUS) VALUES ( '" + dept.CODE + "','" + dept.CODE + "','" + dept.NAME + "','" + dept.DIV_ID + "','" + dept.STATUS + "')";
+                cmd.CommandText = "INSERT INTO T_DEPARTMENT d (d.ID,d.CODE, d.NAME, d.DIV_ID, d.STATUS) VALUES ( '" + dept.CODE + "','" + dept.CODE + "','" + dept.NAME + "','" + dept.DIV_ID + "','" + dept.STATUS + "')";
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
@@ -1156,7 +1209,7 @@ namespace AIS
             bool checkdeptcode = false;
             if (loggedInUser.UserLocationType == "H")
             {
-                where_clause = "inner join V_SERVICE_DEPARTMENT d on t.PLACE_OF_POSTING=d.ID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingDept;
+                where_clause = "inner join T_DEPARTMENT d on t.PLACE_OF_POSTING=d.ID WHERE t.PLACE_OF_POSTING = " + loggedInUser.UserPostingDept;
                 select_clause = ", d.NAME as AUDIT_DEPARTMENT ";
                 checkdeptcode = true;
             }
@@ -1369,9 +1422,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (period_id == 0)
-                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join v_Service_Division d on p.division_id = d.DIVISIONID left join v_Service_Department dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID order by p.PLAN_ID asc";
+                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join T_DIVISION d on p.division_id = d.DIVISIONID left join T_DEPARTMENT dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID order by p.PLAN_ID asc";
                 else
-                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join v_Service_Division d on p.division_id = d.DIVISIONID left join v_Service_Department dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID where p.auditperiod_id=" + period_id+ " order by p.PLAN_ID asc";
+                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join T_DIVISION d on p.division_id = d.DIVISIONID left join T_DEPARTMENT dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID where p.auditperiod_id=" + period_id+ " order by p.PLAN_ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1463,16 +1516,16 @@ namespace AIS
                 if (procDetailId == 0)
                 {
                     if(transactionId==0)
-                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID order by pt.id asc"; 
+                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID order by pt.id asc"; 
                     else
-                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID WHERE pt.ID=" + transactionId + " order by pt.id asc";
+                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID WHERE pt.ID=" + transactionId + " order by pt.id asc";
                 }
                 else
                 {
                     if (transactionId == 0) 
-                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID  where pt.s_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID  where pt.s_id = " + procDetailId + " order by pt.Id asc";
                     else
-                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID where pt.ID=" + transactionId+" pt.s_id = " + procDetailId + " order by pt.Id asc";
+                        cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*,pd.heading as TITLE , p.heading as P_NAME, vc.DESCRIPTION as V_NAME from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID=pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID where pt.ID=" + transactionId+" pt.s_id = " + procDetailId + " order by pt.Id asc";
 
                 }
                     OracleDataReader rdr = cmd.ExecuteReader();
@@ -1510,9 +1563,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (statusId.Length == 0)
-                cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID order by pt.id asc";
+                cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID order by pt.id asc";
                 else
-                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join v_service_division d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
+                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
 
 
                 OracleDataReader rdr = cmd.ExecuteReader();

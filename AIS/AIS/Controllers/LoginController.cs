@@ -29,7 +29,7 @@ namespace AIS.Controllers
         }
         public IActionResult Logout()
         {
-            sessionHandler.DisposeUserSession();
+            dBConnection.DisposeLoginSession();
             return RedirectToAction("Index", "Login");
         }
         [HttpPost]
