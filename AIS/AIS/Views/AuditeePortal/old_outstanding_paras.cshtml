@@ -11,11 +11,12 @@
                 <th>Para Number</th>
                 <th>Audit Period</th>
                 <th>Entity Name</th>
-                <th>Entity Type</th>                
+                <th>Entity Type</th>
                 <th>Observation</th>
                 <th>Auditee Response</th>
                 <th>Auditor Response</th>
                 <th>Status</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -27,14 +28,19 @@
                     foreach (var item in (dynamic)(ViewData["OldParas"]))
                     {
                         <tr>
-                             <td>@item.PARA_NO</td>
+                            <td>@item.PARA_NO</td>
                             <td>@item.AUDIT_PERIOD</td>
                             <td>@item.ENTITY_NAME</td>
-                            <td>@item.TYPE_DES</td>                            
+                            <td>@item.TYPE_DES</td>
                             <td>@item.GIST_OF_PARAS</td>
                             <td>@item.AUDITEE_RESPONSE</td>
                             <td>@item.AUDITOR_REMARKS</td>
                             <td>Unsettled</td>
+                            <td>
+                                <button type="button" onclick="window.location.href = './Reply_new?entity=+@item.ENTITY_NAME+&period=+@item.AUDIT_PERIOD+&para=+@item.PARA_NO';" class="btn btn-link text-danger btn-sm btn-rounded">
+                                    Action
+                                </button>
+                            </td>
 
                         </tr>
                     }

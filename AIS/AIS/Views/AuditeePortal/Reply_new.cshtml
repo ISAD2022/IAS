@@ -4,7 +4,15 @@
 }
 
 <script type="text/javascript">
+    var entity = '';
+    var para = '';
+    var period = '';
     $('#document').ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        entity = url.searchParams.get("entity");
+        period = url.searchParams.get("period");
+        para = url.searchParams.get("para");
         $('#template_box').richText({
             imageUpload: false,
             fileUpload: false,
@@ -12,6 +20,9 @@
             urls: false
         });
 
+        $('#entityname_field').val(entity);
+        $('#auditperiod_field').val(period);
+        $('#parano_field').val(para);
     });
 </script>
 
@@ -22,15 +33,15 @@
 <div class="row col-md-12 mt-3">
     <div class="row col-md-6 mt-3">
         <label><b>Entity:</b></label>
-        <input disabled="disabled" class="form-control mr-1" type="text" />
+        <input id="entityname_field" disabled="disabled" class="form-control mr-1" type="text" />
     </div>
     <div class="row col-md-6 mt-3">
         <label><b>Audit Period:</b></label>
-        <input disabled="disabled" class="form-control ml-1" type="text" />
+        <input id="auditperiod_field" disabled="disabled" class="form-control ml-1" type="text" />
     </div>
     <div class="row col-md-6 mt-3">
         <label><b>Observation No:</b></label>
-        <input disabled="disabled" class="form-control ml-1" type="text" />
+        <input id="parano_field" disabled="disabled" class="form-control ml-1" type="text" />
     </div>
     <div class="row col-md-12 mt-3">
         <label><b>Reply:</b></label>
@@ -53,10 +64,8 @@
 </div>
 <div class="row">
     <div class="col-md-6 mt-5">
-        <button class="btn-primary" style="float:right;">Save</button>
+        <button onclick="window.location.href = './old_outstanding_paras'" class="btn btn-primary" style="float:right;">Submit</button>
     </div>
-    <div class="col-md-6 mt-5">
-        <button class="btn-primary" style="float:left;">Submit</button>
-    </div>
+    
 </div>
 

@@ -3099,7 +3099,7 @@ namespace AIS
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select s.*, et.entitytypedesc  from T_AU_OLD_PARAS s inner join t_auditee_ent_types et on s.type_id=et.autid WHERE " + query+" order by s.PARA_NO, s.ENTITY_NAME, s.AUDIT_PERIOD";
+                cmd.CommandText = "select s.*, et.entitytypedesc  from T_AU_OLD_PARAS s inner join t_auditee_ent_types et on s.type_id=et.autid WHERE " + query+ " order by  s.AUDIT_PERIOD, s.Entity_Name, s.para_no";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
