@@ -198,88 +198,88 @@
     </select>
 </div>
 
-    <div class="row col-md-12">
-        <div class="col-md-10 mt-3">
+<div class="row col-md-12">
+    <div class="col-md-10 mt-3">
 
-            <h3 style="color: #45c545; float:left">Team Formation</h3>
-        </div>
-           <div class="col-md-2 mt-3" style="float:right">
-            <button onclick="addNewTeam();" class="btn btn-danger mb-3"  style="float:right;" >Constitue New Team</button>
+        <h3 style="color: #45c545; float:left">Team Formation</h3>
+    </div>
+        <div class="col-md-2 mt-3" style="float:right">
+        <button onclick="addNewTeam();" class="btn btn-danger mb-3"  style="float:right;" >Constitue New Team</button>
             
-        </div>
-        </div>
-    <div class="col-md-12 mt-3">
-        <table id="listOfEmployeeTeam" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-1">Sr No.</th>
-                    <th class="col-md-2">Team Name</th>
-                    <th class="col-md-2">Team Lead</th>
-                    <th class="col-md-6">Team Members</th>
-                    <th class="col-md-1">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        </div>
+    </div>
+    </div>
+<div class="col-md-12 mt-3">
+    <table id="listOfEmployeeTeam" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-1">Sr No.</th>
+                <th class="col-md-2">Team Name</th>
+                <th class="col-md-2">Team Lead</th>
+                <th class="col-md-6">Team Members</th>
+                <th class="col-md-1">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    </div>
     
-    <div id="setupAuditTeam" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog  modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">New Audit Team</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="teamCodeModalField">Team Code</label>
-                            <input type="text" class="form-control" id="teamCodeModalField" aria-describedby="brcode" placeholder="Team Code">
+<div id="setupAuditTeam" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">New Audit Team</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="teamCodeModalField">Team Code</label>
+                        <input type="text" class="form-control" id="teamCodeModalField" aria-describedby="brcode" placeholder="Team Code">
 
+                    </div>
+                    <div class="form-group">
+                        <label for="branchCodeModalField">Team Name</label>
+                        <input type="text" class="form-control" id="teamNameModalField" aria-describedby="brcode" placeholder="Team Name">
+
+                    </div>
+                    <div class="form-group">
+                        <div class="row col-md-12">
+                            <label class="col-md-2">Participant</label>
+                            <label class="col-md-3" style="float:right">Auditors</label>
+                            <label class="col-md-2">P.P. NO.</label>
+                            <label class="col-md-3">Designation</label>
+
+                            <label class="col-md-2">Team Lead</label>
                         </div>
-                        <div class="form-group">
-                            <label for="branchCodeModalField">Team Name</label>
-                            <input type="text" class="form-control" id="teamNameModalField" aria-describedby="brcode" placeholder="Team Name">
-
-                        </div>
-                        <div class="form-group">
-                            <div class="row col-md-12">
-                                <label class="col-md-2">Participant</label>
-                                <label class="col-md-3" style="float:right">Auditors</label>
-                                <label class="col-md-2">P.P. NO.</label>
-                                <label class="col-md-3">Designation</label>
-
-                                <label class="col-md-2">Team Lead</label>
-                            </div>
-                            <div class="row col-md-12" >
-                                @{
-                                    if (ViewData["AuditEmployees"] != null)
+                        <div class="row col-md-12" >
+                            @{
+                                if (ViewData["AuditEmployees"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["AuditEmployees"]))
                                     {
-                                        foreach (var item in (dynamic)(ViewData["AuditEmployees"]))
-                                        {
-                                            <div class="col-md-2"><input id="participants_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE" class="participantcheckboxes" type="checkbox" /></div>
-                                            <div class="col-md-3" style="float:right"><label>@item.EMPLOYEEFIRSTNAME&nbsp;@item.EMPLOYEELASTNAME</label></div>
-                                            <div class="col-md-2"><label>@item.PPNO</label></div>
-                                            <div class="col-md-3"><label>@item.FUN_DESIGNATION</label></div>
+                                        <div class="col-md-2"><input id="participants_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE" class="participantcheckboxes" type="checkbox" /></div>
+                                        <div class="col-md-3" style="float:right"><label>@item.EMPLOYEEFIRSTNAME&nbsp;@item.EMPLOYEELASTNAME</label></div>
+                                        <div class="col-md-2"><label>@item.PPNO</label></div>
+                                        <div class="col-md-3"><label>@item.FUN_DESIGNATION</label></div>
 
-                                            <div class="col-md-2" style="padding-left:40px;"><input id="lead_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE" class="teamleadradio" name="isTeamLead" type="radio" /></div>
+                                        <div class="col-md-2" style="padding-left:40px;"><input id="lead_@item.PPNO" memberid="@item.PPNO" memberfname="@item.EMPLOYEEFIRSTNAME" memberlname="@item.EMPLOYEELASTNAME" memberplaceofposting="@item.DEPARTMENTCODE" class="teamleadradio" name="isTeamLead" type="radio" /></div>
 
-                                        }
                                     }
                                 }
+                            }
 
-                            </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button onclick="publishNewTeamChanges();" type="button" class="btn btn-danger">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="publishNewTeamChanges();" type="button" class="btn btn-danger">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 

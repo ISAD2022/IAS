@@ -3079,6 +3079,56 @@ namespace AIS
             con.Close();
             return list;
         }
+        public List<AuditeeOldParasModel> GetAuditeeOldParas()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (loggedInUser.UserLocationType == "H")
+                query = query + "  s.ENTITY_CODE=" + loggedInUser.UserPostingDept;
+            else if (loggedInUser.UserLocationType == "B")
+                query = query + "  s.ENTITY_CODE=" + loggedInUser.UserPostingBranch;
+            else if (loggedInUser.UserLocationType == "Z")
+            {
+                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    query = query + "  s.ENTITY_CODE=" + loggedInUser.UserPostingAuditZone;
+                else
+                    query = query + "  s.ENTITY_CODE=" + loggedInUser.UserPostingZone;
+            }
+            
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select s.*, et.entitytypedesc  from T_AU_OLD_PARAS s inner join t_auditee_ent_types et on s.type_id=et.autid WHERE " + query+" order by s.PARA_NO, s.ENTITY_NAME, s.AUDIT_PERIOD";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
+                    chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
+                    //chk.AUDIT_PERIOD_DES =rdr["audit_period_des"].ToString();
+                    chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
+                    chk.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
+                    if(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString()!=null && rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString()!="")
+                        chk.DATE_OF_LAST_COMPLIANCE_RECEIVED = Convert.ToDateTime(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"]);
+
+                   
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.AUDITEE_RESPONSE = rdr["AUDITEE_RESPONSE"].ToString();
+                    chk.AUDITOR_REMARKS = rdr["AUDITOR_REMARKS"].ToString();
+
+
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.TYPE_DES = rdr["entitytypedesc"].ToString();
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
 
 
     }
