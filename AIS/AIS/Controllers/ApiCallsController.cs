@@ -203,6 +203,11 @@ namespace AIS.Controllers
         {
             return dBConnection.SubmitAuditObservationToAuditee(OBS_ID);
         }
+        [HttpPost]
+        public List<ManageObservations> get_observation(int OBS_ID=0)
+        {
+            return dBConnection.GetManagedObservations(0,OBS_ID);
+        }
 
         [HttpPost]
         public List<ManageObservations> draft_report_summary()

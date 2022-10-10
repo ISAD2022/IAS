@@ -9,23 +9,65 @@
     var g_obsId = 0;
     var g_newStatusId = 0;
     var g_riskId = 0;
-    $(document).ready(function () {       
+    var g_currentStatus = 0;
+    $(document).ready(function () {
         var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
-        $.each($('.obs_text'), function (i, ele) {
-            var text = $(ele).attr('data');
-            $(ele).append(text);
-        });
-        $.each($('.obs_reply'), function (i, ele) {
-            var text = $(ele).attr('data');
-            $(ele).append(text);
-        });
-
     });
     function reloadLocation() {
         location.reload();
+    }
+
+    function ObservationViewerPanel(obs_id, status_id, risk_id) {
+        g_obsId = obs_id;
+        g_riskId = risk_id;
+        g_currentStatus = status_id;
+        $.ajax({
+            url: "/ApiCalls/get_observation",
+            type: "POST",
+            data: {
+                'OBS_ID': obs_id
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $('#viewMemoModel').modal('show');
+                $('#viewMemo_memo').html(data[0].obS_TEXT);
+                $('#viewMemo_process').html(data[0].process);
+                $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
+                $('#viewMemo_violation').html(data[0].violation);
+
+                if (g_currentStatus == 1) {
+                    $('#dropButton_memoReply').removeClass('d-none');
+                    $('#submitAuditeeButton_memoReply').removeClass('d-none');
+                    $('#settleButton_memoReply').addClass('d-none');
+                    $('#addDraftButton_memoReply').addClass('d-none');
+                } else if (g_currentStatus == 3) {
+                    if (g_riskId == 3) {
+                        $('#dropButton_memoReply').addClass('d-none');
+                        $('#submitAuditeeButton_memoReply').addClass('d-none');
+                        $('#settleButton_memoReply').removeClass('d-none');
+                        $('#addDraftButton_memoReply').removeClass('d-none');
+                    } else {
+                        $('#dropButton_memoReply').addClass('d-none');
+                        $('#submitAuditeeButton_memoReply').addClass('d-none');
+                        $('#settleButton_memoReply').addClass('d-none');
+                        $('#addDraftButton_memoReply').addClass('d-none');
+                    }
+
+                } else {
+                    $('#dropButton_memoReply').addClass('d-none');
+                    $('#submitAuditeeButton_memoReply').addClass('d-none');
+                    $('#settleButton_memoReply').addClass('d-none');
+                    $('#addDraftButton_memoReply').addClass('d-none');
+                }
+
+            },
+            dataType: "json",
+        });
+
     }
     function finalCommentsButtonSave() {
         if ($('#commentAreaInCommentsBox').val() == "") {
@@ -70,7 +112,7 @@
             data: {
                 'OBS_ID': g_obsId,
                 'NEW_STATUS_ID': g_newStatusId,
-                'RISK_ID': g_riskId               
+                'RISK_ID': g_riskId
             },
             cache: false,
             success: function (data) {
@@ -135,18 +177,18 @@
     </div>
     <div class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-1">Memo No.</th>
-                    <th class="col-md-2">Process</th>
-                    <th class="col-md-2">Violation</th>
-                    <th class="col-md-2">Observation</th>
-                    <th class="col-md-3">Auditee Response</th>
-                    <th class="col-md-2">Risk Category</th>
-                    <th class="col-md-1">Status</th>
+                    <th class="col-md-3">Process</th>
+                    <th class="col-md-4">Violation</th>
+                    <th class="col-md-2 d-none">Observation</th>
+                    <th class="col-md-3 d-none">Auditee Response</th>
+                    <th class="col-md-1">Risk Category</th>
+                    <th class="col-md-2">Status</th>
                     <th class="d-none"></th>
                     <th class="d-none"></th>
-                    <th class="col-md-3 text-center">Action</th>
+                    <th class="col-md-1 text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -156,50 +198,51 @@
 
                         foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                                <tr>
-                                    <td class="text-center">@item.MEMO_NO</td>
-                                    <td>@item.PROCESS</td>
-                                    <td>@item.VIOLATION</td>
-                                    <td class="obs_text" data="@item.OBS_TEXT"></td>
-                                    <td class="obs_reply" data="@item.OBS_REPLY"></td>
-                                    <td>@item.OBS_RISK</td>
-                                    <td>@item.OBS_STATUS</td>
-                                    <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                    <td class="d-none period_name_field">@item.PERIOD</td>
-                                    @if (item.OBS_STATUS_ID == 1)
+                            <tr id="@item.OBS_ID">
+                                <td class="text-center">@item.MEMO_NO</td>
+                                <td>@item.PROCESS</td>
+                                <td>@item.VIOLATION</td>
+                                <td class="obs_text d-none" data=""></td>
+                                <td class="obs_reply d-none" data=""></td>
+                                <td>@item.OBS_RISK</td>
+                                <td>@item.OBS_STATUS</td>
+                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                <td class="d-none period_name_field">@item.PERIOD</td>
+                                <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
+                                <!-- @if (item.OBS_STATUS_ID == 1)
+                                        {
+                                            <td class="text-center">
+                                                <a href="#" onclick="dropObservation(@item.OBS_ID,23,@item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Drop</a>
+                                                /
+                                                <a href="#" onclick="submitObservationToAuditee(@item.OBS_ID,2,@item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Submit to Auditee</a>
+                                            </td>
+
+                                        }
+                                        else @if (item.OBS_STATUS_ID == 3)
+                                   {
+
+                                       if (item.OBS_RISK_ID == 3)
+                                       {
+                                        <td class="text-center">
+                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
+                                            /
+                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
+                                        </td>
+                                    }
+                                    else
                                     {
                                         <td class="text-center">
-                                            <a href="#" onclick="dropObservation(@item.OBS_ID,23,@item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Drop</a>
-                                            /
-                                            <a href="#" onclick="submitObservationToAuditee(@item.OBS_ID,2,@item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Submit to Auditee</a>
+
+                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
                                         </td>
 
                                     }
-                                    else @if (item.OBS_STATUS_ID == 3)
-                               {
-
-                                   if (item.OBS_RISK_ID == 3)
-                                   {
-                                    <td class="text-center">
-                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
-                                        /
-                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
-                                    </td>
                                 }
-                                else
+                                        else
                                 {
-                                    <td class="text-center">
-
-                                        <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
-                                    </td>
-
-                                }
-                            }
-                            else
-                            {
-                                <td class="text-center"><a href="#" class="text-hover">-</a></td>
-                            }
-                                </tr>
+                                    <td class="text-center"><a href="#" class="text-hover">-</a></td>
+                                }-->
+                            </tr>
                         }
                     }
                 }
@@ -229,6 +272,47 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button onclick="finalCommentsButtonSave();" id="finalCommentsButtonSave" type="button" class="btn btn-danger">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_process">Process</label>
+                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_subprocess">Sub Process</label>
+                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_violation">Violation</label>
+                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Memo</label>
+                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,23,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
+                <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
+                <button id="settleButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 1, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Settle Observation</button>
+                <button id="addDraftButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Add to Draft</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

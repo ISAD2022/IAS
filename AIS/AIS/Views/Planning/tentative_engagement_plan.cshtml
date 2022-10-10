@@ -10,6 +10,8 @@
     var g_periodId = 0;
     var g_entityType = 0;
     var g_zoneId = 0;
+    var g_entityId = 0;
+    var g_entityName = '';
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -17,12 +19,14 @@
         var risk = url.searchParams.get("risk");
         var size = url.searchParams.get("size");
         var entityName = url.searchParams.get("name");
+        g_entityName = entityName;
         var freq = url.searchParams.get("freq");
         var days = url.searchParams.get("days");
         g_code = url.searchParams.get("code");
         g_periodId = url.searchParams.get("periodId");
         g_entityType = url.searchParams.get("entityType");
         g_zoneId = url.searchParams.get("zoneId");
+        g_entityId = url.searchParams.get("entityId");
         
         $('#auditperiod_label').text(periodName);
         $('#auditentity_label').text(entityName);
@@ -153,13 +157,14 @@
                 'PERIOD_ID': g_periodId,
                 'ENTITY_TYPE': g_entityType,
                 'ENTITY_CODE': g_code,
+                'ENTITY_ID': g_entityId,
+                'ENTITY_NAME': g_entityName,
                 'AUDIT_ZONEID': g_zoneId,
                 'AUDIT_STARTDATE': $('#startplan_date').val(),
                 'AUDIT_ENDDATE': $('#endplan_date').val(),
                 'TEAM_NAME': $('#auditTeam_box option:selected').text(),
                 'STATUS': 1,
-                'TEAM_ID': $('#auditTeam_box').val(),
-                
+                'TEAM_ID': $('#auditTeam_box').val(),                
             },
             cache: false,
             success: function (data) {

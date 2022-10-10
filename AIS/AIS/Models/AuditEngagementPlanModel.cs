@@ -20,6 +20,7 @@ namespace AIS.Models
         public int? TEAM_ID { get; set; }
         public int? ENTITY_ID { get; set; }
         public int? ENTITY_CODE { get; set; }
+        public string ENTITY_NAME { get; set; }
 
 
     }
