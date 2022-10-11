@@ -105,13 +105,8 @@ namespace AIS
                     {
                         cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
                         cmd.ExecuteReader();
-                    }
-
-                    cmd.CommandText = "begin Closing(1); end;";
-                    cmd.ExecuteReader();                   
+                    }                                   
                 }
-
-
             }
             con.Close();
             sessionHandler.SetSessionUser(user);
