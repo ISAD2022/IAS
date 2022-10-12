@@ -290,6 +290,11 @@ namespace AIS.Controllers
             return dBConnection.GetObservationText(OBS_ID);
             
         }
+        [HttpPost]
+        public bool old_para_response(AuditeeOldParasResponseModel ob)
+        {
+            return dBConnection.AuditeeOldParaResponse(ob);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

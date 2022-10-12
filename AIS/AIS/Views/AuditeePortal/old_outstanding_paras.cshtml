@@ -37,7 +37,7 @@
                             <td>@item.AUDITOR_REMARKS</td>
                             <td>Unsettled</td>
                             <td>
-                                <button type="button" onclick="window.location.href = './Reply_new?entity=+@item.ENTITY_NAME+&period=+@item.AUDIT_PERIOD+&para=+@item.PARA_NO';" class="btn btn-link text-danger btn-sm btn-rounded">
+                                <button type="button" onclick="window.location.href = './Reply_new?id=@item.ID&entity=@item.ENTITY_NAME&period=@item.AUDIT_PERIOD&para=@item.PARA_NO';" class="btn btn-link text-danger btn-sm btn-rounded">
                                     Action
                                 </button>
                             </td>

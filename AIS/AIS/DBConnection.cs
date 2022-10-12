@@ -125,7 +125,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress() + "' and u.SESSION_ACTIVE='Y'";
+                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 int sessionId = 0;
                 while (rdr.Read())
@@ -2477,19 +2477,7 @@ namespace AIS
                         }
                     }
                 }
-                /*else 
-                {
-                    cmd.CommandText = "SELECT o.ID FROM T_AU_OBSERVATION o WHERE o.ENGPLANID =" + ob.ENGPLANID + " and o.V_CAT_NATURE_ID=" + ob.V_CAT_NATURE_ID + " and o.V_CAT_ID=" + ob.V_CAT_ID;
-                    OracleDataReader rdr = cmd.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
-                        {
-                            alreadyAddedOb = true;
-                            success = false;
-                        }
-                    }
-                }*/
+               
                 if (!alreadyAddedOb)
                 {
                     cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.REPLYBY, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID, o.V_CAT_ID, o.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + dtime.DateTimeInDDMMYY(ob.REPLYDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ob.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "','" + ob.V_CAT_ID + "','" + ob.V_CAT_NATURE_ID + "')";
@@ -2506,14 +2494,6 @@ namespace AIS
                     cm.Parameters.Add(parmData);
                     cm.CommandText = strSQL;
                     cm.ExecuteNonQuery();
-
-                    /*
-                      cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_ASSIGNEDTO ot (ot.ID, ot.OBS_ID, ot.OBS_TEXT_ID, ot.ASSIGNEDTO_ROLE, ot.ASSIGNEDBY, ot.ASSIGNED_DATE, ot.IS_ACTIVE, ot.REPLIED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_ASSIGNEDTO acc) , (select max(o.ID) from T_AU_OBSERVATION o), (select max(tt.ID) from T_AU_OBSERVATION_TEXT tt), " + ReplyByQuery + ",'" + ob.ENTEREDBY + "',to_date('" + ob.ENTEREDDATE + "','dd/mm/yyyy HH:MI:SS AM'),'Y','N')";
-                      cmd.ExecuteReader();
-                      string ObsId = "(SELECT MAX(ID) FROM T_AU_OBSERVATION)";
-                      cmd.CommandText = "UPDATE T_AU_OBSERVATION SET STATUS=2 WHERE ID = " + ObsId;
-                      cmd.ExecuteReader();
-                    */
                 }
             }
             con.Close();
@@ -3126,7 +3106,7 @@ namespace AIS
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select s.*, et.entitytypedesc  from T_AU_OLD_PARAS s inner join t_auditee_ent_types et on s.type_id=et.autid WHERE " + query+ " order by  s.AUDIT_PERIOD, s.Entity_Name, s.para_no";
+                cmd.CommandText = "select s.*, et.entitytypedesc from T_AU_OLD_PARAS s inner join t_auditee_ent_types et on s.type_id=et.autid WHERE " + query+ " order by  s.AUDIT_PERIOD, s.Entity_Name, s.para_no";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3155,6 +3135,30 @@ namespace AIS
             }
             con.Close();
             return list;
+        }
+        public bool AuditeeOldParaResponse(AuditeeOldParasResponseModel ob)
+        {
+            var con = this.DatabaseConnection();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                string strSQL = "INSERT INTO T_AU_OLD_PARAS_RESPONSE o (o.ID, o.AU_OBS_ID, o.REPLY, o.REPLIEDBY, o.REPLIEDDATE, o.REMARKS, o.SUBMITTED, o.STATUS) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OLD_PARAS_RESPONSE acc) , '" + ob.AU_OBS_ID + "',:REPLY,'" + ob.REPLIEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), 'Un-settled','Y', 25)";
+                OracleParameter parmData = new OracleParameter();
+                parmData.Direction = System.Data.ParameterDirection.Input;
+                parmData.OracleDbType = OracleDbType.Clob;
+                parmData.ParameterName = "REPLY";
+                parmData.Value = ob.REPLY;
+                OracleCommand cm = new OracleCommand();
+                cm.Connection = con;
+                cm.Parameters.Add(parmData);
+                cm.CommandText = strSQL;
+                cm.ExecuteNonQuery();
+                success = true;
+            }
+            con.Close();
+            return success;
         }
 
 
