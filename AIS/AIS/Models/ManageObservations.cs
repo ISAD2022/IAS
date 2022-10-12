@@ -10,6 +10,7 @@ namespace AIS.Models
        public string ENTITY_NAME { get; set; }
         public string PROCESS { get; set; }
         public string SUB_PROCESS { get; set; }
+        public string Checklist_Details { get; set; }
         public string VIOLATION { get; set; }
         public int MEMO_NO { get; set; }
         public string OBS_TEXT { get; set; }

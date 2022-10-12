@@ -25,6 +25,8 @@ namespace AIS.Controllers
 
         public IActionResult Index()
         {
+            TempData["Message"] = "";
+            TempData["SessionKill"] = "";
             return View();
         }
         public IActionResult Logout()
@@ -36,7 +38,7 @@ namespace AIS.Controllers
         public ActionResult DoLogin(LoginModel login)
         {
              var user=dBConnection.AutheticateLogin(login);
-            if (user.ID != 0)
+            if (user.ID != 0 && !user.isAlreadyLoggedIn && user.isAuthenticate)
             {
                 //Inspection User Check
                 if (user.UserPostingDept == 714) 
@@ -49,10 +51,19 @@ namespace AIS.Controllers
                 
             }else
             {
-                TempData["Message"] = String.Format("Incorrect UserName or Password");
-                return RedirectToAction("Index", "Login");
-            }
-            
+                if (user.isAuthenticate && user.isAlreadyLoggedIn)
+                {
+                    TempData["Message"] = string.Format("You are already loggin in System");
+                    TempData["SessionKill"] = "killsession";
+                    return View("Index", "Login");
+                }
+                else
+                {
+                    TempData["SessionKill"] = string.Format("");
+                    TempData["Message"] = string.Format("Incorrect UserName or Password");
+                    return View("Index", "Login");
+                }
+            }            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

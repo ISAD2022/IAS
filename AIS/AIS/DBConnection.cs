@@ -15,6 +15,7 @@ namespace AIS
         private readonly LocalIPAddress iPAddress = new LocalIPAddress();
         private readonly DateTimeHandler dtime = new DateTimeHandler();
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
+       // private readonly 
         private OracleConnection DatabaseConnection()
         {
             try
@@ -41,14 +42,16 @@ namespace AIS
         {
             var con = this.DatabaseConnection();
             UserModel user = new UserModel();
+            user.isAlreadyLoggedIn = false;
+            user.isAuthenticate = false;
             var enc_pass = getMd5Hash(login.Password);
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //con.Open();
                 cmd.CommandText = "Select U.*, UM.*, e.Employeefirstname,  e.employeelastname FROM t_user u inner join t_user_maping um on u.USERID = um.userid left join t_audit_emp e on u.PPNO=e.ppno WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'"; 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
+                    user.isAuthenticate = true;
                     user.ID = Convert.ToInt32(rdr["USERID"]);
                     user.Name = rdr["Employeefirstname"].ToString() + " "+ rdr["employeelastname"].ToString();
                     user.Email = rdr["LOGIN_NAME"].ToString();
@@ -92,7 +95,7 @@ namespace AIS
 
                     bool isSessionAvailable = false;
 
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress()+"' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -101,11 +104,15 @@ namespace AIS
                             isSessionAvailable = !isSessionAvailable;
                         }
                     }
-                    if(!isSessionAvailable)
+                    if (isSessionAvailable)
+                    {
+                        user.isAlreadyLoggedIn = true;
+                    }
+                    else
                     {
                         cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
                         cmd.ExecuteReader();
-                    }                                   
+                    }                    
                 }
             }
             con.Close();
@@ -139,7 +146,7 @@ namespace AIS
             bool isSession = false;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.IP_ADDRESS='" + iPAddress.GetLocalIpAddress() + "' and u.MAC_ADDRESS='" + iPAddress.GetMACAddress() + "' and u.SESSION_ACTIVE='Y'";
+                cmd.CommandText  = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 
                 while (rdr.Read())
@@ -147,6 +154,26 @@ namespace AIS
                     if(rdr["ID"].ToString()!="" && rdr["ID"].ToString()!=null)
                         isSession = true;
                 }
+            }
+            con.Close();
+            return isSession;
+        }
+
+        public bool KillExistSession(LoginModel login)
+        {
+            var enc_pass = getMd5Hash(login.Password);
+            var con = this.DatabaseConnection();
+            bool isSession = false;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Select U.* FROM t_user u WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    cmd.CommandText = "begin session_kill("+login.PPNumber+"); end;";
+                    cmd.ExecuteReader();
+                    isSession = true;
+                }                    
             }
             con.Close();
             return isSession;
@@ -1116,7 +1143,6 @@ namespace AIS
         }
         public List<TentativePlanModel> GetTentativePlansForFields(bool sessionCheck=true)
         {
-           
             var con = this.DatabaseConnection();
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
             string query = "";
@@ -1261,6 +1287,7 @@ namespace AIS
         }
         public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
         {
+            
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2752,7 +2779,7 @@ namespace AIS
                         chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     else
                         chk.SUB_PROCESS = rdr["V_CAT_NATURE_NAME"].ToString();
-
+                    //chk.Checklist_Details = rdr["Checklist_Details"].ToString();
                     //if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();

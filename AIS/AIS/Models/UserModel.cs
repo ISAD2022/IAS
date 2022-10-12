@@ -24,5 +24,8 @@ namespace AIS.Models
         public string UserGroup { get; set; }
         public int? UserGroupID { get; set; }
         public int? UserRoleID { get; set; }
+        public string ErrorMsg { get; set; }
+        public bool isAuthenticate { get; set; }
+        public bool isAlreadyLoggedIn { get; set; }
     }
 }

@@ -180,12 +180,14 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-1">Memo No.</th>
-                    <th class="col-md-3">Process</th>
-                    <th class="col-md-4">Violation</th>
-                    <th class="col-md-2 d-none">Observation</th>
-                    <th class="col-md-3 d-none">Auditee Response</th>
-                    <th class="col-md-1">Risk Category</th>
-                    <th class="col-md-2">Status</th>
+                    <th class="col-md-1">Process</th>
+                    <th class="col-md-2">Sub Process</th>
+                    <th class="col-md-2">Checklist Detail</th>
+
+                    <th class="col-md-1 d-none">Observation</th>
+                    <th class="col-md-2 d-none">Auditee Response</th>
+                    <th class="col-md-2">Risk Category</th>
+                    <th class="col-md-1">Status</th>
                     <th class="d-none"></th>
                     <th class="d-none"></th>
                     <th class="col-md-1 text-center">Action</th>
@@ -198,51 +200,53 @@
 
                         foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                            <tr id="@item.OBS_ID">
-                                <td class="text-center">@item.MEMO_NO</td>
-                                <td>@item.PROCESS</td>
-                                <td>@item.VIOLATION</td>
-                                <td class="obs_text d-none" data=""></td>
-                                <td class="obs_reply d-none" data=""></td>
-                                <td>@item.OBS_RISK</td>
-                                <td>@item.OBS_STATUS</td>
-                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                <td class="d-none period_name_field">@item.PERIOD</td>
-                                <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                <!-- @if (item.OBS_STATUS_ID == 1)
-                                        {
-                                            <td class="text-center">
-                                                <a href="#" onclick="dropObservation(@item.OBS_ID,23,@item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Drop</a>
-                                                /
-                                                <a href="#" onclick="submitObservationToAuditee(@item.OBS_ID,2,@item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Submit to Auditee</a>
-                                            </td>
+                                <tr id="@item.OBS_ID">
+                                    <td class="text-center">@item.MEMO_NO</td>
+                                    <td>@item.PROCESS</td>
+                                    <td>@item.SUB_PROCESS</td>
 
-                                        }
-                                        else @if (item.OBS_STATUS_ID == 3)
-                                   {
+                                    <td>@item.SUB_PROCESS</td>
+                                    <td>@item.Checklist_Details</td>
+                                    <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                    <td class="d-none period_name_field">@item.PERIOD</td>
+                                    <td>@item.OBS_RISK</td>
+                                    <td>@item.OBS_STATUS</td>
 
-                                       if (item.OBS_RISK_ID == 3)
-                                       {
-                                        <td class="text-center">
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
-                                            /
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-center">
+                                    <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
+                                    <!-- @if (item.OBS_STATUS_ID == 1)
+            {
+                <td class="text-center">
+                    <a href="#" onclick="dropObservation(@item.OBS_ID,23,@item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Drop</a>
+                    /
+                    <a href="#" onclick="submitObservationToAuditee(@item.OBS_ID,2,@item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Submit to Auditee</a>
+                </td>
 
-                                            <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
-                                        </td>
+            }
+            else @if (item.OBS_STATUS_ID == 3)
+       {
 
-                                    }
-                                }
-                                        else
-                                {
-                                    <td class="text-center"><a href="#" class="text-hover">-</a></td>
-                                }-->
-                            </tr>
+           if (item.OBS_RISK_ID == 3)
+           {
+            <td class="text-center">
+                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
+                /
+                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
+            </td>
+        }
+        else
+        {
+            <td class="text-center">
+
+                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
+            </td>
+
+        }
+    }
+            else
+    {
+        <td class="text-center"><a href="#" class="text-hover">-</a></td>
+    }-->
+                                </tr>
                         }
                     }
                 }

@@ -23,6 +23,11 @@ namespace AIS.Controllers
             _logger = logger;
         }
         [HttpPost]
+        public bool kill_session(LoginModel user)
+        {
+           return dBConnection.KillExistSession(user);
+        }
+        [HttpPost]
         public BranchModel branch_add(BranchModel br)
         {
             if (br.ISACTIVE == "Active")

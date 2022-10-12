@@ -39,6 +39,7 @@ namespace AIS
         }
         public bool IsUserLoggedIn()
         {
+          
             if (dBConnection.IsLoginSessionExist())
                 return true;
             else
