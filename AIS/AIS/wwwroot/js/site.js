@@ -5,7 +5,7 @@
 $(document).ready(function () {
   
 
-        const idleDurationSecs = 300;    // X number of seconds
+        const idleDurationSecs = 1800;    // X number of seconds
         const redirectUrl = "/Login/logout";  // Redirect idle users to this URL
         let idleTimeout; // variable to hold the timeout, do not modify
 
