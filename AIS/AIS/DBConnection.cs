@@ -158,7 +158,6 @@ namespace AIS
             con.Close();
             return isSession;
         }
-
         public bool KillExistSession(LoginModel login)
         {
             var enc_pass = getMd5Hash(login.Password);
@@ -170,7 +169,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    cmd.CommandText = "begin session_kill("+login.PPNumber+"); end;";
+                    cmd.CommandText = "begin session_kill("+login.PPNumber+", '"+ iPAddress.GetMACAddress() + "'); end;";
                     cmd.ExecuteReader();
                     isSession = true;
                 }                    

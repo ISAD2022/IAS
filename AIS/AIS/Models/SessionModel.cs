@@ -6,6 +6,9 @@ namespace AIS.Models
 {
     public class SessionModel {
         public int ID { get; set; }
+        public string SessionId { get; set; }
+        public string IPAddress { get; set; }
+        public string MACAddress { get; set; }
         public string Name { get; set; }
         public string PPNumber { get; set; }
         public string Email { get; set; }
