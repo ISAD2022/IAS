@@ -3191,12 +3191,17 @@ namespace AIS
                 whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDiv;
             if (loggedInUser.UserPostingDept != 0)
                 whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDept;
-            if (loggedInUser.UserPostingZone != 0)
-                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingZone;
-            if (loggedInUser.UserPostingBranch != 0)
-                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
+            
             if (loggedInUser.UserPostingAuditZone != 0)
                 whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
+            else
+            {
+                if (loggedInUser.UserPostingZone != 0)
+                    whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingZone;
+                else if (loggedInUser.UserPostingBranch != 0)
+                    whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
+            }
+          
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "select * from t_au_old_paras_fad "+whereClause+" order by ID";
