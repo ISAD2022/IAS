@@ -18,11 +18,12 @@ namespace AIS
         private static SessionModel smodel = new SessionModel();
         private static DBConnection dBConnection = new DBConnection();
         private static LocalIPAddress ipaddr = new LocalIPAddress();
-        public void SetSessionUser(UserModel user)
+        public SessionModel SetSessionUser(UserModel user)
         {
             bool alreadyExists = sessionArr.Any(x => x.MACAddress == ipaddr.GetMACAddress() && x.PPNumber==user.PPNumber);
             if (!alreadyExists)
             {
+                //bool isPrevMacSessionExists = sessionArr.Any(x => x.MACAddress == ipaddr.GetMACAddress() && x.PPNumber == user.PPNumber);
                 smodel.Email = user.Email;
                 smodel.Name = user.Name;
                 smodel.PPNumber = user.PPNumber;
@@ -39,7 +40,13 @@ namespace AIS
                 smodel.SessionId = GenerateRandomCryptographicSessionKey(128);
                 smodel.IPAddress = ipaddr.GetLocalIpAddress();
                 smodel.MACAddress = ipaddr.GetMACAddress();
+                smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();
                 sessionArr.Add(smodel);
+                return smodel;
+            }
+            else
+            {
+                return sessionArr.Where(x => x.MACAddress == ipaddr.GetMACAddress()).LastOrDefault();
             }
         }
         public SessionModel GetSessionUser()
@@ -48,7 +55,10 @@ namespace AIS
         }
         public bool DisposeUserSession()
         {
-            var itemToRemove = sessionArr.Single(r => r.MACAddress == ipaddr.GetMACAddress());
+            var loggedInUser = this.GetSessionUser();
+            var temp = sessionArr;
+
+            var itemToRemove = sessionArr.Single(r => r.MACAddress == ipaddr.GetMACAddress() && r.PPNumber == loggedInUser.PPNumber);
             sessionArr.Remove(itemToRemove);
             return true;
         }
@@ -79,6 +89,7 @@ namespace AIS
             rngCryptoServiceProvider.GetBytes(randomBytes);
             return Convert.ToBase64String(randomBytes);
         }
+
 
     }
 }

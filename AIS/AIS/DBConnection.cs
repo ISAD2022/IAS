@@ -94,8 +94,7 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.MAC_ADDRESS != '"+iPAddress.GetMACAddress()+"' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -110,13 +109,30 @@ namespace AIS
                     }
                     else
                     {
-                        cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS , LOGIN_LOCATION_TYPE, MAC_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
-                        cmd.ExecuteReader();
+                        bool isSameSession = false;
+                        cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.MAC_ADDRESS ='" + iPAddress.GetMACAddress() + "' and u.SESSION_ACTIVE='Y'";
+                        OracleDataReader rdr3 = cmd.ExecuteReader();
+                        while (rdr3.Read())
+                        {
+                            if (rdr3["ID"].ToString() != null && rdr3["ID"].ToString() != "")
+                            {
+                                isSameSession = true;
+                            }
+                        }
+                        if (!isSameSession)
+                        {
+                            cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS, LOGIN_LOCATION_TYPE, MAC_ADDRESS,PRIMARY_MAC_CARD_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + iPAddress.GetFirstMACCardAddress() + "','" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
+                            cmd.ExecuteReader();
+                        }
                     }                    
                 }
             }
             con.Close();
-            sessionHandler.SetSessionUser(user);
+           var resSession=sessionHandler.SetSessionUser(user);
+            user.SessionId = resSession.SessionId;
+            user.IPAddress = resSession.IPAddress;
+            user.MACAddress = resSession.MACAddress;
+            user.FirstMACCardAddress = resSession.FirstMACCardAddress;
             return user;
         }
         public bool DisposeLoginSession()
@@ -125,15 +141,8 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
-                OracleDataReader rdr = cmd.ExecuteReader();
-                int sessionId = 0;
-                while (rdr.Read())
-                {
-                    sessionId = Convert.ToInt32(rdr["ID"]);
-                    cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE ID =" + sessionId;
-                    cmd.ExecuteReader();   
-                }
+                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber+ " and Mac_Address='"+sessionUser.MACAddress+"'";
+                cmd.ExecuteReader();
             }
             con.Close();
             sessionHandler.DisposeUserSession();
@@ -147,8 +156,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText  = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
-                OracleDataReader rdr = cmd.ExecuteReader();
-                
+                OracleDataReader rdr = cmd.ExecuteReader();                
                 while (rdr.Read())
                 {
                     if(rdr["ID"].ToString()!="" && rdr["ID"].ToString()!=null)
@@ -176,6 +184,20 @@ namespace AIS
             }
             con.Close();
             return isSession;
+        }
+        public bool TerminateIdleSession()
+        {
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            bool isTerminate = false;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "begin session_kill(" + loggedInUser.PPNumber + ", '" + iPAddress.GetMACAddress() + "'); end;";
+                cmd.ExecuteReader();
+                isTerminate = true;
+            }
+            con.Close();
+            return isTerminate;
         }
         public static string getMd5Hash(string input)
         {
@@ -3159,7 +3181,49 @@ namespace AIS
             con.Close();
             return success;
         }
+        public List<OldParasModel> GetOldParas()
+        {
+            var con = this.DatabaseConnection();
+            List<OldParasModel> list = new List<OldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from t_au_old_paras_fad order by ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.ANNEXURE = rdr["ANNEXURE"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+                    chk.AUDITED_BY = rdr["AUDITEDBY"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public bool AddOldParas(AddOldParasModel jm)
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);           
 
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_OLD_PARAS_FAD al (al.ID, al.ENGPLANID, al.STATUS,al.ENTEREDBY , al.ENTEREDDATE, al.AMOUNT_INVOLVED, al.REPLYBY , al.REPLYDATE, al.MEMO_DATE, al.SEVERITY, al.MEMO_NUMBER, al.MEMO_REPLY_DATE, al.RESPONSIBILITY_ASSIGNED, al.TRANSACTION_ID, al.RISKMODEL_ID, al.SUBCHECKLIST_ID, al.CHECKLISTDETAIL_ID, al.V_CAT_ID, al.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_OLD_PARAS_FAD acc) , '" + jm.ENGPLANID + "','" + jm.STATUS + "','" + jm.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(jm.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.AMOUNT_INVOLVED + "',to_date('" + dtime.DateTimeInDDMMYY(jm.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.SEVERITY + "','" + jm.MEMO_NUMBER + "',to_date('" + dtime.DateTimeInDDMMYY(jm.MEMO_REPLY_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.RESPONSIBILITY_ASSIGNED + "','" + jm.TRANSACTION_ID + "','" + jm.RISKMODEL_ID + "','" + jm.SUBCHECKLIST_ID + "','" + jm.CHECKLISTDETAIL_ID + "','" + jm.V_CAT_ID + "','" + jm.V_CAT_NATURE_ID + "', 'I')";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
 
     }
 }

@@ -26,6 +26,13 @@ namespace AIS.Controllers
         public bool kill_session(LoginModel user)
         {
            return dBConnection.KillExistSession(user);
+           
+        }
+        [HttpPost]
+        public bool terminate_idle_session()
+        {
+            dBConnection.TerminateIdleSession();
+            return true;
         }
         [HttpPost]
         public BranchModel branch_add(BranchModel br)

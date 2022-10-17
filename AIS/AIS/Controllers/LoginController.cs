@@ -35,33 +35,23 @@ namespace AIS.Controllers
             return RedirectToAction("Index", "Login");
         }
         [HttpPost]
-        public ActionResult DoLogin(LoginModel login)
+        public UserModel DoLogin(LoginModel login)
         {
              var user=dBConnection.AutheticateLogin(login);
             if (user.ID != 0 && !user.isAlreadyLoggedIn && user.isAuthenticate)
             {
-                //Inspection User Check
-                if (user.UserPostingDept == 714) 
-                {
-                    return RedirectToAction("Home", "Inspection");
-                }
-                else {
-                    return RedirectToAction("Index", "Home");
-                }
-                
+                return user;                
             }else
             {
                 if (user.isAuthenticate && user.isAlreadyLoggedIn)
                 {
-                    TempData["Message"] = string.Format("You are already loggin in System");
-                    TempData["SessionKill"] = "killsession";
-                    return View("Index", "Login");
+                    user.ErrorMsg = "You are already loggin in System";
+                    return user;
                 }
                 else
                 {
-                    TempData["SessionKill"] = string.Format("");
-                    TempData["Message"] = string.Format("Incorrect UserName or Password");
-                    return View("Index", "Login");
+                    user.ErrorMsg = "Incorrect UserName or Password";
+                    return user;
                 }
             }            
         }

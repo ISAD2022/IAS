@@ -6,45 +6,32 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
 using System.Reflection;
-
 namespace AIS.Controllers
 {
-    public class HomeController : Controller
+    
+    public class AMSController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<AMSController> _logger;
         private readonly TopMenus tm = new TopMenus();
+        private readonly DBConnection dBConnection = new DBConnection();
         private readonly SessionHandler sessionHandler = new SessionHandler();
 
-        public HomeController(ILogger<HomeController> logger)
+        public AMSController(ILogger<AMSController> logger)
         {
             _logger = logger;
         }
-        public IActionResult Index()
+        [HttpGet("IAMS/paras")]
+        public IActionResult paras()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["subProcessList"] = dBConnection.GetRiskProcessDetails();
             if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
             {
-                if (!sessionHandler.HasPermissionToViewPage("home")) {
-                    return RedirectToAction("Index", "PageNotFound"); 
-                }
-                else
-                    return View();
-            }
-        }
-
-        public IActionResult Privacy()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            if (!sessionHandler.IsUserLoggedIn())
-            { 
-                return RedirectToAction("Index", "Login"); 
+                return RedirectToAction("Index", "Login");
             }
             else
             {
@@ -53,14 +40,38 @@ namespace AIS.Controllers
                     return RedirectToAction("Index", "PageNotFound");
                 }
                 else
-                    return View();
+                    return View("../IAMS/paras");
             }
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+
+        [HttpGet("IAMS/old_para")]
+        public IActionResult old_para()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["OldParas"] = dBConnection.GetOldParas();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View("../IAMS/old_para");
+            }
         }
+
+
+
+        
+
+
     }
 }

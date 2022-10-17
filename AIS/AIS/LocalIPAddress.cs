@@ -15,6 +15,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace AIS
 {
@@ -42,9 +44,23 @@ namespace AIS
                 from nic in NetworkInterface.GetAllNetworkInterfaces()
                 where nic.OperationalStatus == OperationalStatus.Up
                 select nic.GetPhysicalAddress().ToString()
-            ).FirstOrDefault();
-
+            ).FirstOrDefault();            
+            
             return macAddr.ToString();
+        }
+         public string GetFirstMACCardAddress()
+        {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            String sMacAddress = string.Empty;
+            foreach (NetworkInterface adapter in nics)
+            {
+                if (sMacAddress == String.Empty)// only return MAC Address from first card  
+                {
+                    IPInterfaceProperties properties = adapter.GetIPProperties();
+                    sMacAddress = adapter.GetPhysicalAddress().ToString();
+                }
+            }
+            return sMacAddress;
         }
     }
 }

@@ -2,32 +2,19 @@
     ViewData["Title"] = "Login";
 
 }
-
-
-<style type="text/css">
-
-    #captcha {
-       font-size: 30px;
-        letter-spacing: 3px;
-        margin: auto;
-        display: block;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-
-  
-    .incorrectCaptcha {
-        color: #FF0000;
-    }
-
-    .correctCaptcha {
-        color: #7FFF00;
-    } 
-
-</style>
 <script type="text/javascript">
+    $(document).ready(function () {
+        window.localStorage.setItem("AIS_IPADDRESS", "");
+        window.localStorage.setItem("AIS_MACADDRESS", "");
+        window.localStorage.setItem("AIS_SESSIONID", "");
+        $(document).keydown(function (event) {
+            var id = event.key || event.which || event.keyCode || 0;
+            console.log('keycode',id);
+            if (id == "Enter") {
+                doLoginSubmit();
+            }
+        });
+    })
     function doKillSessionSubmit() {
        
         $.ajax({
@@ -42,6 +29,40 @@
                 if (data) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');
+                }                
+            },
+            dataType: "json",
+        });
+    }
+
+    function doLoginSubmit() {
+
+        $.ajax({
+            url: "/Login/DoLogin",
+            type: "POST",
+            data: {
+                'PPNumber': $('#inputPPNoField').val(),
+                'Password': $('#inputPassword').val(),
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                if (!data.isAuthenticate) {
+                    $('#submitKillSessionButton').addClass('d-none');
+                    $('#submitLoginButton').removeClass('d-none');
+                    $('#loginerrormodal').modal('show');
+                    $('#errorDescField').text(data.errorMsg);
+                }
+                else if (data.isAlreadyLoggedIn) {
+                    $('#submitKillSessionButton').removeClass('d-none');
+                    $('#submitLoginButton').addClass('d-none');
+                    $('#loginerrormodal').modal('show');
+                    $('#errorDescField').text(data.errorMsg);
+                } else {
+                    window.localStorage.setItem("AIS_IPADDRESS", data.ipAddress)
+                    window.localStorage.setItem("AIS_MACADDRESS", data.macAddress)
+                    window.localStorage.setItem("AIS_SESSIONID", data.sessionId)
+                    window.location.href = "/home";
                 }                
             },
             dataType: "json",
@@ -83,16 +104,16 @@
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-6">
                         <h2 class="fw-bold mb-5" style="color:white">Audit & Inspection Solution</h2>
-                        <form action="/Login/DoLogin" method="post">
+                        <form action="#" method="post">
                             <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
                             <!-- Email input -->
                             <div class="form-outline mb-4">
-                                <input required type="number" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
+                                <input autocomplete="off" required type="number" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
                             </div>
 
                             <!-- Password input -->
                             <div class="form-outline mb-4">
-                                <input required type="password" placeholder="Password" id="inputPassword" name="Password" class="form-control" />
+                                <input autocomplete="off" required type="password" placeholder="Password" id="inputPassword" name="Password" class="form-control" />
                             </div>
 
                             <!-- <center>
@@ -106,7 +127,7 @@
                             <button id="submitKillSessionButton" type="button" class="btn btn-block btn-danger mb-4 d-none" onclick="doKillSessionSubmit();">
                                 Kill Session
                             </button>
-                            <button id="submitLoginButton" type="submit" class="btn btn-block mb-4" style="background: #dcde8b; " onclick="doLoginSubmit();">
+                            <button id="submitLoginButton" type="button" class="btn btn-block mb-4" style="background: #dcde8b; " onclick="doLoginSubmit();">
                                 Login
                             </button>
 
@@ -130,12 +151,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @if (TempData["Message"] != "")
-                {
-                <p>
-                    @TempData["Message"]
-                </p>
-                }
+               <p id="errorDescField"></p>
 
             </div>
             <div class="modal-footer">
