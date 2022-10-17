@@ -3184,10 +3184,22 @@ namespace AIS
         public List<OldParasModel> GetOldParas()
         {
             var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
+            string whereClause = " WHERE 1=1  ";
+            if (loggedInUser.UserPostingDiv != 0)
+                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDiv;
+            if (loggedInUser.UserPostingDept != 0)
+                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDept;
+            if (loggedInUser.UserPostingZone != 0)
+                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingZone;
+            if (loggedInUser.UserPostingBranch != 0)
+                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
+            if (loggedInUser.UserPostingAuditZone != 0)
+                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_au_old_paras_fad order by ID";
+                cmd.CommandText = "select * from t_au_old_paras_fad "+whereClause+" order by ID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {

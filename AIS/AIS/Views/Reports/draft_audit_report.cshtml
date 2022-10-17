@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
     var g_obsList = [];
-   
+
     function reloadLocation() {
         location.reload();
     }
@@ -40,7 +40,7 @@
                     else if (v.obS_RISK_ID == 2)
                         medP++;
                     else if (v.obS_RISK_ID == 3)
-                         lowP++;
+                        lowP++;
                     if (v.obS_STATUS_ID == 4)
                         settled++;
                     else if (v.obS_STATUS_ID == 5)
@@ -55,10 +55,15 @@
             },
             dataType: "json",
         });
-       
+
 
 
     });
+
+    function ViewObservation(id) {
+        $('#viewMemoModel').modal('show');
+        $('#viewMemo_panel').html($('#obs_' + id + ' .obs_text').attr('data'));
+    }
 </script>
 
 <div class="row">
@@ -93,8 +98,8 @@
                 <tr>
                     <th class="col-md-1 text-center">Memo No.</th>
                     <th class="col-md-2 text-center">Process</th>
-                    <th class="col-md-2 text-center">Violation</th>
-                    <th class="col-md-3">Observation</th>
+                    <th class="col-md-3 text-center">Violation</th>
+                    <th class="col-md-2 text-center">Observation</th>
                     <th class="col-md-1">Risk Category</th>
                     <th class="col-md-2">Auditee Response</th>
                     <th class="col-md-1">Status</th>
@@ -107,15 +112,16 @@
 
                         foreach (var item in (dynamic)(ViewData["ObservationsList"]))
                         {
-                                <tr>
-                                    <td class="text-center">@item.MEMO_NO</td>
-                                    <td>@item.PROCESS</td>
-                                    <td>@item.VIOLATION</td>
-                                    <td class="obs_text" data="@item.OBS_TEXT"></td>
-                                    <td>@item.OBS_RISK</td>
-                                    <td class="obs_reply" data="@item.OBS_REPLY"></td>
-                                    <td>@item.OBS_STATUS</td>
-                                </tr>
+                            <tr id="obs_@item.OBS_ID">
+                                <td class="text-center">@item.MEMO_NO</td>
+                                <td>@item.PROCESS</td>
+                                <td>@item.VIOLATION</td>
+                                <td class="obs_text d-none" data="@item.OBS_TEXT"></td>
+                                <td class="text-center"><a onclick="ViewObservation(@item.OBS_ID);" href="#" class="text-primary">View Observation</a></td>
+                                <td>@item.OBS_RISK</td>
+                                <td class="obs_reply" data="@item.OBS_REPLY"></td>
+                                <td>@item.OBS_STATUS</td>
+                            </tr>
                         }
                     }
                 }
@@ -125,4 +131,32 @@
     </div>
 
 </div>
+
+
+
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Memo</label>
+                        <div class="col-md-12" style="max-height:500px; overflow-y:auto;" id="viewMemo_panel"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
