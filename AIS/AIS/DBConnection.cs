@@ -183,6 +183,7 @@ namespace AIS
                 }                    
             }
             con.Close();
+            sessionHandler.DisposeUserSession();
             return isSession;
         }
         public bool TerminateIdleSession()
@@ -197,6 +198,7 @@ namespace AIS
                 isTerminate = true;
             }
             con.Close();
+            sessionHandler.DisposeUserSession();
             return isTerminate;
         }
         public static string getMd5Hash(string input)

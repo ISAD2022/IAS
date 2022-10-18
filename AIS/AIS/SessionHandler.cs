@@ -55,12 +55,16 @@ namespace AIS
         }
         public bool DisposeUserSession()
         {
-            var loggedInUser = this.GetSessionUser();
-            var temp = sessionArr;
-
-            var itemToRemove = sessionArr.Single(r => r.MACAddress == ipaddr.GetMACAddress() && r.PPNumber == loggedInUser.PPNumber);
-            sessionArr.Remove(itemToRemove);
-            return true;
+            try
+            {
+                var loggedInUser = this.GetSessionUser();
+                sessionArr.RemoveAll(r => r.MACAddress == ipaddr.GetMACAddress() && r.PPNumber == loggedInUser.PPNumber);
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
         }
         public bool IsUserLoggedIn()
         {
