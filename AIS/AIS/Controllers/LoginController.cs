@@ -29,6 +29,7 @@ namespace AIS.Controllers
             TempData["SessionKill"] = "";
             return View();
         }
+      
         public IActionResult Logout()
         {
             dBConnection.DisposeLoginSession();

@@ -82,7 +82,7 @@ namespace AIS
                 if(page_name.ToLower()==(item.Page_Path.Split('/')[item.Page_Path.Split('/').Length-1]).ToLower())
                     permission = true;
             }
-            if (page_name.ToLower() == "home")
+            if ((page_name.ToLower() == "home") || (page_name.ToLower() == "change_password"))
                 permission = true;
             return permission;
         }

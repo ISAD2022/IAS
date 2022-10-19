@@ -37,6 +37,12 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult Change_Password()
+        {
+            TempData["Message"] = "";
+            TempData["SessionKill"] = "";
+            return View();
+        }
 
         public IActionResult Privacy()
         {
