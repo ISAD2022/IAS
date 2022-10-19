@@ -545,6 +545,22 @@ namespace AIS
             user.PASSWORD = "";
             return user;
         }
+        public bool ChangePassword(string Password, string NewPassowrd)
+        {
+
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                
+                    var enc_pass = getMd5Hash(NewPassowrd);
+                    cmd.CommandText = "UPDATE t_user SET PASSWORD = '" + enc_pass + "'  WHERE PPNO='" + loggedInUser.PPNumber + "'";
+                    cmd.ExecuteReader();
+              
+            }
+            con.Close();
+            return true;
+        }
         public void AddGroupMenuAssignment(int role_id = 0, int menu_id = 0, string page_ids = "")
         {
             var con = this.DatabaseConnection();

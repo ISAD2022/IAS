@@ -17,6 +17,7 @@ namespace AIS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly TopMenus tm = new TopMenus();
         private readonly SessionHandler sessionHandler = new SessionHandler();
+        private readonly DBConnection dBConnection = new DBConnection();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -42,6 +43,13 @@ namespace AIS.Controllers
             TempData["Message"] = "";
             TempData["SessionKill"] = "";
             return View();
+        }
+        [HttpPost]
+        public IActionResult DoChangePassword(string Password, string NewPassword)
+        {
+            dBConnection.ChangePassword();
+           
+            return View("Login","Index");
         }
 
         public IActionResult Privacy()
