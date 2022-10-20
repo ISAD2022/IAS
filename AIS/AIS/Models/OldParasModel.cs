@@ -18,6 +18,11 @@ namespace AIS.Models
         public string AMOUNT_INVOLVED { get; set; }
         public string VOL_I_II { get; set; }
         public string AUDITED_BY { get; set; }
+        public int PROCESS { get; set; }
+        public int SUB_PROCESS { get; set; }
+        public int PROCESS_DETAIL { get; set; }
+        public int STATUS { get; set; }
+        public string PARA_TEXT { get; set; }
 
     }
 }

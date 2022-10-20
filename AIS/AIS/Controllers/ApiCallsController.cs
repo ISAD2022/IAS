@@ -302,6 +302,11 @@ namespace AIS.Controllers
         {
             return dBConnection.AuditeeOldParaResponse(ob);
         }
+        [HttpPost]
+        public bool add_legacy_para_observation_text(OldParasModel ob)
+        {
+            return dBConnection.AddOldParas(ob);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -1,6 +1,5 @@
 $(document).ready(function () {
     const idleDurationSecs = 1800;    // X number of seconds
-    const redirectUrl = "/ApiCalls/terminate_idle_session";  // Redirect idle users to this URL
     let idleTimeout; // variable to hold the timeout, do not modify
 
     const resetIdleTimeout = function () {
@@ -29,9 +28,7 @@ function terminateUserSession() {
         },
         cache: false,
         success: function (data) {
-            if (data) {
-                window.location.href = "/Login";
-            }
+           window.location.href = "/Login";
         },
         dataType: "json",
     });

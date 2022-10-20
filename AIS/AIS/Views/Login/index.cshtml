@@ -9,7 +9,6 @@
         window.localStorage.setItem("AIS_SESSIONID", "");
         $(document).keydown(function (event) {
             var id = event.key || event.which || event.keyCode || 0;
-            console.log('keycode',id);
             if (id == "Enter") {
                 doLoginSubmit();
             }
@@ -46,7 +45,6 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
                 if (!data.isAuthenticate) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');
@@ -108,7 +106,7 @@
                             <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
                             <!-- Email input -->
                             <div class="form-outline mb-4">
-                                <input autocomplete="off" required type="number" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
+                                <input autocomplete="off" required type="number"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
                             </div>
 
                             <!-- Password input -->

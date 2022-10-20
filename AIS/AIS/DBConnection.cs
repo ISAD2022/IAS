@@ -550,16 +550,33 @@ namespace AIS
 
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
+            var enc_pass = getMd5Hash(Password);
+            bool correctPass = false;
+            bool res = false;
+            var enc_new_pass = getMd5Hash(NewPassowrd);
             using (OracleCommand cmd = con.CreateCommand())
             {
-                
-                    var enc_pass = getMd5Hash(NewPassowrd);
-                    cmd.CommandText = "UPDATE t_user SET PASSWORD = '" + enc_pass + "'  WHERE PPNO='" + loggedInUser.PPNumber + "'";
+
+                cmd.CommandText = "SELECT ID FROM  t_user WHERE PPNO='" + loggedInUser.PPNumber + "' and PASSWORD = '"+ enc_pass + "'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
+                    {
+                        correctPass = true;
+                        res = true;
+                    }
+                       
+                }
+                if (correctPass)
+                {
+                    cmd.CommandText = "UPDATE t_user SET PASSWORD = '" + enc_new_pass + "'  WHERE PPNO='" + loggedInUser.PPNumber + "'";
                     cmd.ExecuteReader();
-              
+                    res = true;
+                }                            
             }
             con.Close();
-            return true;
+            return res;
         }
         public void AddGroupMenuAssignment(int role_id = 0, int menu_id = 0, string page_ids = "")
         {
@@ -3204,25 +3221,25 @@ namespace AIS
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
-            string whereClause = " WHERE 1=1  ";
+            string whereClause = "";
             if (loggedInUser.UserPostingDiv != 0)
-                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDiv;
+                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingDiv;
             if (loggedInUser.UserPostingDept != 0)
-                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingDept;
+                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingDept;
             
             if (loggedInUser.UserPostingAuditZone != 0)
-                whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
+                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
             else
             {
                 if (loggedInUser.UserPostingZone != 0)
-                    whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingZone;
+                    whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingZone;
                 else if (loggedInUser.UserPostingBranch != 0)
-                    whereClause = whereClause + " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
+                    whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
             }
           
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_au_old_paras_fad "+whereClause+" order by ID";
+                cmd.CommandText = "select * from t_au_old_paras_fad WHERE STATUS = 0 "+whereClause+" order by ID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3245,20 +3262,28 @@ namespace AIS
             con.Close();
             return list;
         }
-        public bool AddOldParas(AddOldParasModel jm)
+        public bool AddOldParas(OldParasModel jm)
         {
             var con = this.DatabaseConnection();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);           
+            var loggedInUser = sessionHandler.GetSessionUser();          
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_OBSERVATION_OLD_PARAS_FAD al (al.ID, al.ENGPLANID, al.STATUS,al.ENTEREDBY , al.ENTEREDDATE, al.AMOUNT_INVOLVED, al.REPLYBY , al.REPLYDATE, al.MEMO_DATE, al.SEVERITY, al.MEMO_NUMBER, al.MEMO_REPLY_DATE, al.RESPONSIBILITY_ASSIGNED, al.TRANSACTION_ID, al.RISKMODEL_ID, al.SUBCHECKLIST_ID, al.CHECKLISTDETAIL_ID, al.V_CAT_ID, al.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_OLD_PARAS_FAD acc) , '" + jm.ENGPLANID + "','" + jm.STATUS + "','" + jm.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(jm.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.AMOUNT_INVOLVED + "',to_date('" + dtime.DateTimeInDDMMYY(jm.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.SEVERITY + "','" + jm.MEMO_NUMBER + "',to_date('" + dtime.DateTimeInDDMMYY(jm.MEMO_REPLY_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.RESPONSIBILITY_ASSIGNED + "','" + jm.TRANSACTION_ID + "','" + jm.RISKMODEL_ID + "','" + jm.SUBCHECKLIST_ID + "','" + jm.CHECKLISTDETAIL_ID + "','" + jm.V_CAT_ID + "','" + jm.V_CAT_NATURE_ID + "', 'I')";
-                cmd.ExecuteReader();
+                jm.STATUS = 1;
+                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '"+jm.PROCESS+"', al.SUB_PROCESS = '"+jm.SUB_PROCESS+"', al.PROCESS_DETAIL = '"+jm.PROCESS_DETAIL+"', al.STATUS = '"+jm.STATUS+"', al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = "+jm.ID;
+                OracleParameter parmData = new OracleParameter();
+                parmData.Direction = System.Data.ParameterDirection.Input;
+                parmData.OracleDbType = OracleDbType.Clob;
+                parmData.ParameterName = "PARA_TEXT";
+                parmData.Value = jm.PARA_TEXT;
+                OracleCommand cm = new OracleCommand();
+                cm.Connection = con;
+                cm.Parameters.Add(parmData);
+                cm.CommandText = strSQL;
+                cm.ExecuteNonQuery();
             }
             con.Close();
             return true;
         }
-
-    }
+ }
 }

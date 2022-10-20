@@ -45,11 +45,9 @@ namespace AIS.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult DoChangePassword(string Password, string NewPassword)
+        public bool DoChangePassword(string Password, string NewPassword)
         {
-            dBConnection.ChangePassword();
-           
-            return View("Login","Index");
+           return dBConnection.ChangePassword(Password, NewPassword);
         }
 
         public IActionResult Privacy()

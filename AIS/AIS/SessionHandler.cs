@@ -58,7 +58,7 @@ namespace AIS
             try
             {
                 var loggedInUser = this.GetSessionUser();
-                sessionArr.RemoveAll(r => r.MACAddress == ipaddr.GetMACAddress() && r.PPNumber == loggedInUser.PPNumber);
+                sessionArr.RemoveAll(r => r.MACAddress == loggedInUser.MACAddress && r.PPNumber == loggedInUser.PPNumber);
                 return true;
             }
             catch(Exception e)
