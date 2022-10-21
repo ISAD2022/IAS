@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
 using System.Net;
+using System.Linq;
 
 namespace AIS
 { 
@@ -3269,7 +3270,12 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
+                List<int> PP_NOs = new List<int>();
                 jm.STATUS = 1;
+                if(jm.RESPONSIBLE_PP_NO!="")
+                {
+                    PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
+                }
                 string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '"+jm.PROCESS+"', al.SUB_PROCESS = '"+jm.SUB_PROCESS+"', al.PROCESS_DETAIL = '"+jm.PROCESS_DETAIL+"', al.STATUS = '"+jm.STATUS+"', al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = "+jm.ID;
                 OracleParameter parmData = new OracleParameter();
                 parmData.Direction = System.Data.ParameterDirection.Input;
@@ -3281,6 +3287,15 @@ namespace AIS
                 cm.Parameters.Add(parmData);
                 cm.CommandText = strSQL;
                 cm.ExecuteNonQuery();
+
+                foreach(int pp in PP_NOs)
+                {
+                    cmd.CommandText = "INSERT INTO t_au_observation_old_paras_responibility_assigned (ID, REF_P, PP_NO, STATUS) VALUES ( (select COALESCE(max(acc.ID)+1,1) from t_au_observation_old_paras_responibility_assigned acc), "+jm.ID+", "+pp+", 1 ) ";
+                    cmd.ExecuteReader();
+
+                }             
+
+
             }
             con.Close();
             return true;

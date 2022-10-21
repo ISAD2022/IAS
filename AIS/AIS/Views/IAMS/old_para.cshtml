@@ -76,7 +76,7 @@
             alert("Please provide all information to proceed");
             return;
         }
-        if ($('#observation').val('') == "") {
+        if ($('.richText-editor').html() == "") {
             alert("Please enter Para Text");
             return;
         }
@@ -89,6 +89,7 @@
                 'SUB_PROCESS': $('#sub_process option:selected').val(),
                 'PROCESS_DETAIL': $('#checklist_box option:selected').val(),
                 'PARA_TEXT': $('.richText-editor').html(),
+                'RESPONSIBLE_PP_NO': $('#multiplePPNumberFields').val()
             },
             cache: false,
             success: function (data) {
@@ -224,6 +225,14 @@
                     </div>
                     <div class="row mt-3 col-md-12">
                         <textarea id="observation" class="form-control"></textarea>
+
+                    </div>
+                    <div class="row mt-3 col-md-12">
+                        <label class="font-weight-bold">Reposible PP No.</label>
+
+                    </div>
+                    <div class="row mt-3 col-md-12">
+                        <input type="text" id="multiplePPNumberFields" class="form-control" placeholder="123456,23456,1222334,345123 etc." />
 
                     </div>
 
