@@ -3272,7 +3272,7 @@ namespace AIS
             {
                 List<int> PP_NOs = new List<int>();
                 jm.STATUS = 1;
-                if(jm.RESPONSIBLE_PP_NO!="")
+                if(jm.RESPONSIBLE_PP_NO!="" && jm.RESPONSIBLE_PP_NO != null)
                 {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
                 }
@@ -3293,9 +3293,7 @@ namespace AIS
                     cmd.CommandText = "INSERT INTO t_au_observation_old_paras_responibility_assigned (ID, REF_P, PP_NO, STATUS) VALUES ( (select COALESCE(max(acc.ID)+1,1) from t_au_observation_old_paras_responibility_assigned acc), "+jm.ID+", "+pp+", 1 ) ";
                     cmd.ExecuteReader();
 
-                }             
-
-
+                }
             }
             con.Close();
             return true;
