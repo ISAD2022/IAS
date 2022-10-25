@@ -95,7 +95,7 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.MAC_ADDRESS != '"+iPAddress.GetMACAddress()+"' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -129,7 +129,7 @@ namespace AIS
                 }
             }
             con.Close();
-           var resSession=sessionHandler.SetSessionUser(user);
+            var resSession=sessionHandler.SetSessionUser(user);
             user.SessionId = resSession.SessionId;
             user.IPAddress = resSession.IPAddress;
             user.MACAddress = resSession.MACAddress;
@@ -149,22 +149,38 @@ namespace AIS
             sessionHandler.DisposeUserSession();
             return true;
         }
+        public bool DisposeSessionByMACAndPPNumber(string MAC, string PPNumber)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE USER_PP_NUMBER =" + PPNumber + " and Mac_Address='" + MAC + "'";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
         public bool IsLoginSessionExist()
         {
             var sessionUser = sessionHandler.GetSessionUser();
-            var con = this.DatabaseConnection();
             bool isSession = false;
-            using (OracleCommand cmd = con.CreateCommand())
+            if (sessionUser.PPNumber !=null && sessionUser.PPNumber != "")
             {
-                cmd.CommandText  = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
-                OracleDataReader rdr = cmd.ExecuteReader();                
-                while (rdr.Read())
+                var con = this.DatabaseConnection();
+               
+                using (OracleCommand cmd = con.CreateCommand())
                 {
-                    if(rdr["ID"].ToString()!="" && rdr["ID"].ToString()!=null)
-                        isSession = true;
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
+                            isSession = true;
+                    }
                 }
+                con.Close();
             }
-            con.Close();
+            
             return isSession;
         }
         public bool KillExistSession(LoginModel login)
@@ -190,16 +206,19 @@ namespace AIS
         public bool TerminateIdleSession()
         {
             var loggedInUser = sessionHandler.GetSessionUser();
-            var con = this.DatabaseConnection();
             bool isTerminate = false;
-            using (OracleCommand cmd = con.CreateCommand())
+            if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
             {
-                cmd.CommandText = "begin session_kill(" + loggedInUser.PPNumber + ", '" + iPAddress.GetMACAddress() + "'); end;";
-                cmd.ExecuteReader();
-                isTerminate = true;
+                var con = this.DatabaseConnection();                
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "begin session_kill(" + loggedInUser.PPNumber + ", '" + iPAddress.GetMACAddress() + "'); end;";
+                    cmd.ExecuteReader();
+                    isTerminate = true;
+                }
+                con.Close();
+                sessionHandler.DisposeUserSession();
             }
-            con.Close();
-            sessionHandler.DisposeUserSession();
             return isTerminate;
         }
         public static string getMd5Hash(string input)

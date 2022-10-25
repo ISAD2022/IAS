@@ -20,45 +20,46 @@ namespace AIS
         private static LocalIPAddress ipaddr = new LocalIPAddress();
         public SessionModel SetSessionUser(UserModel user)
         {
-            bool alreadyExists = sessionArr.Any(x => x.MACAddress == ipaddr.GetMACAddress() && x.PPNumber==user.PPNumber);
-            if (!alreadyExists)
+            bool alreadyExists = sessionArr.Any(x => x.MACAddress == user.MACAddress);
+            if (alreadyExists)
             {
-                //bool isPrevMacSessionExists = sessionArr.Any(x => x.MACAddress == ipaddr.GetMACAddress() && x.PPNumber == user.PPNumber);
-                smodel.Email = user.Email;
-                smodel.Name = user.Name;
-                smodel.PPNumber = user.PPNumber;
-                smodel.ID = user.ID;
-                smodel.UserPostingAuditZone = user.UserPostingAuditZone;
-                smodel.UserPostingBranch = user.UserPostingBranch;
-                smodel.UserPostingDept = user.UserPostingDept;
-                smodel.UserPostingDiv = user.UserPostingDiv;
-                smodel.UserPostingZone = user.UserPostingZone;
-                smodel.IsActive = user.IsActive;
-                smodel.UserLocationType = user.UserLocationType;
-                smodel.UserGroupID = user.UserGroupID;
-                smodel.UserRoleID = user.UserRoleID;
-                smodel.SessionId = GenerateRandomCryptographicSessionKey(128);
-                smodel.IPAddress = ipaddr.GetLocalIpAddress();
-                smodel.MACAddress = ipaddr.GetMACAddress();
-                smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();
-                sessionArr.Add(smodel);
-                return smodel;
+               var allSessions=sessionArr.Where(x => x.MACAddress == user.MACAddress).ToList();
+                foreach(var item in allSessions)
+                {
+                    dBConnection.DisposeSessionByMACAndPPNumber(item.MACAddress, item.PPNumber);
+                    sessionArr.RemoveAll(r => r.MACAddress == item.MACAddress && r.PPNumber == item.PPNumber);
+                }
             }
-            else
-            {
-                return sessionArr.Where(x => x.MACAddress == ipaddr.GetMACAddress()).LastOrDefault();
-            }
+            smodel.Email = user.Email;
+            smodel.Name = user.Name;
+            smodel.PPNumber = user.PPNumber;
+            smodel.ID = user.ID;
+            smodel.UserPostingAuditZone = user.UserPostingAuditZone;
+            smodel.UserPostingBranch = user.UserPostingBranch;
+            smodel.UserPostingDept = user.UserPostingDept;
+            smodel.UserPostingDiv = user.UserPostingDiv;
+            smodel.UserPostingZone = user.UserPostingZone;
+            smodel.IsActive = user.IsActive;
+            smodel.UserLocationType = user.UserLocationType;
+            smodel.UserGroupID = user.UserGroupID;
+            smodel.UserRoleID = user.UserRoleID;
+            smodel.SessionId = GenerateRandomCryptographicSessionKey(128);
+            smodel.IPAddress = ipaddr.GetLocalIpAddress();
+            smodel.MACAddress = ipaddr.GetMACAddress();
+            smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();
+            sessionArr.Add(smodel);
+            return smodel;          
         }
         public SessionModel GetSessionUser()
         {
-            return sessionArr.Where(x => x.MACAddress == ipaddr.GetMACAddress()).LastOrDefault();
+            return sessionArr.Where(x => x.MACAddress == ipaddr.GetMACAddress()).FirstOrDefault();
         }
         public bool DisposeUserSession()
         {
             try
             {
                 var loggedInUser = this.GetSessionUser();
-                sessionArr.RemoveAll(r => r.MACAddress == loggedInUser.MACAddress && r.PPNumber == loggedInUser.PPNumber);
+                sessionArr.RemoveAll(r => r.MACAddress == loggedInUser.MACAddress);
                 return true;
             }
             catch(Exception e)

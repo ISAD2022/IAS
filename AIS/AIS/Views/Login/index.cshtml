@@ -25,6 +25,7 @@
             },
             cache: false,
             success: function (data) {
+                console.log('killsession', data);
                 if (data) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');

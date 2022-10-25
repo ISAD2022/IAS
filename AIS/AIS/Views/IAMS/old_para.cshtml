@@ -72,7 +72,7 @@
     }
    
     function publishResponseChanges() {
-        if ($('#processbox option:selected').val() == 0 || $('#sub_process option:selected').val() == 0 || $('#checklist_box option:selected').val() == 0) {
+        if ($('#processbox option:selected').val() == 0 && $('#sub_process option:selected').val() == 0 && $('#checklist_box option:selected').val() == 0) {
             alert("Please provide all information to proceed");
             return;
         }
@@ -233,7 +233,6 @@
                     </div>
                     <div class="row mt-3 col-md-12">
                         <input type="text" id="multiplePPNumberFields" class="form-control" placeholder="123456,23456,1222334,345123 etc." />
-
                     </div>
 
                 </form>
