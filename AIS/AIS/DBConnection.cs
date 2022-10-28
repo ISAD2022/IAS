@@ -499,6 +499,60 @@ namespace AIS
             return entitiesList;
 
         }
+        public List<AuditeeEntitiesModel>GetAuditeeEntities(int TYPE_ID=0)
+        {
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection();
+            string whereClause = "";
+            if(TYPE_ID != 0)
+            {
+                whereClause += " and e.type_id= " + TYPE_ID;
+            }
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from t_auditee_entities e where e.active='Y' "+ whereClause;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.CODE = Convert.ToInt32(rdr["CODE"]);
+                    entity.NAME = rdr["NAME"].ToString();
+                    entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return entitiesList;
+
+        }
+        public List<AuditeeEntitiesModel>GetAuditeeEntitiesForOldParas(int ENTITY_CODE =0)
+        {
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection();
+            string whereClause = "";
+            if (ENTITY_CODE != 0)
+            {
+                whereClause += " and f.entity_code= " + ENTITY_CODE;
+            }
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras_fad f where f.status=0  " + whereClause + " order by entity_name ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.CODE = Convert.ToInt32(rdr["entity_code"]);
+                    entity.NAME = rdr["entity_name"].ToString();                  
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return entitiesList;
+
+        }
         public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
         {
             var con = this.DatabaseConnection();
@@ -3236,27 +3290,18 @@ namespace AIS
             con.Close();
             return success;
         }
-        public List<OldParasModel> GetOldParas()
+        public List<OldParasModel> GetOldParas(string AUDITED_BY, string AUDIT_YEAR)
         {
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             string whereClause = "";
-            if (loggedInUser.UserPostingDiv != 0)
-                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingDiv;
-            if (loggedInUser.UserPostingDept != 0)
-                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingDept;
-            
-            if (loggedInUser.UserPostingAuditZone != 0)
-                whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
-            else
-            {
-                if (loggedInUser.UserPostingZone != 0)
-                    whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingZone;
-                else if (loggedInUser.UserPostingBranch != 0)
-                    whereClause += " and AUDITEDBY=" + loggedInUser.UserPostingBranch;
-            }
-          
+            if (AUDITED_BY != "")
+                whereClause += " and entity_code=" + AUDITED_BY;
+
+            if (AUDIT_YEAR != "" && AUDIT_YEAR != "0")
+                whereClause += " and AUDIT_PERIOD=" + AUDIT_YEAR;
+
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "select * from t_au_old_paras_fad WHERE STATUS = 0 "+whereClause+" order by ID";
@@ -3276,6 +3321,26 @@ namespace AIS
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITEDBY"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<OldParasModel> GetOldParasAuditYear()
+        {
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+           
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select distinct audit_period from t_au_old_paras_fad WHERE STATUS = 0 order by audit_period";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(chk);
                 }
             }

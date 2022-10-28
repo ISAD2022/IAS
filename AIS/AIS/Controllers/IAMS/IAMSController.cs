@@ -44,15 +44,14 @@ namespace AIS.Controllers
             }
         }
 
-
-
         [HttpGet("IAMS/old_para")]
         public IActionResult old_para()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["OldParas"] = dBConnection.GetOldParas();
+            ViewData["EntitiesList"] = dBConnection.GetAuditeeEntitiesForOldParas(0);
+            ViewData["AuditYearList"] = dBConnection.GetOldParasAuditYear();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

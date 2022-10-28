@@ -300,20 +300,20 @@
 
 
         /* prepare toolbar dropdowns */
-        var $dropdownOuter = $('<div />', {class: "richText-dropdown-outer"});
+        var $dropdownOuter = $('<div />', { class: "richText-dropdown-outer" });
         var $dropdownClose = $('<span />', {
             class: "richText-dropdown-close",
             html: '<span title="' + settings.translations.close + '"><span class="fa fa-times"></span></span>'
         });
-        var $dropdownList = $('<ul />', {class: "richText-dropdown"}), // dropdown lists
-            $dropdownBox = $('<div />', {class: "richText-dropdown"}), // dropdown boxes / custom dropdowns
-            $form = $('<div />', {class: "richText-form"}), // symbolic form
-            $formItem = $('<div />', {class: 'richText-form-item'}), // form item
+        var $dropdownList = $('<ul />', { class: "richText-dropdown" }), // dropdown lists
+            $dropdownBox = $('<div />', { class: "richText-dropdown" }), // dropdown boxes / custom dropdowns
+            $form = $('<div />', { class: "richText-form" }), // symbolic form
+            $formItem = $('<div />', { class: 'richText-form-item' }), // form item
             $formLabel = $('<label />'), // form label
-            $formInput = $('<input />', {type: "text"}), //form input field
-            $formInputFile = $('<input />', {type: "file"}), // form file input field
+            $formInput = $('<input />', { type: "text" }), //form input field
+            $formInputFile = $('<input />', { type: "file" }), // form file input field
             $formInputSelect = $('<select />'),
-            $formButton = $('<button />', {text: settings.translations.add, class: "btn", type: "button"}); // button
+            $formButton = $('<button />', { text: settings.translations.add, class: "btn", type: "button" }); // button
 
         /* internal settings */
         var savedSelection; // caret position/selection
@@ -328,17 +328,17 @@
 
         /* list dropdown for titles */
         var $titles = $dropdownList.clone();
-        $titles.append($('<li />', {html: '<a data-command="formatBlock" data-option="h1">' + settings.translations.title + ' #1</a>'}));
-        $titles.append($('<li />', {html: '<a data-command="formatBlock" data-option="h2">' + settings.translations.title + ' #2</a>'}));
-        $titles.append($('<li />', {html: '<a data-command="formatBlock" data-option="h3">' + settings.translations.title + ' #3</a>'}));
-        $titles.append($('<li />', {html: '<a data-command="formatBlock" data-option="h4">' + settings.translations.title + ' #4</a>'}));
+        $titles.append($('<li />', { html: '<a data-command="formatBlock" data-option="h1">' + settings.translations.title + ' #1</a>' }));
+        $titles.append($('<li />', { html: '<a data-command="formatBlock" data-option="h2">' + settings.translations.title + ' #2</a>' }));
+        $titles.append($('<li />', { html: '<a data-command="formatBlock" data-option="h3">' + settings.translations.title + ' #3</a>' }));
+        $titles.append($('<li />', { html: '<a data-command="formatBlock" data-option="h4">' + settings.translations.title + ' #4</a>' }));
         $btnHeading.append($dropdownOuter.clone().append($titles.prepend($dropdownClose.clone())));
 
         /* list dropdown for fonts */
         var fonts = settings.fontList;
         var $fonts = $dropdownList.clone();
         for (var i = 0; i < fonts.length; i++) {
-            $fonts.append($('<li />', {html: '<a style="font-family:' + fonts[i] + ';" data-command="fontName" data-option="' + fonts[i] + '">' + fonts[i] + '</a>'}));
+            $fonts.append($('<li />', { html: '<a style="font-family:' + fonts[i] + ';" data-command="fontName" data-option="' + fonts[i] + '">' + fonts[i] + '</a>' }));
         }
         $btnFont.append($dropdownOuter.clone().append($fonts.prepend($dropdownClose.clone())));
 
@@ -346,7 +346,7 @@
         var fontSizes = [24, 18, 16, 14, 12];
         var $fontSizes = $dropdownList.clone();
         for (var i = 0; i < fontSizes.length; i++) {
-            $fontSizes.append($('<li />', {html: '<a style="font-size:' + fontSizes[i] + 'px;" data-command="fontSize" data-option="' + fontSizes[i] + '">' + settings.translations.text + ' ' + fontSizes[i] + 'px</a>'}));
+            $fontSizes.append($('<li />', { html: '<a style="font-size:' + fontSizes[i] + 'px;" data-command="fontSize" data-option="' + fontSizes[i] + '">' + settings.translations.text + ' ' + fontSizes[i] + 'px</a>' }));
         }
         $btnFontSize.append($dropdownOuter.clone().append($fontSizes.prepend($dropdownClose.clone())));
 
@@ -380,8 +380,8 @@
                 .append(
                     $formInputSelect
                         .clone().attr("id", "openIn")
-                        .append($("<option />", {value: '_self', text: settings.translations.sameTab}))
-                        .append($("<option />", {value: '_blank', text: settings.translations.newTab}))
+                        .append($("<option />", { value: '_self', text: settings.translations.sameTab }))
+                        .append($("<option />", { value: '_blank', text: settings.translations.newTab }))
                 )
         );
         $linksForm.append($formItem.clone().append($formButton.clone()));
@@ -402,11 +402,11 @@
                 .append(
                     $formInputSelect
                         .clone().attr("id", "size")
-                        .append($("<option />", {value: 'responsive', text: settings.translations.responsive}))
-                        .append($("<option />", {value: '640x360', text: '640x360'}))
-                        .append($("<option />", {value: '560x315', text: '560x315'}))
-                        .append($("<option />", {value: '480x270', text: '480x270'}))
-                        .append($("<option />", {value: '320x180', text: '320x180'}))
+                        .append($("<option />", { value: 'responsive', text: settings.translations.responsive }))
+                        .append($("<option />", { value: '640x360', text: '640x360' }))
+                        .append($("<option />", { value: '560x315', text: '560x315' }))
+                        .append($("<option />", { value: '480x270', text: '480x270' }))
+                        .append($("<option />", { value: '320x180', text: '320x180' }))
                 )
         );
         $videoForm.append($formItem.clone().append($formButton.clone()));
@@ -434,9 +434,9 @@
                     .append(
                         $formInputSelect
                             .clone().attr("id", "align")
-                            .append($("<option />", {value: 'left', text: settings.translations.left}))
-                            .append($("<option />", {value: 'center', text: settings.translations.center}))
-                            .append($("<option />", {value: 'right', text: settings.translations.right}))
+                            .append($("<option />", { value: 'left', text: settings.translations.left }))
+                            .append($("<option />", { value: 'center', text: settings.translations.center }))
+                            .append($("<option />", { value: 'right', text: settings.translations.right }))
                     )
             );
         }
@@ -537,9 +537,9 @@
                 $inputElement.removeAttr("data-richtext");
             }
 
-            $editor = $('<div />', {class: "richText"});
-            var $toolbar = $('<div />', {class: "richText-toolbar"});
-            var $editorView = $('<div />', {class: "richText-editor", id: editorID, contenteditable: !settings.preview});
+            $editor = $('<div />', { class: "richText" });
+            var $toolbar = $('<div />', { class: "richText-toolbar" });
+            var $editorView = $('<div />', { class: "richText-editor", id: editorID, contenteditable: !settings.preview });
             var tabindex = $inputElement.prop('tabindex');
             if (tabindex >= 0 && settings.useTabForNext === true) {
                 $editorView.attr('tabindex', tabindex);
@@ -657,7 +657,7 @@
             $inputElement.replaceWith($editor);
 
             // append bottom toolbar
-            $bottomToolbar = $('<div />', {class: 'richText-toolbar'});
+            $bottomToolbar = $('<div />', { class: 'richText-toolbar' });
             if (!settings.preview) {
                 $bottomToolbar.append($('<a />', {
                     class: 'richText-undo is-disabled',
@@ -670,8 +670,7 @@
                     'title': settings.translations.redo
                 }));
             }
-           // $bottomToolbar.append($('<a />', {class: 'richText-help', html: '<span class="fa fa-question-circle"></span>'}));
-            //$bottomToolbar.append();
+           // $bottomToolbar.append($('<a />', { class: 'richText-help', html: '<span class="fa fa-question-circle"></span>' }));
             $editor.append($bottomToolbar);
 
             if (settings.maxlength > 0) {
@@ -741,8 +740,8 @@
                     class: 'richText-help-popup',
                     style: 'position:absolute;top:0;right:0;bottom:0;left:0;background-color: rgba(0,0,0,0.3);'
                 });
-                var $inner = $('<div />', {style: 'position:relative;margin:60px auto;padding:20px;background-color:#FAFAFA;width:70%;font-family:Calibri,Verdana,Helvetica,sans-serif;font-size:small;'});
-                var $content = $('<div />', {html: '<span id="closeHelp" style="display:block;position:absolute;top:0;right:0;padding:10px;cursor:pointer;" title="' + settings.translations.close + '"><span class="fa fa-times"></span></span>'});
+                var $inner = $('<div />', { style: 'position:relative;margin:60px auto;padding:20px;background-color:#FAFAFA;width:70%;font-family:Calibri,Verdana,Helvetica,sans-serif;font-size:small;' });
+                var $content = $('<div />', { html: '<span id="closeHelp" style="display:block;position:absolute;top:0;right:0;padding:10px;cursor:pointer;" title="' + settings.translations.close + '"><span class="fa fa-times"></span></span>' });
                 $content.append('<h3 style="margin:0;">RichText</h3>');
                 $content.append('<hr><br>Powered by <a href="https://github.com/webfashionist/RichText" target="_blank">webfashionist/RichText</a> (Github) <br>License: <a href="https://github.com/webfashionist/RichText/blob/master/LICENSE" target="_blank">AGPL-3.0</a>');
 
@@ -788,7 +787,7 @@
         // add context menu to several Node elements
         settings.$editor.find('.richText-editor').on('contextmenu', '.richText-editor', function (e) {
 
-            var $list = $('<ul />', {'class': 'list-rightclick richText-list'});
+            var $list = $('<ul />', { 'class': 'list-rightclick richText-list' });
             var $li = $('<li />');
             // remove Node selection
             $('.richText-editor').find('.richText-editNode').removeClass('richText-editNode');
@@ -948,12 +947,12 @@
                 var bottom = $target.offset().top + $target.innerHeight();
                 var top = $target.offset().top;
                 var resize = false;
-                $target.css({'cursor': 'default'});
+                $target.css({ 'cursor': 'default' });
 
                 if (startY <= bottom && startY >= bottom - 20 && startX >= right - 20 && startX <= right) {
                     // bottom right corner
                     $resizeImage = $target;
-                    $resizeImage.css({'cursor': 'nwse-resize'});
+                    $resizeImage.css({ 'cursor': 'nwse-resize' });
                     resize = true;
                 }
 
@@ -975,7 +974,7 @@
         $(document)
             .mouseup(function () {
                 if ($resizeImage) {
-                    $resizeImage.css({'cursor': 'default'});
+                    $resizeImage.css({ 'cursor': 'default' });
                 }
                 $resizeImage = null;
             })
@@ -1301,7 +1300,7 @@
                             if (element.prop('tagName') === "A") {
                                 // remove empty URL tags
                                 element.replaceWith(function () {
-                                    return $('<span />', {html: $(this).html()});
+                                    return $('<span />', { html: $(this).html() });
                                 });
                             }
                         });
@@ -1319,7 +1318,7 @@
 
         /** INTERNAL METHODS **/
 
-        function focusNextElement () {
+        function focusNextElement() {
             // add all elements we want to include in our selection
             var focussableElements = 'a:not([disabled]):not(.richText-btn,.richText-undo,.richText-redo,.richText-help), button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])';
             if (document.activeElement) {
@@ -1955,11 +1954,11 @@
 
             var code = $textarea.val();
             if (!selection || !code) {
-                return {start: 0, end: 0};
+                return { start: 0, end: 0 };
             }
 
             if (reverse === true) {
-                savedSelection = {start: $editor.text().length, end: $editor.text().length, editorID: editorID};
+                savedSelection = { start: $editor.text().length, end: $editor.text().length, editorID: editorID };
                 restoreSelection(editorID);
                 return true;
             }
@@ -2147,11 +2146,11 @@
                 // replace tags, to force <div> or <p> tags and fix issues
                 if (settings.useParagraph !== false) {
                     $editor.find(".richText-editor").find('div:not(.videoEmbed)').replaceWith(function () {
-                        return $('<p />', {html: $(this).html()});
+                        return $('<p />', { html: $(this).html() });
                     });
                 } else {
                     $editor.find(".richText-editor").find('p').replaceWith(function () {
-                        return $('<div />', {html: $(this).html()});
+                        return $('<div />', { html: $(this).html() });
                     });
                 }
             }

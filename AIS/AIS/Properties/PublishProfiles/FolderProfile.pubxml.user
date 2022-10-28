@@ -4,7 +4,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_PublishTargetUrl>\\10.1.100.37\webapps</_PublishTargetUrl>
-    <History>False|2022-10-25T10:19:11.5202317Z;False|2022-10-04T15:59:22.3377367+05:00;False|2022-09-21T17:26:43.3132132+05:00;False|2022-09-19T17:05:48.9800895+05:00;True|2022-09-14T15:07:51.3609092+05:00;True|2022-09-14T15:06:55.2325812+05:00;True|2022-08-24T11:07:18.6878288+05:00;True|2022-08-03T15:58:24.3805639+05:00;True|2022-08-01T13:18:49.0597964+05:00;True|2022-08-01T00:08:19.7282939+05:00;True|2022-07-31T23:49:28.5014446+05:00;True|2022-07-31T23:48:35.0852179+05:00;</History>
+    <_PublishTargetUrl>D:\Audit Inspection Sol\Published</_PublishTargetUrl>
+    <History>True|2022-10-27T10:43:39.8589592Z;True|2022-10-27T15:40:41.9554727+05:00;True|2022-10-27T15:39:50.8277203+05:00;True|2022-10-27T12:18:51.4148246+05:00;True|2022-10-27T12:09:49.5365573+05:00;True|2022-10-25T15:34:03.1796993+05:00;</History>
   </PropertyGroup>
 </Project>

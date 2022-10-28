@@ -303,6 +303,11 @@ namespace AIS.Controllers
             return dBConnection.AuditeeOldParaResponse(ob);
         }
         [HttpPost]
+        public List<OldParasModel> get_legacy_para(string AUDITED_BY, string AUDIT_YEAR)
+        {
+            return dBConnection.GetOldParas(AUDITED_BY, AUDIT_YEAR);
+        }
+        [HttpPost]
         public bool add_legacy_para_observation_text(OldParasModel ob)
         {
             return dBConnection.AddOldParas(ob);
