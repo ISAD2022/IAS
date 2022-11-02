@@ -13,15 +13,16 @@ namespace AIS.Controllers
     public class AdministrationPanelController : Controller
     {
         private readonly ILogger<AdministrationPanelController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public AdministrationPanelController(ILogger<AdministrationPanelController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public AdministrationPanelController(ILogger<AdministrationPanelController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
 
         public IActionResult audit_criteria()
         {
@@ -48,7 +49,6 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["GroupList"] = dBConnection.GetGroups();
-            SessionHandler sessionHandler = new SessionHandler();
             bool sessionCheck = true;
             var loggedInUser = sessionHandler.GetSessionUser();
             if (loggedInUser.UserRoleID == 1)

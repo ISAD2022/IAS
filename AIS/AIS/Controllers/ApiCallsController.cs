@@ -14,13 +14,14 @@ namespace AIS.Controllers
     public class ApiCallsController : Controller
     {
         private readonly ILogger<ApiCallsController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
 
-        public ApiCallsController(ILogger<ApiCallsController> logger)
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
         }
         [HttpPost]
         public bool kill_session(LoginModel user)

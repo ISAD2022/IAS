@@ -14,15 +14,16 @@ namespace AIS.Controllers
     public class SetupController : Controller
     {
         private readonly ILogger<SetupController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public SetupController(ILogger<SetupController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public SetupController(ILogger<SetupController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         public IActionResult branches()
         {
             

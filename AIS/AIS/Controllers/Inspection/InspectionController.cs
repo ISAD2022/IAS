@@ -10,14 +10,16 @@ namespace AIS.Controllers
     public class InspectionController : Controller
     {
         private readonly ILogger<InspectionController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-        public InspectionController(ILogger<InspectionController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public InspectionController(ILogger<InspectionController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         [HttpGet("Inspection/Home")]
         public IActionResult Home()
         {

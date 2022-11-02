@@ -13,13 +13,15 @@ namespace AIS.Controllers
     public class BACController : Controller
     {
         private readonly ILogger<BACController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public BACController(ILogger<BACController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public BACController(ILogger<BACController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
         [HttpGet("BAC/mom")]
 

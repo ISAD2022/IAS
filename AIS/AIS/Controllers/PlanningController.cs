@@ -10,12 +10,15 @@ namespace AIS.Controllers
     public class PlanningController : Controller
     {
         private readonly ILogger<PlanningController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-        public PlanningController(ILogger<PlanningController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public PlanningController(ILogger<PlanningController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
         public IActionResult audit_criteria()
         {

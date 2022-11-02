@@ -13,13 +13,15 @@ namespace AIS.Controllers
     public class AMSController : Controller
     {
         private readonly ILogger<AMSController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public AMSController(ILogger<AMSController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public AMSController(ILogger<AMSController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
         [HttpGet("IAMS/paras")]
         public IActionResult paras()

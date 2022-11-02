@@ -12,15 +12,16 @@ namespace AIS.Controllers
     public class EngagementController : Controller
     {
         private readonly ILogger<EngagementController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public EngagementController(ILogger<EngagementController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public EngagementController(ILogger<EngagementController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         public IActionResult Index()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -173,12 +174,8 @@ namespace AIS.Controllers
         [HttpPost]
         public AuditEntitiesModel add_auditee_entity(AuditEntitiesModel am)
         {
-            var userLoggedIn=sessionHandler.GetSessionUser();
             am.AUTID = 0;
-            dBConnection.AddAuditEntity(am);
-            return am;
-
-
+            return dBConnection.AddAuditEntity(am);
         }
         public IActionResult submission_for_review()
         {

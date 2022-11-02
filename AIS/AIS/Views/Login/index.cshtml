@@ -58,9 +58,7 @@
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
                 } else {
-                    window.localStorage.setItem("AIS_IPADDRESS", data.ipAddress)
-                    window.localStorage.setItem("AIS_MACADDRESS", data.macAddress)
-                    window.localStorage.setItem("AIS_SESSIONID", data.sessionId)
+                  
                     window.location.href = "/home";
                 }                
             },
@@ -71,7 +69,7 @@
 
 <div class="text-center">
 
-    @if (TempData["SessionKill"] == "killsession")
+    @if (TempData["SessionKill"].ToString() == "killsession")
     {
         <script type="text/javascript">
             window.onload = function () {
@@ -81,7 +79,7 @@
             };
         </script>
     }
-    else if (TempData["Message"] != "")
+    else if (TempData["Message"].ToString() != "")
 {
     <script type="text/javascript">
         window.onload = function () {

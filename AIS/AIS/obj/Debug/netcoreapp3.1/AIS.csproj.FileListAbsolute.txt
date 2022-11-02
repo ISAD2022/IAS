@@ -160,6 +160,14 @@ C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.C
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.dll
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.GeneratedMSBuildEditorConfig.editorconfig
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfoInputs.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfo.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.CoreCompileInputs.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.MvcApplicationPartsAssemblyInfo.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.RazorAssemblyInfo.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.RazorAssemblyInfo.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\appsettings.Development.json
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\appsettings.json
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\AIS.exe
@@ -203,14 +211,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\win\lib\net
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.1\System.Security.Principal.Windows.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Security.Principal.Windows.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Windows.Extensions.dll
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.GeneratedMSBuildEditorConfig.editorconfig
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfoInputs.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfo.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.CoreCompileInputs.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.MvcApplicationPartsAssemblyInfo.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.RazorAssemblyInfo.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.RazorAssemblyInfo.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Manifest.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.TagHelpers.input.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.TagHelpers.output.cache
@@ -313,17 +313,32 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\tentative_audit_plan_ho_units.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\tentative_engagement_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\aging_observations.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\annex_violation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\approved_plan.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\audit_plan_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\audit_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\audit_typewise_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\br_au_pos.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\cad_isad_achievement.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\department_performance.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\div_out_paras.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\div_seg_paras.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\draft_audit_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\emp_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\exec_stats.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\glhead_details.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\glhead_summary.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\income_expenditure_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\join_comp_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\management_au_report_zonewise.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\monthwise_settlement_paras.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\riskwise_observations.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\role_wise_user.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\settlement_old_paras.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\significant_finding.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\user_activity_graph.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\zonewise_settlement_paras.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\RiskAssessment\archived\audit_criteria.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\RiskAssessment\archived\audit_period.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\RiskAssessment\archived\holiday_calendar.cshtml.g.cs

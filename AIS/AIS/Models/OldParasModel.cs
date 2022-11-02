@@ -24,6 +24,7 @@ namespace AIS.Models
         public int PROCESS_DETAIL { get; set; }
         public int STATUS { get; set; }
         public string PARA_TEXT { get; set; }
+        public string ENTERED_BY { get; set; }
 
     }
 }

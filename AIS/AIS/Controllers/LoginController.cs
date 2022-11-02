@@ -15,12 +15,15 @@ namespace AIS.Controllers
     public class LoginController : Controller
     {
         private readonly ILogger<LoginController> _logger;
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        
 
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(ILogger<LoginController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
         }
 
         public IActionResult Index()

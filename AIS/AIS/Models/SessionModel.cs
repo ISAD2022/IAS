@@ -20,7 +20,7 @@ namespace AIS.Models
         public int? UserPostingDept { get; set; }
         public int? UserPostingBranch { get; set; }
         public int? UserPostingZone { get; set; }
-        public int? UserGroupID { get; set; }
-        public int? UserRoleID { get; set; }
+        public int UserGroupID { get; set; }
+        public int UserRoleID { get; set; }
     }
 }

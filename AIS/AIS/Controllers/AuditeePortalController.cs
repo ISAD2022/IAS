@@ -15,13 +15,15 @@ namespace AIS.Controllers
     public class AuditeePortalController : Controller
     {
         private readonly ILogger<AuditeePortalController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public AuditeePortalController(ILogger<AuditeePortalController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public AuditeePortalController(ILogger<AuditeePortalController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
 
         public IActionResult observation_assigned()

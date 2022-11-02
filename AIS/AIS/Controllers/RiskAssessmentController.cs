@@ -14,15 +14,16 @@ namespace AIS.Controllers
     public class RiskAssessmentController : Controller
     {
         private readonly ILogger<RiskAssessmentController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public RiskAssessmentController(ILogger<RiskAssessmentController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public RiskAssessmentController(ILogger<RiskAssessmentController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         public IActionResult risk_model()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

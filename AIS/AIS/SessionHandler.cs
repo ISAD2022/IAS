@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using AIS.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System;
-using System.Linq;
 
 namespace AIS
 {
@@ -16,20 +11,24 @@ namespace AIS
     {
         private static List<SessionModel> sessionArr = new List<SessionModel>();
         private static SessionModel smodel = new SessionModel();
-        private static DBConnection dBConnection = new DBConnection();
+        private static DBConnection dBConnection;
         private static LocalIPAddress ipaddr = new LocalIPAddress();
+        
+        public ISession _session;
+        public IHttpContextAccessor _httpCon;
+
+        public SessionHandler()
+        {
+
+        }
+        public SessionHandler(IHttpContextAccessor httpContextAccessor)
+        {
+            _session = httpContextAccessor.HttpContext.Session;
+            _httpCon = httpContextAccessor;
+        }
+       
         public SessionModel SetSessionUser(UserModel user)
         {
-            bool alreadyExists = sessionArr.Any(x => x.MACAddress == user.MACAddress);
-            if (alreadyExists)
-            {
-               var allSessions=sessionArr.Where(x => x.MACAddress == user.MACAddress).ToList();
-                foreach(var item in allSessions)
-                {
-                    dBConnection.DisposeSessionByMACAndPPNumber(item.MACAddress, item.PPNumber);
-                    sessionArr.RemoveAll(r => r.MACAddress == item.MACAddress && r.PPNumber == item.PPNumber);
-                }
-            }
             smodel.Email = user.Email;
             smodel.Name = user.Name;
             smodel.PPNumber = user.PPNumber;
@@ -41,41 +40,50 @@ namespace AIS
             smodel.UserPostingZone = user.UserPostingZone;
             smodel.IsActive = user.IsActive;
             smodel.UserLocationType = user.UserLocationType;
-            smodel.UserGroupID = user.UserGroupID;
-            smodel.UserRoleID = user.UserRoleID;
-            smodel.SessionId = GenerateRandomCryptographicSessionKey(128);
+            smodel.UserGroupID =Convert.ToInt32(user.UserGroupID);
+            smodel.UserRoleID = Convert.ToInt32(user.UserRoleID);
+            smodel.SessionId = _session.Id;        
             smodel.IPAddress = ipaddr.GetLocalIpAddress();
             smodel.MACAddress = ipaddr.GetMACAddress();
-            smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();
+            smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();            
             sessionArr.Add(smodel);
+            _session.SetString("_sessionId", Newtonsoft.Json.JsonConvert.SerializeObject(smodel));
             return smodel;          
         }
         public SessionModel GetSessionUser()
         {
-            return sessionArr.Where(x => x.MACAddress == ipaddr.GetMACAddress()).FirstOrDefault();
+            var smodel = new SessionModel();
+            string json=_session.GetString("_sessionId");
+            if (json != "" && json != null && json.Length > 0)
+            {
+                smodel = JsonSerializer.Deserialize<SessionModel>(json);
+            }
+          
+            return smodel;
         }
         public bool DisposeUserSession()
         {
-            try
-            {
-                var loggedInUser = this.GetSessionUser();
-                sessionArr.RemoveAll(r => r.MACAddress == loggedInUser.MACAddress);
-                return true;
-            }
-            catch(Exception e)
-            {
-                return false;
-            }
+            _session.Clear();            
+            return true;
         }
         public bool IsUserLoggedIn()
         {
-            if (dBConnection.IsLoginSessionExist())
+            string json = _session.GetString("_sessionId");
+            if (json != "" && json != null && json.Length > 0)
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
         public bool HasPermissionToViewPage(string page_name)
         {
+            dBConnection = new DBConnection();
+            dBConnection._httpCon = this._httpCon;
+            dBConnection._session = this._session;
+
             bool permission = false;
             var pagesToView = dBConnection.GetTopMenuPages();
             foreach(var item in pagesToView)

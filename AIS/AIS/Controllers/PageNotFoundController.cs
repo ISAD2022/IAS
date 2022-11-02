@@ -15,14 +15,16 @@ namespace AIS.Controllers
     public class PageNotFoundController : Controller
     {
         private readonly ILogger<PageNotFoundController> _logger;
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public PageNotFoundController(ILogger<PageNotFoundController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public PageNotFoundController(ILogger<PageNotFoundController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         public IActionResult Index()
         {
             return View();

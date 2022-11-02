@@ -18,10 +18,32 @@ namespace AIS
 
     public class TopMenus
     {
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
+        private DBConnection dBConnection;
+        private SessionHandler sessionHandler;
+
+        public ISession _session;
+        public IHttpContextAccessor _httpCon;
+
+        public TopMenus(IHttpContextAccessor httpContextAccessor)
+        {
+            _session = httpContextAccessor.HttpContext.Session;
+            _httpCon = httpContextAccessor;
+        }
+        public TopMenus()
+        {
+
+        }
+
         public List<Object> GetTopMenus()
         {
+            
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            
+            dBConnection = new DBConnection(); 
+            dBConnection._httpCon = this._httpCon;
+            dBConnection._session = this._session;
 
             List<object> menuList = new List<object>();
             if (sessionHandler.IsUserLoggedIn())
@@ -37,6 +59,15 @@ namespace AIS
 
         public List<Object> GetTopMenusPages()
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+
+            dBConnection = new DBConnection();
+            dBConnection._httpCon = this._httpCon;
+            dBConnection._session = this._session;
+
             List<object> menuList = new List<object>();
             if (sessionHandler.IsUserLoggedIn())
             {

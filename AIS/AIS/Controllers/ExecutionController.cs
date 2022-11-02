@@ -13,15 +13,16 @@ namespace AIS.Controllers
     public class ExecutionController : Controller
     {
         private readonly ILogger<ExecutionController> _logger;
-        private readonly TopMenus tm = new TopMenus();
-        private readonly DBConnection dBConnection = new DBConnection();
-        private readonly SessionHandler sessionHandler = new SessionHandler();
-
-        public ExecutionController(ILogger<ExecutionController> logger)
+        private readonly TopMenus tm;
+        private readonly SessionHandler sessionHandler;
+        private readonly DBConnection dBConnection;
+        public ExecutionController(ILogger<ExecutionController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, TopMenus _tpMenu)
         {
             _logger = logger;
+            sessionHandler = _sessionHandler;
+            dBConnection = _dbCon;
+            tm = _tpMenu;
         }
-
         public IActionResult Index()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
