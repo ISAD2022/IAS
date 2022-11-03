@@ -69,9 +69,52 @@ namespace AIS.Controllers
             }
         }
 
+        [HttpGet("IAMS/user_wise_performance")]
+        public IActionResult user_wise_performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["USERWISEPERFORMANCE"] = dBConnection.GetUserWiseOldParasPerformance();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View("../IAMS/user_wise_performance");
+            }
+        }
+
+        [HttpGet("IAMS/zone_wise_performance")]
+        public IActionResult zone_wise_performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+         
+            ViewData["ZONEWISEPERFORMANCE"] = dBConnection.GetZoneWiseOldParasPerformance();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View("../IAMS/zone_wise_performance");
+            }
+        }
 
 
-        
+
+
 
 
     }

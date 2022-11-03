@@ -108,7 +108,7 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ID='" + user.SessionId + "' and u.SESSION_ACTIVE='Y'";
+                    /*cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ID='" + user.SessionId + "' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -116,7 +116,7 @@ namespace AIS
                         {
                             isSessionAvailable = !isSessionAvailable;
                         }
-                    }
+                    }*/
 
                     sessionHandler = new SessionHandler();
                     sessionHandler._httpCon = this._httpCon;
@@ -547,18 +547,30 @@ namespace AIS
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_CODE = 0)
         {
-
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             var con = this.DatabaseConnection();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+             
             string whereClause = "";
             if (ENTITY_CODE != 0)
             {
                 whereClause += " and f.entity_code= " + ENTITY_CODE;
             }
+
+            if (loggedInUser.UserPostingAuditZone != 0)
+                whereClause +=  " and f.AUDITED_BY=" + loggedInUser.UserPostingAuditZone;
+            else
+                whereClause +=  " and f.AUDITED_BY= 0 ";
+
+
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras_fad f where f.status=0  " + whereClause + " order by entity_name ";
+                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras_fad f where f.status=0 "+ whereClause + " order by entity_name ";
                 OracleDataReader rdr = cmd.ExecuteReader();
+
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
@@ -3367,7 +3379,7 @@ namespace AIS
                     chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
                     //chk.AUDIT_PERIOD_DES =rdr["audit_period_des"].ToString();
                     chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
-                    chk.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
+                    chk.AUDITEDBY = Convert.ToInt32(rdr["AUDITED_BY"]);
                     if (rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString() != null && rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString() != "")
                         chk.DATE_OF_LAST_COMPLIANCE_RECEIVED = Convert.ToDateTime(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"]);
 
@@ -3446,7 +3458,7 @@ namespace AIS
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-                    chk.AUDITED_BY = rdr["AUDITEDBY"].ToString();
+                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     list.Add(chk);
                 }
             }
@@ -3515,6 +3527,89 @@ namespace AIS
             con.Close();
             return true;
         }
-    
- }
+        public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (loggedInUser.UserLocationType == "H")
+                query = query + "  s.ID=" + loggedInUser.UserPostingDept;
+            else if (loggedInUser.UserLocationType == "B")
+                query = query + "  s.ID=" + loggedInUser.UserPostingBranch;
+            else if (loggedInUser.UserLocationType == "Z")
+            {
+                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    query = query + "  s.ID=" + loggedInUser.UserPostingAuditZone;
+                else
+                    query = query + "  s.ID=" + loggedInUser.UserPostingZone;
+            }
+            else
+                query = query + "  s.ID= 0 ";
+
+            List<ZoneWiseOldParasPerformanceModel> list = new List<ZoneWiseOldParasPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from v_report_az_progress s  where 1=1 and "+ query;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ZoneWiseOldParasPerformanceModel chk = new ZoneWiseOldParasPerformanceModel();
+                    chk.ZONEID = rdr["ID"].ToString();
+                    chk.ZONENAME = rdr["ZONENAME"].ToString();
+                    chk.PARA_ENTERED = rdr["PARA_ENTERED"].ToString();
+                    chk.PARA_PENDING = rdr["PARA_PENDING"].ToString();
+                    chk.PARA_TOTAL = rdr["PARA_TOTAL"].ToString();
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<UserWiseOldParasPerformanceModel> GetUserWiseOldParasPerformance()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string query = "";
+            if (loggedInUser.UserLocationType == "H")
+                query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingDept;
+            else if (loggedInUser.UserLocationType == "B")
+                query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingBranch;
+            else if (loggedInUser.UserLocationType == "Z")
+            {
+                if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
+                    query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingAuditZone;
+                else
+                    query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingZone;
+            }
+            else
+                query = query + "  s.AUDIT_ZONEID= 0 ";
+
+            List<UserWiseOldParasPerformanceModel> list = new List<UserWiseOldParasPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select s.*, sz.zonename from v_report_az_emp_progress s inner join v_report_az_progress sz on s.audit_zoneid = sz.id  where 1=1 and " + query;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserWiseOldParasPerformanceModel chk = new UserWiseOldParasPerformanceModel();
+                    chk.AUDIT_ZONEID = rdr["AUDIT_ZONEID"].ToString();
+                    chk.ZONENAME = rdr["ZONENAME"].ToString();
+                    chk.PARA_ENTERED = rdr["PARA_ENTERED"].ToString();
+                    chk.PPNO = rdr["PPNO"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+    }
 }

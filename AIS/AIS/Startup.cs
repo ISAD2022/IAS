@@ -31,11 +31,7 @@ namespace IAMS
         {
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddDistributedMemoryCache();
-            services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromSeconds(1800);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
+            services.AddSession();
             services.AddScoped<SessionHandler>();
             services.AddScoped<DBConnection>();
             services.AddScoped<TopMenus>();

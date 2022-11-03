@@ -3,10 +3,8 @@
 
 }
 <script type="text/javascript">
+    var g_reqSend = true;
     $(document).ready(function () {
-        window.localStorage.setItem("AIS_IPADDRESS", "");
-        window.localStorage.setItem("AIS_MACADDRESS", "");
-        window.localStorage.setItem("AIS_SESSIONID", "");
         $(document).keydown(function (event) {
             var id = event.key || event.which || event.keyCode || 0;
             if (id == "Enter") {
@@ -15,27 +13,29 @@
         });
     })
     function doKillSessionSubmit() {
-       
-        $.ajax({
-            url: "/ApiCalls/kill_session",
-            type: "POST",
-            data: {
-                'PPNumber': $('#inputPPNoField').val(),
-                'Password': $('#inputPassword').val(),
-            },
-            cache: false,
-            success: function (data) {
-                console.log('killsession', data);
-                if (data) {
-                    $('#submitKillSessionButton').addClass('d-none');
-                    $('#submitLoginButton').removeClass('d-none');
-                }                
-            },
-            dataType: "json",
-        });
+        
+            $.ajax({
+                url: "/ApiCalls/kill_session",
+                type: "POST",
+                data: {
+                    'PPNumber': $('#inputPPNoField').val(),
+                    'Password': $('#inputPassword').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    console.log('killsession', data);
+                    if (data) {
+                        $('#submitKillSessionButton').addClass('d-none');
+                        $('#submitLoginButton').removeClass('d-none');
+                    }
+                },
+                dataType: "json",
+            });
     }
 
     function doLoginSubmit() {
+
+        $('#submitLoginButton').attr('disabled', true);
 
         $.ajax({
             url: "/Login/DoLogin",
@@ -46,6 +46,7 @@
             },
             cache: false,
             success: function (data) {
+               
                 if (!data.isAuthenticate) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');
@@ -57,10 +58,10 @@
                     $('#submitLoginButton').addClass('d-none');
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
-                } else {
-                  
+                } else {                  
                     window.location.href = "/home";
-                }                
+                }
+                $('#submitLoginButton').attr('disabled', false);
             },
             dataType: "json",
         });
