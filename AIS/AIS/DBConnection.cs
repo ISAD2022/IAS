@@ -145,7 +145,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber + " and Mac_Address='" + sessionUser.MACAddress + "'";
+                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYYHHMMSS(DateTime.Now) + "','dd/mm/yyyy HH:mi:ss') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber + " and SESSION_ID='" + sessionUser.SessionId + "'";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1062,9 +1062,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
+                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.auditby_id as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities mp on mp.CODE=d.CODE and mp.auditby_id is not null WHERE d.ISACTIVE ='A' " + query + " order by d.CODE asc";
                 else
-                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.AUDITEDBY as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities_maping mp on mp.CODE=d.CODE and mp.auditedby is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code + query + " order by d.CODE asc";
+                    cmd.CommandText = "select distinct d.*, div.NAME as DIV_NAME, mp.auditby_id as AUDITED_BY_DEPID from  T_DEPARTMENT d inner join t_auditee_entities e on  d.CODE = e.code inner join T_DIVISION div on d.DIVISIONID=div.DIVISIONID  left join t_auditee_entities mp on mp.CODE=d.CODE and mp.auditby_id is not null WHERE d.ISACTIVE ='A' and d.DIVISIONID= " + div_code + query + " order by d.CODE asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3505,7 +3505,7 @@ namespace AIS
                 {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
                 }
-                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "' , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
+                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "', al.ENTERED_ON = to_date('" + dtime.DateTimeInDDMMYYHHMMSS(System.DateTime.Now) + "','dd/mm/yyyy HH:mi:ss') , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
                 OracleParameter parmData = new OracleParameter();
                 parmData.Direction = System.Data.ParameterDirection.Input;
                 parmData.OracleDbType = OracleDbType.Clob;

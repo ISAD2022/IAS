@@ -25,5 +25,10 @@ namespace AIS
         {
             return dt.ToString("dd'/'MM'/'yyyy", CultureInfo.InvariantCulture);
         }
+
+        public string DateTimeInDDMMYYHHMMSS(DateTime dt)
+        {
+            return dt.ToString("dd'/'MM'/'yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+        }
     }
 }
