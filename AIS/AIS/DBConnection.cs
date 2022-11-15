@@ -145,7 +145,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYYHHMMSS(DateTime.Now) + "','dd/mm/yyyy HH:mi:ss') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber + " and SESSION_ID='" + sessionUser.SessionId + "'";
+                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYYHHMMSS(DateTime.Now) + "','dd/mm/yyyy hh:mi:ss') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber + " and SESSION_ID='" + sessionUser.SessionId + "'";
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -1586,6 +1586,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
+               
                 cmd.CommandText = "insert into T_AU_PLAN_ENG p (p.ENG_ID,p.PERIOD_ID,p.ENTITY_TYPE,p.AUDIT_ZONEID, p.AUDIT_STARTDATE, p.AUDIT_ENDDATE,p.CREATEDBY,p.CREATED_ON,p.TEAM_NAME,p.STATUS,p.TEAM_ID, p.ENTITY_ID, p.ENTITY_CODE) VALUES ( (SELECT COALESCE(max(PP.ENG_ID)+1,1) FROM T_AU_PLAN_ENG PP), " + ePlan.PERIOD_ID + "," + ePlan.ENTITY_TYPE + ", " + ePlan.AUDIT_ZONEID + ", to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_STARTDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ePlan.AUDIT_ENDDATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.CREATEDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ePlan.CREATED_ON) + "','dd/mm/yyyy HH:MI:SS AM'),'" + ePlan.TEAM_NAME + "'," + ePlan.STATUS + "," + ePlan.TEAM_ID + ", " + ePlan.ENTITY_ID + " ," + ePlan.ENTITY_CODE + ")";
                 cmd.ExecuteReader();
 
@@ -2305,16 +2306,31 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
             jm.ENTEREDDATE = System.DateTime.Now;
+            bool alreadyJoined = false;
+            bool response = false;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE, al.STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + dtime.DateTimeInDDMMYY(jm.JOINING_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(jm.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(jm.COMPLETION_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), 'I')";
-                cmd.ExecuteReader();
-                cmd.CommandText = cmd.CommandText = "UPDATE T_AU_AUDIT_TEAM_TASKLIST SET STATUS_ID= (select COALESCE(acc.STATUS_ID+1,1) from T_AU_AUDIT_TEAM_TASKLIST acc WHERE acc.ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and acc.TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO + ") WHERE ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO;
-                cmd.ExecuteReader();
-
+                cmd.CommandText = cmd.CommandText = "SELECT ID FROM T_AU_AUDIT_JOINING WHERE ENG_PLAN_ID="+jm.ENG_PLAN_ID+" and TEAM_MEM_PPNO="+jm.TEAM_MEM_PPNO+" and STATUS='I'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if(rdr["ID"].ToString() != null && rdr["ID"].ToString()!="")
+                    {
+                        alreadyJoined = true;
+                    }
+                }
+                if (!alreadyJoined)
+                {
+                    this.SetEngIdOnHold();
+                    response = true;
+                    cmd.CommandText = cmd.CommandText = "INSERT INTO T_AU_AUDIT_JOINING al (al.ID, al.ENG_PLAN_ID, al.TEAM_MEM_PPNO,al.JOINING_DATE , al.ENTEREDBY, al.ENTEREDDATE, al.COMPLETION_DATE, al.STATUS ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_AUDIT_JOINING acc) , '" + jm.ENG_PLAN_ID + "','" + jm.TEAM_MEM_PPNO + "',to_date('" + dtime.DateTimeInDDMMYY(jm.JOINING_DATE) + "','dd/mm/yyyy HH:MI:SS AM'),'" + jm.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(jm.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(jm.COMPLETION_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), 'I')";
+                    cmd.ExecuteReader();
+                    cmd.CommandText = cmd.CommandText = "UPDATE T_AU_AUDIT_TEAM_TASKLIST SET STATUS_ID= (select COALESCE(acc.STATUS_ID+1,1) from T_AU_AUDIT_TEAM_TASKLIST acc WHERE acc.ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and acc.TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO + ") WHERE ENG_PLAN_ID=" + jm.ENG_PLAN_ID + " and TEAMMEMBER_PPNO= " + jm.TEAM_MEM_PPNO;
+                    cmd.ExecuteReader();
+                }
             }
             con.Close();
-            return true;
+            return response;
         }
         public List<AuditChecklistModel> GetAuditChecklist()
         {
@@ -2879,6 +2895,20 @@ namespace AIS
             }
             con.Close();
             return engId;
+        }
+        public bool SetEngIdOnHold()
+        {
+            int ENG_ID = this.GetLoggedInUserEngId();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Update t_au_audit_joining j SET j.STATUS='P' where j.eng_plan_id=" + ENG_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "Update t_au_plan_eng e SET e.STATUS=5 where e.eng_id=" + ENG_ID;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
         }
         public string GetLatestAuditorResponse(int obs_id = 0)
         {
@@ -3505,7 +3535,7 @@ namespace AIS
                 {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
                 }
-                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "', al.ENTERED_ON = to_date('" + dtime.DateTimeInDDMMYYHHMMSS(System.DateTime.Now) + "','dd/mm/yyyy HH:mi:ss') , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
+                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "', al.ENTERED_ON = to_date('" + dtime.DateTimeInDDMMYYHHMMSS(System.DateTime.Now) + "','dd/mm/yyyy hh:mi:ss') , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
                 OracleParameter parmData = new OracleParameter();
                 parmData.Direction = System.Data.ParameterDirection.Input;
                 parmData.OracleDbType = OracleDbType.Clob;

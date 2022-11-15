@@ -160,7 +160,6 @@ C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.C
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.dll
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 C:\Users\Administrator\source\repos\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.GeneratedMSBuildEditorConfig.editorconfig
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfoInputs.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.AssemblyInfo.cs
@@ -385,3 +384,5 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\IAMS\user_wise_performance.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\IAMS\zone_wise_performance.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\HM\dashboard.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache

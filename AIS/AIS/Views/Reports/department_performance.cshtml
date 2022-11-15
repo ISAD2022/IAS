@@ -299,7 +299,7 @@ List group
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-12">
-        <h5>Select Department</h5>
+        <label>Select Department</label>
         <select id="entity" onchange="ShowDepartmentAuditPeriods();" class="form-select form-control">
             <option value="0" id="0" selected>--Select Department--</option>
             <option value="1" id="1">Information Systems Audit Department</option>
@@ -309,76 +309,16 @@ List group
         </select>
     </div>
 </div>
-        <!--<div class="row mt-3">
-        <div class="col-md-6">
-            <h5>Select Audit Zone</h5>
-            <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Audit Zone--</option>
-                @{
-                    if (ViewData["AuditZonesList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["AuditZonesList"]))
-                        {
-                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                        }
-                    }
-                }
-            </select>
-
-        </div>
-        <div class="col-md-6">
-            <h5>Select Audit Branch</h5>
-            <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0">--Select Audit Branch--</option>
-            </select>
-        </div>
-    </div>
-    <div class="row nonFieldAuditFields mt-3">
-        <div class="col-md-6">
-            <h5>Select Audit Division</h5>
-            <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Audit Division--</option>
-                @{
-                    if (ViewData["DivisionsList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["DivisionsList"]))
-                        {
-                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                        }
-                    }
-                }
-            </select>
-
-        </div>
-        <div class="col-md-6">
-            <h5>Select Audit Department</h5>
-            <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0">--Select Audit Department--</option>
-            </select>
-        </div>
-    </div>
-    <div class="row mt-3 w-100">
-        <div class="col-md-12"><h5>Sub Entities</h5></div>
-        <div class="col-md-12">
-            <select id="entitySelectionBox" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Sub Entity--</option>
-
-            </select>
-        </div>
-    </div>-->
+      
 <div class="row mt-3 col-md-12">
             <div class="row col-md-6">
-                <b>Start Date:</b><input class="form-control" type="date" />
+                <label>Start Date:</label><input class="form-control" type="date" />
             </div>
             <div class="row col-md-6" style="margin-left:10px;">
-                <b>End Date:</b><input class="form-control" type="date" />
+                <label>End Date:</label><input class="form-control" type="date" />
             </div>
 </div>
-<div class="row mt-3 col-md-12">
-            <div class="row col-md-6">
-                <b>As On Date:</b><input id="executionPeriodToField" class="form-control" type="date" />
-            </div>
-</div>
+
 
 <div class="row col-md-12 mt-3">
     <button class="btn btn-primary">Find</button>

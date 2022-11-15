@@ -277,28 +277,13 @@
 
 
 </div>
-<!--<div class="panel panel-default">
-    Default panel contents
-<div class="panel-heading"> </div>
-<div class="panel-body">
-    <p>...</p>
-</div>
 
-List group
-<ul class="list-group">
-    <li class="list-group-item">Branch Special Audit</li>
-    <li class="list-group-item">SAM Protfolio </li>
-    <li class="list-group-item">Budget Assesment</li>
-    <li class="list-group-item">Profitabilty Assesment of the branches</li>
-    <li class="list-group-item">Inspection</li>
-</ul>
--->
 
 <div class="row col-md-12 mt-3">
 
   
     
-        <h5> Audit Department</h5>
+        <label> Audit Department</label>
         <select id="A_dept" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0">--Select Branch--</option>
             <option value="1" id="0">472-CORPORATE AUDIT DEPARTMENT</option>
@@ -310,10 +295,10 @@ List group
   
 </div>
 
-<div class="row col-md-12">
+<div class="row col-md-12 mt-3">
 
-    <div class="row col-md-6 mr-2 mt-3">
-        <h5>Select Zone</h5>
+    <div class="row col-md-6 mr-2 ">
+        <label>Select Zone</label>
         <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Zone--</option>
             @{
@@ -327,8 +312,8 @@ List group
             }
         </select>
     </div>
-    <div class="row col-md-6 mt-3">
-        <h5>Select Branch</h5>
+    <div class="row col-md-6">
+        <label>Select Branch</label>
         <select id="branchSelectionBox" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0">--Select Branch--</option>
         </select>
@@ -338,7 +323,7 @@ List group
 
 <div class="row col-md-12 mt-3">
     <div class="row col-md-6 mr-2">
-        <h5>Select Division</h5>
+        <label>Select Division</label>
         <select id="divSelectionBox" onchange="ShowSelectedDivisionDepartments();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Division--</option>
             @{
@@ -353,7 +338,7 @@ List group
         </select>
     </div>
     <div class="row col-md-6">
-        <h5>Select Department</h5>
+        <label>Select Department</label>
         <select id="divDeptSelectionBox" onchange="getSubEntities();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0">--Select Department--</option>
         </select>
@@ -362,12 +347,12 @@ List group
 <div class="row col-md-12 mt-3">
 
 
-    <div class="row mt-3 mr-2 col-md-6">
-        <h5>Audit Plan Start Date</h5>
+    <div class="row mr-2 col-md-6">
+        <label>Audit Plan Start Date</label>
         <input id="A_P_S_D" class="form-select form-control" aria-label="Default select example" type="date" />
     </div>
-    <div class="row mt-3 col-md-6">
-        <h5>Audit Plan End Date </h5>
+    <div class="row col-md-6">
+        <label>Audit Plan End Date </label>
         <input id="E_D" class="form-select form-control" aria-label="Default select example" type="date" />
     </div>
 
