@@ -22,5 +22,6 @@ namespace AIS.Models
         public int? UserPostingZone { get; set; }
         public int UserGroupID { get; set; }
         public int UserRoleID { get; set; }
+        public int? UserEntityID { get; set; }
     }
 }

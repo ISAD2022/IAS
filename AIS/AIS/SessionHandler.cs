@@ -38,6 +38,7 @@ namespace AIS
             smodel.UserPostingDept = user.UserPostingDept;
             smodel.UserPostingDiv = user.UserPostingDiv;
             smodel.UserPostingZone = user.UserPostingZone;
+            smodel.UserEntityID = user.UserEntityID;
             smodel.IsActive = user.IsActive;
             smodel.UserLocationType = user.UserLocationType;
             smodel.UserGroupID =Convert.ToInt32(user.UserGroupID);
