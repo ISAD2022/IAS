@@ -63,7 +63,10 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["AUDITCCQ"] = dBConnection.GetCCQ();
+            ViewData["EntitiesList"] = dBConnection.GetCCQsEntities();
+            ViewData["ControlViolationList"] = dBConnection.GetAuditVoilationcats();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["AUDITCCQ"] = "";
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else

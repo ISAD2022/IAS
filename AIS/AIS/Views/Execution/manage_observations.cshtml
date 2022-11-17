@@ -153,6 +153,29 @@
         });
     }
 
+    function getEntityObservation() {
+        $('#manageObsPanel tbody').empty();
+        if ($('#entitySelectField option:selected').val() != 0) {            
+            $.ajax({
+                url: "/ApiCalls/get_observations",
+                type: "POST",
+                data: {
+                    'ENG_ID': $('#entitySelectField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        $('#auditPeriodNameField').val(v.period);
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
+                    });
+
+                },
+                dataType: "json",
+            });
+
+        }
+    }
+
 </script>
 
 <div class="row">
@@ -164,9 +187,19 @@
             <label><b>Entity:</b></label>
         </div>
         <div class="col-md-10">
-            <input id="entityNameField" disabled="disabled" class="form-control ml-1" type="text" />
-            <select class="form-control form-select">
+            <input id="entityNameField" disabled="disabled" class="form-control ml-1 d-none" type="text" />
+            <select id="entitySelectField" onchange="getEntityObservation()" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
+                @{
+                    if (ViewData["EntitiesList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                        {
+                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                        }
+                    }
+                }
+
             </select>
         </div>
     </div>
@@ -214,39 +247,7 @@
                                     <td>@item.OBS_STATUS</td>
 
                                     <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                    <!-- @if (item.OBS_STATUS_ID == 1)
-            {
-                <td class="text-center">
-                    <a href="#" onclick="dropObservation(@item.OBS_ID,23,@item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Drop</a>
-                    /
-                    <a href="#" onclick="submitObservationToAuditee(@item.OBS_ID,2,@item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Submit to Auditee</a>
-                </td>
-
-            }
-            else @if (item.OBS_STATUS_ID == 3)
-       {
-
-           if (item.OBS_RISK_ID == 3)
-           {
-            <td class="text-center">
-                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+1, @item.OBS_RISK_ID);" class="text-hover text-danger mr-5px">Settle</a>
-                /
-                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary ml-5px">Add to Draft</a>
-            </td>
-        }
-        else
-        {
-            <td class="text-center">
-
-                <a href="#" onclick="updateObservationStatus(@item.OBS_ID,@item.OBS_STATUS_ID+2, @item.OBS_RISK_ID);" class="text-hover text-primary">Add to Draft</a>
-            </td>
-
-        }
-    }
-            else
-    {
-        <td class="text-center"><a href="#" class="text-hover">-</a></td>
-    }-->
+                                   
                                 </tr>
                         }
                     }

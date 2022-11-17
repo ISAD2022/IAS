@@ -15,10 +15,50 @@
         margin:10px;
     }
 </style>
-<script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        getPieChartData();
+    });
+    function getPieChartData() {
+        $.ajax({
+            url: "/ApiCalls/get_pie_chart_data",
+            type: "POST",
+            data: {
+               
+            },
+            cache: false,
+            success: function (res) {
+                var total_count = parseInt(res.inactive_Count) + parseInt(res.active_Count);
+                console.log(total_count);
+                var activePer = parseFloat((parseInt(res.active_Count) / total_count) * 100).toFixed(2);
+                var InactivePer = parseFloat((parseInt(res.inactive_Count) / total_count) * 100).toFixed(2);
+
+                console.log(activePer, InactivePer);
+                var chart = new CanvasJS.Chart("countrywide_oldParas", {
+                    animationEnabled: true,
+                    title: {
+                        text: "Country Wise Old Para Performance"
+                    },
+                    data: [{
+                        type: "pie",
+                        startAngle: 240,
+                        yValueFormatString: "##0.00'%'",
+                        indexLabel: "{label} {y}",
+                        dataPoints: [
+                            { y: InactivePer, label: "Pending" },
+                            { y: activePer, label: "Completed" }
+                        ]
+                    }]
+                });
+                chart.render();
+            },
+            dataType: "json",
+        });
+
+    }
 window.onload = function() {
 
-    var chart = new CanvasJS.Chart("countrywide_oldParas", {
+   /* var chart = new CanvasJS.Chart("countrywide_oldParas", {
 	animationEnabled: true,
 	title: {
         text: "Country Wise Old Para Performance"
@@ -35,7 +75,7 @@ window.onload = function() {
 	}]
 });
     chart.render();
-
+    */
   
     const labels = ["light1", "light1", "light2", "dark1", "dark2", "dark2", "dark2"];
     const data = {

@@ -14,5 +14,6 @@ namespace AIS.Models
         public int? AUDITBY_ID { get; set; }
         public int? INSPECTEDBY_ID { get; set; }
         public int? COST_CENTER { get; set; }
+        public int? ENG_ID { get; set; }
     }
 }

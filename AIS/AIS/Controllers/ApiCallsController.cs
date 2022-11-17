@@ -293,6 +293,24 @@ namespace AIS.Controllers
             return dBConnection.CAUGetAssignedOMs();
         }
         [HttpPost]
+        public List<ManageObservations> get_observations(int ENG_ID)
+        {
+            return dBConnection.GetManagedObservations(ENG_ID,0);
+
+        }
+        [HttpPost]
+        public List<AuditCCQModel> get_ccqs(int ENTITY_ID)
+        {
+            return dBConnection.GetCCQ(ENTITY_ID);
+
+        }
+        [HttpPost]
+        public bool update_ccq(AuditCCQModel ccq)
+        {
+            return dBConnection.UpdateCCQ(ccq);
+
+        }
+        [HttpPost]
         public List<object> get_observation_text(int OBS_ID)
         {
             return dBConnection.GetObservationText(OBS_ID);
@@ -312,6 +330,11 @@ namespace AIS.Controllers
         public bool add_legacy_para_observation_text(OldParasModel ob)
         {
             return dBConnection.AddOldParas(ob);
+        }
+        [HttpPost]
+        public ActiveInactiveChart get_pie_chart_data()
+        {
+            return dBConnection.GetActiveInactiveChartData();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
