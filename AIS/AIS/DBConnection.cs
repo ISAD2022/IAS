@@ -3405,9 +3405,16 @@ namespace AIS
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
+            int risk_rating = 0;
+            if (ccq.RISK_ID == 1)
+                risk_rating = 3;
+            else if (ccq.RISK_ID == 2)
+                risk_rating = 2;
+            else if (ccq.RISK_ID == 3)
+                risk_rating = 1;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "update t_au_ccq c SET c.QUESTIONS='"+ccq.QUESTIONS+"', c.CONTROL_VIOLATION_ID="+ccq.CONTROL_VIOLATION_ID+", c.RISK_ID="+ccq.RISK_ID+", c.STATUS='"+ccq.STATUS+"', c.UPDATED_BY="+loggedInUser.PPNumber+ ", c.UPDATED_DATETIME=to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM') WHERE c.ID = " + ccq.ID;
+                cmd.CommandText = "update t_au_ccq c SET c.QUESTIONS='"+ccq.QUESTIONS+"', c.CONTROL_VIOLATION_ID="+ccq.CONTROL_VIOLATION_ID+", c.RISK_ID="+ccq.RISK_ID+", c.RISK_RATING="+risk_rating+", c.STATUS='"+ccq.STATUS+"', c.UPDATED_BY="+loggedInUser.PPNumber+ ", c.UPDATED_DATETIME=to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM') WHERE c.ID = " + ccq.ID;
                 cmd.ExecuteReader();
                 resp = true;
             }
