@@ -106,7 +106,7 @@
                 
                 g_userList = data;
                 $.each(data, function (index, user) {
-                    $('#userListTable tbody').append('<tr id="userrecordrow_' + user.id + '"><td>' + user.name + '</td><td>' + user.ppNumber + '</td><td>' + user.zoneName + '</td><td>' + user.branchName + '</td><td>' + user.divName + '</td><td>' + user.deptName + '</td><td>' + user.email + '</td><td>' + user.userRole + '</td><td>' + user.isActive + '</td><td><a class="text-danger editmode" href="#" onclick="editUserDetails(' + user.id + ')">Edit</a><a class="text-danger cancelmode d-none" href="#" onclick="cancelEditUserDetails(' + user.id +')">Cancel</a></td></tr>')
+                    $('#userListTable tbody').append('<tr id="userrecordrow_' + user.id + '"><td>' + user.name + '</td><td>' + user.ppNumber + '</td><td>' + user.userEntityName + '</td><td>' + user.userParentEntityName + '</td><td>' + user.email + '</td><td>' + user.userRole + '</td><td>' + user.isActive + '</td><td><a class="text-danger editmode" href="#" onclick="editUserDetails(' + user.id + ')">Edit</a><a class="text-danger cancelmode d-none" href="#" onclick="cancelEditUserDetails(' + user.id +')">Cancel</a></td></tr>')
                 });
 
             },
@@ -503,10 +503,8 @@
             <tr>
                 <td style="text-align:left;"><h6>User Name</h6></td>
                 <td style="text-align:left;"><h6>P.P. No.</h6></td>
-                <td style="text-align:left;"><h6>Zone</h6></td>
-                <td style="text-align:left;"><h6>Branch</h6></td>
-                <td style="text-align:left;"><h6>Division</h6></td>
-                <td style="text-align:left;"><h6>Department</h6></td>
+                <td style="text-align:left;"><h6>Current Posting</h6></td>
+                <td style="text-align:left;"><h6>Reporting to</h6></td>
                 <td style="text-align:left;"><h6>Email</h6></td>
                 <td style="text-align:left;"><h6>Group/Role</h6></td>
                 <td style="text-align:left;"><h6>Is Active</h6></td>

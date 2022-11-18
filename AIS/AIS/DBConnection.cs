@@ -440,18 +440,22 @@ namespace AIS
         public List<UserModel> GetAllUsers(FindUserModel user)
         {
             string whereClause = " 1 = 1 ";
-            if (user.DIVISIONID != 0)
-                whereClause = whereClause + " and e.CURRENTDIVISIONCODE =" + user.DIVISIONID;
             if (user.DEPARTMENTID != 0)
-                whereClause = whereClause + " and e.CURRENTDEPARTMENTCODE =" + user.DEPARTMENTID;
-            if (user.ZONEID != 0)
-                whereClause = whereClause + " and e.CURRENTZONECODE =" + user.ZONEID;
+                whereClause = whereClause + " and u.entity_id =" + user.DEPARTMENTID;
+            else if (user.DIVISIONID != 0)
+                whereClause = whereClause + " and u.entity_id =" + user.DIVISIONID;
+
             if (user.BRANCHID != 0)
-                whereClause = whereClause + " and e.CURRENTBRANCHCODE =" + user.BRANCHID;
+                whereClause = whereClause + " and u.entity_id =" + user.BRANCHID;
+            else if (user.ZONEID != 0)
+                whereClause = whereClause + " and u.entity_id =" + user.ZONEID;
+           
             if (user.EMAIL != "" && user.EMAIL != null)
                 whereClause = whereClause + " and e.EMAIL like  %'" + user.EMAIL + "'%";
+
             if (user.GROUPID != 0)
                 whereClause = whereClause + " and r.ROLE_ID =" + user.GROUPID;
+
             if (user.PPNUMBER != 0)
                 whereClause = whereClause + " and e.PPNO =" + user.PPNUMBER;
             if (user.LOGINNAME != 0)
@@ -461,7 +465,8 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join T_DIVISION d on e.CURRENTDIVISIONCODE=d.CODE left join T_DEPARTMENT dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
+                //cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join V_SERVICE_DIVISION d on e.CURRENTDIVISIONCODE=d.CODE left join V_SERVICE_DEPARTMENT dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
+                cmd.CommandText = "select u.userid, mp.p_type_id, mp.c_type_id,  u.ppno, u.entity_id, e.code, e.type_id, emp.EMPLOYEEFIRSTNAME, emp.EMPLOYEELASTNAME, emp.EMAIL, u.ISACTIVE, r.group_name, rm.group_id, mp.p_name, mp.c_name from t_auditee_entities e inner join t_auditee_entities_maping mp on e.entity_id = mp.entity_id inner join t_user u on u.entity_id = e.entity_id inner join v_service_employeeinfo emp on emp.PPNO = u.ppno left join t_user_maping rm on u.PPNO = rm.ppno left join t_groups r on r.role_id = rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -471,20 +476,29 @@ namespace AIS
                     um.PPNumber = rdr["PPNO"].ToString();
                     um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString() + " " + rdr["EMPLOYEELASTNAME"].ToString();
                     um.Email = rdr["EMAIL"].ToString();
-                    if (rdr["CURRENTBRANCHCODE"].ToString() != null && rdr["CURRENTBRANCHCODE"].ToString() != "")
-                        um.UserPostingBranch = Convert.ToInt32(rdr["CURRENTBRANCHCODE"]);
-                    if (rdr["CURRENTDEPARTMENTCODE"].ToString() != null && rdr["CURRENTDEPARTMENTCODE"].ToString() != "")
-                        um.UserPostingDept = Convert.ToInt32(rdr["CURRENTDEPARTMENTCODE"]);
-                    if (rdr["CURRENTZONECODE"].ToString() != null && rdr["CURRENTZONECODE"].ToString() != "")
-                        um.UserPostingZone = Convert.ToInt32(rdr["CURRENTZONECODE"]);
-                    if (rdr["CURRENTDIVISIONCODE"].ToString() != null && rdr["CURRENTDIVISIONCODE"].ToString() != "")
-                        um.UserPostingDiv = Convert.ToInt32(rdr["CURRENTDIVISIONCODE"]);
-                    if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
+                    um.UserEntityID =Convert.ToInt32(rdr["entity_id"].ToString());
+                    um.UserParentEntityTypeID = Convert.ToInt32(rdr["p_type_id"].ToString());
+                    um.UserEntityTypeID = Convert.ToInt32(rdr["c_type_id"].ToString());
+                    um.UserEntityName = rdr["c_name"].ToString();
+                    um.UserParentEntityName = rdr["p_name"].ToString();
+                    if (Convert.ToInt32(rdr["type_id"].ToString()) == 6)
+                    {
+                        if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
+                            um.UserPostingBranch = Convert.ToInt32(rdr["code"]);
+                    }
+                    else
+                    {
+                        if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
+                            um.UserPostingDept = Convert.ToInt32(rdr["code"]);
+                    }
+                 
+                   if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
                         um.UserGroupID = Convert.ToInt32(rdr["group_id"]);
-                    um.DivName = rdr["divName"].ToString();
-                    um.DeptName = rdr["DeptName"].ToString();
-                    um.ZoneName = rdr["ZONENAME"].ToString();
-                    um.BranchName = rdr["BRANCHNAME"].ToString();
+
+                    um.DivName = rdr["p_name"].ToString();
+                    um.DeptName = rdr["c_name"].ToString();
+                    um.ZoneName = rdr["p_name"].ToString();
+                    um.BranchName = rdr["c_name"].ToString();
                     um.UserRole = rdr["group_name"].ToString();
                     um.UserGroup = rdr["group_name"].ToString();
                     um.IsActive = rdr["ISACTIVE"].ToString();
@@ -997,7 +1011,6 @@ namespace AIS
         {
             var con = this.DatabaseConnection();
             List<DivisionModel> divList = new List<DivisionModel>();
-            string query = "";
             /*if (sessionCheck)
             {
                 var loggedInUser = sessionHandler.GetSessionUser();
@@ -1072,7 +1085,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (div_code == 0)
-                    cmd.CommandText = "select mp.parent_id as DIVISIONID, mp.entity_id as ID , mp.c_name as NAME, mp.child_code as CODE ,mp.status as ISACTIVE, mp.p_name as DIV_NAME, mp.auditedby as AUDITED_BY_DEPID from t_auditee_entities e, t_auditee_entities_maping mp where e.entity_id = mp.parent_id and e.type_id IN (3) and mp.entity_id is not null"+ query;
+                    cmd.CommandText = "select mp.parent_id as DIVISIONID, mp.entity_id as ID , mp.c_name as NAME, mp.child_code as CODE ,mp.status as ISACTIVE, mp.p_name as DIV_NAME, mp.auditedby as AUDITED_BY_DEPID from t_auditee_entities e, t_auditee_entities_maping mp where e.entity_id = mp.parent_id and e.type_id IN (3) and mp.entity_id is not null" + query;
                 else
                     cmd.CommandText = "select mp.parent_id as DIVISIONID, mp.entity_id as ID , mp.c_name as NAME, mp.child_code as CODE ,mp.status as ISACTIVE, mp.p_name as DIV_NAME, mp.auditedby as AUDITED_BY_DEPID from t_auditee_entities e, t_auditee_entities_maping mp where mp.entity_id is not null and e.type_id IN (3) and e.entity_id = mp.parent_id and e.entity_id = " + div_code+ query;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -2765,7 +2778,7 @@ namespace AIS
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, ced.heading as PROCESS,  g.description  as VIOLATION, o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, o.STATUS as STATUS_ID, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.code=t.ENTITY_ID left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query + "  order by t.OBS_ID asc";
+                cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, ced.heading as PROCESS,  g.description  as VIOLATION, o.Memo_Date, o.replydate, t.* , ot.text as OBSERVATION_TEXT, ot.text_plain as OBSERVATION_TEXT_PLAIN,  s.statusname as STATUS, o.STATUS as STATUS_ID, e.name AS ENTITY_NAME, pe.audit_startdate as AUDIT_STARTDATE, pe.audit_enddate as AUDIT_ENDDATE  from t_au_observation_assignedto t inner join t_au_observation o on o.id=t.obs_id inner join t_au_observation_text ot on ot.id=t.obs_text_id inner join t_au_observation_status s on o.status=s.statusid inner join t_auditee_entities e on e.entity_id=t.ENTITY_ID left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_plan_eng pe on pe.entity_id=e.entity_id WHERE 1=1  " + query + "  order by t.OBS_ID asc";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {

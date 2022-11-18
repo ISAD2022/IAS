@@ -29,6 +29,13 @@ namespace AIS.Models
         public int? UserGroupID { get; set; }
         public int? UserRoleID { get; set; }
         public int? UserEntityID { get; set; }
+        public int? UserParentEntityID { get; set; }
+        public int? UserEntityCode { get; set; }
+        public int? UserParentEntityCode { get; set; }
+        public string UserEntityName { get; set; }
+        public string UserParentEntityName { get; set; }
+        public int? UserEntityTypeID { get; set; }
+        public int? UserParentEntityTypeID { get; set; }
         public string ErrorMsg { get; set; }
         public bool isAuthenticate { get; set; }
         public bool isAlreadyLoggedIn { get; set; }
