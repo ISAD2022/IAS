@@ -40,8 +40,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -580,7 +580,7 @@ namespace AIS
             return entitiesList;
 
         }
-        public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_CODE = 0)
+        public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_ID = 0)
         {
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             var con = this.DatabaseConnection();
@@ -590,22 +590,23 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
              
             string whereClause = "";
-            if (ENTITY_CODE != 0)
+            if (ENTITY_ID != 0)
             {
-                whereClause += " and f.entity_code= " + ENTITY_CODE;
+                whereClause += " and f.entity_id= " + ENTITY_ID;
             }
 
-             whereClause +=  " and f.AUDITED_BY = ( SELECT CODE FROM T_AUDITEE_ENTITIES WHERE ENTITY_ID = " + loggedInUser.UserEntityID+")";           
+             whereClause += " and f.auditedby =" +  loggedInUser.UserEntityID;           
 
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras_fad f where f.status=0 "+ whereClause + " order by entity_name ";
+                cmd.CommandText = "select distinct f.entity_name, f.entity_code, f.entity_id from t_au_old_paras_fad f where 1=1 "+ whereClause + " order by entity_name ";
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.CODE = Convert.ToInt32(rdr["entity_code"]);
                     entity.NAME = rdr["entity_name"].ToString();
                     entitiesList.Add(entity);
@@ -628,20 +629,20 @@ namespace AIS
             string whereClause = "";
             if (ENTITY_CODE != 0)
             {
-                whereClause += " and f.entity_code= " + ENTITY_CODE;
+                whereClause += " and e.code= " + ENTITY_CODE;
             }
 
-            whereClause += " and f.AUDITED_BY = ( SELECT CODE FROM T_AUDITEE_ENTITIES WHERE ENTITY_ID = " + loggedInUser.UserEntityID + ")";
-
-
+           
+            whereClause += " and enteredby=" + loggedInUser.PPNumber;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras f where 1=1 " + whereClause + " order by entity_name ";
+                cmd.CommandText = "select distinct e.name, e.code, e.entity_id from t_au_old_paras_iams f inner join t_auditee_entities e on e.code=f.branchid where 1=1 " + whereClause + " order by e.name ";
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["entity_id"]);
                     entity.CODE = Convert.ToInt32(rdr["entity_code"]);
                     entity.NAME = rdr["entity_name"].ToString();
                     entitiesList.Add(entity);
@@ -1406,29 +1407,7 @@ namespace AIS
             {
                 if (sessionCheck)
                 {
-                    if (loggedInUser.UserLocationType == "H")
-                    {
-                        query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingDept;
-                    }
-                    else if (loggedInUser.UserLocationType == "B")
-                    {
-                        query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingBranch;
-
-                    }
-                    else if (loggedInUser.UserLocationType == "Z")
-                    {
-                        if (loggedInUser.UserPostingAuditZone != 0 && loggedInUser.UserPostingAuditZone != null)
-                        {
-                            query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingAuditZone;
-
-                        }
-                        else
-                        {
-                            query = query + " and p.AUDITEDBY=" + loggedInUser.UserPostingZone;
-
-                        }
-                    }
-
+                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserEntityID;
                 }
             }
             using (OracleCommand cmd = con.CreateCommand())
@@ -3579,7 +3558,7 @@ namespace AIS
             List<OldParasModel> list = new List<OldParasModel>();
             string whereClause = "";
             if (AUDITED_BY != "")
-                whereClause += " and entity_code=" + AUDITED_BY;
+                whereClause += " and entity_id=" + AUDITED_BY;
 
             if (AUDIT_YEAR != "" && AUDIT_YEAR != "0")
                 whereClause += " and AUDIT_PERIOD=" + AUDIT_YEAR;
@@ -3593,6 +3572,7 @@ namespace AIS
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
                     chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
@@ -3603,6 +3583,7 @@ namespace AIS
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
+                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
                     list.Add(chk);
                 }
             }
@@ -3610,7 +3591,7 @@ namespace AIS
             return list;
         }
 
-        public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_CODE, string AUDIT_YEAR)
+        public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -3619,15 +3600,15 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             string whereClause = "";
-            if (ENTITY_CODE != "")
-                whereClause += " and entity_code=" + ENTITY_CODE;
+            if (ENTITY_ID != "")
+                whereClause += " and e.entity_id=" + ENTITY_ID;
 
-            if (AUDIT_YEAR != "" && AUDIT_YEAR != "0")
-                whereClause += " and AUDIT_PERIOD=" + AUDIT_YEAR;
+           
 
+            whereClause += " and ENTEREDBY=" + loggedInUser.PPNumber;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_au_old_paras WHERE 1=1 " + whereClause + " order by ID";
+                cmd.CommandText = "select * from t_au_old_paras_iams a inner join t_auditee_entities e on e.code = a.branchid  WHERE 1=1 " + whereClause + " order by ID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3788,7 +3769,8 @@ return list;
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
             string query = "";
-            if (loggedInUser.UserLocationType == "H")
+            query = query + "  s.AUDIT_ZONEID = (select code from t_auditee_entities where entity_id = " + loggedInUser.UserEntityID + ")";
+            /*if (loggedInUser.UserLocationType == "H")
                 query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingDept;
             else if (loggedInUser.UserLocationType == "B")
                 query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingBranch;
@@ -3800,7 +3782,7 @@ return list;
                     query = query + "  s.AUDIT_ZONEID=" + loggedInUser.UserPostingZone;
             }
             else
-                query = query + "  s.AUDIT_ZONEID= 0 ";
+                query = query + "  s.AUDIT_ZONEID= 0 ";*/
 
             List<UserWiseOldParasPerformanceModel> list = new List<UserWiseOldParasPerformanceModel>();
 

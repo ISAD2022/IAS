@@ -327,9 +327,9 @@ namespace AIS.Controllers
             return dBConnection.GetOldParas(AUDITED_BY, AUDIT_YEAR);
         }
         [HttpPost]
-        public List<AuditeeOldParasModel> get_outstanding_para(string ENTITY_CODE, string AUDIT_YEAR)
+        public List<AuditeeOldParasModel> get_outstanding_para(string ENTITY_ID)
         {
-            return dBConnection.GetOutstandingParas(ENTITY_CODE, AUDIT_YEAR);
+            return dBConnection.GetOutstandingParas(ENTITY_ID);
         }
         [HttpPost]
         public bool add_legacy_para_observation_text(OldParasModel ob)

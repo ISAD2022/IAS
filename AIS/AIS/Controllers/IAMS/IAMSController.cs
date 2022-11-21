@@ -30,7 +30,6 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["EntitiesList"] = dBConnection.GetAuditeeEntitiesForOutstandingParas(0);
-            ViewData["AuditYearList"] = dBConnection.GetOutstandingParasAuditYear();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
