@@ -28,9 +28,9 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["subProcessList"] = dBConnection.GetRiskProcessDetails();
+            ViewData["EntitiesList"] = dBConnection.GetAuditeeEntitiesForOutstandingParas(0);
+            ViewData["AuditYearList"] = dBConnection.GetOutstandingParasAuditYear();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

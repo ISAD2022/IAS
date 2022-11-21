@@ -40,8 +40,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -109,7 +109,7 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-                    /*cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ID='" + user.SessionId + "' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -117,7 +117,7 @@ namespace AIS
                         {
                             isSessionAvailable = !isSessionAvailable;
                         }
-                    }*/
+                    }
 
                     sessionHandler = new SessionHandler();
                     sessionHandler._httpCon = this._httpCon;
@@ -164,20 +164,25 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool IsLoginSessionExist()
+        public bool IsLoginSessionExist(string PPNumber ="" )
         {
+            
+
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var sessionUser = sessionHandler.GetSessionUser();
+
+            if (PPNumber == "")
+                PPNumber = sessionUser.PPNumber;
             bool isSession = false;
-            if (sessionUser.PPNumber != null && sessionUser.PPNumber != "")
+            if (PPNumber != null && PPNumber != "")
             {
                 var con = this.DatabaseConnection();
 
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + sessionUser.PPNumber + "' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + PPNumber + "' and u.SESSION_ACTIVE='Y'";
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
                     {
@@ -204,7 +209,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    cmd.CommandText = "begin session_kill(" + login.PPNumber + ", '" + iPAddress.GetMACAddress() + "'); end;";
+                    cmd.CommandText = "begin session_kill(" + login.PPNumber + "); end;";
                     cmd.ExecuteReader();
                     isSession = true;
                 }
@@ -225,7 +230,7 @@ namespace AIS
                 var con = this.DatabaseConnection();
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "begin session_kill(" + loggedInUser.PPNumber + ", '" + iPAddress.GetMACAddress() + "'); end;";
+                    cmd.CommandText = "begin session_kill(" + loggedInUser.PPNumber + "); end;";
                     cmd.ExecuteReader();
                     isTerminate = true;
                 }
@@ -451,22 +456,22 @@ namespace AIS
                 whereClause = whereClause + " and u.entity_id =" + user.ZONEID;
            
             if (user.EMAIL != "" && user.EMAIL != null)
-                whereClause = whereClause + " and e.EMAIL like  %'" + user.EMAIL + "'%";
+                whereClause = whereClause + " and emp.EMAIL like  %'" + user.EMAIL + "'%";
 
             if (user.GROUPID != 0)
                 whereClause = whereClause + " and r.ROLE_ID =" + user.GROUPID;
 
             if (user.PPNUMBER != 0)
-                whereClause = whereClause + " and e.PPNO =" + user.PPNUMBER;
+                whereClause = whereClause + " and emp.PPNO =" + user.PPNUMBER;
             if (user.LOGINNAME != 0)
-                whereClause = whereClause + " and e.PPNO =" + user.LOGINNAME;
+                whereClause = whereClause + " and emp.PPNO =" + user.LOGINNAME;
 
             List<UserModel> userList = new List<UserModel>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join V_SERVICE_DIVISION d on e.CURRENTDIVISIONCODE=d.CODE left join V_SERVICE_DEPARTMENT dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
-                cmd.CommandText = "select u.userid, mp.p_type_id, mp.c_type_id,  u.ppno, u.entity_id, e.code, e.type_id, emp.EMPLOYEEFIRSTNAME, emp.EMPLOYEELASTNAME, emp.EMAIL, u.ISACTIVE, r.group_name, rm.group_id, mp.p_name, mp.c_name from t_auditee_entities e inner join t_auditee_entities_maping mp on e.entity_id = mp.entity_id inner join t_user u on u.entity_id = e.entity_id inner join v_service_employeeinfo emp on emp.PPNO = u.ppno left join t_user_maping rm on u.PPNO = rm.ppno left join t_groups r on r.role_id = rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
+                cmd.CommandText = "select u.userid, mp.parent_id, mp.parent_code, mp.child_code,  mp.p_type_id, mp.c_type_id,  u.ppno, u.entity_id, e.code, e.type_id, emp.EMPLOYEEFIRSTNAME, emp.EMPLOYEELASTNAME, emp.EMAIL, u.ISACTIVE, r.group_name, rm.group_id, mp.p_name, mp.c_name from t_auditee_entities e inner join t_auditee_entities_maping mp on e.entity_id = mp.entity_id inner join t_user u on u.entity_id = e.entity_id inner join v_service_employeeinfo emp on emp.PPNO = u.ppno left join t_user_maping rm on u.PPNO = rm.ppno left join t_groups r on r.role_id = rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -477,23 +482,38 @@ namespace AIS
                     um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString() + " " + rdr["EMPLOYEELASTNAME"].ToString();
                     um.Email = rdr["EMAIL"].ToString();
                     um.UserEntityID =Convert.ToInt32(rdr["entity_id"].ToString());
+                    um.UserEntityCode = Convert.ToInt32(rdr["child_code"].ToString());
                     um.UserParentEntityTypeID = Convert.ToInt32(rdr["p_type_id"].ToString());
+                    um.UserParentEntityID = Convert.ToInt32(rdr["parent_id"].ToString());
+                    um.UserParentEntityCode = Convert.ToInt32(rdr["parent_code"].ToString());
                     um.UserEntityTypeID = Convert.ToInt32(rdr["c_type_id"].ToString());
                     um.UserEntityName = rdr["c_name"].ToString();
                     um.UserParentEntityName = rdr["p_name"].ToString();
                     if (Convert.ToInt32(rdr["type_id"].ToString()) == 6)
                     {
                         if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
+                        {
                             um.UserPostingBranch = Convert.ToInt32(rdr["code"]);
+                            um.UserPostingZone = Convert.ToInt32(rdr["parent_code"]);
+                        }
+                            
                     }
                     else
                     {
                         if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
+                        {
                             um.UserPostingDept = Convert.ToInt32(rdr["code"]);
+                            um.UserPostingDiv = Convert.ToInt32(rdr["parent_code"]);
+                        }
+                            
                     }
                  
                    if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
+                    {
                         um.UserGroupID = Convert.ToInt32(rdr["group_id"]);
+                        um.UserRoleID = Convert.ToInt32(rdr["group_id"]);
+                    }
+                        
 
                     um.DivName = rdr["p_name"].ToString();
                     um.DeptName = rdr["c_name"].ToString();
@@ -575,10 +595,7 @@ namespace AIS
                 whereClause += " and f.entity_code= " + ENTITY_CODE;
             }
 
-            if (loggedInUser.UserPostingAuditZone != 0)
-                whereClause +=  " and f.AUDITED_BY=" + loggedInUser.UserPostingAuditZone;
-            else
-                whereClause +=  " and f.AUDITED_BY= 0 ";
+             whereClause +=  " and f.AUDITED_BY = ( SELECT CODE FROM T_AUDITEE_ENTITIES WHERE ENTITY_ID = " + loggedInUser.UserEntityID+")";           
 
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -598,6 +615,43 @@ namespace AIS
             return entitiesList;
 
         }
+
+        public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOutstandingParas(int ENTITY_CODE = 0)
+        {
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            string whereClause = "";
+            if (ENTITY_CODE != 0)
+            {
+                whereClause += " and f.entity_code= " + ENTITY_CODE;
+            }
+
+            whereClause += " and f.AUDITED_BY = ( SELECT CODE FROM T_AUDITEE_ENTITIES WHERE ENTITY_ID = " + loggedInUser.UserEntityID + ")";
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select distinct f.entity_name, f.entity_code from t_au_old_paras f where 1=1 " + whereClause + " order by entity_name ";
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.CODE = Convert.ToInt32(rdr["entity_code"]);
+                    entity.NAME = rdr["entity_name"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return entitiesList;
+
+        }
+
         public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
         {
             var con = this.DatabaseConnection();
@@ -3555,6 +3609,49 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_CODE, string AUDIT_YEAR)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            string whereClause = "";
+            if (ENTITY_CODE != "")
+                whereClause += " and entity_code=" + ENTITY_CODE;
+
+            if (AUDIT_YEAR != "" && AUDIT_YEAR != "0")
+                whereClause += " and AUDIT_PERIOD=" + AUDIT_YEAR;
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * from t_au_old_paras WHERE 1=1 " + whereClause + " order by ID";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
+                    //chk.TYPE_DES = rdr["TYPE_DES"].ToString();
+                    chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.AUDITEE_RESPONSE = rdr["AUDITEE_RESPONSE"].ToString();
+                    chk.AUDITOR_REMARKS = rdr["AUDITOR_REMARKS"].ToString();
+                    if(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString()!="" && rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString() != null)
+                    chk.DATE_OF_LAST_COMPLIANCE_RECEIVED = Convert.ToDateTime(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"]);
+                    chk.AUDITEDBY =Convert.ToInt32(rdr["AUDITED_BY"].ToString());
+                    list.Add(chk);
+                }
+}
+con.Close();
+return list;
+        }
+
         public List<OldParasModel> GetOldParasAuditYear()
         {
             sessionHandler = new SessionHandler();
@@ -3567,6 +3664,29 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "select distinct audit_period from t_au_old_paras_fad WHERE STATUS = 0 order by audit_period";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<OldParasModel> GetOutstandingParasAuditYear()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select distinct audit_period from t_au_old_paras order by audit_period";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3595,7 +3715,7 @@ namespace AIS
                 {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
                 }
-                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "', al.ENTERED_ON = to_date('" + dtime.DateTimeInDDMMYYHHMMSS(System.DateTime.Now) + "','dd/mm/yyyy hh:mi:ss') , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
+                string strSQL = cmd.CommandText = "UPDATE T_AU_OLD_PARAS_FAD al SET al.PROCESS = '" + jm.PROCESS + "', al.SUB_PROCESS = '" + jm.SUB_PROCESS + "', al.PROCESS_DETAIL = '" + jm.PROCESS_DETAIL + "', al.STATUS = '" + jm.STATUS + "', al.ENTERED_BY = '" + jm.ENTERED_BY + "', al.ENTERED_ON = to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy hh:mi:ss') , al.PARA_TEXT =:PARA_TEXT  WHERE al.ID = " + jm.ID;
                 OracleParameter parmData = new OracleParameter();
                 parmData.Direction = System.Data.ParameterDirection.Input;
                 parmData.OracleDbType = OracleDbType.Clob;

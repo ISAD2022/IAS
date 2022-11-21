@@ -69,8 +69,11 @@ namespace AIS
         }
         public bool IsUserLoggedIn()
         {
-            string json = _session.GetString("_sessionId");
-            if (json != "" && json != null && json.Length > 0)
+            dBConnection = new DBConnection();
+            dBConnection._httpCon = this._httpCon;
+            dBConnection._session = this._session;
+           string json = _session.GetString("_sessionId");
+            if (json != "" && json != null && json.Length > 0 && dBConnection.IsLoginSessionExist())
             {
                 return true;
             }

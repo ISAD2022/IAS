@@ -127,18 +127,19 @@
                 $('#ppnoSaveField').val(user.ppNumber);
                 $('#loginSaveField').val(user.ppNumber);
                 if (user.userPostingDiv != null) {
-                    $('#divSaveField').val(user.userPostingDiv);
-                    ShowEditedDivisionDepartments(user.userPostingDept);
+                    $('#divSaveField').val(user.userParentEntityID);
+                    ShowEditedDivisionDepartments(user.userEntityID);
                 }
                 if (user.userPostingZone != null) {
-                    $('#zoneSaveField').val(user.userPostingZone);
-                    ShowEditedZonesBranches(user.userPostingBranch);
+                    $('#zoneSaveField').val(user.userParentEntityID);
+                    ShowEditedZonesBranches(user.userEntityID);
                 }
                 $('#emailSaveField').val(user.email);
-                if (user.userPostingZone != null)
+                if (user.userGroupID != null)
                     $('#roleSaveField').val(user.userGroupID);
                 else
                     $('#roleSaveField').val(0);
+
                 if (user.isActive == "Y")
                     $('#isActiveSaveField').attr('checked', true);
                 else
@@ -398,7 +399,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["DivisionList"]))
                         {
-                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
                         }
                     }
                 }
