@@ -248,6 +248,17 @@
             dataType: "json",
         });
     }
+
+    function setSizeEnableForBranches() {
+        if ($('#auditCriteriaEntityField option:selected').val() != 6) {
+            $('#auditCriteriaSizeField').val('1');
+            $('#auditCriteriaSizeField').attr('disabled', true);
+
+        } else {
+            $('#auditCriteriaSizeField').attr('disabled', false);
+        }
+      
+    }
 </script>
 
 <div class="row col-md-12">
@@ -280,7 +291,7 @@
     </div>
     <div class="col-md-8">
         <div class="col-md-12 pl-0 pr-0">
-            <select id="auditCriteriaEntityField" class="form-select form-control">
+            <select onchange="setSizeEnableForBranches();" id="auditCriteriaEntityField" class="form-select form-control">
                 <option value="0" id="0" selected>--Select Entity--</option>
                 @{
                     if (ViewData["AuditEntities"] != null)
