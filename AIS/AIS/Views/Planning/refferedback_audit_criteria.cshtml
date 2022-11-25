@@ -164,7 +164,7 @@
                         </td>                      
                         <td>
                             
-                            <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferredBackAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_ID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS');">
+                            <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferredBackAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_TYPEID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS');">
                                 Details
                             </button>
                         </td>
@@ -200,7 +200,7 @@
 
                                         foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
                                         {
-                                            <option id="@period.ID" value="@period.ID">@period.DESCRIPTION</option>
+                                            <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
                                         }
 
                                     }

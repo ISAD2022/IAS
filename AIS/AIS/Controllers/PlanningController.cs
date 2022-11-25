@@ -289,17 +289,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
             var loggedInUser = sessionHandler.GetSessionUser();
-            if(loggedInUser.UserPostingAuditZone!=null && loggedInUser.UserPostingAuditZone != 0)
-                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingAuditZone);
-           else if (loggedInUser.UserPostingBranch != null && loggedInUser.UserPostingBranch != 0)
-                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingBranch);
-            else if (loggedInUser.UserPostingDept != null && loggedInUser.UserPostingDept != 0)
-                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingDept);
-            else if (loggedInUser.UserPostingDiv != null && loggedInUser.UserPostingDiv != 0)
-                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingDiv);
-            else if (loggedInUser.UserPostingZone != null && loggedInUser.UserPostingZone != 0)
-                ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserPostingZone);
-
+            ViewData["AuditEmployees"] = dBConnection.GetAuditEmployees((int)loggedInUser.UserEntityID);
 
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -384,7 +374,7 @@ namespace AIS.Controllers
                 AddAuditCriteriaModel cm = new AddAuditCriteriaModel();
                 cm.ID = Convert.ToInt32(CRITERIA_LIST[0]);
                 cm.AUDITPERIODID = Convert.ToInt32(CRITERIA_LIST[1]);
-                cm.ENTITY_ID = Convert.ToInt32(CRITERIA_LIST[2]);
+                cm.ENTITY_TYPEID = Convert.ToInt32(CRITERIA_LIST[2]);
                 cm.RISK_ID = Convert.ToInt32(CRITERIA_LIST[3]);
                 cm.FREQUENCY_ID = Convert.ToInt32(CRITERIA_LIST[4]);
                 cm.SIZE_ID = Convert.ToInt32(CRITERIA_LIST[5]);
@@ -508,12 +498,13 @@ namespace AIS.Controllers
         public List<AuditTeamModel> add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
         {
             List<AuditTeamModel> aTeams = new List<AuditTeamModel>();
+            int newTeamId = dBConnection.GetLatestTeamID();
             if (AUDIT_TEAM.Count > 0 && AUDIT_TEAM != null)
             {
                 foreach(var item in AUDIT_TEAM) { 
                 AuditTeamModel ateam = new AuditTeamModel();
-                    ateam.ID = 0;
-                    ateam.CODE = item.T_CODE;
+                    ateam.T_ID = newTeamId;
+                    ateam.CODE = newTeamId.ToString();
                     ateam.NAME = item.T_NAME;
                     ateam.EMPLOYEENAME = item.NAME;
                     ateam.TEAMMEMBER_ID = item.PPNO;

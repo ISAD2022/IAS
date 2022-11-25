@@ -49,6 +49,8 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["GroupList"] = dBConnection.GetGroups();
+            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+       
             bool sessionCheck = true;
             var loggedInUser = sessionHandler.GetSessionUser();
             if (loggedInUser.UserRoleID == 1)

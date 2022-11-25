@@ -139,7 +139,7 @@ namespace AIS.Controllers
                 AddAuditCriteriaModel cm = new AddAuditCriteriaModel();
                 cm.ID = 0;
                 cm.AUDITPERIODID = Convert.ToInt32(criteria[0]);
-                cm.ENTITY_ID = Convert.ToInt32(criteria[1]);
+                cm.ENTITY_TYPEID = Convert.ToInt32(criteria[1]);
                 cm.RISK_ID = Convert.ToInt32(criteria[2]);
                 cm.FREQUENCY_ID = Convert.ToInt32(criteria[3]);
                 cm.SIZE_ID = Convert.ToInt32(criteria[4]);
@@ -149,7 +149,7 @@ namespace AIS.Controllers
                 cm.RISK = criteria[9];
                 cm.SIZE = criteria[10];
                 cm.FREQUENCY = criteria[11];
-                if ((criteria[6].ToLower()) == "yes")
+                if (criteria[6].ToLower() == "yes")
                     criteria[6] = "Y";
                 else
                     criteria[6] = "N";

@@ -5,7 +5,7 @@ namespace AIS.Models
 {
     public class AuditPeriodModel
     {        
-        public int ID { get; set; }
+        public int AUDITPERIODID { get; set; }
         public string DESCRIPTION { get; set; }
         public DateTime START_DATE { get; set; }
         public DateTime END_DATE { get; set; }

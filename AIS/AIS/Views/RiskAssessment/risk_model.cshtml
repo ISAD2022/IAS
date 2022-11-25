@@ -35,7 +35,7 @@
 
                     foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
                     {
-                        <option id="@period.ID" value="@period.ID">@period.DESCRIPTION</option>
+                        <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
                     }
 
                 }

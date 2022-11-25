@@ -5,6 +5,7 @@ namespace AIS.Models
     public class AuditTeamModel
     {
         public int ID { get; set; }
+        public int T_ID { get; set; }
         public string CODE { get; set; }
         public string NAME { get; set; }
         public int AUDIT_DEPARTMENT { get; set; }

@@ -7,7 +7,7 @@ namespace AIS.Models
     public class AuditCriteriaModel
     {        
         public int ID { get; set; }
-        public int ENTITY_ID { get; set; }
+        public int ENTITY_TYPEID { get; set; }
         public string ENTITY { get; set; }
         public int SIZE_ID { get; set; }
         public string SIZE { get; set; }

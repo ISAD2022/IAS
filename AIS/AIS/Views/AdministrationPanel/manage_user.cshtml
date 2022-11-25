@@ -36,7 +36,69 @@
             });
         }
     }
-    function ShowSelectedDivisionDepartments() {
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function getrelation() {
+
+
+        $('#controlingsearch').empty();
+
+        $('#childposting').empty();
+
+        $.ajax({
+            url: "/ApiCalls/getparentrel",
+            type: "POST",
+            data: {
+                'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
+            },
+
+
+            cache: false,
+            success: function (data) {
+
+
+                $.each(data, function (index, contof) {
+                    $('#controlingsearch').append('<option value="' + contof.entitY_ID + '" id="' + contof.entitY_REALTION_ID + '">' + contof.description + '</option>')
+                });
+
+                // console.log(data);
+
+            },
+            dataType: "json",
+        });
+
+
+
+    }
+
+  function getplacepost() {
+        $('#childposting').empty();
+
+        $.ajax({
+            url: "/ApiCalls/getpostplace",
+            type: "POST",
+            data: {
+                'E_R_ID': $('#controlingsearch option:selected').val()
+            },
+
+
+            cache: false,
+            success: function (data) {
+                //console.log(data);
+
+                $.each(data, function (index, gpp) {
+                    $('#childposting').append('<option value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
+                });
+
+
+
+            },
+            dataType: "json",
+        });
+        //  getrelation();
+
+    }
+  function ShowSelectedDivisionDepartments() {
         if ($('#divSearchField option:selected').val() == 0) {
             $('#deptSearchField').empty();
             $('#deptSearchField').append('<option value="0" id="0">--Select Audit Department--</option>')
@@ -266,6 +328,79 @@
 <div class="row col-md-12 mt-3">
     <h3>Manage Users</h3>
 </div>
+
+
+
+
+
+
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Relationship Type</label>
+    </div>
+    <div class="col-md-10">
+        <select id="RelationshipField" onchange="getrelation();" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Relationship Type--</option>
+
+
+            @{
+                if (ViewData["Userrelationship"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["Userrelationship"]))
+                    {
+                        <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                    }
+                }
+            }
+
+
+
+        </select>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="row col-md-12 mt-1">
+    <div class="col-md-2">
+        <label>Controlling/Reporting Office</label>
+    </div>
+    <div class="col-md-4">
+        <select id="controlingsearch" onchange="getplacepost();" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Controlling/Reporting Office--</option>
+
+        </select>
+    </div>
+
+
+
+
+
+
+
+    <div class="col-md-2">
+        <label>Place of Posting</label>
+    </div>
+    <div class="col-md-4">
+        <select id="childposting" class="form-control form-select">
+            <option id="0" value="0" selected="selected">--Select Place of Posting--</option>
+
+        </select>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
 <div id="searchFieldsContainer">
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">
@@ -281,60 +416,65 @@
             <input id="loginSearchField" autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" class="form-control" type="text" />
         </div>
     </div>
-    <div class="row col-md-12 mt-1">
-        <div class="col-md-2">
-            <label>Division</label>
-        </div>
-        <div class="col-md-4">
-            <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Division--</option>
-                @{
-                    if (ViewData["DivisionList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["DivisionList"]))
-                        {
-                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label>Department</label>
-        </div>
-        <div class="col-md-4">
-            <select id="deptSearchField" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Department--</option>
-            </select>
-        </div>
-    </div>
-    <div class="row col-md-12 mt-1">
-        <div class="col-md-2">
-            <label>Zone</label>
-        </div>
-        <div class="col-md-4">
-            <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Zone--</option>
-                @{
-                    if (ViewData["ZoneList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["ZoneList"]))
-                        {
-                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label>Branches</label>
-        </div>
-        <div class="col-md-4">
-            <select id="brSearchField" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Branch--</option>
-            </select>
-        </div>
-    </div>
+
+
+
+    <!-- <div class="row col-md-12 mt-1">
+         <div class="col-md-2">
+             <label>Division</label>
+         </div>
+         <div class="col-md-4">
+             <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
+                 <option id="0" value="0" selected="selected">--Select Division--</option>
+                 @{
+                     if (ViewData["DivisionList"] != null)
+                     {
+                         foreach (var item in (dynamic)(ViewData["DivisionList"]))
+                         {
+                             <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
+                         }
+                     }
+                 }
+             </select>
+         </div>
+         <div class="col-md-2">
+             <label>Department</label>
+         </div>
+         <div class="col-md-4">
+             <select id="deptSearchField" class="form-control form-select">
+                 <option id="0" value="0" selected="selected">--Select Department--</option>
+             </select>
+         </div>
+     </div>
+     <div class="row col-md-12 mt-1">
+         <div class="col-md-2">
+             <label>Zone</label>
+         </div>
+         <div class="col-md-4">
+             <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
+                 <option id="0" value="0" selected="selected">--Select Zone--</option>
+                 @{
+                     if (ViewData["ZoneList"] != null)
+                     {
+                         foreach (var item in (dynamic)(ViewData["ZoneList"]))
+                         {
+                             <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
+                         }
+                     }
+                 }
+             </select>
+         </div>
+         <div class="col-md-2">
+             <label>Branches</label>
+         </div>
+         <div class="col-md-4">
+             <select id="brSearchField" class="form-control form-select">
+                 <option id="0" value="0" selected="selected">--Select Branch--</option>
+             </select>
+         </div>
+     </div>-->
+
+
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">
             <label>Email</label>
@@ -362,6 +502,28 @@
             </select>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">
             <label>Is Active</label>

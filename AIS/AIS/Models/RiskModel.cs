@@ -7,6 +7,7 @@ namespace AIS.Models
     {
         public int R_ID { get; set; }
         public string DESCRIPTION { get; set; }
+        public string RATING { get; set; }
 
     }
 }
