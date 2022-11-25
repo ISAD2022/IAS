@@ -278,6 +278,16 @@ namespace AIS.Controllers
             return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
         }
         [HttpPost]
+        public bool DeletePendingCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
+        {
+            return dBConnection.DeletePendingCriteria(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
+        }
+        [HttpPost]
+        public bool submit_audit_criterias(int PERIOD_ID)
+        {
+            return dBConnection.SubmitAuditCriteriaForApproval(PERIOD_ID);
+        }
+        [HttpPost]
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID=0)
         {
             return dBConnection.GetCOSORiskForDepartment(PERIOD_ID);

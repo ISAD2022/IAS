@@ -2026,13 +2026,50 @@ namespace AIS
             con.Close();
             return riskList;
         }
+        public List<AuditCriteriaModel> GetPendingAuditCriterias()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.CRITERIA_SUBMITTED='N' and ac.CREATED_BY="+loggedInUser.PPNumber;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditCriteriaModel acr = new AuditCriteriaModel();
+                    acr.ID = Convert.ToInt32(rdr["ID"]);
+                    acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
+                    if (rdr["SIZE_ID"].ToString() != null && rdr["SIZE_ID"].ToString() != "")
+                        acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
+                    acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                    acr.APPROVAL_STATUS = Convert.ToInt32(rdr["APPROVAL_STATUS"]);
+                    acr.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    acr.PERIOD = rdr["PERIOD"].ToString();
+                    acr.ENTITY = rdr["ENTITY"].ToString();
+                    acr.FREQUENCY = rdr["FREQUENCY"].ToString();
+                    acr.SIZE = rdr["BRSIZE"].ToString();
+                    acr.RISK = rdr["RISK"].ToString();
+                    acr.VISIT = rdr["VISIT"].ToString();
+                    acr.COMMENTS = this.GetAuditCriteriaLogLastStatus(acr.ID);
+                    criteriaList.Add(acr);
+                }
+            }
+            con.Close();
+            return criteriaList;
+        }
         public List<AuditCriteriaModel> GetRefferedBackAuditCriterias()
         {
             var con = this.DatabaseConnection();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS=2";
+                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS=2 and ac.CRITERIA_SUBMITTED='Y'";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2065,7 +2102,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ac.*, p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS IN (1,3)";
+                cmd.CommandText = "select ac.*, p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS IN (1,3) and ac.CRITERIA_SUBMITTED='Y'";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2093,11 +2130,13 @@ namespace AIS
             con.Close();
             return criteriaList;
         }
+
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             bool isAlreadyAdded = false;
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2111,14 +2150,13 @@ namespace AIS
                 }
                 if (!isAlreadyAdded)
                 {
-                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_TYPEID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_TYPEID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "' )";
+                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_TYPEID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID, a.CREATED_BY, a.CRITERIA_SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_TYPEID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "', "+loggedInUser.PPNumber+", 'N')";
                     cmd.ExecuteReader();
                     AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
                     alog.ID = 0;
                     alog.C_ID = 0;
                     alog.STATUS_ID = 1;
                     alog.REMARKS = "AUDIT CRITERIA CREATED";
-                    var loggedInUser = sessionHandler.GetSessionUser();
                     alog.CREATEDBY_ID =Convert.ToInt32(loggedInUser.PPNumber);
                     alog.CREATED_ON = DateTime.Now;
                     alog.UPDATED_BY = Convert.ToInt32(loggedInUser.PPNumber);
@@ -3340,6 +3378,32 @@ namespace AIS
             }
             con.Close();
             return count;
+        }
+        public bool DeletePendingCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Delete FROM t_audit_criteria c where c.entity_typeid=" + ENTITY_TYPE_ID + " and c.auditperiodid= " + PERIOD_ID + " and c.size_id=" + SIZE_ID + " and c.risk_id=" + RISK_ID + " and c.frequency_id=" + FREQUENCY_ID;
+                 cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "Update t_audit_criteria c SET c.CRITERIA_SUBMITTED='Y' where c.CREATED_BY=" + loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
         }
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
         {

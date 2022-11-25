@@ -22,5 +22,8 @@ namespace AIS.Models
         public string PERIOD { get; set; }
         public string COMMENTS { get; set; }
         public int ENTITIES_COUNT { get; set; }
+        public int CREATED_BY { get; set; }
+        public bool CRITERIA_SUBMITTED { get; set; }
+
     }
 }

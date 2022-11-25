@@ -29,6 +29,7 @@ namespace AIS.Controllers
             ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
             ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["PendingCriteriaList"] = dBConnection.GetPendingAuditCriterias();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
