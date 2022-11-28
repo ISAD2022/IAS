@@ -301,7 +301,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\audit_period.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\audit_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\holiday_calendar.cshtml.g.cs
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\plan_approvals.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\post_changes_approved_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\post_changes_team_members.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\refferedback_audit_criteria.cshtml.g.cs
@@ -386,3 +385,4 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.CopyCompl
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Planning\post_changes_criteria.cshtml.g.cs

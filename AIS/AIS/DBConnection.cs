@@ -2102,7 +2102,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ac.*, p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS IN (1,3) and ac.CRITERIA_SUBMITTED='Y'";
+                cmd.CommandText = "select ac.*, p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS IN (1,3,6) and ac.CRITERIA_SUBMITTED='Y'";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2124,6 +2124,39 @@ namespace AIS
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.COMMENTS = this.GetAuditCriteriaLogLastStatus(acr.ID);
                     acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.RISK_ID, acr.SIZE_ID, acr.ENTITY_TYPEID, acr.AUDITPERIODID, acr.FREQUENCY_ID);
+                    criteriaList.Add(acr);
+                }
+            }
+            con.Close();
+            return criteriaList;
+        }
+        public List<AuditCriteriaModel> GetPostChangesAuditCriterias()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.APPROVAL_STATUS IN (4) and ac.CRITERIA_SUBMITTED='Y'";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditCriteriaModel acr = new AuditCriteriaModel();
+                    acr.ID = Convert.ToInt32(rdr["ID"]);
+                    acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
+                    if (rdr["SIZE_ID"].ToString() != null && rdr["SIZE_ID"].ToString() != "")
+                        acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
+                    acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
+                    acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                    acr.APPROVAL_STATUS = Convert.ToInt32(rdr["APPROVAL_STATUS"]);
+                    acr.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    acr.PERIOD = rdr["PERIOD"].ToString();
+                    acr.ENTITY = rdr["ENTITY"].ToString();
+                    acr.FREQUENCY = rdr["FREQUENCY"].ToString();
+                    acr.SIZE = rdr["BRSIZE"].ToString();
+                    acr.RISK = rdr["RISK"].ToString();
+                    acr.VISIT = rdr["VISIT"].ToString();
+                    acr.COMMENTS = this.GetAuditCriteriaLogLastStatus(acr.ID);
                     criteriaList.Add(acr);
                 }
             }
@@ -2185,7 +2218,7 @@ namespace AIS
                 AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
                 alog.ID = 0;
                 alog.C_ID = acm.ID;
-                alog.STATUS_ID = 3;
+                alog.STATUS_ID = acm.APPROVAL_STATUS;
                 alog.REMARKS = COMMENTS;
                 var loggedInUser = sessionHandler.GetSessionUser();
                 alog.CREATEDBY_ID = Convert.ToInt32(loggedInUser.PPNumber);
@@ -3119,9 +3152,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (OBS_ID == 0)
-                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_code = aee.code  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.id = e.period_id and o.engplanid=" + ENG_ID + "  order by o.memo_number";
+                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_code = aee.code  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id and o.engplanid=" + ENG_ID + "  order by o.memo_number";
                 else 
-                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_code = aee.code  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.id = e.period_id and o.ID=" + OBS_ID + " and o.engplanid=" + ENG_ID + "  order by o.memo_number";
+                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_code = aee.code  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id and o.ID=" + OBS_ID + " and o.engplanid=" + ENG_ID + "  order by o.memo_number";
                 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
