@@ -6,7 +6,7 @@ namespace AIS.Models
     {
         public int CRITERIA_ID { get; set; }
         public int AUDIT_PERIOD_ID { get; set; }
-        public int AUDIT_ZONE_ID { get; set; }
+        public int AUDITEDBY { get; set; }
         public string ZONE_NAME { get; set; }
         public string CODE { get; set; }
         public string ENTITY_NAME { get; set; }

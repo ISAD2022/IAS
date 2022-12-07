@@ -93,6 +93,32 @@
         }
     }
 
+    function div_zoneBranchesShowHide() {
+        if ($('#zoneSearchField option:selected').val() == 0) {
+            $('#brSearchField').empty();
+            $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>');
+        }
+        else {
+            $('#brSearchField').empty();
+            $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>')
+            $.ajax({
+                url: "/Planning/zone_branches",
+                type: "POST",
+                data: {
+                    'zone_code': $('#zoneSearchField option:selected').val(),
+                    'session_check':false
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (index, branch) {
+                        $('#brSearchField').append('<option value="' + branch.branchcode + '" id="' + branch.branchcode + '">' + branch.description + '</option>')
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+
 </script>
 <div class="row col-md-12">
     <div class="col-md-12 mt-3">
@@ -129,44 +155,74 @@
         </div>
     </div>
     <div class="row col-md-12 mt-3">
-
         <div class="row col-md-12 mt-3">
-            <div class="col-md-3 mt-3">
-                <label>Responsible P.P. No.</label>
+            <div class="col-md-2 mt-3">
+                <label>Zones</label>
             </div>
             <div class="col-md-4 mt-3">
-                <input type="number" />
-            </div>
-        </div>
-        <div class="row col-md-12 mt-3">
-            <div class="col-md-3">
-                <label>No. of Days to Reply</label>
-            </div>
-            <div class="col-md-3">
-                <select class="form-control form-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
+                <select id="zoneSearchField" onchange="div_zoneBranchesShowHide();" class="form-select form-control" aria-label="Default select example">
+                    <option value="0" id="0" selected="selected">--Select Zone--</option>
+                    @{
+                        if (ViewData["ZonesList"] != null)
+                        {
+                            foreach (var item in (dynamic)(ViewData["ZonesList"]))
+                            {
+                                <option id="@item.ZONECODE" value="@item.ZONECODE">@item.ZONENAME</option>
+                            }
+                        }
+                    }
                 </select>
             </div>
-            <div class="col-md-2">
-                <label>Attachments</label>
+
+            <div class="col-md-2 mt-3">
+                <label>Branches</label>
             </div>
-            <div class="col-md-4">
-                <input class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />
+            <div class="col-md-4 mt-3">
+                <select id="brSearchField"  class="form-select form-control" aria-label="Default select example">
+                    <option value="0" id="0" selected="selected">--Select Branch--</option>
+                  
+                </select>
             </div>
-        </div>
-        
-            
-        <div class="row col-md-12 mt-5">
-            <button class="btn btn-primary">Save</button>
-            <button style="margin-left:20px;" class="btn btn-primary">Submit to Auditee  </button>
 
         </div>
-    
+
+            <div class="row col-md-12 mt-3">
+                <div class="col-md-3 mt-3">
+                    <label>Responsible P.P. No.</label>
+                </div>
+                <div class="col-md-4 mt-3">
+                    <input type="number" />
+                </div>
+            </div>
+            <div class="row col-md-12 mt-3">
+                <div class="col-md-3">
+                    <label>No. of Days to Reply</label>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control form-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Attachments</label>
+                </div>
+                <div class="col-md-4">
+                    <input class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />
+                </div>
+            </div>
+
+
+            <div class="row col-md-12 mt-5">
+                <button class="btn btn-primary">Save</button>
+                <button style="margin-left:20px;" class="btn btn-primary">Submit to Auditee  </button>
+
+            </div>
+
+        </div>
     </div>
-</div>

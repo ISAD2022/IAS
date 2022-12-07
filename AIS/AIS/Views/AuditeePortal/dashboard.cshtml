@@ -4,334 +4,52 @@
 }
 
 <script type="text/javascript">
-    var g_teams = [];
-    var g_branches = [];
+   
     $(document).ready(function () {
-        $('#deptSelectionBox').addClass('d-none');
-        $('.hiddenContainers').addClass('d-none');
-        $('.fieldAuditFields').addClass('d-none');
-        $('.nonFieldAuditFields').addClass('d-none');
-        $('#branchInfoArea').addClass('d-none');
-        ShowDepartmentAuditPeriods();
-
+       
     });
-    function getBusinessDateCount(startDate, endDate) {
-        var elapsed, daysBeforeFirstSaturday, daysAfterLastSunday;
-        var ifThen = function (a, b, c) {
-            return a == b ? c : a;
-        };
 
-        elapsed = endDate - startDate;
-        elapsed /= 86400000;
+    //
+    //
 
-        daysBeforeFirstSunday = (7 - startDate.getDay()) % 7;
-        daysAfterLastSunday = endDate.getDay();
-
-        elapsed -= (daysBeforeFirstSunday + daysAfterLastSunday);
-        elapsed = (elapsed / 7) * 5;
-        elapsed += ifThen(daysBeforeFirstSunday - 1, -1, 0) + ifThen(daysAfterLastSunday, 6, 5);
-
-        return Math.ceil(elapsed);
-    }
-
-
-    function div_risksubcategoryShowHide() {
-        if ($('#riskGroupSelectBox option:selected').val() == 0) {
-            $('#div_risksubcategory').hide();
-            $('#div_activityContainer').hide();
-        }
-        else {
-            $('#div_risksubcategory').show();
-            $('#div_activityContainer').hide();
-            $('#riskSubGroupSelectBox').empty();
+    function getEntityObservation() {
+        $('#observation_panel tbody').empty();
+        if ($('#department option:selected').val() != 0 && $('#natureofviolation option:selected').val() != 0) {
             $.ajax({
-                url: "/Execution/sub_voilation",
+                url: "/ApiCalls/get_violation_observations",
                 type: "POST",
                 data: {
-                    'GR_ID': $('#riskGroupSelectBox option:selected').val(),
+                    'ENTITY_ID': $('#department option:selected').val(),
+                    'VIOLATION_ID': $('#natureofviolation option:selected').val()
                 },
                 cache: false,
                 success: function (data) {
-                    $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                    $.each(data, function (index, item) {
-                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.v_ID + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
-                    });
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-
-
-    function div_activityContainerShowHide() {
-        if ($('#riskSubGroupSelectBox option:selected').val() == 0)
-            $('#div_activityContainer').hide();
-        else
-            $('#div_activityContainer').show();
-        $('#riskActivitiesSelectBox').empty();
-        $.ajax({
-            url: "/Execution/risk_activities",
-            type: "POST",
-            data:
-            {
-                'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
-            },
-            cache: false,
-            success: function (data) {
-                console.log(data);
-                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                $.each(data, function (index, item) {
-                    $('#riskActivitiesSelectBox').append("<option value=\"" + item.activitY_ID + "\"> " + item.description + "</option>");
-                });
-
-            },
-            dataType: "json",
-        });
-    }
-
-
-    function ShowDepartmentAuditPeriods() {
-        if ($('#deptSelectionBox option:selected').val() == 0)
-            $('.hiddenContainers').addClass('d-none');
-        else {
-            $('.hiddenContainers').removeClass('d-none');
-            if ($('#deptSelectionBox option:selected').val() == '473') {
-                $('.fieldAuditFields').removeClass('d-none');
-                $('.nonFieldAuditFields').addClass('d-none');
-            } else {
-                $('.nonFieldAuditFields').removeClass('d-none');
-                $('.fieldAuditFields').addClass('d-none');
-            }
-            $.ajax({
-                url: "/Planning/audit_periods",
-                type: "POST",
-                data: {
-                    'dept_code': $('#deptSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#periodSelectionBox').empty();
-                    $('#periodSelectionBox').append('<option value="0" id="0">--Select Audit Period--</option>')
                     console.log(data);
-                    $.each(data, function (index, period) {
-                        $('#periodSelectionBox').append('<option value="' + period.id + '" id="' + period.id + '">' + period.description + '</option>')
+                    return;
+                    g_response = data;
+                    var sr = 1;
+                    $.each(data, function (i, v) {
+                        $('#ccqs_panel tbody').append('  <tr id="' + v.id + '"><td align="justify"> ' + sr + '</td> <td align="left">' + v.questions + '</td> <td align="left">' + v.controL_VIOLATION + '</td> <td align="left">' + v.risk + '</td> <td align="left">' + v.status + '</td><td align="justify"><a onclick="updateCCQBinding(' + v.id + ', \'\',' + v.controL_VIOLATION_ID + ' , ' + v.risK_ID + ', \'' + v.status + '\');" href="#">Edit</a></td> </tr>');
+                        sr++;
                     });
 
                 },
                 dataType: "json",
             });
-            $.ajax({
-                url: "/Planning/audit_teams",
-                type: "POST",
-                data: {
-                    'dept_code': $('#deptSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#teamSelectionBox').empty();
-                    $('#teamSelectionBox').append('<option value="0" id="0">--Select Audit Team--</option>')
-                    g_teams = data;
-                    $.each(data, function (index, team) {
-                        if (team.iS_TEAMLEAD == 'Y')
-                            $('#teamSelectionBox').append('<option value="' + team.code + '" id="' + team.code + '">' + team.name + '</option>')
-                    });
 
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function ShowSelectedZonesBranches() {
-        if ($('#auditZoneSelectionBox option:selected').val() == 0) {
-            $('#branchSelectionBox').empty();
-            $('#branchInfoArea').addClass('d-none');
-            $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>');
         }
         else {
-            $('#branchSelectionBox').empty();
-            $('#branchInfoArea').removeClass('d-none');
-            $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-            $.ajax({
-                url: "/Planning/zone_branches",
-                type: "POST",
-                data: {
-                    'zone_code': $('#auditZoneSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    g_branches = data;
-                    $('#branchSelectionBox').empty();
-                    $('#branchInfoArea').hide();
-                    $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
-                    console.log(data);
-                    $.each(data, function (index, branch) {
-                        $('#branchSelectionBox').append('<option value="' + branch.id + '" id="' + branch.id + '">' + branch.description + '</option>')
-                    });
-
-                },
-                dataType: "json",
-            });
+            alert('Select both Entity and Violation to proceed');
+            return false;
         }
     }
-    function ShowSelectedDivisionDepartments() {
-        if ($('#divSelectionBox option:selected').val() == 0) {
-            $('#divDeptSelectionBox').empty();
-            $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-        }
-        else {
-            $('#divDeptSelectionBox').empty();
-            $.ajax({
-                url: "/Planning/div_departments",
-                type: "POST",
-                data: {
-                    'div_code': $('#divSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('#divDeptSelectionBox').empty();
-                    $('#divDeptSelectionBox').append('<option value="0" id="0">--Select Audit Department--</option>')
-                    console.log(data);
-                    $.each(data, function (index, dept) {
-                        $('#divDeptSelectionBox').append('<option value="' + dept.id + '" id="' + dept.id + '">' + dept.name + '</option>')
-                    });
 
-                },
-                dataType: "json",
-            });
-            getSubEntities();
-        }
-    }
-    function ShowBranchInfoBox() {
-        if ($('#branchSelectionBox option:selected').val() == 0) {
-            $('#branchInfoArea').addClass('d-none');
-        } else {
-            $('#branchInfoArea').removeClass('d-none');
-        }
-    }
-    function previewAuditPlan() {
-
-        $('#previewAuditPlan').modal('show');
-        $('#auditorDept').text($('#deptSelectionBox option:selected').text());
-        $('#auditorPlan').text($('#periodSelectionBox option:selected').text());
-        $('#descModal_field').html($('#entitySelectionBox option:selected').text());
-        if ($('#deptSelectionBox option:selected').val() == '473') {
-            $('#divzone_field').text($('#auditZoneSelectionBox option:selected').text());
-            $('#deptBranch_field').text($('#branchSelectionBox option:selected').text());
-
-        } else {
-            $('#divzone_field').text($('#divSelectionBox option:selected').text());
-            $('#deptBranch_field').text($('#divDeptSelectionBox option:selected').text());
-
-        }
-        $('#exeFrom_field').html($('#executionPeriodFromField').val());
-        $('#exeTo_field').html($('#executionPeriodToField').val());
-        $('#operationalFrom_field').html($('#auditPeriodFromField').val());
-        $('#operationalTo_field').html($('#auditPeriodToField').val());
-        //
-        if ($('#isTravelingRequiredField').is(":checked"))
-            $('#travelingReq_field').html('Yes');
-        else
-            $('#travelingReq_field').html('No');
-        $('#remarksAddtn_field').html($('#remarksAdditionalInfoField').val());
-        $('#teamName_field').text($('#teamSelectionBox option:selected').text());
-        //
-        var teamMembersFields = "";
-        $.each(g_teams, function (index, team) {
-            if (team.name == $('#teamSelectionBox option:selected').text()) {
-                if (team.iS_TEAMLEAD == "Y")
-                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (L)<br>";
-                else
-                    teamMembersFields += team.employeename + " " + team.teammembeR_ID + " (M)<br>";
-            }
-        });
-        $('#teamMembers_field').html(teamMembersFields);
-
-    }
-    function publishNewAuditPlanChanges() {
-
-        alert("Under Construction");
-        return false;
-        var periodId = $('#periodSelectionBox option:selected').val();
-        var stDate = $('#executionPeriodFromField').val();
-        var edDate = $('#executionPeriodToField').val();
-        var period_stDate = $('#auditPeriodFromField').val();
-        var period_edDate = $('#auditPeriodToField').val();
-        var conducted_by = $('#deptSelectionBox option:selected').val();
-        var no_days = getBusinessDateCount(new Date(stDate), new Date(edDate));
-        var zoneId = $('#auditZoneSelectionBox option:selected').val();
-        var branchId = 0;
-        if (zoneId != 0)
-            branchId = $('#branchSelectionBox option:selected').val();
-
-        var divId = $('#divSelectionBox option:selected').val();
-        var deptId = 0;
-        if (divId != 0)
-            deptId = $('#divDeptSelectionBox option:selected').val();
-
-        var teamId = $('#teamSelectionBox option:selected').val();
-        var status = 1;
-        var desc = $('#descriptionAuditPlanField').val();
-
-        $.ajax({
-            url: "/Planning/add_audit_plan",
-            type: "POST",
-            data: {
-                'AUDITPERIOD_ID': periodId,
-                'AUDIT_STARTDATE': stDate,
-                'AUDIT_ENDDATE': edDate,
-                'AUDITPERIOD_FROM': period_stDate,
-                'AUDITPERIOD_TO': period_edDate,
-                'AUDIT_CONDUCTBY_DEPT': conducted_by,
-                'NO_OF_DAYS_AUDIT': no_days,
-                'AUDIT_ZONEID': zoneId,
-                'BRANCHID': branchId,
-                'DIVISION_ID': divId,
-                'DEPARTMENT_ID': deptId,
-                'TEAM_CONST_ID': teamId,
-                'STATUS': status,
-                'DESCRIPTION': desc
-            },
-            cache: false,
-            success: function (data) {
-                window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
-            },
-            dataType: "json",
-        });
-    }
-    function getSubEntities() {
-        if ($('#divSelectionBox option:selected').val() != 0) {
-            $('#entitySelectionBox').empty();
-            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
-            $.ajax({
-                url: "/Setup/get_sub_entities",
-                type: "POST",
-                data: {
-                    'div_id': $('#divSelectionBox option:selected').val(),
-                    'dept_id': $('#divDeptSelectionBox option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, ent) {
-                        $('#entitySelectionBox').append('<option value="' + ent.id + '" id="' + ent.id + '" >' + ent.name + '</option>');
-                    });
-
-                },
-                dataType: "json",
-            });
-
-        } else {
-            $('#entitySelectionBox').empty();
-            $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
-        }
-
-
-    }
+   
 </script>
 <div class="row w-100">
 
-    <div class="col-md-8 mt-3">
-  
+    <div class="col-md-12 mt-3">
+
         <h3 style="color: #45c545;">Dashboard for Divisional Head</h3>
 
         <div class="row col-md-12 mt-4">
@@ -344,7 +62,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
                         {
-                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.ID" id="@item.ID">@item.NAME</option>
                         }
                     }
                 }
@@ -354,7 +72,7 @@
         </div>
         <div class="row col-md-12 mt-3">
             <h5>Nature of Violation</h5>
-            <select id="natureofviolation" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
+            <select id="natureofviolation" class="form-select form-control" aria-label="Default select example">
                 <option value="0" id="0" selected>Nature of Violation</option>
                 @{
                     if (ViewData["Voilation_Cat"] != null)
@@ -367,132 +85,31 @@
                 }
             </select>
         </div>
-
-
-        <div id="div_risksubcategory" style="display:none;" class="row col-md-12 mt-3">
-            <h5>Nature/Area</h5>
-            <select id="riskSubGroupSelectBox" onchange="div_activityContainerShowHide();" class="form-select form-control" aria-label="Default select example">
-            </select>
-
-        </div>
-        <div id="div_activityContainer" style="display:none;" class="row col-md-12 mt-3">
-            <h5>Risk</h5>
-            <!--  <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
-        </select>-->
-            <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Risk Category--</option>
-                @{
-                    if (ViewData["RiskList"] != null)
-                    {
-
-                        foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                        {
-                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                        }
-
-                    }
-                }
-            </select>
-
+        <div class="row col-md-12 mt-3">
+            <button onclick="getEntityObservation();" class="btn btn-primary">Search Para</button>
         </div>
 
+
+        </div>
+        <div class="mt-3 col-md-12">
+            <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                    <tr>
+                        <th>Name of Audit Report</th>
+                        <th>Nature of Violation</th>
+                        <th>Audit Year</th>
+                        <th>Para No. Outstanding</th>
+                        <th>Observation</th>
+                        <th>Risk Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="mt-3 col-md-12">
-        <table class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th>Name of Audit Report</th>
-                    <th>Nature of Violation</th>
-                    <th>Audit Year</th>
-                    <th>Para No. Outstanding</th>
-                    <th>Observation</th>
-                    <th>Risk Category</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" onclick="window.location.href = './Reply_new';" class="btn btn-link text-danger btn-sm btn-rounded">
-                            Action
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
 
 <!--<div class="row col-md-12 w-100 mt-3">
     <button style="width:150px;" class="btn btn-primary">Cancel</button>

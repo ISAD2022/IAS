@@ -363,6 +363,12 @@ namespace AIS.Controllers
         {
             return dBConnection.Getchildposting(E_R_ID);
         }
+        [HttpPost]
+        public List<ManageObservations> get_violation_observations(int ENTITY_ID,int VIOLATION_ID)
+        {
+            return dBConnection.GetViolationObservations(ENTITY_ID,VIOLATION_ID);
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

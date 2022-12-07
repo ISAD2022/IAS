@@ -16,6 +16,25 @@
     }
 </style>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        var doc = new jsPDF();
+        var specialElementHandlers = {
+            '#editor': function (element, renderer) {
+                return true;
+            }
+        };
+
+        $('#cmd').click(function () {
+            doc.fromHTML($('#content').html(), 15, 15, {
+                'width': 170,
+                'elementHandlers': specialElementHandlers
+            });
+            doc.save('sample-file.pdf');
+        });
+    });
+</script>
+
 
 <div class="row col-md-12">
     <div class="col-md-6 mt-3 p-10">
@@ -44,6 +63,10 @@
             </tbody>
 
         </table>
+        <div class="col-md-12">
+           
+            <button id="cmd" class="btn btn-primary">Export PDF</button>
+        </div>
     </div>
     
 </div>

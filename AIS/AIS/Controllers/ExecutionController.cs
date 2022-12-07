@@ -214,6 +214,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
+            ViewData["ZonesList"] = dBConnection.GetZones(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             if (!sessionHandler.IsUserLoggedIn())
             {

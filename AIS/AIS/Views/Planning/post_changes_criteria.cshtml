@@ -111,8 +111,21 @@
         });
     }
 
-    function generatePlanAuditCriterias() {
-        alert('Generating Plan.... ');
+    function generatePlanAuditCriterias(id) {
+        alert(id);
+        $.ajax({
+            url: "/Planning/generate_plan_audit_criteria",
+            type: "POST",
+            data: {
+                'CRITERIA_ID': id
+            },
+            cache: false,
+            success: function (data) {
+                alert('Plan Generated');
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
     }
 
 </script>
@@ -178,7 +191,7 @@
                     </button>
                 </td>
                 <td>
-                    <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="generatePlanAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_TYPEID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS');">
+                    <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="generatePlanAuditCriterias('@item.ID');">
                         Generate Plan
                     </button>
                 </td>

@@ -448,6 +448,14 @@ namespace AIS.Controllers
             }
 
         }
+
+        [HttpPost]
+        public bool generate_plan_audit_criteria(int CRITERIA_ID)
+        {
+            return dBConnection.GeneratePlanForAuditCriteria(CRITERIA_ID);
+
+        }
+
         [HttpPost]
         public AuditPlanModel add_audit_plan(AuditPlanModel plan)
         {
@@ -501,9 +509,9 @@ namespace AIS.Controllers
             }
         }
         [HttpPost]
-        public List<BranchModel> zone_branches(int zone_code)
+        public List<BranchModel> zone_branches(int zone_code, bool session_check=true)
         {
-            return dBConnection.GetBranches(zone_code);
+            return dBConnection.GetBranches(zone_code, session_check);
         }
         [HttpPost]
         public List<DepartmentModel> div_departments(int div_code)

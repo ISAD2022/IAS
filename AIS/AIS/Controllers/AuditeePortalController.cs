@@ -111,11 +111,10 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult dashboard()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["AuditDepartments"] = dBConnection.GetDepartments(0,false);
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -131,8 +130,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -13,7 +13,6 @@ namespace AIS
 {
     public class DBConnection
     {
-       
         private SessionHandler sessionHandler;
         private readonly LocalIPAddress iPAddress = new LocalIPAddress();
         private readonly DateTimeHandler dtime = new DateTimeHandler();
@@ -40,8 +39,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -1177,7 +1176,7 @@ namespace AIS
             con.Close();
             return deptList;
         }
-        public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
+         public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
         {
             var con = this.DatabaseConnection();
             List<SubEntitiesModel> entitiesList = new List<SubEntitiesModel>();
@@ -1409,12 +1408,13 @@ namespace AIS
             {
                 if (sessionCheck)
                 {
-                    query = query + " and p.AUDITEDBY=" + loggedInUser.UserEntityID;
+                    query = query + " where p.AUDITEDBY=" + loggedInUser.UserEntityID;
                 }
             }
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.AUDITPERIODID WHERE not EXISTS (select * from t_au_plan_eng e where e.period_id= p.auditperiodid and e.entity_code= p.entity_code and e.entity_id= p.entity_id) " + query + " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
+                cmd.CommandText = " select * FROM v_GET_AUDIT_PLAN p " + query;
+                    //"  p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.AUDITPERIODID WHERE not EXISTS (select * from t_au_plan_eng e where e.period_id= p.auditperiodid and e.entity_code= p.entity_code and e.entity_id= p.entity_id) " + query + " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1422,17 +1422,17 @@ namespace AIS
                     TentativePlanModel tplan = new TentativePlanModel();
                     tplan.CRITERIA_ID = Convert.ToInt32(rdr["CRITERIA_ID"]);
                     tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
-                    if(rdr["AUDITEDBY"].ToString()!=null && rdr["AUDITEDBY"].ToString()!="")
-                    tplan.AUDIT_ZONE_ID = Convert.ToInt32(rdr["AUDITEDBY"]);
+                   // if(rdr["AUDITEDBY"].ToString()!=null && rdr["AUDITEDBY"].ToString()!="")
+                    tplan.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
                     tplan.BR_SIZE = rdr["AUDITEE_SIZE"].ToString();
                     tplan.RISK = rdr["AUDITEE_RISK"].ToString();
                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
                     tplan.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     tplan.CODE = rdr["ENTITY_CODE"].ToString();
                     tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
-                    tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
+                  // tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
-                    tplan.BR_NAME = rdr["AUDITEE_SIZE"].ToString();
+                  //  tplan.BR_NAME = rdr["AUDITEE_SIZE"].ToString();
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
                     tplansList.Add(tplan);
                 }
@@ -2036,7 +2036,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.CRITERIA_SUBMITTED='N' and ac.CREATED_BY="+loggedInUser.PPNumber;
+                cmd.CommandText = "select ac.* , p.DESCRIPTION as PERIOD ,et.entitytypedesc as ENTITY, r.description as RISK, f.frequency_discription as FREQUENCY, s.description as BRSIZE from t_audit_criteria ac inner join t_au_period p on ac.auditperiodid=p.auditperiodid inner join t_auditee_ent_types et on ac.entity_typeid=et.autid and et.auditable='A' inner join t_risk r on ac.risk_id=r.r_id inner join t_audit_frequency f on ac.frequency_id=f.frequency_id left join t_auditee_entities_size_disc s on ac.size_id=s.entity_size WHERE ac.CRITERIA_SUBMITTED='N' and ac.CREATED_BY="+loggedInUser.UserEntityID;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2163,7 +2163,18 @@ namespace AIS
             con.Close();
             return criteriaList;
         }
+        public bool GeneratePlanForAuditCriteria( int CRITERIA_ID)
+        {
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "begin Tentative_Audit_Plan(" + CRITERIA_ID + "); end;";
+                cmd.ExecuteReader();
 
+            }
+            con.Close();
+            return true;
+        }
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
         {
             sessionHandler = new SessionHandler();
@@ -2183,7 +2194,7 @@ namespace AIS
                 }
                 if (!isAlreadyAdded)
                 {
-                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_TYPEID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID, a.CREATED_BY, a.CRITERIA_SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_TYPEID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "', "+loggedInUser.PPNumber+", 'N')";
+                    cmd.CommandText = "INSERT INTO T_AUDIT_CRITERIA a (a.ID, a.ENTITY_TYPEID, a.SIZE_ID,a.RISK_ID, a.FREQUENCY_ID,a.NO_OF_DAYS,a.VISIT,a.APPROVAL_STATUS,a.AUDITPERIODID, a.CREATED_BY, a.CRITERIA_SUBMITTED ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AUDIT_CRITERIA acc) ,'" + acm.ENTITY_TYPEID + "','" + acm.SIZE_ID + "','" + acm.RISK_ID + "','" + acm.FREQUENCY_ID + "','" + acm.NO_OF_DAYS + "','" + acm.VISIT + "','" + acm.APPROVAL_STATUS + "','" + acm.AUDITPERIODID + "', "+loggedInUser.UserEntityID+", 'N')";
                     cmd.ExecuteReader();
                     AuditCriteriaLogModel alog = new AuditCriteriaLogModel();
                     alog.ID = 0;
@@ -3233,6 +3244,53 @@ namespace AIS
 
             return list;
         }
+        public List<ManageObservations> GetViolationObservations(int ENTITY_ID=0, int VIOLATION_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            
+            List<ManageObservations> list = new List<ManageObservations>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "begin v_Dash_Borad_of_Divisional_Head; end;";
+                
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservations chk = new ManageObservations();
+
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    if (rdr["PROCESS"].ToString() != null && rdr["PROCESS"].ToString() != "")
+                        chk.PROCESS = rdr["PROCESS"].ToString();
+                    else
+                        chk.PROCESS = rdr["V_CAT_NAME"].ToString();
+
+                    if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
+                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    else
+                        chk.SUB_PROCESS = rdr["V_CAT_NATURE_NAME"].ToString();
+                    //chk.Checklist_Details = rdr["Checklist_Details"].ToString();
+                    //if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
+                    chk.VIOLATION = rdr["VIOLATION"].ToString();
+                    chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
         public bool DropAuditObservation(int OBS_ID)
         {
             int NEW_STATUS_ID = 23;
@@ -3723,7 +3781,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
         {
             sessionHandler = new SessionHandler();
@@ -3765,7 +3822,6 @@ namespace AIS
 con.Close();
 return list;
         }
-
         public List<OldParasModel> GetOldParasAuditYear()
         {
             sessionHandler = new SessionHandler();
@@ -3989,10 +4045,7 @@ return list;
             return list;
         }
 
-
-
-
-    public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
+        public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
         {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
@@ -4024,7 +4077,6 @@ return list;
             return entitiesList;
 
         }
-
 
         public List<UserRelationshipModel> Getparentrepoffice(int r_id=0)
         {
@@ -4064,7 +4116,7 @@ return list;
 
         }
 
-    public List<UserRelationshipModel> Getrealtionshiptype() 
+        public List<UserRelationshipModel> Getrealtionshiptype() 
         {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
@@ -4093,13 +4145,6 @@ return list;
             return entitiesList;
 
         }
-
-
-
-
-
-
-
 
 
     }

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
     <link rel="stylesheet" href="~/lib/rich-text-editor/richtext.min.css">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
     <style>
         navImg .dropdown-toggle::after {
             display: none !important;
@@ -29,7 +30,7 @@
             });
             $(document).ajaxComplete(function () {
                 $("#wait").css("display", "none");
-            });          
+            });
         });
     </script>
 
@@ -42,7 +43,7 @@
             </button>
             <a class="navbar-brand" href="#"><img height="50" src="/Images/ztbllogo.png" alt="Logo"></a>
 
-            <div id="navBarTopMenu" class="collapse navbar-collapse">
+            <div id="navBarTopMenu" class="collapse navbar-collapse" style="font-size:14px;">
 
 
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -200,6 +201,7 @@
     <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
     <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>
     <script type="text/javascript" src="~/lib/canvasjs/canvasjs.min.js"></script>
+    
 
     @RenderSection("Scripts", required: false)
 </body>

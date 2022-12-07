@@ -5,8 +5,15 @@
 
 <script type="text/javascript">
     var g_id = 0;
+    var g_response = [];
     function updateCCQBinding(id, question, cv_id, risk_id,status) {
         g_id = id;
+        var question = '';
+        $.each(g_response, function (i, e) {
+            if (e.id == id) {
+                question = e.questions;
+            }
+        });
         $('#updateCCQModal').modal('show');
         $('#CCQquestion_textarea').val(question);
         $('#CCQcontrolViolation_selectarea').val(cv_id);
@@ -24,9 +31,10 @@
                 },
                 cache: false,
                 success: function (data) {
+                    g_response = data;
                     var sr = 1;
                     $.each(data, function (i, v) {
-                        $('#ccqs_panel tbody').append('  <tr id="' + v.id + '"><td align="justify"> ' + sr + '</td> <td align="left">' + v.questions + '</td> <td align="left">' + v.controL_VIOLATION + '</td> <td align="left">' + v.risk + '</td> <td align="left">' + v.status + '</td><td align="justify"><a onclick="updateCCQBinding(' + v.id + ', \'' + v.questions + '\' ,' + v.controL_VIOLATION_ID+' , ' + v.risK_ID+', \''+v.status+'\');" href="#">Edit</a></td> </tr>');
+                        $('#ccqs_panel tbody').append('  <tr id="' + v.id + '"><td align="justify"> ' + sr + '</td> <td align="left">' + v.questions + '</td> <td align="left">' + v.controL_VIOLATION + '</td> <td align="left">' + v.risk + '</td> <td align="left">' + v.status + '</td><td align="justify"><a onclick="updateCCQBinding(' + v.id + ', \'\',' + v.controL_VIOLATION_ID+' , ' + v.risK_ID+', \''+v.status+'\');" href="#">Edit</a></td> </tr>');
                         sr++;
                     });
 
@@ -36,8 +44,24 @@
 
         }
     }
+
+    function addCCQsUpdateToTable() {
+        $('#updateCCQModal').modal('hide');
+        $($('#ccqs_panel tbody tr#' + g_id).find('td').eq(1)).html($('#CCQquestion_textarea').val());
+        $($('#ccqs_panel tbody tr#' + g_id).find('td').eq(2)).html($('#CCQcontrolViolation_selectarea option:selected').text());
+        $($('#ccqs_panel tbody tr#' + g_id).find('td').eq(3)).html($('#CCQrisk_selectarea option:selected').text());
+        $($('#ccqs_panel tbody tr#' + g_id).find('td').eq(4)).html($('#CCQstatus_selectarea option:selected').text());
+        $($('#ccqs_panel tbody tr#' + g_id).find('td').eq(5)).html('<a onclick="updateCCQBinding(' + g_id + ', \'\',' + $('#CCQcontrolViolation_selectarea option:selected').text() + ' , ' + $('#CCQrisk_selectarea option:selected').text() + ', \'' + $('#CCQstatus_selectarea option:selected').text() + '\');" href="#">Edit</a>');
+       
+        $.each(g_response, function (i, e) {
+            if (e.id == id) {
+                e.questions = $('#CCQquestion_textarea').val();
+            }
+        });
+       
+    }
     function reloadLocation() {
-        location.reload();
+        addCCQsUpdateToTable();
     }
     function finalUpdateCCQHandler() {
         if ($('#CCQquestion_textarea').val() == "") {
@@ -73,12 +97,14 @@
             cache: false,
             success: function (data) {
                 alert('Record Updated Successfully');
-                onAlertCallback(getEntityObservation);
+                onAlertCallback(addCCQsUpdateToTable);
             },
             dataType: "json",
         });
 
     }
+
+   
 </script>
 <h3 style=" display:block;color: #45c545;" class="mt-3">Compliance & Control Questionnaire</h3>
 
