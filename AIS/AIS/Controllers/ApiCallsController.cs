@@ -369,6 +369,18 @@ namespace AIS.Controllers
             return dBConnection.GetViolationObservations(ENTITY_ID,VIOLATION_ID);
         }
 
+        [HttpPost]
+        public bool approve_engagement_plan(int ENG_ID)
+        {
+            return dBConnection.ApproveAuditEngagementPlan(ENG_ID);
+        }
+
+        [HttpPost]
+        public bool reject_engagement_plan(int ENG_ID, string COMMENTS)
+        {
+            return dBConnection.RefferedBackAuditEngagementPlan(ENG_ID, COMMENTS);
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

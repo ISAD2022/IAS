@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Numerics;
 
 namespace AIS
 {
@@ -1610,6 +1611,33 @@ namespace AIS
             con.Close();
             return plan;
         }
+        public List<AuditEngagementPlanModel> GetAuditEngagementPlans()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            List<AuditEngagementPlanModel> list = new List<AuditEngagementPlanModel>(); 
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select e.eng_id, ee.entity_id, ee.name, e.team_name, e.audit_startdate, e.audit_enddate from t_au_plan_eng e inner join t_auditee_entities ee on e.entity_id=ee.entity_id where e.STATUS IN (1,3,7) and e.auditby_id= " + loggedInUser.UserEntityID;
+                OracleDataReader ardr = cmd.ExecuteReader();
+                while (ardr.Read())
+                {
+                    AuditEngagementPlanModel eng = new AuditEngagementPlanModel();
+                    eng.ENG_ID =Convert.ToInt32(ardr["eng_id"].ToString());
+                    eng.TEAM_NAME = ardr["team_name"].ToString();
+                    eng.ENTITY_NAME= ardr["name"].ToString();
+                    eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString());
+                    eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
+                    eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
+                    list.Add(eng);
+                }                
+            }
+            con.Close();
+            return list;
+        }
         public AuditEngagementPlanModel AddAuditEngagementPlan(AuditEngagementPlanModel ePlan)
         {
             sessionHandler = new SessionHandler();
@@ -1671,6 +1699,42 @@ namespace AIS
             }
             con.Close();
             return ePlan;
+        }
+        public bool RefferedBackAuditEngagementPlan(int ENG_ID, string REMARKS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AU_PLAN_ENG a SET a.STATUS=2 WHERE a.ENG_ID = " + ENG_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll)," + ENG_ID + " ,2," + loggedInUser.PPNumber + ", to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), '" + REMARKS + "')";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool ApproveAuditEngagementPlan(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE T_AU_PLAN_ENG a SET a.STATUS=4 WHERE a.ENG_ID = " + ENG_ID;
+                cmd.ExecuteReader();
+                cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll)," + ENG_ID + " ,2," + loggedInUser.PPNumber + ", to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), 'Engagement Plan Approved')";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+           // EmailConfiguration email = new EmailConfiguration();
+          //  email.ConfigEmail();
+            return true;
         }
         public List<AuditPlanModel> GetAuditPlan(int period_id = 0)
         {
