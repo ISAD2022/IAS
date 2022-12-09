@@ -1638,6 +1638,36 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        public List<AuditEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            List<AuditEngagementPlanModel> list = new List<AuditEngagementPlanModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select e.eng_id, ee.entity_id, ee.name, e.team_name, tt.team_id,  e.audit_startdate, e.audit_enddate from t_au_plan_eng e inner join t_auditee_entities ee on e.entity_id=ee.entity_id inner join t_au_audit_teams tt on tt.eng_id=e.eng_id  where e.STATUS IN (2,6) and e.auditby_id= " + loggedInUser.UserEntityID;
+                OracleDataReader ardr = cmd.ExecuteReader();
+                while (ardr.Read())
+                {
+                    AuditEngagementPlanModel eng = new AuditEngagementPlanModel();
+                    eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
+                    eng.TEAM_NAME = ardr["team_name"].ToString();
+                    eng.TEAM_ID = Convert.ToInt32(ardr["team_id"].ToString());
+                    eng.ENTITY_NAME = ardr["name"].ToString();
+                    eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString());
+                    eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
+                    eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
+                    list.Add(eng);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        //
         public AuditEngagementPlanModel AddAuditEngagementPlan(AuditEngagementPlanModel ePlan)
         {
             sessionHandler = new SessionHandler();
@@ -2249,7 +2279,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "SELECT a.ID FROM T_AUDIT_CRITERIA a inner join t_au_period p on p.auditperiodid = a.auditperiodid WHERE p.status_id = 1 and  a.ENTITY_TYPEID =" + acm.ENTITY_TYPEID + " and a.SIZE_ID=" + acm.SIZE_ID + " and a.RISK_ID=" + acm.RISK_ID + " and a.AUDITPERIODID = "+ acm.AUDITPERIODID;
+                cmd.CommandText = "SELECT a.ID FROM T_AUDIT_CRITERIA a inner join t_au_period p on p.auditperiodid = a.auditperiodid WHERE p.status_id = 2 and  a.ENTITY_TYPEID =" + acm.ENTITY_TYPEID + " and a.SIZE_ID=" + acm.SIZE_ID + " and a.RISK_ID=" + acm.RISK_ID + " and a.AUDITPERIODID = "+ acm.AUDITPERIODID;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -4064,9 +4094,9 @@ return list;
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if(loggedInUser.UserGroupID != 1)
-                cmd.CommandText = "select distinct t.name, t.code, t.entity_id, j.eng_plan_id from t_au_audit_joining j inner join t_au_plan_eng e on e.eng_id = j.eng_plan_id inner join t_auditee_entities t on t.entity_id = e.entity_id inner join t_au_period p on e.period_id = p.auditperiodid where p.status_id = 1 and j.team_mem_ppno = " + loggedInUser.PPNumber;
+                cmd.CommandText = "select distinct t.name, t.code, t.entity_id, j.eng_plan_id from t_au_audit_joining j inner join t_au_plan_eng e on e.eng_id = j.eng_plan_id inner join t_auditee_entities t on t.entity_id = e.entity_id inner join t_au_period p on e.period_id = p.auditperiodid where p.status_id = 2 and j.team_mem_ppno = " + loggedInUser.PPNumber;
                 else
-                    cmd.CommandText = "select distinct t.name, t.code, t.entity_id, j.eng_plan_id from t_au_audit_joining j inner join t_au_plan_eng e on e.eng_id = j.eng_plan_id inner join t_auditee_entities t on t.entity_id = e.entity_id inner join t_au_period p on e.period_id = p.auditperiodid where p.status_id = 1";
+                    cmd.CommandText = "select distinct t.name, t.code, t.entity_id, j.eng_plan_id from t_au_audit_joining j inner join t_au_plan_eng e on e.eng_id = j.eng_plan_id inner join t_auditee_entities t on t.entity_id = e.entity_id inner join t_au_period p on e.period_id = p.auditperiodid where p.status_id = 2";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
