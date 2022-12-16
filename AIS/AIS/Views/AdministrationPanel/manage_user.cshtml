@@ -89,9 +89,6 @@
                 $.each(data, function (index, gpp) {
                     $('#childposting').append('<option value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
                 });
-
-
-
             },
             dataType: "json",
         });
@@ -127,19 +124,19 @@
     }
     function findButtonClickHandler() {
         var whereCheck = 0;
+        var entity_id = 0;
         if ($('#ppnoSearchField').val() != "")
             whereCheck++;
         if ($('#loginSearchField').val() != "")
             whereCheck++;
-        if ($('#divSearchField option:selected').val() != 0)
+        if ($('#childposting').val() != 0) {
             whereCheck++;
-        if ($('#deptSearchField option:selected').val() != 0)
+            entity_id = $('#childposting').val();
+        } else if ($('#controlingsearch').val() != 0) {
             whereCheck++;
-        if ($('#zoneSearchField option:selected').val() != 0)
-            whereCheck++;
-        if ($('#brSearchField option:selected').val() != 0)
-            whereCheck++;
-        if ($('#emailSearchField').val() != "")
+            entity_id = $('#controlingsearch').val();
+        }
+       if ($('#emailSearchField').val() != "")
             whereCheck++;
         if ($('#roleSearchField option:selected').val() != 0)
             whereCheck++;
@@ -156,10 +153,7 @@
             data: {
                 'PPNUMBER': $('#ppnoSearchField').val(),
                 'LOGINNAME': $('#loginSearchField').val(),
-                'DIVISIONID': $('#divSearchField option:selected').val(),
-                'DEPARTMENTID': $('#deptSearchField option:selected').val(),
-                'ZONEID': $('#zoneSearchField option:selected').val(),
-                'BRANCHID': $('#brSearchField option:selected').val(),
+                'ENTITYID': entity_id,
                 'EMAIL': $('#emailSearchField').val(),
                 'GROUPID': $('#roleSearchField option:selected').val(),
             },

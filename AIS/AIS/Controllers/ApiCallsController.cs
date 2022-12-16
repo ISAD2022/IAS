@@ -17,6 +17,7 @@ namespace AIS.Controllers
 
         private readonly SessionHandler sessionHandler;
         private readonly DBConnection dBConnection;
+        private readonly DBContext _context;
         public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
         {
             _logger = logger;
@@ -220,6 +221,11 @@ namespace AIS.Controllers
         public List<ManageObservations> get_observation(int OBS_ID=0)
         {
             return dBConnection.GetManagedObservations(0,OBS_ID);
+        }
+        [HttpPost]
+        public List<ManageObservations> get_observation_branches(int OBS_ID = 0)
+        {
+            return dBConnection.GetManagedObservationsForBranches(0, OBS_ID);
         }
 
         [HttpPost]

@@ -12,7 +12,8 @@ namespace AIS.Models
         public int DEPARTMENTID { get; set; }
         public int ZONEID { get; set; }
         public int BRANCHID { get; set; }
-        public int GROUPID { get; set; }     
-      
+        public int GROUPID { get; set; }
+        public int ENTITYID { get; set; }
+
     }
 }

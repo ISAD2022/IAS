@@ -443,7 +443,7 @@ namespace AIS
         public List<UserModel> GetAllUsers(FindUserModel user)
         {
             string whereClause = " 1 = 1 ";
-            if (user.DEPARTMENTID != 0)
+            /*if (user.DEPARTMENTID != 0)
                 whereClause = whereClause + " and u.entity_id =" + user.DEPARTMENTID;
             else if (user.DIVISIONID != 0)
                 whereClause = whereClause + " and u.entity_id =" + user.DIVISIONID;
@@ -451,8 +451,11 @@ namespace AIS
             if (user.BRANCHID != 0)
                 whereClause = whereClause + " and u.entity_id =" + user.BRANCHID;
             else if (user.ZONEID != 0)
-                whereClause = whereClause + " and u.entity_id =" + user.ZONEID;
-           
+                whereClause = whereClause + " and u.entity_id =" + user.ZONEID;*/
+
+            if(user.ENTITYID != 0 )
+                whereClause = whereClause + " and u.ENTITY_ID =  '" + user.ENTITYID + "'";
+
             if (user.EMAIL != "" && user.EMAIL != null)
                 whereClause = whereClause + " and emp.EMAIL like  %'" + user.EMAIL + "'%";
 
@@ -469,7 +472,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select  u.USERID, u.ISACTIVE, r.group_name, rm.group_id, d.NAME as divName, dep.NAME as DeptName, z.ZONENAME, b.BRANCHNAME, e.* from v_service_employeeinfo e left join t_user u on e.PPNO=u.PPNO left join V_SERVICE_DIVISION d on e.CURRENTDIVISIONCODE=d.CODE left join V_SERVICE_DEPARTMENT dep on e.CURRENTDEPARTMENTCODE=dep.ID left join v_service_zones z on e.CURRENTZONECODE=z.ZONECODE left join v_service_branch b on e.CURRENTBRANCHCODE=b.BRANCHCODE left join t_user_maping rm on e.PPNO=rm.ppno left join t_groups r on r.role_id=rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
-                cmd.CommandText = "select u.userid, mp.parent_id, mp.parent_code, mp.child_code,  mp.p_type_id, mp.c_type_id,  u.ppno, u.entity_id, e.code, e.type_id, emp.EMPLOYEEFIRSTNAME, emp.EMPLOYEELASTNAME, emp.EMAIL, u.ISACTIVE, r.group_name, rm.group_id, mp.p_name, mp.c_name from t_auditee_entities e inner join t_auditee_entities_maping mp on e.entity_id = mp.entity_id inner join t_user u on u.entity_id = e.entity_id inner join v_service_employeeinfo emp on emp.PPNO = u.ppno left join t_user_maping rm on u.PPNO = rm.ppno left join t_groups r on r.role_id = rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
+                cmd.CommandText = "select u.userid, mp.parent_id, mp.parent_code, mp.child_code,  mp.p_type_id, mp.c_type_id,  u.ppno, u.entity_id, e.code, e.type_id, emp.EMPLOYEEFIRSTNAME, emp.EMPLOYEELASTNAME, emp.EMAIL, u.ISACTIVE, r.group_name, rm.group_id, mp.p_name, mp.c_name from t_auditee_entities e left join t_auditee_entities_maping mp on e.entity_id = mp.entity_id inner join t_user u on u.entity_id = e.entity_id inner join v_service_employeeinfo emp on emp.PPNO = u.ppno left join t_user_maping rm on u.PPNO = rm.ppno left join t_groups r on r.role_id = rm.role_id WHERE " + whereClause + " ORDER BY u.USERID";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -479,12 +482,24 @@ namespace AIS
                     um.PPNumber = rdr["PPNO"].ToString();
                     um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString() + " " + rdr["EMPLOYEELASTNAME"].ToString();
                     um.Email = rdr["EMAIL"].ToString();
-                    um.UserEntityID =Convert.ToInt32(rdr["entity_id"].ToString());
-                    um.UserEntityCode = Convert.ToInt32(rdr["child_code"].ToString());
-                    um.UserParentEntityTypeID = Convert.ToInt32(rdr["p_type_id"].ToString());
-                    um.UserParentEntityID = Convert.ToInt32(rdr["parent_id"].ToString());
-                    um.UserParentEntityCode = Convert.ToInt32(rdr["parent_code"].ToString());
-                    um.UserEntityTypeID = Convert.ToInt32(rdr["c_type_id"].ToString());
+                    if(rdr["entity_id"].ToString()!=null && rdr["entity_id"].ToString()!="")
+                        um.UserEntityID =Convert.ToInt32(rdr["entity_id"].ToString());
+                    
+                    if (rdr["child_code"].ToString() != null && rdr["child_code"].ToString() != "")
+                        um.UserEntityCode = Convert.ToInt32(rdr["child_code"].ToString());
+                    
+                    if (rdr["p_type_id"].ToString() != null && rdr["p_type_id"].ToString() != "")
+                        um.UserParentEntityTypeID = Convert.ToInt32(rdr["p_type_id"].ToString());
+
+                    if (rdr["parent_id"].ToString() != null && rdr["parent_id"].ToString() != "") 
+                        um.UserParentEntityID = Convert.ToInt32(rdr["parent_id"].ToString());
+                    
+                    if (rdr["parent_code"].ToString() != null && rdr["parent_code"].ToString() != "") 
+                        um.UserParentEntityCode = Convert.ToInt32(rdr["parent_code"].ToString());
+                    
+                    if (rdr["c_type_id"].ToString() != null && rdr["c_type_id"].ToString() != "") 
+                        um.UserEntityTypeID = Convert.ToInt32(rdr["c_type_id"].ToString());
+                    
                     um.UserEntityName = rdr["c_name"].ToString();
                     um.UserParentEntityName = rdr["p_name"].ToString();
                     if (Convert.ToInt32(rdr["type_id"].ToString()) == 6)
@@ -492,18 +507,24 @@ namespace AIS
                         if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
                         {
                             um.UserPostingBranch = Convert.ToInt32(rdr["code"]);
+                        }
+                        if (rdr["parent_code"].ToString() != null && rdr["parent_code"].ToString() != "")
+                        {
                             um.UserPostingZone = Convert.ToInt32(rdr["parent_code"]);
                         }
-                            
+
                     }
                     else
                     {
                         if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
                         {
                             um.UserPostingDept = Convert.ToInt32(rdr["code"]);
-                            um.UserPostingDiv = Convert.ToInt32(rdr["parent_code"]);
                         }
-                            
+                        if (rdr["parent_code"].ToString() != null && rdr["parent_code"].ToString() != "")
+                        {
+                           um.UserPostingDiv = Convert.ToInt32(rdr["parent_code"]);
+                        }
+
                     }
                  
                    if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
@@ -1741,6 +1762,8 @@ namespace AIS
             {
                 cmd.CommandText = "UPDATE T_AU_PLAN_ENG a SET a.STATUS=2 WHERE a.ENG_ID = " + ENG_ID;
                 cmd.ExecuteReader();
+                cmd.CommandText = "UPDATE T_AU_PLAN p SET p.STATUS=2 WHERE a.ENG_ID = " + ENG_ID;
+                cmd.ExecuteReader();
                 cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll)," + ENG_ID + " ,2," + loggedInUser.PPNumber + ", to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), '" + REMARKS + "')";
                 cmd.ExecuteReader();
             }
@@ -1773,7 +1796,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (period_id == 0)
-                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join T_DIVISION d on p.division_id = d.DIVISIONID left join T_DEPARTMENT dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID order by p.PLAN_ID asc";
+                    cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join T_DIVISION d on p.division_id = d.DIVISIONID left join T_DEPARTMENT dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID  order by p.PLAN_ID asc";
                 else
                     cmd.CommandText = "select p.*,d.Name as DIVISION_NAME,dp.Name as DEPARTMENT_NAME, b.branchname as BRANCH_NAME, az.ZONENAME as AUDITZONE_NAME from T_AU_PLAN p left join T_DIVISION d on p.division_id = d.DIVISIONID left join T_DEPARTMENT dp on p.department_id = dp.ID left join V_SERVICE_BRANCH b on p.Branch_Id = b.BRANCHID left join V_SERVICE_ZONES az on p.auditzone_id = az.ZONEID where p.auditperiod_id=" + period_id + " order by p.PLAN_ID asc";
 
@@ -2151,6 +2174,8 @@ namespace AIS
                     acr.RISK = rdr["RISK"].ToString();
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.COMMENTS = this.GetAuditCriteriaLogLastStatus(acr.ID);
+                    if(rdr["no_of_entity"].ToString()!=null && rdr["no_of_entity"].ToString() !="")
+                        acr.ENTITIES_COUNT =Convert.ToInt32(rdr["no_of_entity"].ToString());
                     criteriaList.Add(acr);
                 }
             }
@@ -3257,9 +3282,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (OBS_ID == 0)
-                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id and o.engplanid=" + ENG_ID + "  order by o.memo_number";
-                else 
-                    cmd.CommandText = "select vc.v_name as V_CAT_NAME, vcs.SUB_V_NAME AS V_CAT_NATURE_NAME, p.description  as PERIOD,o.ID as OBS_ID,aee.name as ENTITY_NAME, ced.heading as PROCESS,  sd.heading    as SUB_PROCESS,  g.description  as VIOLATION, o.memo_number  as MEMO_NO, ot.text  as OBS_TEXT, o.severity as OBS_RISK_ID,osr.name  as OBS_RISK,o.status as OBS_STATUS_ID,ost.Statusname as OBS_STATUS from t_au_observation o  inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id  left join t_audit_checklist_details cd on o.checklistdetail_id = cd.id left join t_r_sub_group g on cd.v_id=g.s_gr_id left join t_audit_checklist_sub sd on o.subchecklist_id = sd.s_id left join t_audit_checklist ced on sd.t_id = ced.t_id left join t_control_violation vc on o.v_cat_id=vc.id left join t_control_violation_sub vcs on o.v_cat_nature_id=vcs.id inner join t_au_observation_severity osr on osr.id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id and o.ID=" + OBS_ID + " and o.engplanid=" + ENG_ID + "  order by o.memo_number";
+                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.v_id = c.id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.engplanid = " + ENG_ID + "  order by o.memo_number ";
+                else
+                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.v_id = c.id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.ID=" + OBS_ID + " order by o.memo_number";
                 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3270,18 +3295,50 @@ namespace AIS
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
-                    if (rdr["PROCESS"].ToString() != null && rdr["PROCESS"].ToString() != "")
-                        chk.PROCESS = rdr["PROCESS"].ToString();
-                    else
-                        chk.PROCESS = rdr["V_CAT_NAME"].ToString();
-
-                    if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
-                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
-                    else
-                        chk.SUB_PROCESS = rdr["V_CAT_NATURE_NAME"].ToString();
-                    //chk.Checklist_Details = rdr["Checklist_Details"].ToString();
-                    //if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
+                    chk.NATURE = rdr["NATURE"].ToString();
+                    chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            if (ENG_ID == 0)
+                ENG_ID = this.GetLoggedInUserEngId();
+
+            List<ManageObservations> list = new List<ManageObservations>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                if (OBS_ID == 0)
+                    cmd.CommandText = "select c.heading as Process, cc.heading as Sub_process, csb.heading AS Check_List_Detail, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_audit_checklist_sub cc on cc.s_id = o.subchecklist_id inner join t_audit_checklist_details csb on csb.id = o.checklistdetail_id inner join t_audit_checklist c on c.t_id = cc.t_id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.engplanid = " + ENG_ID + "  order by o.memo_number ";
+                else
+                    cmd.CommandText = "select c.heading as Process, cc.heading as Sub_process, csb.heading AS Check_List_Detail, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_audit_checklist_sub cc on cc.s_id = o.subchecklist_id inner join t_audit_checklist_details csb on csb.id = o.checklistdetail_id inner join t_audit_checklist c on c.t_id = cc.t_id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.ID=" + OBS_ID + " order by o.memo_number";
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservations chk = new ManageObservations();
+
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    chk.PROCESS = rdr["PROCESS"].ToString();
+                    chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -3584,7 +3641,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Update t_audit_criteria c SET c.CRITERIA_SUBMITTED='Y' where c.CREATED_BY=" + loggedInUser.PPNumber;
+                cmd.CommandText = "Update t_audit_criteria c SET c.CRITERIA_SUBMITTED='Y' where c.CREATED_BY=" + loggedInUser.UserEntityID;
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -3592,11 +3649,15 @@ namespace AIS
         }
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select cr.* from T_COSO_RATING_DEPARTMENT cr inner join t_au_period p on cr.AUDIT_PERIOD=p.DESCRIPTION where p.AUDITPERIODID= " + PERIOD_ID + " order by cr.DEPT_NAME ASC";
+                cmd.CommandText = "select cr.*,  t.final_score, t.final_rating as final_audit_rating from T_COSO_RATING_DEPARTMENT_INHERITED_RISK cr inner join T_COSO_RATING_DEPARTMENT_FINAL t on cr.dept_name = t.dept inner join t_au_period p on cr.audit_period = p.description inner join t_auditee_entities e on e.name = cr.dept_name where cr.audit_period = t.audit_period and e.auditby_id = " + loggedInUser.UserEntityID + " and p.auditperiodid = " + PERIOD_ID + " order by cr.DEPT_NAME ASC";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3607,9 +3668,44 @@ namespace AIS
                     chk.WEIGHT_ASSIGNED = Convert.ToInt32(rdr["WEIGHT_ASSIGNED"]);
                     chk.SUB_FACTORS = Convert.ToInt32(rdr["SUB_FACTORS"]);
                     chk.MAX_SCORE = Convert.ToInt32(rdr["MAX_SCORE"]);
+                    chk.FINAL_SCORE = Convert.ToInt32(rdr["FINAL_SCORE"]);
                     chk.NO_OF_OBSERVATIONS = Convert.ToInt32(rdr["NO_OF_OBSERVATIONS"]);
                     chk.WEIGHTED_AVERAGE_SCORE = Convert.ToInt32(rdr["WEIGHTED_AVERAGE_SCORE"]);
                     chk.AUDIT_RATING = rdr["AUDIT_RATING"].ToString();
+                    chk.FINAL_AUDIT_RATING = rdr["FINAL_AUDIT_RATING"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<COSORiskModel> GetCOSORiskForBranches(int PERIOD_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<COSORiskModel> list = new List<COSORiskModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select cr.*,  t.final_score, t.final_rating as final_audit_rating from T_COSO_RATING_DEPARTMENT_INHERITED_RISK cr inner join T_COSO_RATING_DEPARTMENT_FINAL t on cr.dept_name = t.dept inner join t_au_period p on cr.audit_period = p.description inner join t_auditee_entities e on e.name = cr.dept_name where cr.audit_period = t.audit_period and e.auditby_id = " + loggedInUser.UserEntityID + " and p.auditperiodid = " + PERIOD_ID + " order by cr.DEPT_NAME ASC";
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    COSORiskModel chk = new COSORiskModel();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.DEPT_NAME = rdr["DEPT_NAME"].ToString();
+                    chk.RATING_FACTORS = rdr["RATING_FACTORS"].ToString();
+                    chk.WEIGHT_ASSIGNED = Convert.ToInt32(rdr["WEIGHT_ASSIGNED"]);
+                    chk.SUB_FACTORS = Convert.ToInt32(rdr["SUB_FACTORS"]);
+                    chk.MAX_SCORE = Convert.ToInt32(rdr["MAX_SCORE"]);
+                    chk.FINAL_SCORE = Convert.ToInt32(rdr["FINAL_SCORE"]);
+                    chk.NO_OF_OBSERVATIONS = Convert.ToInt32(rdr["NO_OF_OBSERVATIONS"]);
+                    chk.WEIGHTED_AVERAGE_SCORE = Convert.ToInt32(rdr["WEIGHTED_AVERAGE_SCORE"]);
+                    chk.AUDIT_RATING = rdr["AUDIT_RATING"].ToString();
+                    chk.FINAL_AUDIT_RATING = rdr["FINAL_AUDIT_RATING"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
                 }

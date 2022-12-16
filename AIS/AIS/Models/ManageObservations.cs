@@ -7,11 +7,12 @@ namespace AIS.Models
     public class ManageObservations
     {        
         public int OBS_ID { get; set; }
-       public string ENTITY_NAME { get; set; }
+        public string ENTITY_NAME { get; set; }
         public string PROCESS { get; set; }
         public string SUB_PROCESS { get; set; }
         public string Checklist_Details { get; set; }
         public string VIOLATION { get; set; }
+        public string NATURE { get; set; }
         public int MEMO_NO { get; set; }
         public string OBS_TEXT { get; set; }
         public string OBS_REPLY { get; set; }

@@ -35,8 +35,8 @@
                 console.log(data);
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0].obS_TEXT);
-                $('#viewMemo_process').html(data[0].process);
-                $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
+               // $('#viewMemo_process').html(data[0].violation);
+                $('#viewMemo_subprocess').html(data[0].nature);
                 $('#viewMemo_violation').html(data[0].violation);
 
                 if (g_currentStatus == 1) {
@@ -166,7 +166,7 @@
                 success: function (data) {
                     $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
                     });
 
                 },
@@ -215,18 +215,16 @@
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-1">Memo No.</th>
-                    <th class="col-md-1">Process</th>
-                    <th class="col-md-2">Sub Process</th>
-                    <th class="col-md-2">Checklist Detail</th>
-
-                    <th class="col-md-1 d-none">Observation</th>
-                    <th class="col-md-2 d-none">Auditee Response</th>
-                    <th class="col-md-2">Risk Category</th>
-                    <th class="col-md-1">Status</th>
+                    <th class="col-md-auto">Memo No.</th>
+                    <th class="col-md-auto">Violation</th>
+                    <th class="col-md-auto">Nature</th>
+                    <th class="col-md-auto d-none">Observation</th>
+                    <th class="col-md-auto d-none">Auditee Response</th>
+                    <th class="col-md-auto">Risk Category</th>
+                    <th class="col-md-auto">Status</th>
                     <th class="d-none"></th>
                     <th class="d-none"></th>
-                    <th class="col-md-1 text-center">Action</th>
+                    <th class="col-md-auto text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -238,9 +236,8 @@
                         {
                                 <tr id="@item.OBS_ID">
                                     <td class="text-center">@item.MEMO_NO</td>
-                                    <td>@item.PROCESS</td>
-                                    <td>@item.SUB_PROCESS</td>
-                                    <td>@item.Checklist_Details</td>
+                                    <td>@item.VIOLATION</td>
+                                    <td>@item.NATURE</td>
                                     <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
                                     <td class="d-none period_name_field">@item.PERIOD</td>
                                     <td>@item.OBS_RISK</td>
@@ -296,17 +293,14 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_process">Process</label>
-                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_subprocess">Sub Process</label>
-                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
                         <label for="viewMemo_violation">Violation</label>
                         <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
+                    <div class="form-group">
+                        <label for="viewMemo_subprocess">Nature</label>
+                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
