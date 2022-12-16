@@ -1493,12 +1493,10 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (dept_code != 0 )
-                    cmd.CommandText = "select t.*, d.name as AUDIT_DEPARTMENT  from t_au_team_members t inner join t_auditee_entities d on d.entity_id=t.PLACE_OF_POSTING Where t.PLACE_OF_POSTING=" + loggedInUser.UserEntityID + " order by t.T_CODE asc, t.ISTEAMLEAD desc";
+                    cmd.CommandText = "select t.*, d.name as AUDIT_DEPARTMENT  from t_au_team_members t inner join t_auditee_entities d on d.entity_id=t.PLACE_OF_POSTING Where t.PLACE_OF_POSTING=" + loggedInUser.UserEntityID + " and t.PLACE_OF_POSTING=" + dept_code + "  order by t.T_CODE asc, t.ISTEAMLEAD desc";
                 else
-                    cmd.CommandText = "select t.* , d.name as AUDIT_DEPARTMENT  from t_au_team_members t inner join t_auditee_entities d on d.entity_id=t.PLACE_OF_POSTING order by t.T_CODE asc, t.ISTEAMLEAD desc";
-                // cmd.CommandText = "select t.*,tm.*, e.*, t.ID as TEAMID from t_ap_teamconstitute t inner join t_ap_team_members tm on t.id=tm.plan_id inner join t_audit_emp e on tm.teammember_id=e.ppno WHERE t.AUDIT_DEPARTMENT=" + dept_code+ " order by t.ID asc, tm.is_teamlead desc";
-
-
+                    cmd.CommandText = "select t.* , d.name as AUDIT_DEPARTMENT  from t_au_team_members t inner join t_auditee_entities d on d.entity_id=t.PLACE_OF_POSTING Where t.PLACE_OF_POSTING=" + loggedInUser.UserEntityID + " order by t.T_CODE asc, t.ISTEAMLEAD desc";
+              
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2472,9 +2470,7 @@ namespace AIS
                 if (group_id == 0)
                     cmd.CommandText = "select * from t_control_violation_sub S order by S.ID";
                 else
-
-
-                    cmd.CommandText = "select * from t_control_violation_sub S where s.p_id= " + group_id + "  order by s.p_ID, s.ID asc";
+                    cmd.CommandText = "select * from t_control_violation_sub S where s.v_id= " + group_id + "  order by s.v_ID, s.ID asc";
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3282,9 +3278,9 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (OBS_ID == 0)
-                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.v_id = c.id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.engplanid = " + ENG_ID + "  order by o.memo_number ";
+                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.id = o.v_cat_nature_id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.engplanid = " + ENG_ID + "  order by o.memo_number ";
                 else
-                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.v_id = c.id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.ID=" + OBS_ID + " order by o.memo_number";
+                    cmd.CommandText = "select c.v_name as Violation, csb.sub_v_name AS NATURE, p.description as PERIOD, o.ID as OBS_ID, aee.name as ENTITY_NAME, o.memo_number as MEMO_NO, ot.text as OBS_TEXT, o.severity as OBS_RISK_ID, r.description as OBS_RISK, o.status as OBS_STATUS_ID, ost.Statusname as OBS_STATUS from t_au_observation o inner join t_au_plan_eng e on o.engplanid = e.eng_id inner join t_au_observation_text ot on o.id = ot.observatsion_id inner join t_auditee_entities aee on e.entity_id = aee.entity_id inner join t_control_violation c on c.id = o.v_cat_id inner join t_control_violation_sub csb on csb.id = o.v_cat_nature_id inner join t_risk r on r.r_id = o.severity inner join t_au_observation_status ost on o.status = ost.statusid inner join t_au_period p on p.auditperiodid = e.period_id Where o.ID=" + OBS_ID + " order by o.memo_number";
                 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3460,7 +3456,7 @@ namespace AIS
             sessionHandler._session = this._session;
             int NEW_STATUS_ID = 2;
             var loggedInUser = sessionHandler.GetSessionUser();
-            var ENG_ID = this.GetLoggedInUserEngId();
+            var ENG_ID = "(select o.engplanid from t_au_observation o where o.id="+OBS_ID+")";
             int ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
             DateTime ENTEREDDATE = System.DateTime.Now;
             string ReplyByQuery = "(select pe.entity_id from t_au_plan_eng pe where pe.eng_id= " + ENG_ID + ")";
