@@ -213,6 +213,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ObservationsList"] = dBConnection.GetManagedObservations();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
