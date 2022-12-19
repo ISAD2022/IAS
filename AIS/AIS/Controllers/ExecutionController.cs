@@ -209,6 +209,52 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+
+        public IActionResult staff_pos_info()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["staffpos"] = dBConnection.GetStaffPosition();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+      
+        public IActionResult loan_case_document()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
+            ViewData["DivisionsList"] = dBConnection.GetDivisions(false);
+            ViewData["AuditZonesList"] = dBConnection.GetZones();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult audit_observation()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -274,7 +320,31 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+
+            //ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult manage_draft_report_paras_branch(int engId = 0)
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+
+            //ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

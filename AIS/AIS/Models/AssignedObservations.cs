@@ -18,7 +18,10 @@ namespace AIS.Models
         public string REPLIED { get; set; }
         public string OBSERVATION_TEXT { get; set; }
         public string PROCESS { get; set; }
+        public string SUB_PROCESS { get; set; }
+        public string CHECKLIST_DETAIL { get; set; }
         public string VIOLATION { get; set; }
+        public string NATURE { get; set; }
         public string REPLY_TEXT { get; set; }
         public string STATUS { get; set; }
         public string STATUS_ID { get; set; }

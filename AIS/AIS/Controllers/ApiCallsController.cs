@@ -229,9 +229,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<ManageObservations> draft_report_summary()
+        public List<ManageObservations> draft_report_summary(int ENG_ID)
         {
-           return dBConnection.GetManagedObservations();
+           return dBConnection.GetManagedObservations(ENG_ID);
         }
         [HttpPost]
         public List<ObservationModel> closing_draft_report_status(int ENG_ID = 0)
@@ -315,6 +315,18 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
+        public List<ManageObservations> get_observations_draft(int ENG_ID)
+        {
+            return dBConnection.GetManagedDraftObservations(ENG_ID);
+
+        }
+        [HttpPost]
+        public List<AssignedObservations> get_assigned_observation(int ENG_ID)
+        {
+            return dBConnection.GetAssignedObservations(ENG_ID);
+
+        }
+        [HttpPost]
         public List<AuditCCQModel> get_ccqs(int ENTITY_ID)
         {
             return dBConnection.GetCCQ(ENTITY_ID);
@@ -343,6 +355,11 @@ namespace AIS.Controllers
             return dBConnection.GetOldParas(AUDITED_BY, AUDIT_YEAR);
         }
         [HttpPost]
+        public List<OldParasModel> get_legacy_para_for_response()
+        {
+            return dBConnection.GetOldParasForResponse();
+        }
+        [HttpPost]
         public List<AuditeeOldParasModel> get_outstanding_para(string ENTITY_ID)
         {
             return dBConnection.GetOutstandingParas(ENTITY_ID);
@@ -351,6 +368,11 @@ namespace AIS.Controllers
         public bool add_legacy_para_observation_text(OldParasModel ob)
         {
             return dBConnection.AddOldParas(ob);
+        }
+        [HttpPost]
+        public bool add_legacy_para_reply(int ID, string REPLY)
+        {
+            return dBConnection.AddOldParasReply(ID,REPLY);
         }
         [HttpPost]
         public ActiveInactiveChart get_pie_chart_data()
@@ -387,6 +409,18 @@ namespace AIS.Controllers
             return dBConnection.RefferedBackAuditEngagementPlan(ENG_ID, COMMENTS);
         }
 
+
+        
+
+
+  [HttpPost]
+        public List<LoanCasedocModel> Getloancasedocuments()
+        {
+            return dBConnection.GetLoanCaseDocuments();
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

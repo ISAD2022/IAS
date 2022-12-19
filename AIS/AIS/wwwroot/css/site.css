@@ -13,9 +13,8 @@ a {
 }
 
 .text-hover:hover{
-    font-size:105% !important;
     cursor:pointer !important;
-    font-weight:bold !important;
+    text-decoration:underline !important;
 }
 
 .btn-primary {

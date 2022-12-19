@@ -35,7 +35,6 @@
                 console.log(data);
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0].obS_TEXT);
-               // $('#viewMemo_process').html(data[0].violation);
                 $('#viewMemo_subprocess').html(data[0].nature);
                 $('#viewMemo_violation').html(data[0].violation);
 
@@ -54,7 +53,7 @@
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
                         $('#settleButton_memoReply').addClass('d-none');
-                        $('#addDraftButton_memoReply').addClass('d-none');
+                        $('#addDraftButton_memoReply').removeClass('d-none');
                     }
 
                 } else {

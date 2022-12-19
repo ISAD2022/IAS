@@ -564,3 +564,8 @@ D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\n
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.0\System.Runtime.Caching.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.MvcApplicationPartsAssemblyInfo.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\AuditeePortal\old_para_reply.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\staff_pos_info.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\loan_case_document.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\manage_draft_report_paras_branch.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\draft_audit_report_branch.cshtml.g.cs

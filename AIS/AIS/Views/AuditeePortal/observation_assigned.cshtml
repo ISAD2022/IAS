@@ -6,8 +6,9 @@
 <script type="text/javascript">
     var g_obsId = 0;
     var g_obsTextId = 0;
+    var g_obsList = [];
     $(document).ready(function () {
-      
+
         $('#viewMemo_reply').richText({
             imageUpload: false,
             fileUpload: false,
@@ -18,7 +19,19 @@
     function reloadLocation() {
         location.reload();
     }
-    function showMemo(memotxt, obs_id, obs_text_id, status, reply_txt, process, violation) {
+    function showMemo(obs_id, obs_text_id, status, violation, nature, process, subprocess,checklist_detail) {
+        $.each(g_obsList, function (i, v) {
+            if (v.obS_ID == obs_id) {
+                obs_text_id = v.obS_TEXT_ID;
+                status = v.status;
+                violation = v.violation;
+                nature = v.nature;
+                process = v.process;
+                subprocess = v.suB_PROCESS;
+                checklist_detail = v.checklisT_DETAIL;
+
+            }
+        })
 
         g_obsId=obs_id;
         g_obsTextId = obs_text_id;
@@ -26,15 +39,31 @@
             url: "/ApiCalls/get_observation_text",
             type: "POST",
             data: {
-                'OBS_ID': g_obsId                
+                'OBS_ID': g_obsId
             },
             cache: false,
             success: function (data) {
-                
+
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0]);
-                $('#viewMemo_process').html(process);
-                $('#viewMemo_violation').html(violation);
+                if (nature == "" && violation == "") {
+                    $('#viewMemo_nature').html(nature);
+                    $('#viewMemo_violation').html(violation);
+
+                    $('#viewMemo_process').addClass('d-none');
+                    $('#viewMemo_subprocess').addClass('d-none');
+                    $('#viewMemo_checklist_detail').addClass('d-none');
+                } else {
+                    $('#viewMemo_nature').addClass('d-none');
+                    $('#viewMemo_violation').addClass('d-none');
+                    
+
+                    $('#viewMemo_process').html(process);
+                    $('#viewMemo_subprocess').html(subprocess);
+                    $('#viewMemo_checklist_detail').html(checklist_detail);
+                }
+                
+             
                 if (status == 2) {
                     $('#replyButton_memoReply').removeClass('d-none');
                     $('#viewMemo_responded').parent().addClass('d-none');
@@ -75,7 +104,34 @@
             alert("Provide your comments to proceed");
             return false;
         }
-       
+
+    }
+
+    function getEntityObservation() {
+        $('#manageObsPanel tbody').empty();
+        if ($('#entitySelectField option:selected').val() != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_assigned_observation",
+                type: "POST",
+                data: {
+                    'ENG_ID': $('#entitySelectField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    g_obsList = data;
+                    var sr = 1;
+                    $.each(data, function (i, v) {
+                        var sdate = v.memO_DATE.split(" ")[0];
+                        var edate = v.memO_REPLY_DATE.split(" ")[0];                           
+                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + sr + '</td><td>' + v.entitY_NAME + '</td><td>' + sdate + '</td><td>' + edate + '</td><td>' +v.status+'</td><td class="text-center"><a onclick="showMemo( '+ v.obS_ID +');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                        sr++;
+                          });
+
+                },
+                dataType: "json",
+            });
+
+        }
     }
 </script>
 <div class="row col-md-12">
@@ -84,8 +140,29 @@
         <h3 style="color: #45c545;">Assigned Observations</h3>
     </div>
     <div class="row col-md-12 mt-3">
-        <table class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+        <div class="col-md-2">
+            <label><b>Entity:</b></label>
+        </div>
+        <div class="col-md-10">
+            <input id="entityNameField" disabled="disabled" class="form-control ml-1 d-none" type="text" />
+            <select id="entitySelectField" onchange="getEntityObservation()" class="form-control form-select">
+                <option value="0" id="0">--Select Audit Entity--</option>
+                @{
+                    if (ViewData["EntitiesList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                        {
+                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                        }
+                    }
+                }
+
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-3">
+        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-1">Sr. No</th>
                     <th class="col-md-4">Entity</th>
@@ -96,27 +173,7 @@
                 </tr>
             </thead>
             <tbody>
-                @{
-                    if (ViewData["AssignedObservations"] != null)
-                    {
-
-                        var index = 1;
-                        foreach (var item in (dynamic)(ViewData["AssignedObservations"]))
-                        {
-                            string sdate = @item.MEMO_DATE.ToString().Split(" ")[0];
-                            string edate = @item.MEMO_REPLY_DATE.ToString().Split(" ")[0];
-                            <tr>
-                                <td class="text-center">@index</td>
-                                <td>@item.ENTITY_NAME</td>
-                                <td>@sdate</td>
-                                <td>@edate</td>
-                                <td>@item.STATUS</td>
-                                <td class="text-center"><a onclick="showMemo('',@item.OBS_ID,@item.OBS_TEXT_ID,'@item.STATUS_ID','','@item.PROCESS','@item.VIOLATION');" class="text-hover font-weight-bold text-success">View</a></td>
-                            </tr>
-                            index++;
-                        }
-                    }
-                }
+              
             </tbody>
         </table>
     </div>
@@ -134,14 +191,28 @@
             </div>
             <div class="modal-body">
                 <form>
+
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Violation</label>
+                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Nature</label>
+                        <div id="viewMemo_nature" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Process</label>
                         <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_memo">Violation</label>
-                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_memo">Sub Process</label>
+                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Checklist Detail</label>
+                        <div id="viewMemo_checklist_detail" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>

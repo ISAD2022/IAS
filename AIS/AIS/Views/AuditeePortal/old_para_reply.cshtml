@@ -4,17 +4,17 @@
 }
 <script>
     var g_paraId = 0;
+    var g_obsList = [];
     $(document).ready(function () {
         getLegacyPara();
 
-        $('#observation').richText({
+        $('#responseAuditee').richText({
             imageUpload: false,
             fileUpload: false,
             videoEmbed: false,
             urls: false
         });
         $('#PublishParaText').on('click', function () {
-            console.log('asdasdas');
             publishResponseChanges();
         });
     });
@@ -22,16 +22,16 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_para",
+            url: "/ApiCalls/get_legacy_para_for_response",
             type: "POST",
             data: {
-                'AUDITED_BY': $('#legacypara_branch option:selected').val(),
-                'AUDIT_YEAR': $('#legacypara_year option:selected').val(),
+                
             },
             cache: false,
             success: function (data) {
+                g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II +'</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="processdetails('+child.id+');">Add Para Text</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II +'</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="processdetails('+child.id+');">Add Reply</a></td></tr>')
                 });
 
             },
@@ -40,99 +40,37 @@
         });
 
     }
-    function getProcessChilds() {
-
-        var select = document.getElementById('processbox');
-        var option = select.options[select.selectedIndex];
-        var p_id = option.value;
-        $('#sub_process').empty();
-        $('#sub_process').append('<option value="0" id="0">--Select Sub-Process--</option>');
-        if (p_id != 0) {
-            $.ajax({
-                url: "/Setup/process_details",
-                type: "POST",
-                data: {
-                    'ProcessId': p_id,
-                },
-
-                cache: false,
-                success: function (data) {
-                    
-                    $.each(data, function (index, pid) {
-                        $('#sub_process').append('<option value="' + pid.id + '" id="' + pid.id + '" >' + pid.title + '</option>');
-                    });
-                },
-
-                dataType: "json",
-            });
-        }
-
-    }
-    function getchecklist() {
-        var select = document.getElementById('sub_process');
-        var option = select.options[select.selectedIndex];
-        var s_p_id = option.value;
-        $('#checklist_box').empty();
-        $('#checklist_box').append('<option value="0" id="0">--Select Checklist Detail--</option>');
-        if (s_p_id != 0) {
-            $.ajax({
-                url: "/Setup/process_transactions",
-                type: "POST",
-                data: {
-                    'ProcessDetailId': s_p_id,
-                },
-                cache: false,
-                success: function (data) {                    
-                    $.each(data, function (index, clid) {
-                        $('#checklist_box').append('<option value="' + clid.id + '" id="' + clid.id + '" >' + clid.description + '</option>');
-                    });
-                },
-
-                dataType: "json",
-            });
-        }
-
-    }
     function processdetails(id) {
         g_paraId = id;
+        $.each(g_obsList, function (i, v) {
+            if (v.id == g_paraId) {
+                console.log(v);
+                $('#processField').val(v.procesS_DES);
+                $('#subprocessField').val(v.suB_PROCESS_DES);
+                $('#checklistDetailField').val(v.procesS_DETAIL_DES);
+                $('#observation').html(v.gisT_OF_PARAS);
+            }
+        });
         $('#process_detail').modal('show');
-        $('#observation').val('').trigger('change');
+        $('#responseAuditee').val('').trigger('change');
     }
 
     function publishResponseChanges() {
-        if ($('#processbox option:selected').val() == 0) {
-            alert("Please select Process to proceed");
-            return;
-        }
-
-        if ($('#sub_process option:selected').val() == 0) {
-            alert("Please select Sub-Process to proceed");
-            return;
-        }
-        if ($('#checklist_box option:selected').val() == 0) {
-            alert("Please select Checklist Detail to proceed");
-            return;
-        }
-
-    
+       
         if ($('.richText-editor').html() == "") {
-            alert("Please enter Para Text");
+            alert("Please enter Reply");
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_observation_text",
+            url: "/ApiCalls/add_legacy_para_reply",
             type: "POST",
             data: {
                 'ID': g_paraId,
-                'PROCESS': $('#processbox option:selected').val(),
-                'SUB_PROCESS': $('#sub_process option:selected').val(),
-                'PROCESS_DETAIL': $('#checklist_box option:selected').val(),
-                'PARA_TEXT': $('.richText-editor').html(),
-                'RESPONSIBLE_PP_NO': $('#multiplePPNumberFields').val()
+                'REPLY': $('.richText-editor').html()               
             },
             cache: false,
             success: function (data) {
-                alert("Para text Successfully added");
+                alert("Reply Successfully added");
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
@@ -152,13 +90,13 @@
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-2">Entity</th>
-                    <th class="col-md-1">Audit Year</th>
-                    <th class="col-md-1">Para No.</th>
-                    <th class="col-md-3">Observation</th>
-                    <th class="col-md-1">Amount</th>
-                    <th class="col-md-2">VOL I II</th>
-                    <th class="col-md-2">Action</th>
+                    <th class="col-md-auto">Entity</th>
+                    <th class="col-md-auto">Audit Year</th>
+                    <th class="col-md-auto">Para No.</th>
+                    <th class="col-md-auto">Observation</th>
+                    <th class="col-md-auto">Amount</th>
+                    <th class="col-md-auto">VOL I II</th>
+                    <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -184,41 +122,21 @@
                     <div class="row col-md-12">
 
                         <label class="font-weight-bold">Process</label>
-
-                        <select id="processbox" onchange="getProcessChilds();" class="form-select form-control">
-                            <option value="0" id="0">--Enter Process--</option>
-                            @{
-                                if (ViewData["ProcessList"] != null)
-                                {
-                                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
-                                    {
-                                        <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                        <input class="form-control" id="processField" disabled="disabled" />
 
 
-                                    }
-                                }
-                            }
-                        </select>
                     </div>
                     <div class="row mt-3 col-md-12">
 
                         <label class="font-weight-bold">Sub-Process</label>
 
-                        <select id="sub_process" onchange="getchecklist();" class="form-select form-control">
-                            <option value="0" id="0">--Add Sub-Process--</option>
-
-                        </select>
-                        <!--<button onclick="getProcessChilds();">function</button>-->
+                        <input class="form-control" id="subprocessField" disabled="disabled" />
                     </div>
 
                     <div class="row mt-3 col-md-12">
 
                         <label class="font-weight-bold">Checklist Details </label>
-                        <select id="checklist_box" class="form-select form-control">
-                            <option value="0" id="0">--Enter Checklist Details--</option>
-
-                        </select>
-
+                        <input class="form-control" id="checklistDetailField" disabled="disabled" />
                     </div>
 
                     <div class="row mt-3 col-md-12">
@@ -226,16 +144,18 @@
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <textarea id="observation" class="form-control"></textarea>
+                        <div id="observation" class="col-md-12"></div>
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Responsible PP No.</label>
+                        <label class="font-weight-bold">Reply</label>
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <input type="text" id="multiplePPNumberFields" class="form-control" placeholder="123456,23456,1222334,345123 etc." />
+                        <textarea class="form-control" id="responseAuditee"></textarea>
+
                     </div>
+
 
                 </form>
             </div>
