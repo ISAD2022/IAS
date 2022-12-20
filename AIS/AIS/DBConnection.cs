@@ -3382,10 +3382,15 @@ namespace AIS
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageObservations> list = new List<ManageObservations>();
+
+            if (loggedInUser.UserLocationType=="Z")
+            {
+                return this.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
+            }
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
 
-            List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (OBS_ID == 0)
@@ -3464,7 +3469,6 @@ namespace AIS
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
-            List<ManageObservations> finalList = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "select * from V_GET_DRAFT_AUDIT_DEPARTMENT t where t.eng_id = '" + ENG_ID + "'";
@@ -3485,6 +3489,17 @@ namespace AIS
                     if (rdr["NATURE"].ToString() != null && rdr["NATURE"].ToString() != "")
                         chk.NATURE = rdr["NATURE"].ToString();
 
+
+                    if (rdr["PROCESS"].ToString() != null && rdr["PROCESS"].ToString() != "")
+                        chk.PROCESS = rdr["PROCESS"].ToString();
+
+                    if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
+                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+
+                    if (rdr["CHECK_LIST_DETAILS"].ToString() != null && rdr["CHECK_LIST_DETAILS"].ToString() != "")
+                        chk.Checklist_Details = rdr["CHECK_LIST_DETAILS"].ToString();
+
+                    
 
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);

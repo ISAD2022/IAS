@@ -88,9 +88,21 @@
                 cache: false,
                 success: function (data) {
                     g_obsList = data;
+                    var isbranch = false;
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="obs_' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="obs_text d-none" ></td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td>' + v.obS_RISK + '</td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.obS_STATUS + '</td></tr> ');
+                        if (v.violation == null && v.nature == null) {
+                            isbranch = true;
+                        }
+                        $('#manageObsPanel tbody').append('<tr id="obs_' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="branchfield">' + v.process + '</td><td class="branchfield">' + v.suB_PROCESS + '</td><td class="branchfield">' + v.checklist_Details + '</td><td class="obs_text d-none" ></td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td>' + v.obS_RISK + '</td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.obS_STATUS + '</td></tr> ');
                     });
+                    if (isbranch) {
+                        $('.deptfield').addClass('d-none');
+                        $('.branchfield').removeClass('d-none');
+                    }
+                    else {
+                        $('.deptfield').removeClass('d-none');
+                        $('.branchfield').addClass('d-none');
+                    }
 
                     $.ajax({
                         url: "/ApiCalls/draft_report_summary",
@@ -190,8 +202,11 @@
             <thead style="background-color:aquamarine;">
                 <tr>
                     <th class="col-md-auto text-center">Memo No.</th>
-                    <th class="col-md-auto text-center">Violation</th>
-                    <th class="col-md-auto text-center">Nature</th>
+                    <th class="col-md-auto text-center deptfield">Violation</th>
+                    <th class="col-md-auto text-center deptfield">Nature</th>
+                    <th class="col-md-auto text-center branchfield">Process</th>
+                    <th class="col-md-auto text-center branchfield">Sub Process</th>
+                    <th class="col-md-auto text-center branchfield">Checklist Detail</th>
                     <th class="col-md-auto text-center">Observation</th>
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Auditee Response</th>
