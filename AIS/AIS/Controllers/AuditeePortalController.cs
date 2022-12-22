@@ -128,13 +128,32 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult dashboard()
+        public IActionResult div_historic_paras()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["AuditDepartments"] = dBConnection.GetDepartments();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult functional_resp_paras()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["ReportingDepartmentList"] = dBConnection.Getchildposting();
+
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else

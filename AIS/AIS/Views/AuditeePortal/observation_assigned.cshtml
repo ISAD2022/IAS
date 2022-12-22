@@ -19,7 +19,8 @@
     function reloadLocation() {
         location.reload();
     }
-    function showMemo(obs_id, obs_text_id, status, violation, nature, process, subprocess,checklist_detail) {
+    function showMemo(obs_id) {
+        var obs_text_id, status, violation, nature, process, subprocess, checklist_detail;
         $.each(g_obsList, function (i, v) {
             if (v.obS_ID == obs_id) {
                 obs_text_id = v.obS_TEXT_ID;
@@ -29,7 +30,6 @@
                 process = v.process;
                 subprocess = v.suB_PROCESS;
                 checklist_detail = v.checklisT_DETAIL;
-
             }
         })
 
@@ -46,21 +46,21 @@
 
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0]);
-                if (nature == "" && violation == "") {
-                    $('#viewMemo_nature').html(nature);
-                    $('#viewMemo_violation').html(violation);
+                console.log('Hereee',nature, violation, process, subprocess, checklist_detail);
+                if (nature != null && violation != null) {
+                    $('#viewMemo_nature').val(nature);
+                    $('#viewMemo_violation').val(violation);
 
-                    $('#viewMemo_process').addClass('d-none');
-                    $('#viewMemo_subprocess').addClass('d-none');
-                    $('#viewMemo_checklist_detail').addClass('d-none');
+                    $('#viewMemo_process').parent().addClass('d-none');
+                    $('#viewMemo_subprocess').parent().addClass('d-none');
+                    $('#viewMemo_checklist_detail').parent().addClass('d-none');
                 } else {
-                    $('#viewMemo_nature').addClass('d-none');
-                    $('#viewMemo_violation').addClass('d-none');
-                    
+                    $('#viewMemo_nature').parent().addClass('d-none');
+                    $('#viewMemo_violation').parent().addClass('d-none');
 
-                    $('#viewMemo_process').html(process);
-                    $('#viewMemo_subprocess').html(subprocess);
-                    $('#viewMemo_checklist_detail').html(checklist_detail);
+                    $('#viewMemo_process').val(process);
+                    $('#viewMemo_subprocess').val(subprocess);
+                    $('#viewMemo_checklist_detail').val(checklist_detail);
                 }
                 
              
@@ -123,7 +123,7 @@
                     $.each(data, function (i, v) {
                         var sdate = v.memO_DATE.split(" ")[0];
                         var edate = v.memO_REPLY_DATE.split(" ")[0];                           
-                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + sr + '</td><td>' + v.entitY_NAME + '</td><td>' + sdate + '</td><td>' + edate + '</td><td>' +v.status+'</td><td class="text-center"><a onclick="showMemo( '+ v.obS_ID +');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + sr + '</td><td>' + v.entitY_NAME + '</td><td>' + sdate + '</td><td>' + edate + '</td><td>' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID +');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
                         sr++;
                           });
 
@@ -194,23 +194,26 @@
 
                     <div class="form-group">
                         <label for="viewMemo_memo">Violation</label>
-                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <input id="viewMemo_violation" class="form-control" disabled="disabled" />
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Nature</label>
-                        <div id="viewMemo_nature" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <input id="viewMemo_nature" class="form-control" disabled="disabled" />
+                        
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Process</label>
-                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <input id="viewMemo_process" class="form-control" disabled="disabled" />
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Sub Process</label>
-                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <input id="viewMemo_subprocess" class="form-control" disabled="disabled" />
+                        
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Checklist Detail</label>
-                        <div id="viewMemo_checklist_detail" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <input id="viewMemo_checklist_detail" class="form-control" disabled="disabled" />
+                        
                     </div>
                     
                     <div class="form-group">

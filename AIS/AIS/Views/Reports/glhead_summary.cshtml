@@ -63,25 +63,25 @@
                         foreach (var item in (dynamic)(ViewData["GlHeadDetails"]))
                         {
 
-                            String date = @item.MONTHEND.ToString();
+                            String date = @item.DATETIME.ToString();
 
                             <tr id="Branch_@item.BRANCHID">
                                 <td class="gl_id">
-                                    <p class="fw-normal mb-1">@item.GLCODE</p>
+                                    <p class="fw-normal mb-1">@item.GLSUBCODE</p>
                                 </td>
                                 <td class="gl_des">
-                                    <p class="fw-normal mb-1">@item.GLDESP</p>
+                                    <p class="fw-normal mb-1">@item.DESCRIPTION</p>
                                 </td>
                                 <td class="date">
                                     <p class="fw-normal mb-1">@date.Split(" ")[0]</p>
 
                                 </td>
                                 <td class="run_cr">
-                                    <p class="fw-normal mb-1">@item.RUNNING_CR</p>
+                                    <p class="fw-normal mb-1">@item.CREDIT</p>
 
                                 </td>
                                 <td class="run_deb">
-                                    <p class="fw-normal mb-1">@item.RUNNING_DR</p>
+                                    <p class="fw-normal mb-1">@item.DEBIT</p>
                                 </td>
                                 <td class="bal">
                                     <p class="fw-normal mb-1">@item.BALANCE</p>
@@ -90,7 +90,7 @@
 
 
                                 <td>
-                                    <a href='/Reports/glhead_details?glcode=@item.GLCODE'>Details</a>
+                                    <a href='/Reports/glhead_details?glcode=@item.GLSUBCODE'>Details</a>
                                 </td>
 
                             </tr>

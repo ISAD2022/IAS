@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+       
+    });
+
+
+    function getEntityObservation() {
+        $('#observation_panel tbody').empty();
+        if ($('#department option:selected').val() != 0 && $('#natureofviolation option:selected').val() != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_violation_observations",
+                type: "POST",
+                data: {
+                    'ENTITY_ID': $('#department option:selected').val(),
+                    'VIOLATION_ID': $('#natureofviolation option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    return;
+                    g_response = data;
+                    var sr = 1;
+                    $.each(data, function (i, v) {
+                        $('#ccqs_panel tbody').append('  <tr id="' + v.id + '"><td align="justify"> ' + sr + '</td> <td align="left">' + v.questions + '</td> <td align="left">' + v.controL_VIOLATION + '</td> <td align="left">' + v.risk + '</td> <td align="left">' + v.status + '</td><td align="justify"><a onclick="updateCCQBinding(' + v.id + ', \'\',' + v.controL_VIOLATION_ID + ' , ' + v.risK_ID + ', \'' + v.status + '\');" href="#">Edit</a></td> </tr>');
+                        sr++;
+                    });
+
+                },
+                dataType: "json",
+            });
+
+        }
+        else {
+            alert('Select both Entity and Violation to proceed');
+            return false;
+        }
+    }
+
+   
+</script>
+<div class="row w-100">
+
+    <div class="col-md-12 mt-3">
+
+        <h3 style="color: #45c545;">Dashboard for Divisional Head</h3>
+
+        <div class="row col-md-12 mt-4">
+            <h5>Select Department</h5>
+            <select id="department" class="form-select form-control">
+                <option value="0" id="0" selected>--Select Department--</option>
+
+                @{
+                    if (ViewData["AuditDepartments"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["AuditDepartments"]))
+                        {
+                            <option value="@item.ID" id="@item.ID">@item.NAME</option>
+                        }
+                    }
+                }
+
+
+            </select>
+        </div>
+        <div class="row col-md-12 mt-3">
+            <h5>Nature of Violation</h5>
+            <select id="natureofviolation" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>Nature of Violation</option>
+                @{
+                    if (ViewData["Voilation_Cat"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
+                        {
+                            <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+        <div class="row col-md-12 mt-3">
+            <button onclick="getEntityObservation();" class="btn btn-primary">Search Para</button>
+        </div>
+
+
+        </div>
+        <div class="mt-3 col-md-12">
+            <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                    <tr>
+                        <th>Name of Audit Report</th>
+                        <th>Nature of Violation</th>
+                        <th>Audit Year</th>
+                        <th>Para No. Outstanding</th>
+                        <th>Observation</th>
+                        <th>Risk Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+

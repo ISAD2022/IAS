@@ -9,6 +9,9 @@ using System.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Numerics;
+using System.Data.OracleClient;
+using System.Data;
+
 
 namespace AIS
 {
@@ -1423,8 +1426,8 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
-            List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
+            List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
             string query = "";
             if (loggedInUser.UserGroupID != 1)
             {
@@ -1435,16 +1438,17 @@ namespace AIS
             }
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " select * FROM v_GET_AUDIT_PLAN p " + query;
-                    //"  p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.AUDITPERIODID WHERE not EXISTS (select * from t_au_plan_eng e where e.period_id= p.auditperiodid and e.entity_code= p.entity_code and e.entity_id= p.entity_id) " + query + " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
-
+                string _sql = "pkg_ais.p_get_audit_plan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("AUDITEDBY", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;                
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     TentativePlanModel tplan = new TentativePlanModel();
                     tplan.CRITERIA_ID = Convert.ToInt32(rdr["CRITERIA_ID"]);
                     tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
-                   // if(rdr["AUDITEDBY"].ToString()!=null && rdr["AUDITEDBY"].ToString()!="")
                     tplan.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
                     tplan.BR_SIZE = rdr["AUDITEE_SIZE"].ToString();
                     tplan.RISK = rdr["AUDITEE_RISK"].ToString();
@@ -1452,15 +1456,57 @@ namespace AIS
                     tplan.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     tplan.CODE = rdr["ENTITY_CODE"].ToString();
                     tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
-                  // tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
-                  //  tplan.BR_NAME = rdr["AUDITEE_SIZE"].ToString();
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
                     tplansList.Add(tplan);
                 }
             }
             con.Close();
             return tplansList;
+
+
+            /* sessionHandler = new SessionHandler();
+             sessionHandler._httpCon = this._httpCon;
+             sessionHandler._session = this._session;
+             var con = this.DatabaseConnection();
+             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
+             var loggedInUser = sessionHandler.GetSessionUser();
+             string query = "";
+             if (loggedInUser.UserGroupID != 1)
+             {
+                 if (sessionCheck)
+                 {
+                     query = query + " where p.AUDITEDBY=" + loggedInUser.UserEntityID;
+                 }
+             }
+             using (OracleCommand cmd = con.CreateCommand())
+             {
+                 cmd.CommandText = " select * FROM v_GET_AUDIT_PLAN p " + query;
+                     //"  p.*,ap.DESCRIPTION as PERIOD_NAME from t_au_plan p inner join t_au_period ap on p.AUDITPERIODID=ap.AUDITPERIODID WHERE not EXISTS (select * from t_au_plan_eng e where e.period_id= p.auditperiodid and e.entity_code= p.entity_code and e.entity_id= p.entity_id) " + query + " order by decode(p.AUDITEE_RISK, 'High', 1, 'Medium', 2, 'Low', 3 ), p.DIVISION_ZONE_NAME asc";
+
+                 OracleDataReader rdr = cmd.ExecuteReader();
+                 while (rdr.Read())
+                 {
+                     TentativePlanModel tplan = new TentativePlanModel();
+                     tplan.CRITERIA_ID = Convert.ToInt32(rdr["CRITERIA_ID"]);
+                     tplan.AUDIT_PERIOD_ID = Convert.ToInt32(rdr["AUDITPERIODID"]);
+                    // if(rdr["AUDITEDBY"].ToString()!=null && rdr["AUDITEDBY"].ToString()!="")
+                     tplan.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
+                     tplan.BR_SIZE = rdr["AUDITEE_SIZE"].ToString();
+                     tplan.RISK = rdr["AUDITEE_RISK"].ToString();
+                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
+                     tplan.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                     tplan.CODE = rdr["ENTITY_CODE"].ToString();
+                     tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
+                   // tplan.ZONE_NAME = rdr["DIVISION_ZONE_NAME"].ToString();
+                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
+                   //  tplan.BR_NAME = rdr["AUDITEE_SIZE"].ToString();
+                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
+                     tplansList.Add(tplan);
+                 }
+             }
+             con.Close();
+             return tplansList;*/
         }
         public string GetAuditOperationalStartDate(int auditPeriodId = 0, int entityCode = 0)
         {
@@ -2707,24 +2753,32 @@ namespace AIS
         {
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection();
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
                 //cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.GLSUBNAME, GH.MONTHEND";
-                cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by GH.GLSUBNAME, GH.MONTHEND";
+                // cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by GH.GLSUBNAME, GH.MONTHEND";
+                cmd.CommandText = "select * from V_GET_GL_INCOME_EXPENDITURES t where t.team_mem_ppno = '" + loggedInUser.PPNumber + "' and t.DESCRIPTION in ('EXPENSE','INCOME') ORDER BY T.DESCRIPTION, T.datetime";
+
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
-                    GlHeadDetails.GLDESP = rdr["DESCRIPTION"].ToString();
-                    GlHeadDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadDetails.MONTHEND = Convert.ToDateTime(rdr["MONTHEND"]);
+                    GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GlHeadDetails.RUNNING_DR = Convert.ToDouble(rdr["DEBIT"]);
-                    GlHeadDetails.RUNNING_CR = Convert.ToDouble(rdr["CREDIT"]);
+                    GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
                 }
             }
@@ -2797,10 +2851,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
         public List<LoanCasedocModel> GetLoanCaseDocuments()
         {
            
@@ -2838,17 +2888,6 @@ namespace AIS
             con.Close();
             return list;
         }
-
-
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        //////////////////////////////////////////////////////////////////////////
-
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -2865,13 +2904,13 @@ namespace AIS
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
-                    GlHeadDetails.GLDESP = rdr["DESCRIPTION"].ToString();
-                    GlHeadDetails.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadDetails.MONTHEND = Convert.ToDateTime(rdr["MONTHEND"]);
+                    GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GlHeadDetails.RUNNING_DR = Convert.ToDouble(rdr["DEBIT"]);
-                    GlHeadDetails.RUNNING_CR = Convert.ToDouble(rdr["CREDIT"]);
+                    GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
                 }
             }
@@ -4511,29 +4550,26 @@ return list;
         }
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            if (e_r_id == 0)
+                e_r_id =Convert.ToInt32(loggedInUser.UserEntityID);
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection();
          
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select distinct(r.entity_id), r.c_name, r.c_name, e.status from t_auditee_ent_relation     e, t_auditee_ent_types    t, T_AUDITEE_ENTITIES_MAPING r where t.autid = e.parent_entity_typeid and r.p_type_id = e.parent_entity_typeid and r.parent_id = " + e_r_id +" order by r.c_name";
-               // cmd.CommandText = "select * from ztblaisdev.t_auditee_ent_relation";
-                 OracleDataReader rdr = cmd.ExecuteReader();
+                cmd.CommandText = "select distinct(r.entity_id), r.c_name, r.c_name, e.status from t_auditee_ent_relation   e, t_auditee_ent_types    t, T_AUDITEE_ENTITIES_MAPING r where t.autid = e.parent_entity_typeid and r.p_type_id = e.parent_entity_typeid and r.parent_id = " + e_r_id +" order by r.c_name";              
+                OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     UserRelationshipModel entity = new UserRelationshipModel();
-                 
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
-               
-
                     entity.C_NAME = rdr["C_NAME"].ToString();
-                   // entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                   // entity.ACTIVE = rdr["ACTIVE"].ToString();
-
-
-
-
                     entitiesList.Add(entity);
                 }
             }
@@ -4607,7 +4643,6 @@ return list;
             return entitiesList;
 
         }
-
         public List<StaffPositionModel> GetStaffPosition()
         {
 
@@ -4640,6 +4675,67 @@ return list;
             }
             con.Close();
             return list;
+        }
+
+        public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara (int PROCESS_ID=0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string whereClause = " 1=1";
+            if (PROCESS_DETAIL_ID != 0)
+                whereClause += " and CHECK_LIST_DETAIL_ID = " + PROCESS_DETAIL_ID;
+            if (SUB_PROCESS_ID != 0)
+                whereClause += " and SUB_PROCESS_ID= " + SUB_PROCESS_ID;
+            if (PROCESS_ID != 0)
+                whereClause += " and PROCESS_ID= " + PROCESS_ID;
+
+            List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "select * FROM v_dash_borad_of_divisional_head WHERE "+whereClause;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FunctionalResponsibilityWiseParas para = new FunctionalResponsibilityWiseParas();
+                    para.PROCESS_ID = Convert.ToInt32(rdr["PROCESS_ID"].ToString());
+                    para.PROCESS = rdr["PROCESS"].ToString();
+                    para.SUB_PROCESS_ID = Convert.ToInt32(rdr["SUB_PROCESS_ID"].ToString());
+                    para.VIOLATION = rdr["VIOLATION"].ToString();
+                    para.CHECK_LIST_DETAIL_ID = Convert.ToInt32(rdr["CHECK_LIST_DETAIL_ID"].ToString());
+                    para.PERIOD = rdr["PERIOD"].ToString();
+                    para.OBS_ID = Convert.ToInt32(rdr["OBS_ID"].ToString());
+                    para.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    para.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    para.MEMO_NO = rdr["MEMO_NO"].ToString();
+                    para.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    para.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
+                    para.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
+                    para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    list.Add(para);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public bool AddDivisionalHeadRemarksOnFunctionalLegacyPara(int CONCERNED_DEPT_ID = 0, string COMMENTS="", int REF_PARA_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO t_au_old_functional_para_division_head_remarks (ID, PARA_ID, REF_P, ENTITY_ID, ENTITY_NAME, PARA_NO, CONCERNED_DEPT_ID, REMARKS, CREATED_BY) VALUES ( (select COALESCE(max(p.ID)+1,1) from t_au_old_functional_para_division_head_remarks p) , '" + REF_PARA_ID + "',(select f.REF_P from t_au_old_paras_fad f where f.id="+REF_PARA_ID+ " ),(select f.entity_id from t_au_old_paras_fad f where f.id=" + REF_PARA_ID + " ), (select f.entity_name from t_au_old_paras_fad f where f.id=" + REF_PARA_ID + " ), (select f.para_no from t_au_old_paras_fad f where f.id=" + REF_PARA_ID + " ),"+CONCERNED_DEPT_ID+", '"+COMMENTS+"', "+loggedInUser.PPNumber+")";
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
         }
 
     }

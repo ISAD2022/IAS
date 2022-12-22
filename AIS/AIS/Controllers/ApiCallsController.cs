@@ -409,18 +409,21 @@ namespace AIS.Controllers
             return dBConnection.RefferedBackAuditEngagementPlan(ENG_ID, COMMENTS);
         }
 
-
-        
-
-
-  [HttpPost]
+        [HttpPost]
         public List<LoanCasedocModel> Getloancasedocuments()
         {
             return dBConnection.GetLoanCaseDocuments();
         }
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        [HttpPost]
+        public List<FunctionalResponsibilityWiseParas> get_functional_responsibility_wise_paras(int PROCESS_ID=0, int SUB_PROCESS_ID=0, int PROCESS_DETAIL_ID=0)
+        {
+            return dBConnection.GetFunctionalResponsibilityWisePara(PROCESS_ID,SUB_PROCESS_ID,PROCESS_DETAIL_ID);
+        }
+        [HttpPost]
+        public bool divisional_head_remarks_on_functional_legacy_para(int CONCERNED_DEPT_ID = 0, string COMMENTS="", int REF_PARA_ID=0)
+        {
+            return dBConnection.AddDivisionalHeadRemarksOnFunctionalLegacyPara(CONCERNED_DEPT_ID, COMMENTS, REF_PARA_ID);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
