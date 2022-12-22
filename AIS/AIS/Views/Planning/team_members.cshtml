@@ -119,7 +119,7 @@
         $.each($('.participantcheckboxes'), function (index, member) {
             if ($(member).is(':checked')) {
                 var obj = {
-                    'T_CODE': teamCode,
+                    'T_CODE': '',
                     'T_NAME':teamName,
                     'PPNO': $(member).attr('memberid'),
                     'NAME': $(member).attr('memberfname') +" "+$(member).attr('memberlname'),
@@ -139,7 +139,6 @@
             }
         });
         $.each(participants, function (i, p) {
-            //console.log(p.PPNO);
             if (p.PPNO == teamLeadID) {
                 p.ISTEAMLEAD = 'Y'
                 teamLeadCheck = 1;

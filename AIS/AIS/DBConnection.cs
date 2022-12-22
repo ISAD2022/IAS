@@ -1428,14 +1428,7 @@ namespace AIS
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
-            string query = "";
-            if (loggedInUser.UserGroupID != 1)
-            {
-                if (sessionCheck)
-                {
-                    query = query + " where p.AUDITEDBY=" + loggedInUser.UserEntityID;
-                }
-            }
+           
             using (OracleCommand cmd = con.CreateCommand())
             {
                 string _sql = "pkg_ais.p_get_audit_plan";
@@ -1565,11 +1558,17 @@ namespace AIS
         }
         public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
         {
-
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO T_AU_TEAM_MEMBERS (ID, T_ID, T_CODE, TEAM_NAME, MEMBER_PPNO, MEMBER_NAME, ISTEAMLEAD, PLACE_OF_POSTING, STATUS ) VALUES ( (SELECT COALESCE(max(PP.ID)+1,1) FROM T_AU_TEAM_MEMBERS PP), '" + aTeam.T_ID + "', '" + aTeam.CODE + "', '" + aTeam.NAME + "', '" + aTeam.TEAMMEMBER_ID + "', '" + aTeam.EMPLOYEENAME + "', '" + aTeam.IS_TEAMLEAD + "', '" + aTeam.PLACE_OF_POSTING + "', '" + aTeam.STATUS + "')";
+                string _sql = "pkg_ais.TEAM_MEMBERS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("teamname", OracleDbType.Varchar2).Value = aTeam.NAME;
+                cmd.Parameters.Add("TEAMMEMBER_ID", OracleDbType.Int32).Value = aTeam.TEAMMEMBER_ID;
+                cmd.Parameters.Add("EMPLOYEENAME", OracleDbType.Varchar2).Value = aTeam.EMPLOYEENAME;
+                cmd.Parameters.Add("IS_TEAMLEAD", OracleDbType.Varchar2).Value = aTeam.IS_TEAMLEAD;
+                cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = aTeam.STATUS;
+                cmd.CommandText = _sql;
                 cmd.ExecuteReader();
 
             }
