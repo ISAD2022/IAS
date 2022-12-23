@@ -161,7 +161,7 @@ namespace AIS
                         cmd.Parameters.Add("UserPostingDept", OracleDbType.Int32).Value = user.UserPostingDept;
                         cmd.Parameters.Add("UserPostingZone", OracleDbType.Int32).Value = user.UserPostingZone;
                         cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
-                        cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = login.UserPostingAuditZone;
+                        cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = user.UserPostingAuditZone;
                         cmd.ExecuteReader();
                     }
                 }
