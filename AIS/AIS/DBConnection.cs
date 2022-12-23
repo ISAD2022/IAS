@@ -63,8 +63,16 @@ namespace AIS
             var enc_pass = getMd5Hash(login.Password);
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "Select U.*, UM.*, e.Employeefirstname,  e.employeelastname FROM t_user u inner join t_user_maping um on u.USERID = um.userid left join t_audit_emp e on u.PPNO=e.ppno WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'";
+                string _sql = "pkg_ais.p_get_user";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
+                cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
+                //cmd.CommandText = "Select U.*, UM.*, e.Employeefirstname,  e.employeelastname FROM t_user u inner join t_user_maping um on u.USERID = um.userid left join t_audit_emp e on u.PPNO=e.ppno WHERE U.PPNO ='" + login.PPNumber + "' and u.Password ='" + enc_pass + "' and u.ISACTIVE='Y'";
+                //OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     user.isAuthenticate = true;
@@ -113,7 +121,12 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + user.PPNumber + "' and u.SESSION_ACTIVE='Y'";
+                    string _sql2 = "pkg_ais.p_get_user_id";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    cmd.CommandText = _sql2;
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
                     {
@@ -133,7 +146,22 @@ namespace AIS
                     else
                     {
                         var resp=sessionHandler.SetSessionUser(user);
-                        cmd.CommandText = "INSERT INTO T_USER_SESSION  (ID, USER_PP_NUMBER, ROLE_ID, IP_ADDRESS, SESSION_ID, LOGIN_LOCATION_TYPE, MAC_ADDRESS,PRIMARY_MAC_CARD_ADDRESS, POSTING_DIV, GROUP_ID, POSTING_DEPT, POSTING_ZONE, POSTING_BRANCH, POSTING_AZ, SESSION_ACTIVE) VALUES ( (select COALESCE(max(p.ID)+1,1) from T_USER_SESSION p) , '" + user.PPNumber + "','" + user.UserRoleID + "','" + iPAddress.GetLocalIpAddress() + "','" + resp.SessionId + "','" + user.UserLocationType + "','" + iPAddress.GetMACAddress() + "', '" + iPAddress.GetFirstMACCardAddress() + "','" + user.UserPostingDiv + "','" + user.UserGroupID + "','" + user.UserPostingDept + "','" + user.UserPostingZone + "','" + user.UserPostingBranch + "','" + user.UserPostingAuditZone + "' , 'Y')";
+                        cmd.CommandText = "pkg_ais.User_SESSION";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Clear();                        
+                        cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = user.PPNumber;
+                        cmd.Parameters.Add("UserRoleID", OracleDbType.Int32).Value = user.UserRoleID;
+                        cmd.Parameters.Add("LocalIpAddress", OracleDbType.Varchar2).Value = iPAddress.GetLocalIpAddress();
+                        cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = resp.SessionId;
+                        cmd.Parameters.Add("UserLocationType", OracleDbType.Varchar2).Value = user.UserLocationType;
+                        cmd.Parameters.Add("MACAddress", OracleDbType.Varchar2).Value = iPAddress.GetMACAddress();
+                        cmd.Parameters.Add("FirstMACCardAddress", OracleDbType.Varchar2).Value = iPAddress.GetFirstMACCardAddress();
+                        cmd.Parameters.Add("UserPostingDiv", OracleDbType.Int32).Value = user.UserPostingDiv;
+                        cmd.Parameters.Add("UserGroupID", OracleDbType.Varchar2).Value = user.UserGroupID;
+                        cmd.Parameters.Add("UserPostingDept", OracleDbType.Int32).Value = user.UserPostingDept;
+                        cmd.Parameters.Add("UserPostingZone", OracleDbType.Int32).Value = user.UserPostingZone;
+                        cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
+                        cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = login.UserPostingAuditZone;
                         cmd.ExecuteReader();
                     }
                 }
