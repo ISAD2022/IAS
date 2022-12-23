@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Tentative Inspection Plan";
+    Layout = "_Layout";
+}
+
+
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
+<script type="text/javascript">
+    function createAuditEngagement(name, size, risk, freq, days, auditperiod, periodId, code, zoneId, entity_id) {
+        window.location.href = '/planning/tentative_engagement_plan?name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=6' + '&zoneId=' + zoneId + '&entityId=' + entity_id;
+    }
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tentative_plan_list tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+      
+</script>
+<div class="row col-md-12 mt-3">
+    <h3 style="color: #45c545;">Tentative Inspection Plan </h3>
+</div>
+<div>
+    
+        <div class="row col-md-12">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+ 
+    <br>
+    <div class="row col-md-12 mt-3">
+        <table  id="tentative_plan_list" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th width="80" style="font-size:large">Sr No</th>
+                <th width="150" style="font-size:large">Audit Period</th>
+                <th width="150" style="font-size:large">Entity Name</th>
+                <th width="150" style="font-size:large">Entity Size</th>
+                <th width="80" style="font-size:large">Risk</th>
+
+                <th width="250" style="font-size:large">Tentatively Inspected On</th>
+              
+
+                <th width="100" style="font-size:large">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["TentativePlansList"] != null)
+                    {
+                        int sr = 1;
+                        int total_plan = Convert.ToInt32(ViewData["TotalPlanEntities"]);
+                        int first_q = Convert.ToInt32(total_plan * 0.25);
+                        int second_q = Convert.ToInt32(total_plan * 0.50);
+                        int third_q = Convert.ToInt32(total_plan * 0.75);
+                        
+                        foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
+                        {
+                                <tr>
+                                    <td align="center">@sr</td>
+                                    <td align="center">@item.PERIOD_NAME</td>
+                                    <td align="left">@item.ENTITY_NAME</td>
+                                    <td align="center">@item.BR_SIZE</td>
+                                    <td align="center">@item.RISK</td>
+                                    <td align="center">@item.FREQUENCY_DESCRIPTION</td>
+                                    <td align="center">@item.NO_OF_DAYS</td>
+                                    @if(sr <= first_q){
+                                    <td align="center">First Quarter</td>
+                                    }
+                                    else if (sr > first_q && sr <= second_q)
+                                    {
+                                    <td align="center">Second Quarter</td>
+                                    }else if (sr > second_q && sr <= third_q)
+                                    {
+                                    <td align="center">Third Quarter</td>
+                                    }
+                                    else{
+                                    <td align="center">Fourth Quarter</td>
+                                    }
+                                    <td align="center"><small onclick="createAuditEngagement('@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDITEDBY','@item.ENTITY_ID');" class="text-center text-danger text-hover">Create</small></td>
+                                </tr>
+                            sr = sr + 1;
+                        }
+
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="row w-100 mt-3 d-none">
+            <h4>Audit Zone Head Remarks</h4>
+            <select id="deptSelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" selected>Remarks</option>
+                <option value="1">1. Recommended for Approval</option>
+                <option value="2">2. Refer back for changes in the above marked plans</option>
+            </select>
+        </div>
+        <div class="row w-100 col-md-12 mt-3 d-none">
+            <div class="col-md-6 mt-5">
+                <button onclick="window.location.href = '';" class="btn-primary">Submit</button>
+            </div>
+            <div class="col-md-6 mt-5">
+                <button onclick="window.location.href = '';" class="btn-primary">Refer Back</button>
+            </div>
+        </div>
+    </div>
+</div>

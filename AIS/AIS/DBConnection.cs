@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Numerics;
 using System.Data.OracleClient;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 
 namespace AIS
@@ -42,9 +43,9 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
-                ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+                 ocsb.Password = "ztblais";
+                 ocsb.UserID = "ztblais";
+                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
                 con.Open();
@@ -178,22 +179,15 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy hh:mi:ss') WHERE USER_PP_NUMBER =" + sessionUser.PPNumber + " and SESSION_ID='" + sessionUser.SessionId + "'";
+                cmd.CommandText = "pkg_ais.Session_END";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = sessionUser.PPNumber;
+                cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = sessionUser.SessionId;
                 cmd.ExecuteReader();
             }
             con.Close();
             sessionHandler.DisposeUserSession();
-            return true;
-        }
-        public bool DisposeSessionByMACAndPPNumber(string sessionId)
-        {
-            var con = this.DatabaseConnection();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "UPDATE T_USER_SESSION SET SESSION_ACTIVE='N', LOGGED_OUT_DATE= to_timestamp('" + dtime.DateTimeInDDMMYY(DateTime.Now) + "','dd/mm/yyyy HH:MI AM') WHERE SESSION_ID ='" + sessionId + "'";
-                cmd.ExecuteReader();
-            }
-            con.Close();
             return true;
         }
         public bool IsLoginSessionExist(string PPNumber ="" )
@@ -212,7 +206,11 @@ namespace AIS
 
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT u.ID FROM T_USER_SESSION u WHERE u.USER_PP_NUMBER='" + PPNumber + "' and u.SESSION_ACTIVE='Y'";
+                    cmd.CommandText = "pkg_ais.p_get_user_session";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = PPNumber;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
                     {
