@@ -2238,18 +2238,18 @@ namespace AIS
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetRiskProcessTransactionsWithStatus";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("statusId", OracleDbType.Int32).Value = statusId;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-
-                //if (statusId.Length == 0)
-                //    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID order by pt.id asc";
-                //else
-                //    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
+                //cmd.CommandText = "pkg_ais.p_GetRiskProcessTransactionsWithStatus";
+                //cmd.CommandType = CommandType.StoredProcedure;
+                //cmd.Parameters.Clear();
+                //cmd.Parameters.Add("statusId", OracleDbType.Int32).Value = statusId;
+                //cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 //OracleDataReader rdr = cmd.ExecuteReader();
+
+                if (statusId.Length == 0)
+                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID order by pt.id asc";
+                else
+                    cmd.CommandText = "select s.description as DIV_NAME, d.name as CONTROL_OWNER, pt.*, pd.HEADING as TITLE, p.HEADING as P_NAME, vc.DESCRIPTION as V_NAME, s.status from t_audit_checklist_details pt inner join t_audit_checklist_sub pd on pt.S_ID = pd.S_ID inner join t_audit_checklist p on pd.T_ID = p.T_ID inner join t_r_sub_group vc on vc.S_GR_ID=pt.V_ID inner join t_hr_designations s on pt.role_resp_id = s.designationcode inner join T_DIVISION d on pt.process_owner_id=d.DIVISIONID inner join t_audit_checklist_details_status_mapping sm on pt.id = sm.T_ID inner join t_audit_checklist_details_status s on s.ID = sm.STATUS_ID and s.ID IN (" + string.Join(",", statusId) + ") order by pt.id asc";
+                OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     RiskProcessTransactions pTran = new RiskProcessTransactions();
