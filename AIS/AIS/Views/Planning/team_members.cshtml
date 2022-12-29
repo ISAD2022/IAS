@@ -61,7 +61,7 @@
                     $.each(data, function (index, team) {
                        
                         if (team.iS_TEAMLEAD == "Y") {
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.status + ' </p></td><td> <small onclick="deleteTeam(\'' + team.code + '\');" class="text-danger deleteTeam">Delete</small></td></tr>');
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td><td> <small onclick="deleteTeam(\'' + team.code + '\');" class="text-danger deleteTeam">Delete</small></td></tr>');
                             srNo++;
                         } else
                         {

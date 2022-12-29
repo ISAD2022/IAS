@@ -203,7 +203,7 @@
                         if (team.code == $('#auditTeam_box').val()) {
 
                             if (team.iS_TEAMLEAD == "Y") {
-                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.status + ' </p></td></tr>');
+                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td></tr>');
                              } else {
                                 teamMembers.push(team);
                                 if (team.code != teamId) {
@@ -337,7 +337,8 @@
             }
 
         </select>
-        <div id="teamPreview" class="row col-md-12 mt-3 d-none">
+        <div id="teamPreview" class="w-100 d-none mt-3">
+            <h5 style="color: #45c545;">Team Formation</h5>
             <table id="listOfEmployeeTeam" class="table table-hover table-bordered table-hover mt-3 table-striped">
                 <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                     <tr>
