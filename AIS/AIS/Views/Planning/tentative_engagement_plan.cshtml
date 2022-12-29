@@ -203,7 +203,7 @@
                         if (team.code == $('#auditTeam_box').val()) {
 
                             if (team.iS_TEAMLEAD == "Y") {
-                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td></tr>');
+                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td></tr>');
                              } else {
                                 teamMembers.push(team);
                                 if (team.code != teamId) {
@@ -345,7 +345,6 @@
                         <th class="col-md-auto">Team Name</th>
                         <th class="col-md-auto">Team Lead</th>
                         <th class="col-md-auto">Team Members</th>
-                        <th class="col-md-auto">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -364,6 +363,6 @@
     </div>
 </div>
 <div class="row col-md-12 mt-4">
-   <button onclick="publishNewAuditPlanChanges();" class="col-md-2 btn btn-primary">Save Changes</button>
+   <button onclick="publishNewAuditPlanChanges();" class="col-md-2 btn btn-success">Save Changes</button>
   </div>
 
