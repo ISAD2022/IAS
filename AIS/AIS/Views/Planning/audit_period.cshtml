@@ -27,7 +27,11 @@
                     //console.log(data);
                     var srNo = 1;
                     $.each(data, function (index, period) {
-                        var status = 'Approved';
+                        var status = "";
+                        if (period.statuS_ID==1)
+                            status = 'Created';
+                        else if (period.statuS_ID == 2)
+                            status = 'Approved';
                         period.starT_DATE = period.starT_DATE.split('T')[0];
                         period.enD_DATE = period.enD_DATE.split('T')[0];
                         $('#listOfAuditPeriods tbody').append('<tr id=teamcode_' + period.auditperiodid + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + period.description + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.starT_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.enD_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + status + ' </p></td><td><small onclick="getAuditPlan(' + period.auditperiodid+')" class="text-danger planDetails">Details</small></td></tr>');

@@ -29,26 +29,42 @@
     });
     function reRecommendEngagementPlan(engId, startDate, endData, teamId) {
         g_engId = engId;
+        console.log(engId, startDate, endData, teamId);
         $('#commentsBox').modal('show');
+        $('#selectDateInputField').val(startDate);
+        $('#selectEndDateInputField').val(endData);
+        $('#teamSelectionBox').val(teamId);
     }
       function reloadLocation() {
         location.reload();
     }
     function finalreRecommendEngagementPlan() {
-         if ($('#commentAreaInCommentsBox').val() == "") {
+        if ($('#commentsAreaEnteredBox').val() == "") {
             alert("Enter Comments to Proceed"); return false;
+        }
+        if ($('#selectDateInputField').val() == "") {
+            alert("Enter Start Date to Proceed"); return false;
+        }
+        if ($('#selectEndDateInputField').val() == "") {
+            alert("Enter End Date to Proceed"); return false;
+        }
+        if ($('#teamSelectionBox').val() == "") {
+            alert("Select Team to Proceed"); return false;
         }
         
         $.ajax({
-            url: "/ApiCalls/reject_engagement_plan",
+            url: "/ApiCalls/rerecommend_engagement_plan",
                 type: "POST",
                 data: {
                     'ENG_ID': g_engId,
-                    'COMMENTS': $('#commentAreaInCommentsBox').val()
+                    'COMMENTS': $('#commentsAreaEnteredBox').val(),
+                    'START_DATE': $('#selectDateInputField').val(),
+                    'END_DATE': $('#selectEndDateInputField').val(),
+                    'TEAM_ID': $('#teamSelectionBox').val(),
                 },
                 cache: false,
                 success: function (data) {
-                    alert("Successfully rejected Engagement Plan");
+                    alert("Successfully Rerecommend Engagement Plan for approval");
                     onAlertCallback(reloadLocation);
                 },
                 dataType: "json",
@@ -101,7 +117,7 @@
                             <td class="col-md-auto">@item.TEAM_NAME</td>
                             <td class="col-md-auto">@sDate</td>
                             <td class="col-md-auto">@eDate</td>
-                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, @item.AUDIT_STARTDATE, @item.AUDIT_ENDDATE, @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
+                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, '@item.AUDIT_STARTDATE', '@item.AUDIT_ENDDATE', @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
                         </tr>
 
                     }
@@ -110,7 +126,7 @@
         </tbody>
     </table>
 </div>
-<div id="commentsBox" class="modal" tabindex="-1" role="dialog">
+ <div id="commentsBox" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -134,6 +150,10 @@
                         <label for="selectEndDateInputField">Audit Team</label>
                         <select id="teamSelectionBox" class="form-select form-control" aria-label="Default select example">
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="commentsAreaEnteredBox">Comments</label>
+                       <textarea class="form-control" id="commentsAreaEnteredBox"></textarea>
                     </div>
 
                 </form>

@@ -35,6 +35,10 @@
         });
         
     });
+    function reloadLocation() {
+        window.location = window.location.pathname;
+
+    }
    
     function ShowEmployeeContainer() {
         //console.log($('#deptSelectionBox option:selected').val());
@@ -57,7 +61,8 @@
                     $.each(data, function (index, team) {
                        
                         if (team.iS_TEAMLEAD == "Y") {
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' </p></td><td class="empMembers"></td><td> <small onclick="deleteTeam(\'' + team.code +'\');" class="text-danger deleteTeam">Delete</small></td></tr>');
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.status + ' </p></td><td> <small onclick="deleteTeam(\'' + team.code + '\');" class="text-danger deleteTeam">Delete</small></td></tr>');
+                            srNo++;
                         } else
                         {
                             teamMembers.push(team);
@@ -157,11 +162,12 @@
             },
             cache: false,
             success: function (data) {
-                window.location = window.location.pathname;
+                alert('Team Created Successfully');
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
-
+        
 
     }
     function deleteTeam(teamCode) {
@@ -212,11 +218,12 @@
     <table id="listOfEmployeeTeam" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-1">Sr No.</th>
-                <th class="col-md-2">Team Name</th>
-                <th class="col-md-2">Team Lead</th>
-                <th class="col-md-6">Team Members</th>
-                <th class="col-md-1">Delete</th>
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">Team Name</th>
+                <th class="col-md-auto">Team Lead</th>
+                <th class="col-md-auto">Team Members</th>
+                <th class="col-md-auto">Status</th>
+                <th class="col-md-auto">Delete</th>
             </tr>
         </thead>
         <tbody>

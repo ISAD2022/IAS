@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AIS.Models
 {
     public class AuditEngagementPlanModel
-    {        
+    {
+        public int? PLAN_ID { get; set; }
         public int? ENG_ID { get; set; }
         public int? PERIOD_ID { get; set; }
         public int? ENTITY_TYPE { get; set; } 

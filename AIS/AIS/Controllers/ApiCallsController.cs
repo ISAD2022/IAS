@@ -410,6 +410,13 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public bool rerecommend_engagement_plan(int ENG_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
+        {
+            return dBConnection.RerecommendAuditEngagementPlan(ENG_ID, START_DATE, END_DATE, TEAM_ID, COMMENTS);
+        }
+
+
+        [HttpPost]
         public List<LoanCasedocModel> Getloancasedocuments()
         {
             return dBConnection.GetLoanCaseDocuments();
@@ -423,6 +430,22 @@ namespace AIS.Controllers
         public bool divisional_head_remarks_on_functional_legacy_para(int CONCERNED_DEPT_ID = 0, string COMMENTS="", int REF_PARA_ID=0)
         {
             return dBConnection.AddDivisionalHeadRemarksOnFunctionalLegacyPara(CONCERNED_DEPT_ID, COMMENTS, REF_PARA_ID);
+        }
+
+        [HttpPost]
+        public bool menu_pages_updation(int MENU_ID = 0, int[] PAGE_IDS=null)
+        {
+            if (PAGE_IDS != null)
+            {
+                foreach (var PAGE_ID in PAGE_IDS)
+                {
+                    dBConnection.UpdateMenuPagesAssignment(MENU_ID, PAGE_ID);
+                }
+                return true;
+            }
+            else
+                return false;
+            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

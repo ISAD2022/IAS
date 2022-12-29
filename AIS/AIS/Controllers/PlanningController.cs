@@ -542,11 +542,14 @@ namespace AIS.Controllers
             {
                 foreach(var item in AUDIT_TEAM) { 
                 AuditTeamModel ateam = new AuditTeamModel();
+                    ateam.T_ID = newTeamId;
+                    ateam.CODE = (newTeamId).ToString();
                     ateam.NAME = item.T_NAME;
                     ateam.EMPLOYEENAME = item.NAME;
                     ateam.TEAMMEMBER_ID = item.PPNO;
                     ateam.IS_TEAMLEAD = item.ISTEAMLEAD;
-                    ateam.STATUS = item.STATUS;
+                    ateam.PLACE_OF_POSTING = item.PLACEOFPOSTING;
+                    ateam.STATUS = "Y";
                     dBConnection.AddAuditTeam(ateam);
                     aTeams.Add(ateam);
                 }
