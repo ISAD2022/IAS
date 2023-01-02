@@ -171,8 +171,9 @@
             },
             cache: false,
             success: function (data) {
-                alert('Plan has been Created');
-                onAlertCallback(redirectToLocation);
+                alert(data.remarkS_OUT);
+                if(data.iS_SUCCESS=="Yes")
+                    onAlertCallback(redirectToLocation);
                 
             },
             dataType: "json",

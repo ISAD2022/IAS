@@ -298,32 +298,20 @@ namespace AIS.Controllers
         [HttpPost]
         public GroupMenuItemMapping add_group_item_assignment(GroupMenuItemMapping gItemMap)
         {
+            if (gItemMap.UNLINK_MENU_ITEM_IDs != null && gItemMap.UNLINK_MENU_ITEM_IDs.Count > 0)
+            {
+                foreach (var id in gItemMap.UNLINK_MENU_ITEM_IDs)
+                {
+                    dBConnection.RemoveGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
+                }
+            }
+
             if (gItemMap.MENU_ITEM_IDs!=null && gItemMap.MENU_ITEM_IDs.Count > 0)
             {
-                var menu_items_ids = string.Join(",", gItemMap.MENU_ITEM_IDs);
-                dBConnection.AddGroupMenuAssignment(gItemMap.GROUP_ID, gItemMap.MENU_ID, menu_items_ids);
-                if (gItemMap.UNLINK_MENU_ITEM_IDs != null && gItemMap.UNLINK_MENU_ITEM_IDs.Count > 0)
-                {
-                    foreach (var id in gItemMap.UNLINK_MENU_ITEM_IDs)
-                    {
-                        dBConnection.RemoveGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
-                    }
-                }
                 foreach (var id in gItemMap.MENU_ITEM_IDs)
                 {
-                        dBConnection.AddGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
+                    dBConnection.AddGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
                 }               
-            }
-            else
-            {
-                if (gItemMap.UNLINK_MENU_ITEM_IDs != null && gItemMap.UNLINK_MENU_ITEM_IDs.Count > 0)
-                {
-                    foreach (var id in gItemMap.UNLINK_MENU_ITEM_IDs)
-                    {
-                        dBConnection.RemoveGroupMenuItemsAssignment(gItemMap.GROUP_ID, id);
-                    }
-                }
-                dBConnection.RemoveGroupMenuAssignment(gItemMap.GROUP_ID, gItemMap.MENU_ID);
             }
             return gItemMap;
         }
