@@ -410,9 +410,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public bool rerecommend_engagement_plan(int ENG_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
+        public bool rerecommend_engagement_plan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
         {
-            return dBConnection.RerecommendAuditEngagementPlan(ENG_ID, START_DATE, END_DATE, TEAM_ID, COMMENTS);
+            return dBConnection.RerecommendAuditEngagementPlan(ENG_ID, PLAN_ID, ENTITY_ID, START_DATE, END_DATE, TEAM_ID, COMMENTS);
         }
 
 

@@ -1052,7 +1052,6 @@ namespace AIS
             con.Close();
             return true;
         }
-
         public List<RoleRespModel> GetRoleResponsibilities()
         {
             var con = this.DatabaseConnection();
@@ -2266,6 +2265,7 @@ namespace AIS
                 while (ardr.Read())
                 {
                     AuditEngagementPlanModel eng = new AuditEngagementPlanModel();
+                    eng.PLAN_ID = Convert.ToInt32(ardr["plan_id"].ToString());
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
                     eng.TEAM_NAME = ardr["team_name"].ToString();
                     eng.TEAM_ID = Convert.ToInt32(ardr["team_id"].ToString());
@@ -2287,6 +2287,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             ePlan.CREATED_ON = System.DateTime.Now;
             int placeofposting = Convert.ToInt32(loggedInUser.UserEntityID);
+            bool isContinue = false;
            
             ePlan.CREATEDBY = Convert.ToInt32(loggedInUser.PPNumber);
             var con = this.DatabaseConnection();
@@ -2304,48 +2305,49 @@ namespace AIS
                 cmd.Parameters.Add("TEAM_ID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
                 cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = ePlan.TEAM_NAME;
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
-                cmd.ExecuteReader();
-               
-
-                cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP) and TEAM_ID=" + ePlan.TEAM_ID;
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.Clear();
-                OracleDataReader ardr2 = cmd.ExecuteReader();
-                bool teamentry = false;
-                while (ardr2.Read())
-                {
-                    if (ardr2["ID"].ToString() != "" && ardr2["ID"].ToString() != null)
-                        teamentry = true;
-                }
-                if (!teamentry)
-                {
-                    cmd.CommandText = "pkg_ais.AUDIT_TEAMS";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add("TEAM_ID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
-                    cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = ePlan.TEAM_NAME;
-                    cmd.Parameters.Add("placeofposting", OracleDbType.Int32).Value = placeofposting;
-                    cmd.ExecuteReader();
-                }
-
-                cmd.CommandText = "select tmm.member_ppno from T_AU_TEAM_MEMBERS tmm where tmm.t_code = ( select distinct tm.t_code from T_AU_TEAM_MEMBERS tm where tm.t_id =" + ePlan.TEAM_ID + ")";
-                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    if (rdr["member_ppno"].ToString() != "" && rdr["member_ppno"].ToString() != null)
+                    if (rdr["REMARKS"].ToString() != "" && rdr["REMARKS"].ToString() != null && rdr["REMARKS"].ToString().Trim().ToLower() == "engagement created")
+                        isContinue = true;
+                }
+
+                if (isContinue)
+                {
+                    cmd.CommandText = "Select ID from T_AU_AUDIT_TEAMS WHERE ENG_ID= (SELECT MAX(PP.ENG_ID) FROM T_AU_PLAN_ENG PP) and TEAM_ID=" + ePlan.TEAM_ID;
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.Clear();
+                    OracleDataReader ardr2 = cmd.ExecuteReader();
+                    bool teamentry = false;
+                    while (ardr2.Read())
                     {
-                        string member_pp = rdr["member_ppno"].ToString();
-                        cmd.CommandText = "pkg_ais.P_AddAuditteamtasklist";
+                        if (ardr2["ID"].ToString() != "" && ardr2["ID"].ToString() != null)
+                            teamentry = true;
+                    }
+                    if (!teamentry)
+                    {
+                        cmd.CommandText = "pkg_ais.AUDIT_TEAMS";
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Clear();
                         cmd.Parameters.Add("TEAM_ID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
-                        cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
-                        cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ePlan.ENTITY_ID;
-                        cmd.Parameters.Add("MEMBER_PPNO", OracleDbType.Int32).Value = Convert.ToInt32(member_pp);
+                        cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = ePlan.TEAM_NAME;
+                        cmd.Parameters.Add("placeofposting", OracleDbType.Int32).Value = placeofposting;
                         cmd.ExecuteReader();
                     }
+
+                    cmd.CommandText = "pkg_ais.P_AddAuditteamtasklist";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
+                    cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
+                    cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ePlan.ENTITY_ID;
+                    cmd.ExecuteReader();
+
                 }
+
+
+               
             }
             con.Close();
             return ePlan;
@@ -2371,7 +2373,7 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool RerecommendAuditEngagementPlan(int ENG_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
+        public bool RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2380,9 +2382,17 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "UPDATE T_AU_PLAN_ENG a SET a.STATUS=3, a.team_id=" + TEAM_ID + ", a.TEAM_NAME=(SELECT team_name from t_au_team_members m where m.t_id=" + TEAM_ID + "), a.audit_startdate= to_date('" + dtime.DateTimeInDDMMYY(START_DATE) + "','dd/mm/yyyy HH:MI:SS AM') , a.audit_enddate = to_date('" + dtime.DateTimeInDDMMYY(END_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), a.LASTUPDATEDBY=" + loggedInUser.PPNumber + ", a.LASTUPDATEDDATE= to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM') WHERE a.ENG_ID = " + ENG_ID;
-                cmd.ExecuteReader();
-                cmd.CommandText = "insert into t_au_plan_eng_log l (l.ID,l.E_ID, l.STATUS_ID,l.CREATEDBY_ID, l.CREATED_ON, l.REMARKS) VALUES ( (SELECT COALESCE(max(ll.ID)+1,1) FROM t_au_plan_eng_log ll)," + ENG_ID + " ,2," + loggedInUser.PPNumber + ", to_date('" + dtime.DateTimeInDDMMYY(System.DateTime.Now) + "','dd/mm/yyyy HH:MI:SS AM'), '" + COMMENTS + "')";
+                cmd.CommandText = "pkg_ais.P_RerecommendAuditEngagementPlan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("STARTDATE", OracleDbType.Date).Value = START_DATE;
+                cmd.Parameters.Add("ENDDATE", OracleDbType.Date).Value = END_DATE;
+                cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = TEAM_ID;
+                cmd.Parameters.Add("UPDATEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = PLAN_ID;
+                cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.ExecuteReader();
             }
             con.Close();

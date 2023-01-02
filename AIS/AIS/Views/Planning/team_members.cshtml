@@ -4,8 +4,6 @@
 }
 <style type="text/css">
     .deleteTeam:hover {
-        font-size: 120%;
-        font-weight:bold;
         cursor: pointer;
 
     }
@@ -61,7 +59,15 @@
                     $.each(data, function (index, team) {
                        
                         if (team.iS_TEAMLEAD == "Y") {
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td><td> <small onclick="deleteTeam(\'' + team.code + '\');" class="text-danger deleteTeam">Delete</small></td></tr>');
+                            if (team.status == 'Y')
+                                team.status = 'Active';
+                            else
+                                team.status = 'Inactive';
+                            if (team.status=='Inactive')
+                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td><td> </tr>');
+                            else
+                                $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td class="searchable"><p class="empName fw-normal mb-1 text-center">' + team.status + ' </p></td><td> <small onclick="deleteTeam(\'' + team.code + '\');" class="text-danger deleteTeam">Inactive</small></td></tr>');
+
                             srNo++;
                         } else
                         {
