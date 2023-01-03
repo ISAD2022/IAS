@@ -459,7 +459,7 @@ namespace AIS.Controllers
         [HttpPost]
         public AuditPlanModel add_audit_plan(AuditPlanModel plan)
         {
-            return dBConnection.AddAuditPlan(plan);
+            return plan;
         }
         public IActionResult tentative_audit_plan()
         {

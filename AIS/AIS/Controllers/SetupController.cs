@@ -266,8 +266,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            int[] statusIds = { 1, 4 };
-            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);            
+            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(4);            
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -286,8 +286,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            int[] statusIds = {3};
-            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(statusIds);
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(3);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
