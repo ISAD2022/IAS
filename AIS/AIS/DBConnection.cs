@@ -2660,10 +2660,11 @@ namespace AIS
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                if (s_id == 0)
-                    cmd.CommandText = "select t.*, p.heading as S_NAME, s.description as V_NAME, r.description as RISK from t_audit_checklist_details t inner join t_audit_checklist_sub p on p.s_id=t.s_id inner join t_r_sub_group s on s.s_gr_id=t.v_id inner join t_risk r on r.r_id=t.risk_id where t.STATUS='Y' order by t.id asc";
-                else
-                    cmd.CommandText = "select t.*, p.heading as S_NAME, s.description as V_NAME, r.description as RISK from t_audit_checklist_details t inner join t_audit_checklist_sub p on p.s_id=t.s_id inner join t_r_sub_group s on s.s_gr_id=t.v_id inner join t_risk r on r.r_id=t.risk_id where t.STATUS='Y' and t.s_id=" + s_id + " order by t.id asc";
+                cmd.CommandText = "pkg_ais.P_GetAuditChecklistDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("sid", OracleDbType.Int32).Value = s_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2679,12 +2680,10 @@ namespace AIS
                     if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
                     {
                         chk.ROLE_RESP_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
-                        // chk.ROLE_RESP = rdr["ROLE_RESP"].ToString();
                     }
                     if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
                     {
                         chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["PROCESS_OWNER_ID"]);
-                        // chk.PROCESS_OWNER = rdr["PROCESS_OWNER"].ToString();
 
                     }
                     chk.STATUS = rdr["STATUS"].ToString();
@@ -2694,6 +2693,9 @@ namespace AIS
             con.Close();
             return list;
         }
+
+
+        /////////////////////// PRE DISBURSEMENT FUNCTIONS STARTS HERE /////////////
         public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -2708,10 +2710,11 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //cmd.CommandText = "select * from V_GET_GL_SUM GH order by GH.GLSUBNAME, GH.MONTHEND";
-                // cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by GH.GLSUBNAME, GH.MONTHEND";
-                cmd.CommandText = "select * from V_GET_GL_INCOME_EXPENDITURES t where t.team_mem_ppno = '" + loggedInUser.PPNumber + "' and t.DESCRIPTION in ('EXPENSE','INCOME') ORDER BY T.DESCRIPTION, T.datetime";
-
+                cmd.CommandText = "pkg_ais.P_GetGlheadDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2738,8 +2741,7 @@ namespace AIS
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-
-                cmd.CommandText = "select* from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + " order by gh.GLSUBNAME, gh.DATETIME";
+               cmd.CommandText = "select* from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + " order by gh.GLSUBNAME, gh.DATETIME";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2842,7 +2844,6 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.BRANCHID = " + brId + " and GH.DESCRIPTION IN  ('INCOME','EXPENSE')  order by GH.DESCRIPTION, GH.MONTHEND";
                 cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.DESCRIPTION IN  ('INCOME','EXPENSE') and GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " )  order by GH.DESCRIPTION, GH.MONTHEND";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2973,6 +2974,9 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        /////////////////////// PRE DISBURSEMENT FUNCTIONS END HERE /////////////
+       
         public bool SaveAuditObservation(ObservationModel ob)
         {
             sessionHandler = new SessionHandler();
@@ -4656,13 +4660,7 @@ namespace AIS
                 while (rdr.Read())
                 {
                     UserRelationshipModel entity = new UserRelationshipModel();
-                    //  entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
-
-
-                    //entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
-                    // entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    // entity.ACTIVE = rdr["ACTIVE"].ToString();
-
+                   
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.ACTIVE = rdr["ACTIVE"].ToString();
@@ -4710,9 +4708,6 @@ namespace AIS
         }
         public List<StaffPositionModel> GetStaffPosition()
         {
-
-
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4722,9 +4717,14 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select emp.ppno as PPNO, emp.employee_name as EMPLOYEE_NAME, emp.designation as DESIGNATION, emp.rank_desc as RANK_DESC, emp.place_of_posting as PLACE_OF_POSTING from T_AU_ACTIVE_EMPOLYEES emp inner join t_au_plan_eng eg on eg.entity_id = emp.entity_id  inner join t_au_audit_joining j on j.eng_plan_id = eg.eng_id where j.team_mem_ppno = '" + loggedInUser.PPNumber + "'  order by emp.rank_code";
-
+                cmd.CommandText = "pkg_ais.P_GetStaffPosition";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
+
+
                 while (rdr.Read())
                 {
                     StaffPositionModel staffposition = new StaffPositionModel();
@@ -4747,21 +4747,22 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-            string whereClause = " 1=1";
-            if (PROCESS_DETAIL_ID != 0)
-                whereClause += " and CHECK_LIST_DETAIL_ID = " + PROCESS_DETAIL_ID;
-            if (SUB_PROCESS_ID != 0)
-                whereClause += " and SUB_PROCESS_ID= " + SUB_PROCESS_ID;
-            if (PROCESS_ID != 0)
-                whereClause += " and PROCESS_ID= " + PROCESS_ID;
-
+         
             List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * FROM v_dash_borad_of_divisional_head WHERE " + whereClause;
-
+                cmd.CommandText = "pkg_ais.P_GetFunctionalResponsibilityWisePara";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SUB_PROCESSID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("PROCESS_DETAILID", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
+
+
                 while (rdr.Read())
                 {
                     FunctionalResponsibilityWiseParas para = new FunctionalResponsibilityWiseParas();
