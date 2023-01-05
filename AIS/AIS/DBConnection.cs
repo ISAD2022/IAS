@@ -792,7 +792,7 @@ namespace AIS
             string remarks = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select remarks from T_AUDIT_CRITERIA_LOG l where l.c_id=" + Id + " order by l.id desc FETCH NEXT 1 ROWS ONLY";
+                cmd.CommandText = sqlParams.GetCriteriaLatestRemarksQueryFromParams(Id);
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1496,7 +1496,7 @@ namespace AIS
             List<DivisionModel> divList = new List<DivisionModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from t_auditee_entities d WHERE d.type_id=3 order by d.CODE asc";
+                cmd.CommandText = sqlParams.GetDivisionQueryFromParams();
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1541,22 +1541,11 @@ namespace AIS
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             List<DepartmentModel> deptList = new List<DepartmentModel>();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            string query = "";
-            if (loggedInUser.UserGroupID != 1)
-            {
-                if (sessionCheck)
-                {
-                    query = query + " and e.entity_id=" + loggedInUser.UserEntityID;
-
-                }
-            }
+            var loggedInUser = sessionHandler.GetSessionUser();           
+            
             using (OracleCommand cmd = con.CreateCommand())
             {
-                if (div_code == 0)
-                    cmd.CommandText = "select mp.parent_id as DIVISIONID, mp.entity_id as ID , mp.c_name as NAME, mp.child_code as CODE ,mp.status as ISACTIVE, mp.p_name as DIV_NAME, mp.auditedby as AUDITED_BY_DEPID from t_auditee_entities e, t_auditee_entities_maping mp where e.entity_id = mp.parent_id and e.type_id IN (3) and mp.entity_id is not null" + query;
-                else
-                    cmd.CommandText = "select mp.parent_id as DIVISIONID, mp.entity_id as ID , mp.c_name as NAME, mp.child_code as CODE ,mp.status as ISACTIVE, mp.p_name as DIV_NAME, mp.auditedby as AUDITED_BY_DEPID from t_auditee_entities e, t_auditee_entities_maping mp where mp.entity_id is not null and e.type_id IN (3) and e.entity_id = mp.parent_id and e.entity_id = " + div_code + query;
+                cmd.CommandText = sqlParams.GetDepartmentQueryFromParams(div_code, sessionCheck, loggedInUser);
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -1576,7 +1565,7 @@ namespace AIS
                     {
                         // dept.AUDITED_BY_NAME = rdr["ADUTIED_BY"].ToString();
                         dept.AUDITED_BY_DEPID = Convert.ToInt32(rdr["AUDITED_BY_DEPID"]);
-                        cmd.CommandText = "Select dep.NAME FROM t_auditee_entities dep WHERE dep.ENTITY_ID = " + dept.AUDITED_BY_DEPID;
+                        cmd.CommandText = sqlParams.GetDepartmentNameByIdQueryFromParams(dept.AUDITED_BY_DEPID);
                         OracleDataReader rdr2 = cmd.ExecuteReader();
                         while (rdr2.Read())
                         {
@@ -2948,7 +2937,6 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID= " + brId + " order by lcd.DISB_DATE ";
                 cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd order by lcd.DISB_DATE fetch next 50 rows only";
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2979,64 +2967,28 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
-            bool isAlreadyAdded = true;
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ob.ENGPLANID == 0)
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
-
-           
-          
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_ADDAUDITCRITERIA";
+                cmd.CommandText = "pkg_ais.P_SaveAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYTYPEID", OracleDbType.Int32).Value = acm.ENTITY_TYPEID;
-                cmd.Parameters.Add("SIZEID", OracleDbType.Int32).Value = acm.SIZE_ID;
-                cmd.Parameters.Add("RISKID", OracleDbType.Int32).Value = acm.RISK_ID;
-                cmd.Parameters.Add("FREQUENCYID", OracleDbType.Int32).Value = acm.FREQUENCY_ID;
-                cmd.Parameters.Add("NOOFDAYS", OracleDbType.Int32).Value = acm.NO_OF_DAYS;
-                cmd.Parameters.Add("visit", OracleDbType.Varchar2).Value = acm.VISIT;
-                cmd.Parameters.Add("APPROVALSTATUS", OracleDbType.Int32).Value = acm.APPROVAL_STATUS;
-                cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = acm.AUDITPERIODID;
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = "AUDIT CRITERIA CREATED";
-                cmd.Parameters.Add("CREATEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
-                        isAlreadyAdded = false;
-                    }
-                }
-
-                if(!isAlreadyAdded)
-                {
-
-                }
-
-                if (!alreadyAddedOb)
-                {
-                    cmd.CommandText = "INSERT INTO T_AU_OBSERVATION o (o.ID, o.ENGPLANID, o.STATUS, o.ENTEREDBY, o.ENTEREDDATE, o.ENTITY_ID, o.REPLYDATE, o.MEMO_DATE, o.SEVERITY, o.MEMO_NUMBER, o.RESPONSIBILITY_ASSIGNED, o.RISKMODEL_ID, o.SUBCHECKLIST_ID, o.CHECKLISTDETAIL_ID, o.V_CAT_ID, o.V_CAT_NATURE_ID) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION acc) , '" + ob.ENGPLANID + "','" + ob.STATUS + "','" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM')," + ReplyByQuery + ",to_date('" + dtime.DateTimeInDDMMYY(ob.REPLYDATE) + "','dd/mm/yyyy HH:MI:SS AM'), to_date('" + dtime.DateTimeInDDMMYY(ob.MEMO_DATE) + "','dd/mm/yyyy HH:MI:SS AM'), " + SeverityQuery + "," + MemoNumberQuery + "," + ob.RESPONSIBILITY_ASSIGNED + " ," + RiskModelQuery + ",'" + ob.SUBCHECKLIST_ID + "','" + ob.CHECKLISTDETAIL_ID + "','" + ob.V_CAT_ID + "','" + ob.V_CAT_NATURE_ID + "')";
-                    cmd.ExecuteReader();
-
-                    string strSQL = "INSERT INTO T_AU_OBSERVATION_TEXT ot (ot.ID, ot.OBSERVATSION_ID, ot.TEXT, ot.ENTEREDBY, ot.ENTEREDDATE ) VALUES ( (select COALESCE(max(acc.ID)+1,1) from T_AU_OBSERVATION_TEXT acc) , (select max(o.ID) from T_AU_OBSERVATION o) , :TEXT_DATA,'" + ob.ENTEREDBY + "',to_date('" + dtime.DateTimeInDDMMYY(ob.ENTEREDDATE) + "','dd/mm/yyyy HH:MI:SS AM'))";
-                    OracleParameter parmData = new OracleParameter();
-                    parmData.Direction = System.Data.ParameterDirection.Input;
-                    parmData.OracleDbType = OracleDbType.Clob;
-                    parmData.ParameterName = "TEXT_DATA";
-                    parmData.Value = ob.OBSERVATION_TEXT;
-                    OracleCommand cm = new OracleCommand();
-                    cm.Connection = con;
-                    cm.Parameters.Add(parmData);
-                    cm.CommandText = strSQL;
-                    cm.ExecuteNonQuery();
-                }
+                cmd.Parameters.Add("ENGPLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
+                cmd.Parameters.Add("STATUS", OracleDbType.Int32).Value = ob.STATUS;
+                cmd.Parameters.Add("REPLYDATE", OracleDbType.Date).Value = ob.REPLYDATE;
+                cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Severity", OracleDbType.Int32).Value = ob.SEVERITY;
+                cmd.Parameters.Add("SUBCHECKLIST_ID", OracleDbType.Varchar2).Value = ob.SUBCHECKLIST_ID;
+                cmd.Parameters.Add("CHECKLISTDETAIL_ID", OracleDbType.Int32).Value = ob.CHECKLISTDETAIL_ID;
+                cmd.Parameters.Add("V_CAT_ID", OracleDbType.Int32).Value = ob.V_CAT_ID;
+                cmd.Parameters.Add("V_CAT_NATURE_ID", OracleDbType.Int32).Value = ob.V_CAT_NATURE_ID;
+                cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
+                cmd.ExecuteReader();
             }
             con.Close();
-            return success;
+            return true;
         }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
         {
