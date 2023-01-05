@@ -106,7 +106,7 @@ namespace AIS
             rngCryptoServiceProvider.GetBytes(randomBytes);
             return Convert.ToBase64String(randomBytes);
         }
-
+      
 
     }
 }
