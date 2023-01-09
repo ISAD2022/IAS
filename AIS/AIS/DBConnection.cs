@@ -2623,7 +2623,7 @@ namespace AIS
                     chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
                     chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
                     chk.STATUS = "Pending";
-                    if (eng_id != 0)
+                    /*if (eng_id != 0)
                     {
                         cmd.CommandText = "select os.statusname from t_au_observation o inner join t_au_observation_status os on o.status=os.statusid where o.subchecklist_id=" + chk.S_ID + " and o.engplanid=" + eng_id;
                         OracleDataReader rdr2 = cmd.ExecuteReader();
@@ -2636,7 +2636,7 @@ namespace AIS
                                 chk.STATUS = "Pending";
                             }
                         }
-                    }
+                    }*/
 
                     list.Add(chk);
                 }
@@ -2728,7 +2728,11 @@ namespace AIS
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-               cmd.CommandText = "select * from V_GET_GLHEADS_DETAILS gh where gh.GLSUBCODE= " + gl_code + " order by gh.GLSUBNAME, gh.DATETIME";
+                cmd.CommandText = "pkg_ais.P_GetGlheadSubDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("gl_code", OracleDbType.Int32).Value = gl_code;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2753,18 +2757,24 @@ namespace AIS
         public List<LoanCaseModel> GetLoanCaseDetails(int lid = 0, string type = "")
         {
             int ENG_ID = this.GetLoggedInUserEngId();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanCaseModel> list = new List<LoanCaseModel>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                if (type.ToLower() == "live" || type.ToLower() == "")
-                    cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd where lcd.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by lcd.DISB_DATE ";
-                else
-                    cmd.CommandText = "select * from v_customer_loan_close lcd where lcd.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) order by lcd.DISB_DATE ";
-
+                cmd.CommandText = "pkg_ais.P_GetLoanCaseDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Loantype", OracleDbType.Varchar2).Value = type;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+
+              while (rdr.Read())
                 {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
                     LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
@@ -2787,9 +2797,6 @@ namespace AIS
         }
         public List<LoanCasedocModel> GetLoanCaseDocuments()
         {
-
-
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -2799,8 +2806,11 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from v_list_cbas_sdms s where s.team_mem_ppno ='" + loggedInUser.PPNumber + "' ";
-
+                cmd.CommandText = "pkg_ais.P_GetLoanCaseDocuments";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2824,6 +2834,10 @@ namespace AIS
         }
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
 
             var con = this.DatabaseConnection();
@@ -2831,8 +2845,13 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_GET_GL_SUM GH where GH.DESCRIPTION IN  ('INCOME','EXPENSE') and GH.BRANCHID IN (select e.entity_id from t_au_plan_eng e where e.eng_id=" + ENG_ID + " )  order by GH.DESCRIPTION, GH.MONTHEND";
+                cmd.CommandText = "pkg_ais.P_GetIncomeExpenceDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
+               
                 while (rdr.Read())
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
@@ -2853,12 +2872,21 @@ namespace AIS
         }
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
             var con = this.DatabaseConnection();
             List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select distinct NAME from V_GET_BRANCH_DEPOSIT_ACCOUNTS n order by  n.NAME ";
+
+                cmd.CommandText = "pkg_ais.P_GetDepositAccountdetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -2872,16 +2900,21 @@ namespace AIS
         }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname = "")
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
-
             var con = this.DatabaseConnection();
             List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                //cmd.CommandText = "select * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d where d.NAME = '" + bname + "' order by d.OPENINGDATE ";
-                cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where UPPER(d.NAME) = (SELECT UPPER(BRANCHNAME) FROM V_SERVICE_BRANCH WHERE BRANCHID IN (select e.entity_code from t_au_plan_eng e where e.eng_id=" + ENG_ID + " ) ) order by d.OPENINGDATE";
-                //cmd.CommandText = "select  * from V_GET_BRANCH_DEPOSIT_ACCOUNTS d  where d.NAME = (SELECT BRANCHNAME FROM V_SERVICE_BRANCH WHERE BRANCHID= " + brId + ") order by d.OPENINGDATE";
-                OracleDataReader rdr = cmd.ExecuteReader();
+                cmd.CommandText = "pkg_ais.P_GetDepositAccountSubdetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();               
                 while (rdr.Read())
                 {
                     DepositAccountModel depositaccsubdetails = new DepositAccountModel();
@@ -2937,9 +2970,14 @@ namespace AIS
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "select * from V_CUSTOMER_LOAN_LIVE lcd order by lcd.DISB_DATE fetch next 50 rows only";
+                cmd.CommandText = "pkg_ais.P_GetBranchDesbursementAccountdetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+
+                 while (rdr.Read())
                 {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
                     LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
@@ -3018,17 +3056,8 @@ namespace AIS
                     chk.ASSIGNEDBY = Convert.ToInt32(rdr["ASSIGNEDBY"]);
                     chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
                     chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
-                    chk.REPLIED = rdr["REPLIED"].ToString();
-                    if (chk.REPLIED.ToString().ToLower() == "y")
-                    {
-                        cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
-                        OracleDataReader rdr2 = cmd.ExecuteReader();
-                        while (rdr2.Read())
-                        {
-                            if (rdr2["REPLY"].ToString() != "" && rdr2["REPLY"].ToString() != null)
-                                chk.REPLY_TEXT = rdr2["REPLY"].ToString();
-                        }
-                    }
+                    chk.REPLIED = rdr["REPLIED"].ToString();                   
+                    chk.REPLY_TEXT = rdr["REPLY_TEXT"].ToString();
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
 
                     if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
@@ -3089,17 +3118,7 @@ namespace AIS
                     chk.ASSIGNEDBY = Convert.ToInt32(rdr["ASSIGNEDBY"]);
                     chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
                     chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
-                    chk.REPLIED = rdr["REPLIED"].ToString();
-                    if (chk.REPLIED.ToString().ToLower() == "y")
-                    {
-                        cmd.CommandText = "select REPLY from t_au_observations_auditee_response where au_obs_id = " + chk.OBS_ID + " and obs_text_id= " + chk.OBS_TEXT_ID;
-                        OracleDataReader rdr2 = cmd.ExecuteReader();
-                        while (rdr2.Read())
-                        {
-                            if (rdr2["REPLY"].ToString() != "" && rdr2["REPLY"].ToString() != null)
-                                chk.REPLY_TEXT = rdr2["REPLY"].ToString();
-                        }
-                    }
+                    chk.REPLIED = rdr["REPLIED"].ToString();chk.REPLY_TEXT = rdr["REPLY_TEXT"].ToString();
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
 
                     if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
@@ -3271,9 +3290,6 @@ namespace AIS
                 cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = obs_id;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
-
-                //cmd.CommandText = "select  r.reply from t_au_observations_auditor_response  r where r.au_obs_id= " + obs_id + " and r.reply_role IN ('Departmental Head / Incharge AZ') order by r.id desc FETCH NEXT 1 ROWS ONLY";
-                //OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     response = rdr["reply"].ToString();
