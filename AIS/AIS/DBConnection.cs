@@ -2797,12 +2797,14 @@ namespace AIS
         }
         public List<LoanCasedocModel> GetLoanCaseDocuments()
         {
+            List<LoanCasedocModel> list = new List<LoanCasedocModel>();
+            /*
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
 
-            List<LoanCasedocModel> list = new List<LoanCasedocModel>();
+           
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2829,7 +2831,7 @@ namespace AIS
                     list.Add(LoanCaseDetails);
                 }
             }
-            con.Close();
+            con.Close();*/
             return list;
         }
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
@@ -2872,13 +2874,15 @@ namespace AIS
         }
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
+            List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
+            /*
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             var con = this.DatabaseConnection();
-            List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
+            
             using (OracleCommand cmd = con.CreateCommand())
             {
 
@@ -2895,7 +2899,7 @@ namespace AIS
                     depositacclist.Add(depositaccdetails);
                 }
             }
-            con.Close();
+            con.Close();*/
             return depositacclist;
         }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname = "")
