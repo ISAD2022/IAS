@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
@@ -30,6 +31,7 @@ namespace AIS.Models
         public int V_CAT_ID { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
         public string TEAM_LEAD { get; set; }
+        public List<int> RESPONSIBLE_PPNO { get; set; }
 
     }
 }

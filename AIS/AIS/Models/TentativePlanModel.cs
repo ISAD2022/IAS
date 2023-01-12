@@ -17,6 +17,7 @@ namespace AIS.Models
         public string BR_SIZE { get; set; }
         public string PERIOD_NAME { get; set; }
         public string FREQUENCY_DESCRIPTION { get; set; }
+        public string REPORTING_OFFICE { get; set; }
         public int NO_OF_DAYS { get; set; }
       
     }

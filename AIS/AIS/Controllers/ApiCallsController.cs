@@ -180,6 +180,7 @@ namespace AIS.Controllers
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
                 ob.SEVERITY = RISK_ID;
+                ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
                 if (dBConnection.SaveAuditObservation(ob))
                     success++;
@@ -401,6 +402,12 @@ namespace AIS.Controllers
         public bool approve_engagement_plan(int ENG_ID)
         {
             return dBConnection.ApproveAuditEngagementPlan(ENG_ID);
+        }
+
+        [HttpPost]
+        public UserModel get_matched_pp_numbers(string PPNO)
+        {
+            return dBConnection.GetMatchedPPNumbers(PPNO);
         }
 
         [HttpPost]

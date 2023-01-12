@@ -47,51 +47,35 @@
     <div class="row col-md-12 mt-3">
         <table  id="tentative_plan_list" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th width="80" style="font-size:large" >Sr No</th>
-                    <th  width="150" style="font-size:large">Audit Period</th>
-                    <th  width="150" style="font-size:large">Entity Name</th>
-                    <th  width="150" style="font-size:large">Entity Size</th>
-                    <th width="80" style="font-size:large">Risk</th>
-                    <th  width="100" style="font-size:large">Frequency</th>
-                    <th  width="150" style="font-size:large">No. of Days</th>
-                    <th  width="250" style="font-size:large">Tentatively Audited On</th>
-                    <th  width="100" style="font-size:large">Actions</th>
-                </tr>
+            <tr>
+                <th width="80" style="font-size:large">Sr No</th>
+                <th width="150" style="font-size:large">Audit Period</th>
+                <th width="250" style="font-size:large">Reporting/Controlling Office</th>
+                <th width="150" style="font-size:large">Entity Name</th>
+                <th width="150" style="font-size:large">Entity Size</th>
+                <th width="80" style="font-size:large">Risk</th>
+                <th width="100" style="font-size:large">Frequency</th>
+                <th width="150" style="font-size:large">No. of Days</th>
+                <th width="100" style="font-size:large">Actions</th>
+            </tr>
             </thead>
             <tbody>
                 @{
                     if (ViewData["TentativePlansList"] != null)
                     {
                         int sr = 1;
-                        int total_plan = Convert.ToInt32(ViewData["TotalPlanEntities"]);
-                        int first_q = Convert.ToInt32(total_plan * 0.25);
-                        int second_q = Convert.ToInt32(total_plan * 0.50);
-                        int third_q = Convert.ToInt32(total_plan * 0.75);
                         
                         foreach (var item in (dynamic)(ViewData["TentativePlansList"]))
                         {
                                 <tr @item.PLAN_ID>
                                     <td align="center">@sr</td>
                                     <td align="center">@item.PERIOD_NAME</td>
+                                    <td align="left">@item.REPORTING_OFFICE</td>
                                     <td align="left">@item.ENTITY_NAME</td>
                                     <td align="center">@item.BR_SIZE</td>
                                     <td align="center">@item.RISK</td>
                                     <td align="center">@item.FREQUENCY_DESCRIPTION</td>
                                     <td align="center">@item.NO_OF_DAYS</td>
-                                    @if(sr <= first_q){
-                                    <td align="center">First Quarter</td>
-                                    }
-                                    else if (sr > first_q && sr <= second_q)
-                                    {
-                                    <td align="center">Second Quarter</td>
-                                    }else if (sr > second_q && sr <= third_q)
-                                    {
-                                    <td align="center">Third Quarter</td>
-                                    }
-                                    else{
-                                    <td align="center">Fourth Quarter</td>
-                                    }
                                     <td align="center"><small onclick="createAuditEngagement(@item.PLAN_ID,'@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDITEDBY','@item.ENTITY_ID');" class="text-center text-danger text-hover">Create</small></td>
                                 </tr>
                             sr = sr + 1;

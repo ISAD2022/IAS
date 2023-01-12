@@ -563,7 +563,6 @@ namespace AIS
             con.Close();
             return result;
         }
-
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
         {
             sessionHandler = new SessionHandler();
@@ -728,7 +727,6 @@ namespace AIS
                 cmd.Parameters.Add("FREQUENCY_ID", OracleDbType.Int32).Value = acm.FREQUENCY_ID;
                 cmd.Parameters.Add("NO_OF_DAYS", OracleDbType.Int32).Value = acm.NO_OF_DAYS;
                 cmd.Parameters.Add("VISIT", OracleDbType.Varchar2).Value = acm.VISIT;
-                cmd.Parameters.Add("APPROVAL_STATUS", OracleDbType.Int32).Value = acm.APPROVAL_STATUS;
                 cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = acm.AUDITPERIODID;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.Parameters.Add("CREATED_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -1203,6 +1201,14 @@ namespace AIS
         }
         public UpdateUserModel UpdateUser(UpdateUserModel user)
         {
+            var newPassword = "";
+            bool setPassword = false;
+            if(user.PASSWORD != "" && user.PASSWORD != null)
+            {
+                newPassword = getMd5Hash(user.PASSWORD);
+                setPassword = !setPassword;
+            }
+
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1210,11 +1216,14 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNUMBER", OracleDbType.Int32).Value = user.PPNO;
-                cmd.Parameters.Add("PASSWORD", OracleDbType.Varchar2).Value = user.PASSWORD!="" && user.PASSWORD!=null?getMd5Hash(user.PASSWORD):"";
+                if (setPassword)
+                    cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = newPassword;
+                else
+                    cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = newPassword;
                 cmd.Parameters.Add("ISACTIVE", OracleDbType.Varchar2).Value = user.ISACTIVE;
                 cmd.Parameters.Add("ROLEID", OracleDbType.Int32).Value = user.ROLE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-              cmd.ExecuteReader();
+                cmd.ExecuteReader();
             }
             con.Close();
             user.PASSWORD = "";
@@ -1243,7 +1252,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
+                    if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
                     {
                         correctPass = true;
                         res = true;
@@ -1256,7 +1265,7 @@ namespace AIS
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                    cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;
+                    cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_new_pass;
                     cmd.ExecuteReader();
                     res = true;
                 }
@@ -1811,6 +1820,7 @@ namespace AIS
                     tplan.ENTITY_NAME = rdr["AUDITEE_NAME"].ToString();
                     tplan.FREQUENCY_DESCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
+                    tplan.REPORTING_OFFICE = rdr["REPORTING_OFFICE"].ToString();
                     tplansList.Add(tplan);
                 }
             }
@@ -1921,13 +1931,13 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_AddAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PERIOD_ID", OracleDbType.Int32).Value = ePlan.PERIOD_ID;
+                cmd.Parameters.Add("PERIODID", OracleDbType.Int32).Value = ePlan.PERIOD_ID;
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ePlan.ENTITY_ID;
                 cmd.Parameters.Add("AUDIT_STARTDATE", OracleDbType.Date).Value = ePlan.AUDIT_STARTDATE;
                 cmd.Parameters.Add("CREATEDBY", OracleDbType.Int32).Value = ePlan.CREATEDBY;
                 cmd.Parameters.Add("AUDIT_ENDDATE", OracleDbType.Date).Value = ePlan.AUDIT_ENDDATE;
                 cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = ePlan.STATUS;
-                cmd.Parameters.Add("TEAM_ID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
+                cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
                 cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = ePlan.TEAM_NAME;
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2018,13 +2028,46 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = "Engagement Plan Approved";
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
             con.Close();
           
             return true;
+        }
+
+        public UserModel GetMatchedPPNumbers(string PPNO)
+        {
+            UserModel um = new UserModel();
+           if (PPNO == "")
+                return um;
+            if (PPNO != null && PPNO != "")
+            {
+                var con = this.DatabaseConnection();
+
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "pkg_ais.p_get_allusers";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = 0;
+                    cmd.Parameters.Add("EMAIL", OracleDbType.Varchar2).Value = "";
+                    cmd.Parameters.Add("GROUPID", OracleDbType.Int32).Value = 0;
+                    cmd.Parameters.Add("PPNUMBER", OracleDbType.Int32).Value = PPNO;
+                    cmd.Parameters.Add("LOGINNAME", OracleDbType.Varchar2).Value = "";
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        um.ID = Convert.ToInt32(rdr["USERID"].ToString());
+                        um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString() + " " +rdr["EMPLOYEELASTNAME"].ToString();
+                        um.PPNumber = rdr["ppno"].ToString();
+                    }
+                }
+                con.Close();
+            }
+
+            return um;
         }
         public List<AuditPlanModel> GetAuditPlan(int period_id = 0)
         {
@@ -2563,10 +2606,9 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_AddJoiningReport";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENG_PLAN_ID", OracleDbType.Int32).Value = jm.ENG_PLAN_ID;
-                cmd.Parameters.Add("TEAM_MEM_PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = jm.ENG_PLAN_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("COMPLETION_DATE", OracleDbType.Date).Value = jm.COMPLETION_DATE;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
                 this.SetEngIdOnHold();
                 response = true;
@@ -3005,6 +3047,8 @@ namespace AIS
               
         public bool SaveAuditObservation(ObservationModel ob)
         {
+            //105400
+            int addedObsId = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -3017,17 +3061,47 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_SaveAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGPLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
+                cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
                 cmd.Parameters.Add("STATUS", OracleDbType.Int32).Value = ob.STATUS;
                 cmd.Parameters.Add("REPLYDATE", OracleDbType.Date).Value = ob.REPLYDATE;
                 cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("Severity", OracleDbType.Int32).Value = ob.SEVERITY;
-                cmd.Parameters.Add("SUBCHECKLIST_ID", OracleDbType.Varchar2).Value = ob.SUBCHECKLIST_ID;
-                cmd.Parameters.Add("CHECKLISTDETAIL_ID", OracleDbType.Int32).Value = ob.CHECKLISTDETAIL_ID;
-                cmd.Parameters.Add("V_CAT_ID", OracleDbType.Int32).Value = ob.V_CAT_ID;
-                cmd.Parameters.Add("V_CAT_NATURE_ID", OracleDbType.Int32).Value = ob.V_CAT_NATURE_ID;
+                cmd.Parameters.Add("SUBCHECKLISTID", OracleDbType.Varchar2).Value = ob.SUBCHECKLIST_ID;
+                cmd.Parameters.Add("CHECKLISTDETAILID", OracleDbType.Int32).Value = ob.CHECKLISTDETAIL_ID;
+                cmd.Parameters.Add("VCATID", OracleDbType.Int32).Value = ob.V_CAT_ID;
+                cmd.Parameters.Add("VCATNATUREID", OracleDbType.Int32).Value = ob.V_CAT_NATURE_ID;
                 cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                    {
+                        return false;
+                    }
+                    else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
+                    {
+                        addedObsId = Convert.ToInt32(rdr["ID"].ToString());
+
+                    }
+                }
+                if (ob.RESPONSIBLE_PPNO != null)
+                {
+                    if (ob.RESPONSIBLE_PPNO.Count > 0)
+                    {
+                        foreach (int pp in ob.RESPONSIBLE_PPNO)
+                        {
+                            cmd.CommandText = "pkg_ais.P_responibilityassigned";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("PP", OracleDbType.Int32).Value = pp;
+                            cmd.ExecuteReader();
+                        }
+                    }
+
+                }                  
             }
             con.Close();
             return true;

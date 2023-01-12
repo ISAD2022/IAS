@@ -41,9 +41,7 @@
 
 
         $('#controlingsearch').empty();
-
         $('#childposting').empty();
-
         $.ajax({
             url: "/ApiCalls/getparentrel",
             type: "POST",
@@ -55,7 +53,7 @@
             cache: false,
             success: function (data) {
 
-
+                $('#controlingsearch').append('<option id="0" value="0" selected="selected">--Select Controlling/Reporting Office--</option>');
                 $.each(data, function (index, contof) {
                     $('#controlingsearch').append('<option value="' + contof.entitY_ID + '" id="' + contof.entitY_REALTION_ID + '">' + contof.description + '</option>')
                 });
@@ -71,7 +69,7 @@
     }
 
   function getplacepost() {
-        $('#childposting').empty();
+      $('#childposting').empty();
 
         $.ajax({
             url: "/ApiCalls/getpostplace",
@@ -84,7 +82,7 @@
             cache: false,
             success: function (data) {
                 //console.log(data);
-
+                $('#childposting').append('<option id="0" value="0" selected="selected">--Select Place of Posting--</option>');
                 $.each(data, function (index, gpp) {
                     $('#childposting').append('<option value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
                 });
@@ -352,12 +350,6 @@
     </div>
 </div>
 
-
-
-
-
-
-
 <div class="row col-md-12 mt-1">
     <div class="col-md-2">
         <label>Controlling/Reporting Office</label>
@@ -365,7 +357,6 @@
     <div class="col-md-4">
         <select id="controlingsearch" onchange="getplacepost();" class="form-control form-select">
             <option id="0" value="0" selected="selected">--Select Controlling/Reporting Office--</option>
-
         </select>
     </div>
 
@@ -380,14 +371,6 @@
         </select>
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 <div id="searchFieldsContainer">
     <div class="row col-md-12 mt-1">
