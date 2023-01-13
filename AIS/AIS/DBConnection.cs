@@ -3119,8 +3119,8 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.p_GetAssignedObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENTID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                //cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -3135,7 +3135,7 @@ namespace AIS
                     chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
                     chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
                     chk.REPLIED = rdr["REPLIED"].ToString();                   
-                    chk.REPLY_TEXT = rdr["REPLY_TEXT"].ToString();
+                    chk.REPLY_TEXT = rdr["REPLYTEXT"].ToString();
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
 
                     if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
@@ -3538,7 +3538,7 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetManagedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3563,8 +3563,8 @@ namespace AIS
                     if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
                         chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
 
-                    if (rdr["CHECK_LIST_DETAILS"].ToString() != null && rdr["CHECK_LIST_DETAILS"].ToString() != "")
-                        chk.Checklist_Details = rdr["CHECK_LIST_DETAILS"].ToString();
+                    if (rdr["CHECK_LIST_DETAIL"].ToString() != null && rdr["CHECK_LIST_DETAIL"].ToString() != "")
+                        chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
 
 
 
@@ -3596,7 +3596,7 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
               
