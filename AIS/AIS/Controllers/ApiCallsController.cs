@@ -219,14 +219,14 @@ namespace AIS.Controllers
             return dBConnection.SubmitAuditObservationToAuditee(OBS_ID);
         }
         [HttpPost]
-        public List<ManageObservations> get_observation(int OBS_ID=0)
+        public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID=0)
         {
-            return dBConnection.GetManagedObservations(0,OBS_ID);
+            return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
         }
         [HttpPost]
-        public List<ManageObservations> get_observation_branches(int OBS_ID = 0)
+        public List<ManageObservations> get_observation_branches(int ENG_ID=0, int OBS_ID = 0)
         {
-            return dBConnection.GetManagedObservationsForBranches(0, OBS_ID);
+            return dBConnection.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
         }
 
         [HttpPost]
@@ -310,15 +310,15 @@ namespace AIS.Controllers
             return dBConnection.CAUGetAssignedOMs();
         }
         [HttpPost]
-        public List<ManageObservations> get_observations(int ENG_ID)
+        public List<ManageObservations> get_observations(int ENG_ID, int OBS_ID=0)
         {
-            return dBConnection.GetManagedObservations(ENG_ID,0);
+            return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
 
         }
         [HttpPost]
-        public List<ManageObservations> get_observations_draft(int ENG_ID)
+        public List<ManageObservations> get_observations_draft(int ENG_ID, int OBS_ID = 0)
         {
-            return dBConnection.GetManagedDraftObservations(ENG_ID);
+            return dBConnection.GetManagedDraftObservations(ENG_ID, OBS_ID);
 
         }
         [HttpPost]

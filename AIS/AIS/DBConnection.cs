@@ -1353,7 +1353,8 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetInspectionUnits";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;OracleDataReader rdr = cmd.ExecuteReader();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     InspectionUnitsModel z = new InspectionUnitsModel();
@@ -1383,7 +1384,8 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output; OracleDataReader rdr = cmd.ExecuteReader();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     BranchModel br = new BranchModel();
@@ -3158,6 +3160,7 @@ namespace AIS
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
+                    chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
                     list.Add(chk);
                 }
             }
@@ -3278,7 +3281,6 @@ namespace AIS
                 cmd.Parameters.Add("REPLY_ROLE", OracleDbType.Int32).Value = ob.REPLY_ROLE;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Int32).Value = ob.REMARKS;
                 cmd.Parameters.Add("SUBMITTED", OracleDbType.Int32).Value = ob.SUBMITTED;
-                OracleDataReader rdr = cmd.ExecuteReader();
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -3527,7 +3529,7 @@ namespace AIS
             con.Close();
             return list;
         }
-        public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0)
+        public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0, int OBS_ID=0)
         {
             var con = this.DatabaseConnection();
             if (ENG_ID == 0)
@@ -3565,8 +3567,6 @@ namespace AIS
 
                     if (rdr["CHECK_LIST_DETAIL"].ToString() != null && rdr["CHECK_LIST_DETAIL"].ToString() != "")
                         chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
-
-
 
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
