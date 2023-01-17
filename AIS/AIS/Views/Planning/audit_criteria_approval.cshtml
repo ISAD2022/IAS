@@ -125,9 +125,14 @@
                             <td>
                                 <p class="fw-normal mb-1">@item.PERIOD</p>
                             </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.ENTITY</p>
-                            </td>
+                            @if (@item.ENTITY_TYPEID == 25)
+                            {
+                                <td value="@item.ENTITY_TYPEID">@item.ENTITY_NAME</td>
+                            }
+                            else
+                            {
+                                <td value="@item.ENTITY_TYPEID">@item.ENTITY</td>
+                            }
                             <td>
                                 <p class="fw-normal mb-1">@item.RISK</p>
                             </td>

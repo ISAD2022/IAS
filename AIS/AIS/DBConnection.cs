@@ -871,6 +871,8 @@ namespace AIS
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
                     if (rdr["SIZE_ID"].ToString() != null && rdr["SIZE_ID"].ToString() != "")
                         acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    if (rdr["ENTITY_ID"].ToString() != null && rdr["ENTITY_ID"].ToString() != "")
+                        acr.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
                     acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
                     acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
@@ -881,6 +883,7 @@ namespace AIS
                     acr.FREQUENCY = rdr["FREQUENCY"].ToString();
                     acr.SIZE = rdr["BRSIZE"].ToString();
                     acr.RISK = rdr["RISK"].ToString();
+                    acr.ENTITY_NAME = rdr["NAME"].ToString();
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     criteriaList.Add(acr);
@@ -905,6 +908,8 @@ namespace AIS
                     AuditCriteriaModel acr = new AuditCriteriaModel();
                     acr.ID = Convert.ToInt32(rdr["ID"]);
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
+                    if (rdr["ENTITY_ID"].ToString() != null && rdr["ENTITY_ID"].ToString() != "")
+                        acr.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     if (rdr["SIZE_ID"].ToString() != null && rdr["SIZE_ID"].ToString() != "")
                         acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
                     acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
@@ -918,6 +923,7 @@ namespace AIS
                     acr.SIZE = rdr["BRSIZE"].ToString();
                     acr.RISK = rdr["RISK"].ToString();
                     acr.VISIT = rdr["VISIT"].ToString();
+                    acr.ENTITY_NAME = rdr["NAME"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.RISK_ID, acr.SIZE_ID, acr.ENTITY_TYPEID, acr.AUDITPERIODID, acr.FREQUENCY_ID);
                     criteriaList.Add(acr);
@@ -946,6 +952,8 @@ namespace AIS
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
                     if (rdr["SIZE_ID"].ToString() != null && rdr["SIZE_ID"].ToString() != "")
                         acr.SIZE_ID = Convert.ToInt32(rdr["SIZE_ID"]);
+                    if (rdr["ENTITY_ID"].ToString() != null && rdr["ENTITY_ID"].ToString() != "")
+                        acr.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     acr.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
                     acr.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
                     acr.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
@@ -957,6 +965,7 @@ namespace AIS
                     acr.SIZE = rdr["BRSIZE"].ToString();
                     acr.RISK = rdr["RISK"].ToString();
                     acr.VISIT = rdr["VISIT"].ToString();
+                    acr.ENTITY_NAME = rdr["NAME"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     criteriaList.Add(acr);
                 }
@@ -1179,8 +1188,8 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetAuditeeEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
+                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;                
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -1189,8 +1198,7 @@ namespace AIS
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
-                    if (rdr["code"].ToString() != "" && rdr["code"].ToString() != null)
-                        entity.CODE = Convert.ToInt32(rdr["code"]);
+                    
                     if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
                         entity.NAME = rdr["name"].ToString();
 
