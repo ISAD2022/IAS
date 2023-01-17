@@ -149,6 +149,7 @@ namespace AIS.Controllers
                 cm.RISK = criteria[9];
                 cm.SIZE = criteria[10];
                 cm.FREQUENCY = criteria[11];
+                cm.ENTITY_ID = Convert.ToInt32(criteria[12]);
                 if (criteria[6].ToLower() == "yes")
                     criteria[6] = "Y";
                 else

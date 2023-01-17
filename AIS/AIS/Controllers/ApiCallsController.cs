@@ -285,9 +285,9 @@ namespace AIS.Controllers
             return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
         }
         [HttpPost]
-        public bool DeletePendingCriteria(int RISK_ID=0, int SIZE_ID = 0, int ENTITY_TYPE_ID = 0, int PERIOD_ID = 0, int FREQUENCY_ID = 0, int CID=0)
+        public bool DeletePendingCriteria(int CID=0)
         {
-            return dBConnection.DeletePendingCriteria(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID, CID);
+            return dBConnection.DeletePendingCriteria(CID);
         }
         [HttpPost]
         public bool submit_audit_criterias(int PERIOD_ID)

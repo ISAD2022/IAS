@@ -46,7 +46,7 @@
             <div id="navBarTopMenu" class="collapse navbar-collapse" style="font-size:14px;">
 
 
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <ul class="navbar-nav mt-2 mt-lg-0">
                     @{
                         @if (ViewData["TopMenu"] != null)
                         {
@@ -62,16 +62,19 @@
                                             @{
                                                 foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
                                                 {
-                                                    if (itemPage.Menu_Id == item.Menu_Id)
+                                                    if (itemPage.Menu_Id != 1020304050)
                                                     {
-                                                        if (itemPage.Hide_Menu == 0)
+                                                        if (itemPage.Menu_Id == item.Menu_Id)
                                                         {
+                                                            if (itemPage.Hide_Menu == 0)
+                                                            {
                                                             <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>
+                                                                }
+                                                            }
                                                         }
-                                                    }
 
+                                                    }
                                                 }
-                                            }
                                         </div>
                                     }
                                 </li>
@@ -161,11 +164,29 @@
                         -->
                 </ul>
             </div>
-            <div id="navBarTopMenu" class="collapse navbar-collapse float-right">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:auto;">
-                    <li id="avatarImg" class="nav-item active dropdown float-right">
+            <div id="navBarTopMenu" class="collapse navbar-collapse">
+                
+                <ul class="navbar-nav mt-2 mt-lg-0" style="float: right; margin-right: 20px; margin-left: auto;">
+                    <span style="margin-top: 13px; font-size: 14px;">
+                        Welcome:
+                        @if (ViewData["TopMenuPages"] != null)
+                        {
+                            foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
+                                {
+                                    if (itemPage.Menu_Id == 1020304050)
+                                    {
+                                                    <span id="avatarEmpName">
+                                                        @itemPage.Name (@itemPage.PPNO)
+                                                    </span>
+                                    }
+                                }
+
+                        }
+                    
+                    </span>
+                   <li id="avatarImg" class="nav-item active dropdown float-right">
                         <a class="nav-link dropdown-toggle" href="#" id="navImg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="rounded-circle" height="30" src="~/Images/profile.png" />
+                            <img class="rounded-circle" height="25" src="~/Images/profile.png" />
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navImg">
                             <a class="dropdown-item" href="~/Home/Change_Password">Change Password</a>
@@ -188,7 +209,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="container text-center">
             &copy; ZTBL INTERNAL AUDIT & INSPECTION DIVISION (Developed By A.A.A)
         </div>
     </footer>

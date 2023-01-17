@@ -75,8 +75,16 @@ namespace AIS
                 foreach (var item in menus)
                 {
                     menuList.Add(item);
+                   
                 }
             }
+            var loggedInUser = sessionHandler.GetSessionUser();
+            AvatarNameDisplayModel av = new AvatarNameDisplayModel();
+            av.Menu_Id = 1020304050;
+            av.PPNO = loggedInUser.PPNumber;
+            av.Name = loggedInUser.Name;
+
+            menuList.Add(av);
             return menuList;
         }
 

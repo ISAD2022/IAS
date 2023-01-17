@@ -45,9 +45,7 @@
                 'Password': $('#inputPassword').val(),
             },
             cache: false,
-            success: function (data) {
-
-               
+            success: function (data) {               
                 if (!data.isAuthenticate) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');
@@ -59,7 +57,7 @@
                     $('#submitLoginButton').addClass('d-none');
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
-                } else {                  
+                } else {
                     window.location.href = "/home";
                 }
                 $('#submitLoginButton').attr('disabled', false);
