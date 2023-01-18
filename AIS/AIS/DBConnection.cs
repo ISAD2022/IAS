@@ -982,11 +982,22 @@ namespace AIS
         }
         public bool GeneratePlanForAuditCriteria(int CRITERIA_ID)
         {
+            
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "begin Tentative_Audit_Plan(" + CRITERIA_ID + "); end;";
-                cmd.ExecuteReader();
+                 cmd.CommandText = "pkg_ais.Tentative_Audit_Plan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CRITERIA_ID", OracleDbType.Int32).Value = CRITERIA_ID;
+                cmd.Parameters.Add("auditperiod_id", OracleDbType.Int32).Value = "";
+                cmd.Parameters.Add("auditby_id", OracleDbType.Int32).Value = "";
+                cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = "";
+                cmd.Parameters.Add("noofdays", OracleDbType.Int32).Value = "";
+                cmd.Parameters.Add("typeid", OracleDbType.Int32).Value = "";
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
 
             }
             con.Close();
