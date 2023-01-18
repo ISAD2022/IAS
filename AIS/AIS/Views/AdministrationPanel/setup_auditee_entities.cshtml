@@ -70,7 +70,7 @@
                     var sr = 0;
                     $.each(data, function (i, v) {
                         sr++;
-                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td>updateAuditeeEntities(' + v.entitY_ID + ')</td></tr>');
+                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
 
                     });
                 },
