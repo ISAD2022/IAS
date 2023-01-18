@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "Plan Status";
+    Layout = "_Layout";
+}
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+<script type="text/javascript">
+    var g_entId = 0;
+    var g_entList = [];
+    $(document).ready(function () {
+       
+        $('#sidebar_policy').hide();
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfDepartment tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+    function newDeptSetup() {
+        g_entId = 0;
+        $('#setupDeptModal').modal('show');
+        $('#deptCodeModalField').val('');
+        $('#deptNameModalField').val('');
+        $('#deptdivNameModalField').val('');
+    }
+
+    function updateAuditeeEntities(id) {
+
+        g_entId = id;
+        $.each(g_entList, function (i, v) {
+            if (v.entitY_ID == g_entId) {
+                $('#entNameField').val(v.name);
+                $('#entCodeField').val(v.name);
+                $('#entParentField').val('');
+                $('#entChildField').val('');
+            }
+         });      
+
+        $('#updateEntityModal').modal('show');
+    }
+
+    function ShowEntities() {
+
+        var typeId = $('#entityTypeSelectField').val();
+        if (typeId != 0) {
+            $.ajax({
+                url: "/ApiCalls/GetAuditeeEntitiesByTypeId",
+                type: "POST",
+                data: {
+                    'ENTITY_TYPE_ID': typeId
+                },
+                cache: false,
+                success: function (data) {
+                    g_entList = data;
+                    var sr = 0;
+                    $.each(data, function (i, v) {
+                        sr++;
+                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td>updateAuditeeEntities(' + v.entitY_ID + ')</td></tr>');
+
+                    });
+                },
+                dataType: "json",
+            });
+        } else {
+            g_entList = [];
+            $('#auditeeEntitiesList tbody').empty();
+        }
+
+    }
+</script>
+<div class="row text-center ml-4 mr-2" style="margin-top:30px;">
+    <h3 style=" display:block;color: #45c545;">Auditee Entities </h3>
+</div>
+<div class="row mt-3 col-md-12 ml-4 mr-2">
+    <label><b>Select Entity Type</b></label>
+    <select id="entityTypeSelectField" onchange="ShowEntities();" class="form-select form-control">
+        <option value="0" id="0" selected>--Select Entity Type--</option>
+        @{
+            if (ViewData["EntitiesTypes"] != null)
+            {
+                foreach (var item in (dynamic)(ViewData["EntitiesTypes"]))
+                {
+            <option value="@item.ENTITYCODE" id="@item.ENTITYCODE">@item.ENTITYTYPEDESC</option>
+
+                }
+            }
+        }
+
+    </select>
+</div>
+<div class="row col-md-12 ml-4 mr-2">
+    <table id="auditeeEntitiesList" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">ID</th>
+                <th class="col-md-auto">Entity Name</th>
+                <th class="col-md-auto">Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
+</div>
+
+
+<div id="updateEntityModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Auditee Entity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Name</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="entNameField" class="form-control" type="text" />
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Code</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="entCodeField" class="form-control" type="text" />
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Parent Office</h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="entParentField" class="form-control">
+                                <option value="0">--Select Parent Office--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <h5>Child Office </h5>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="entChildField" class="form-control" >
+                                <option value="0">--Select Child Office--</option>
+                            </select>
+                        </div>
+                    </div>
+
+                   
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="" type="button" data-dismiss="modal" class="btn btn-success">Update</button>
+
+            </div>
+        </div>
+    </div>
+</div>

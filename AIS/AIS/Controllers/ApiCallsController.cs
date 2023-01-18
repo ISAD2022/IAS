@@ -290,6 +290,11 @@ namespace AIS.Controllers
             return dBConnection.DeletePendingCriteria(CID);
         }
         [HttpPost]
+        public List<AuditeeEntitiesModel> GetAuditeeEntitiesByTypeId(int ENTITY_TYPE_ID = 0)
+        {
+            return dBConnection.GetAuditeeEntities(ENTITY_TYPE_ID);
+        }
+        [HttpPost]
         public bool submit_audit_criterias(int PERIOD_ID)
         {
             return dBConnection.SubmitAuditCriteriaForApproval(PERIOD_ID);

@@ -451,7 +451,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public bool generate_plan_audit_criteria(int CRITERIA_ID)
+        public string generate_plan_audit_criteria(int CRITERIA_ID)
         {
             return dBConnection.GeneratePlanForAuditCriteria(CRITERIA_ID);
 

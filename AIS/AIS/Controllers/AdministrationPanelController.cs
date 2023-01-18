@@ -227,10 +227,11 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult plan_status()
+        public IActionResult setup_auditee_entities()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesTypes"] = dBConnection.GetAuditEntities();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

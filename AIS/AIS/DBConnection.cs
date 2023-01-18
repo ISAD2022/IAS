@@ -980,8 +980,9 @@ namespace AIS
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             return entitiesList;           
         }
-        public bool GeneratePlanForAuditCriteria(int CRITERIA_ID)
+        public string GeneratePlanForAuditCriteria(int CRITERIA_ID)
         {
+            string resMsg = "";
             
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -989,19 +990,18 @@ namespace AIS
                  cmd.CommandText = "pkg_ais.Tentative_Audit_Plan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("CRITERIA_ID", OracleDbType.Int32).Value = CRITERIA_ID;
-                cmd.Parameters.Add("auditperiod_id", OracleDbType.Int32).Value = "";
-                cmd.Parameters.Add("auditby_id", OracleDbType.Int32).Value = "";
-                cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = "";
-                cmd.Parameters.Add("noofdays", OracleDbType.Int32).Value = "";
-                cmd.Parameters.Add("typeid", OracleDbType.Int32).Value = "";
-
+                cmd.Parameters.Add("CRITERIA_ID", OracleDbType.Int32).Value = CRITERIA_ID;               
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
+                while (rdr.Read())
+                {
+                    resMsg=rdr["REMARKS"].ToString();
+                                  }
+
             }
             con.Close();
-            return true;
+            return resMsg;
         }
         public List<RoleRespModel> GetRoleResponsibilities()
         {
@@ -3555,7 +3555,7 @@ namespace AIS
         {
 
             var con = this.DatabaseConnection();
-            if (ENG_ID == 0)
+            if (ENG_ID == 0 && OBS_ID==0)
                 ENG_ID = this.GetLoggedInUserEngId();
 
             List<ManageObservations> list = new List<ManageObservations>();
