@@ -35,6 +35,7 @@
                 console.log(data);
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0].obS_TEXT);
+                $('#viewMemo_response').html(data[0].obS_REPLY);
                 $('#viewMemo_subprocess').html(data[0].nature);
                 $('#viewMemo_violation').html(data[0].violation);
 
@@ -52,7 +53,7 @@
                     } else {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-                        $('#settleButton_memoReply').addClass('d-none');
+                        $('#settleButton_memoReply').removeClass('d-none');
                         $('#addDraftButton_memoReply').removeClass('d-none');
                     }
 
@@ -127,6 +128,9 @@
         });
     }
     function submitObservationToAuditee(obs_id, new_status_id, risk_id) {
+        $('#' + $('#auditeeEvidences').find('input[type="file"]').attr('id'))
+
+
         g_obsId = obs_id;
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
@@ -292,17 +296,21 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_violation">Violation</label>
+                        <label for="viewMemo_violation" class="font-weight-bold">Violation</label>
                         <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_subprocess">Nature</label>
+                        <label for="viewMemo_subprocess" class="font-weight-bold">Nature</label>
                         <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="viewMemo_memo">Memo</label>
+                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_response" class="font-weight-bold">Auditee Response</label>
+                        <div id="viewMemo_response" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                 </form>
             </div>

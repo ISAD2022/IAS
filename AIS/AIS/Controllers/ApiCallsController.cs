@@ -292,7 +292,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesByTypeId(int ENTITY_TYPE_ID = 0)
         {
-            return dBConnection.GetAuditeeEntities(ENTITY_TYPE_ID);
+            return dBConnection.GetAuditeeEntitiesForUpdate(ENTITY_TYPE_ID);
         }
         [HttpPost]
         public bool submit_audit_criterias(int PERIOD_ID)

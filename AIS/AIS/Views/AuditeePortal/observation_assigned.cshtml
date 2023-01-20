@@ -15,6 +15,7 @@
             videoEmbed: false,
             urls: false
         });
+        $('#auditeeEvidences').imageUploader();
     });
     function reloadLocation() {
         location.reload();
@@ -69,12 +70,14 @@
                     $('#viewMemo_responded').parent().addClass('d-none');
                     $('#replyrichTextWrapper').removeClass('d-none');
                     $('#viewMemo_responded').html('');
+                    $('#auditeeEvidences').parent().removeClass('d-none');
                 }
                 else {
                     $('#replyButton_memoReply').addClass('d-none');
                     $('#viewMemo_responded').parent().removeClass('d-none');
                     $('#replyrichTextWrapper').addClass('d-none');
                     $('#viewMemo_responded').html(data[1]);
+                    $('#auditeeEvidences').parent().removeClass('d-none');
                     }
 
             },
@@ -82,6 +85,8 @@
         });
     }
     function replyMemo() {
+        var ele = document.getElementById($('#auditeeEvidences').find('input[type="file"]').attr('id'));
+
         var replyTxt = ($('#viewMemo_reply').val()).length;
         if (replyTxt > 0) {
             $.ajax({
@@ -234,6 +239,10 @@
                     <div id="replyrichTextWrapper" class="form-group">
                         <label for="viewMemo_reply">Reply</label>
                         <textarea id="viewMemo_reply" style="max-height:150px; height:auto;" class="form-control"></textarea>
+                    </div>
+                    <div class="input-field">
+                        <label class="active">Evidences</label>
+                        <div id="auditeeEvidences" style="padding-top: .5rem;"></div>
                     </div>
                 </form>
             </div>

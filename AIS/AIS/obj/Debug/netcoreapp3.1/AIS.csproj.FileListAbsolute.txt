@@ -741,3 +741,8 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\AdministrationPanel\setup_auditee_entities.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Pack.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.AIS.Microsoft.AspNetCore.StaticWebAssets.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.build.AIS.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.AIS.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.AIS.props

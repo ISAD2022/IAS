@@ -1220,6 +1220,40 @@ namespace AIS
             return entitiesList;
 
         }
+        public List<AuditeeEntitiesModel> GetAuditeeEntitiesForUpdate(int ENTITY_TYPE_ID = 0, int ENTITY_ID=0)
+        {
+            var con = this.DatabaseConnection();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetDepartments";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
+                        entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+
+                    if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
+                        entity.NAME = rdr["name"].ToString();
+
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Close();
+            return entitiesList;
+
+        }
         public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
         {
             var con = this.DatabaseConnection();
@@ -3342,8 +3376,8 @@ namespace AIS
                 cmd.Parameters.Add("REPLIEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("OBS_TEXT_ID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
                 cmd.Parameters.Add("REPLY_ROLE", OracleDbType.Int32).Value = ob.REPLY_ROLE;
-                cmd.Parameters.Add("REMARKS", OracleDbType.Int32).Value = ob.REMARKS;
-                cmd.Parameters.Add("SUBMITTED", OracleDbType.Int32).Value = ob.SUBMITTED;
+                cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = ob.REMARKS;
+                cmd.Parameters.Add("SUBMITTED", OracleDbType.Varchar2).Value = ob.SUBMITTED;
                 cmd.ExecuteReader();
             }
             con.Close();
@@ -3411,7 +3445,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    response = rdr["reply"].ToString();
+                    response = rdr["Recommendation"].ToString();
                 }
             }
             con.Close();
@@ -3435,7 +3469,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    response = rdr["reply"].ToString();
+                    response = rdr["audit_reply"].ToString();
                 }
             }
             con.Close();

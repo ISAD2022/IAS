@@ -70,7 +70,7 @@
                     var sr = 0;
                     $.each(data, function (i, v) {
                         sr++;
-                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
+                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
 
                     });
                 },
@@ -95,7 +95,7 @@
             {
                 foreach (var item in (dynamic)(ViewData["EntitiesTypes"]))
                 {
-            <option value="@item.ENTITYCODE" id="@item.ENTITYCODE">@item.ENTITYTYPEDESC</option>
+            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
 
                 }
             }

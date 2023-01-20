@@ -29,6 +29,10 @@ a {
   border-color: #1861ac;
 }
 
+.modal-body label{
+    font-weight:bold !important;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

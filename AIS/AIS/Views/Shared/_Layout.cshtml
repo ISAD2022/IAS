@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
     <link rel="stylesheet" href="~/lib/rich-text-editor/richtext.min.css">
+    <link type="text/css" rel="stylesheet" href="~/lib/jquery-image-uploader/src/image-uploader.css">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
     <style>
@@ -68,13 +69,13 @@
                                                         {
                                                             if (itemPage.Hide_Menu == 0)
                                                             {
-                                                            <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>
-                                                                }
+                                                                <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>
                                                             }
                                                         }
-
                                                     }
+
                                                 }
+                                            }
                                         </div>
                                     }
                                 </li>
@@ -165,26 +166,26 @@
                 </ul>
             </div>
             <div id="navBarTopMenu" class="collapse navbar-collapse">
-                
+
                 <ul class="navbar-nav mt-2 mt-lg-0" style="float: right; margin-right: 20px; margin-left: auto;">
                     <span style="margin-top: 13px; font-size: 14px;">
                         Welcome:
                         @if (ViewData["TopMenuPages"] != null)
                         {
                             foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
+                            {
+                                if (itemPage.Menu_Id == 1020304050)
                                 {
-                                    if (itemPage.Menu_Id == 1020304050)
-                                    {
-                                                    <span id="avatarEmpName">
-                                                        @itemPage.Name (@itemPage.PPNO)
-                                                    </span>
-                                    }
+                                    <span id="avatarEmpName">
+                                        @itemPage.Name (@itemPage.PPNO)
+                                    </span>
                                 }
+                            }
 
                         }
-                    
+
                     </span>
-                   <li id="avatarImg" class="nav-item active dropdown float-right">
+                    <li id="avatarImg" class="nav-item active dropdown float-right">
                         <a class="nav-link dropdown-toggle" href="#" id="navImg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="rounded-circle" height="25" src="~/Images/profile.png" />
                         </a>
@@ -218,11 +219,13 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/idleSessionHandler.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
     <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
     <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>
     <script type="text/javascript" src="~/lib/canvasjs/canvasjs.min.js"></script>
-    
+    <script type="text/javascript" src="~/lib/jquery-image-uploader/src/image-uploader.js"></script>
+
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1833,6 +1833,10 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\font-awesome\webfonts\fa-solid-900.ttf
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\font-awesome\webfonts\fa-solid-900.woff
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\font-awesome\webfonts\fa-solid-900.woff2
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-image-uploader\dist\image-uploader.min.css
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-image-uploader\dist\image-uploader.min.js
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-image-uploader\src\image-uploader.css
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-image-uploader\src\image-uploader.js
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
