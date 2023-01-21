@@ -276,6 +276,27 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult cau_observation()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
+            ViewData["ZonesList"] = dBConnection.GetZones(false);
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult manage_observations(int engId= 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

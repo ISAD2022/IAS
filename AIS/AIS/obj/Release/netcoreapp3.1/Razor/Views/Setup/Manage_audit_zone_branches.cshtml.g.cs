@@ -28,7 +28,9 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"d7699546d2308f3b16a2fb21e5646a566b050b48", @"/Views/Setup/Manage_audit_zone_branches.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
+    #nullable restore
     public class Views_Setup_Manage_audit_zone_branches : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
+    #nullable disable
     {
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_0 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("value", "0", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_1 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("id", new global::Microsoft.AspNetCore.Html.HtmlString("0"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
@@ -355,7 +357,7 @@ using AIS.Models;
     <div class=""row col-md-8"">
        <select id=""auditZoneSelectionBox1""  class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4816431", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4816477", async() => {
                 WriteLiteral("--Select Audit Zone--");
             }
             );
@@ -387,7 +389,7 @@ using AIS.Models;
 #line hidden
 #nullable disable
             WriteLiteral("                        ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4818403", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4818449", async() => {
 #nullable restore
 #line 289 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Setup\Manage_audit_zone_branches.cshtml"
                                                           Write(item.ZONENAME);
@@ -449,7 +451,7 @@ AddHtmlAttributeValue("", 12372, item.ID, 12372, 8, false);
 
             <select id=""auditZoneSelectionBox"" onchange=""ShowSelectedZonesBranches();"" class=""form-select form-control"" aria-label=""Default select example"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4821309", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4821355", async() => {
                 WriteLiteral("--Select Operational Audit Zone--");
             }
             );
@@ -481,7 +483,7 @@ AddHtmlAttributeValue("", 12372, item.ID, 12372, 8, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4823333", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4823379", async() => {
 #nullable restore
 #line 312 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Setup\Manage_audit_zone_branches.cshtml"
                                                                       Write(item.ZONENAME);
@@ -544,7 +546,7 @@ AddHtmlAttributeValue("", 13183, item.ZONEID, 13183, 12, false);
         <select id=""branchSelectionBox"" onchange=""ShowBranchInfoBox();"" class=""form-select form-control"" aria-label=""Default select example"" multiple autofocus size=""15"">
             
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4826323", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d7699546d2308f3b16a2fb21e5646a566b050b4826369", async() => {
                 WriteLiteral("--Select Audit Branch--");
             }
             );
@@ -662,16 +664,26 @@ AddHtmlAttributeValue("", 13183, item.ZONEID, 13183, 12, false);
             WriteLiteral("              <td></td>\r\n                <td></td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n</div>-->\r\n<div class=\"row col-md-12 mt-3\">\r\n    <button class=\"col-md-2 btn btn-danger\">Submit</button>\r\n</div>\r\n\r\n");
         }
         #pragma warning restore 1998
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; } = default!;
+        #nullable disable
     }
 }
 #pragma warning restore 1591

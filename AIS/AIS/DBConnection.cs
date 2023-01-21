@@ -2742,6 +2742,33 @@ namespace AIS
             con.Close();
             return list;
         }
+        public List<AuditChecklistModel> GetAuditChecklistCAD()
+        {
+            var con = this.DatabaseConnection();
+            List<AuditChecklistModel> list = new List<AuditChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ais.P_GetAuditChecklistCAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistModel chk = new AuditChecklistModel();
+                    chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    //chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
         public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id = 0, int eng_id = 0)
         {
             var con = this.DatabaseConnection();

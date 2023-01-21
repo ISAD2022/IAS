@@ -579,3 +579,9 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspec
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspection\Planning\task_list.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Inspection\Planning\tentative_plan.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\AdministrationPanel\setup_auditee_entities.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Pack.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.AIS.Microsoft.AspNetCore.StaticWebAssets.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.build.AIS.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.AIS.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.AIS.props
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\cau_observation.cshtml.g.cs

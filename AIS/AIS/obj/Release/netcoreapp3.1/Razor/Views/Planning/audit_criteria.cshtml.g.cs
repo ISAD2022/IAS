@@ -28,7 +28,9 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"b9248776f9192fd58609e21eac7913ce7eedc106", @"/Views/Planning/audit_criteria.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
+    #nullable restore
     public class Views_Planning_audit_criteria : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
+    #nullable disable
     {
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_0 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("value", "0", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_1 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("id", new global::Microsoft.AspNetCore.Html.HtmlString("0"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
@@ -372,7 +374,7 @@ using AIS.Models;
     <div class=""col-md-8"">
         <select id=""auditCriteriaPeriodField"" class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10616215", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10616261", async() => {
                 WriteLiteral("--Select Audit Period--");
             }
             );
@@ -405,7 +407,7 @@ using AIS.Models;
 #line hidden
 #nullable disable
             WriteLiteral("                        ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10618198", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10618244", async() => {
 #nullable restore
 #line 305 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                                     Write(period.DESCRIPTION);
@@ -466,7 +468,7 @@ AddHtmlAttributeValue("", 11929, period.AUDITPERIODID, 11929, 21, false);
         <div class=""col-md-12 pl-0 pr-0"">
             <select onchange=""setSizeEnableForBranches();"" id=""auditCriteriaEntityField"" class=""form-select form-control"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10621149", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10621195", async() => {
                 WriteLiteral("--Select Entity--");
             }
             );
@@ -498,7 +500,7 @@ AddHtmlAttributeValue("", 11929, period.AUDITPERIODID, 11929, 21, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10623142", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10623188", async() => {
 #nullable restore
 #line 326 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                               Write(item.ENTITYTYPEDESC);
@@ -563,7 +565,7 @@ AddHtmlAttributeValue("", 12768, item.ENTITYCODE, 12768, 16, false);
         <div class=""col-md-8"">
             <select id=""auditCriteriaRiskField"" class=""form-select form-control"" aria-label=""Default select example"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10626291", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10626337", async() => {
                 WriteLiteral("--Select Risk Category--");
             }
             );
@@ -596,7 +598,7 @@ AddHtmlAttributeValue("", 12768, item.ENTITYCODE, 12768, 16, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10628283", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10628329", async() => {
 #nullable restore
 #line 352 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                   Write(risk.DESCRIPTION);
@@ -656,7 +658,7 @@ AddHtmlAttributeValue("", 13775, risk.R_ID, 13775, 10, false);
         <div class=""col-md-8"">
             <select id=""auditCriteriaSizeField"" class=""form-select form-control"" aria-label=""Default select example"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10631178", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10631224", async() => {
                 WriteLiteral("--Select Size--");
             }
             );
@@ -688,7 +690,7 @@ AddHtmlAttributeValue("", 13775, risk.R_ID, 13775, 10, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10633173", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10633219", async() => {
 #nullable restore
 #line 372 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                               Write(item.DESCRIPTION);
@@ -748,7 +750,7 @@ AddHtmlAttributeValue("", 14587, item.BR_SIZE_ID, 14587, 16, false);
         <div class=""col-md-8"">
             <select id=""auditCriteriaFreqField"" class=""form-select form-control"" aria-label=""Default select example"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10636073", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10636119", async() => {
                 WriteLiteral("--Select Frequency--");
             }
             );
@@ -781,7 +783,7 @@ AddHtmlAttributeValue("", 14587, item.BR_SIZE_ID, 14587, 16, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10638079", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10638125", async() => {
 #nullable restore
 #line 393 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                                       Write(period.FREQUENCY_DISCRIPTION);
@@ -844,7 +846,7 @@ AddHtmlAttributeValue("", 15369, period.FREQUENCY_ID, 15369, 20, false);
         <div class=""col-md-8"">
             <select id=""auditCriteriaCADHUBField"" class=""form-select form-control"" aria-label=""Default select example"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10641094", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10641140", async() => {
                 WriteLiteral("--Select CAD HUB--");
             }
             );
@@ -876,7 +878,7 @@ AddHtmlAttributeValue("", 15369, period.FREQUENCY_ID, 15369, 20, false);
 #line hidden
 #nullable disable
             WriteLiteral("                            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10643082", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10643128", async() => {
 #nullable restore
 #line 416 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Planning\audit_criteria.cshtml"
                                                                             Write(item.NAME);
@@ -1274,7 +1276,7 @@ WriteAttributeValue("", 19696, item.ID, 19696, 8, false);
             </div>
             <div class=""modal-body"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10658631", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9248776f9192fd58609e21eac7913ce7eedc10658677", async() => {
                 WriteLiteral(@"
                     <!--  <div class=""form-group"">
                         <label for=""auditeeEntTypesCodeModelField"">Code</label>
@@ -1329,16 +1331,26 @@ WriteAttributeValue("", 19696, item.ID, 19696, 8, false);
 ");
         }
         #pragma warning restore 1998
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; } = default!;
+        #nullable disable
     }
 }
 #pragma warning restore 1591

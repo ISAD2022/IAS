@@ -28,7 +28,9 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"fafe7996414c6171e216111aa53545dac3e0ede2", @"/Views/Engagement/create_audit_plan.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
+    #nullable restore
     public class Views_Engagement_create_audit_plan : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
+    #nullable disable
     {
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_0 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("value", "0", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_1 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("id", new global::Microsoft.AspNetCore.Html.HtmlString("0"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
@@ -208,7 +210,7 @@ using AIS.Models;
     <div class=""row col-md-8"">
         <select id=""auditCriteriaPeriodField"" class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede210089", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede210135", async() => {
                 WriteLiteral("--Select Inspection Period--");
             }
             );
@@ -241,7 +243,7 @@ using AIS.Models;
 #line hidden
 #nullable disable
             WriteLiteral("            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede212046", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede212092", async() => {
 #nullable restore
 #line 147 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\create_audit_plan.cshtml"
                                                                         Write(period.DESCRIPTION);
@@ -302,7 +304,7 @@ AddHtmlAttributeValue("", 5990, period.AUDITPERIODID, 5990, 21, false);
         <div class=""col-md-9 pl-0"">
             <select id=""auditCriteriaEntityField"" onchange=""enitityChangeEvent();"" class=""form-select form-control"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede214975", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede215021", async() => {
                 WriteLiteral("--Select Entity--");
             }
             );
@@ -334,7 +336,7 @@ AddHtmlAttributeValue("", 5990, period.AUDITPERIODID, 5990, 21, false);
 #line hidden
 #nullable disable
             WriteLiteral("                ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede216937", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede216983", async() => {
 #nullable restore
 #line 168 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\create_audit_plan.cshtml"
                                                         Write(item.ENTITYTYPEDESC);
@@ -400,7 +402,7 @@ AddHtmlAttributeValue("", 6772, item.AUTID, 6772, 11, false);
     <div class=""row col-md-8"">
         <select id=""auditCriteriaRiskField"" class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede219972", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede220018", async() => {
                 WriteLiteral("--Select Risk Category--");
             }
             );
@@ -433,7 +435,7 @@ AddHtmlAttributeValue("", 6772, item.AUTID, 6772, 11, false);
 #line hidden
 #nullable disable
             WriteLiteral("            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede221909", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede221955", async() => {
 #nullable restore
 #line 195 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\create_audit_plan.cshtml"
                                                   Write(risk.DESCRIPTION);
@@ -495,7 +497,7 @@ AddHtmlAttributeValue("", 7630, risk.R_ID, 7630, 10, false);
     <div class=""row col-md-8"">
         <select id=""auditCriteriaSizeField"" class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede224738", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede224784", async() => {
                 WriteLiteral("--Select Size--");
             }
             );
@@ -527,7 +529,7 @@ AddHtmlAttributeValue("", 7630, risk.R_ID, 7630, 10, false);
 #line hidden
 #nullable disable
             WriteLiteral("            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede226678", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede226724", async() => {
 #nullable restore
 #line 217 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\create_audit_plan.cshtml"
                                                               Write(item.DESCRIPTION);
@@ -595,7 +597,7 @@ AddHtmlAttributeValue("", 8330, item.BR_SIZE_ID, 8330, 16, false);
     <div class=""row col-md-8"">
         <select id=""auditCriteriaFreqField"" class=""form-select form-control"" aria-label=""Default select example"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede229762", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede229808", async() => {
                 WriteLiteral("--Select Frequency--");
             }
             );
@@ -628,7 +630,7 @@ AddHtmlAttributeValue("", 8330, item.BR_SIZE_ID, 8330, 16, false);
 #line hidden
 #nullable disable
             WriteLiteral("            ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede231713", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede231759", async() => {
 #nullable restore
 #line 246 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\create_audit_plan.cshtml"
                                                                       Write(period.FREQUENCY_DISCRIPTION);
@@ -729,7 +731,7 @@ AddHtmlAttributeValue("", 9238, period.FREQUENCY_ID, 9238, 20, false);
             </div>
             <div class=""modal-body"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede236232", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fafe7996414c6171e216111aa53545dac3e0ede236278", async() => {
                 WriteLiteral(@"
                     <!--  <div class=""form-group"">
                         <label for=""auditeeEntTypesCodeModelField"">Code</label>
@@ -784,16 +786,26 @@ AddHtmlAttributeValue("", 9238, period.FREQUENCY_ID, 9238, 20, false);
 ");
         }
         #pragma warning restore 1998
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; } = default!;
+        #nullable disable
+        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; }
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; } = default!;
+        #nullable disable
     }
 }
 #pragma warning restore 1591

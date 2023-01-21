@@ -37,7 +37,7 @@
         $('#recommendPostChangesAuditCriteriasModal').modal('show');
 
         if (ent_id == 25) {
-            $('#auditCriteriaCADHUBField').append('<option selected="selected" id="' + entityId + '">' + entName + '</option>');
+            $('#auditCriteriaCADHUBField').append('<option selected="selected" id="' + entId + '">' + entName + '</option>');
             $('#CADHUBPanel').removeClass('d-none');
             $('#nonCADHUBPanel').addClass('d-none');
         } else {
@@ -130,7 +130,7 @@
             },
             cache: false,
             success: function (data) {
-                alert(data);
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
@@ -199,7 +199,7 @@
                                 <p class="fw-normal mb-1">@item.COMMENTS</p>
                             </td>
                             <td>
-                                <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendPostChangesAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_TYPEID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS','@item.ENTITY_ID','@item.NAME');">
+                                <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendPostChangesAuditCriterias('@item.ID', '@item.AUDITPERIODID', '@item.ENTITY_TYPEID', '@item.SIZE_ID', '@item.RISK_ID', '@item.FREQUENCY_ID', '@item.VISIT', '@item.NO_OF_DAYS','@item.ENTITY_ID','@item.ENTITY_NAME');">
                                     Post Changes
                                 </button>
                             </td>
@@ -268,7 +268,7 @@
 
                         </div>
                     </div>
-                    <div id="CADHUBPanel">
+                    <div class="row col-md-12" id="CADHUBPanel">
                         <div class="row mt-3 col-md-12">
                             <div class="col-md-4">
                                 <h5>CAD HUB</h5>
@@ -279,7 +279,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="nonCADHUBPanel">
+                    <div class="row col-md-12" id="nonCADHUBPanel">
                         <div class="row col-md-12 mt-3">
                             <div class="row col-md-4">
                                 <h5>Risk Category</h5>

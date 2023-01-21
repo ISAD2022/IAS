@@ -51,10 +51,9 @@
         
             svpComments = $('#commentAreaInCommentsBox').val();
             if ($('#commentAreaInCommentsBox').val() == "") {
-                alert("Comments are Mandatory");
+                alert("Please enter the Comments First");
                 return;
-            }
-        
+            }       
 
 
         $.ajax({
@@ -72,7 +71,7 @@
                     alert("Successfully done");
                     onAlertCallback(reloadLocation);
                 } else {
-                    alert("Failed!! please try again");
+                    alert("Failed to update Observation status!! please try again");
                     onAlertCallback(reloadLocation);
                 }
             },
