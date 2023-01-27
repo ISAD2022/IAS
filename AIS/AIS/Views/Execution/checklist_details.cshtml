@@ -6,14 +6,16 @@
     var g_respUser = [];
     var g_memoObj = [];
     var g_observationId = 0;
-    var g_endId = 0;
+    var g_engId = 0;
     var S_ID = 0;
+    var g_respUsersArr=[];
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
         var checklistsub_id = url.searchParams.get("id");
         S_ID = checklistsub_id;
-        g_endId = url.searchParams.get("engId");
+        g_engId = url.searchParams.get("engId");
+        getSubCheckListStatus();
         $.ajax({
             url: "/ApiCalls/checklist_details",
             type: "POST",
@@ -26,7 +28,7 @@
                 $('#checklistDetailsPanel tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="0" id="0" selected>No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
+                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select id="checklistaction_'+v.id+'" class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="-1" id="-1" selected>--Please Select--</option><option value="0" id="0">No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
                     sr++;
                 });
 
@@ -42,7 +44,7 @@
     });
     function showObservationArea(value, id) {
         g_observationId = id;
-        if (value != 0) {
+        if (value ==1) {
             $('#viewMemoModel').modal('show');
             $('.richText-editor').html('');
             $('#viewMemo_replydays').val(1);
@@ -58,7 +60,7 @@
             type: "POST",
             data: {
                 'LIST_OBS': g_memoObj,
-                'ENG_ID': g_endId,
+                'ENG_ID': g_engId,
                 'S_ID': S_ID
             },
             cache: false,
@@ -82,7 +84,8 @@
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': $('#viewMemo_loancase').val(),
             'ATTACHMENTS': $('#viewMemo_attachments').val(),
-            'RESPONSIBLE_PPNO': resP
+            'RESPONSIBLE_PPNO': resP,
+            'RESP_TABLE_ROWS':g_respUsersArr
         };
         var isFound = false;
         $.each(g_memoObj, function (i, v) {
@@ -94,6 +97,7 @@
                 g_memoObj[i].DAYS = memo.DAYS;
                 g_memoObj[i].ATTACHMENTS = memo.ATTACHMENTS;
                 g_memoObj[i].RESPONSIBLE_PPNO = memo.RESPONSIBLE_PPNO;
+                g_memoObj[i].RESP_TABLE_ROWS = memo.RESP_TABLE_ROWS;
             }
 
         });
@@ -110,9 +114,11 @@
             'MEMO': '',
             'DAYS': '',
             'LOANCASE': '',
-            'ATTACHMENTS': ''
+            'ATTACHMENTS': '',
+            'RESPONSIBLE_PPNO': [],
+            'RESP_TABLE_ROWS': [],
         };
-        if (value != 0) {
+        if (value == 1) {
             $.each(g_memoObj, function (i, v) {
                 if (v.ID == id) {
                     tempobj = v;
@@ -126,6 +132,12 @@
             $('#viewMemo_replydays').val(tempobj.DAYS);
             $('#viewMemo_loancase').val(tempobj.LOANCASE);
             $('#viewMemo_attachments').val(tempobj.ATTACHMENTS);
+            $.each(tempobj.RESP_TABLE_ROWS, function (i, v) {
+                g_respUser=[];
+                g_respUser.push(v);
+                addResponsibilityToObsPanel();
+            });
+            
         } else {
             alert("Please select Yes to create Observation");
             return;
@@ -150,7 +162,7 @@
             success: function (data) {
                 g_respUser.push(data);
                 if (data.id > 0) {
-                    $('#matchedPPNoPanels').append('<div class="row"><div class="col-sm-4"><input id="respCheckBOX" type="checkbox" /></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span></div></div>');
+                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div></div>');
                 }                    
                 else
                     $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
@@ -164,19 +176,63 @@
 
     function addResponsibilityToMainTable() {
         if (g_respUser[0].id > 0) {
-            if ($('#respCheckBOX:checked')) {
+            if ($('#respCheckBOX').is(':checked')) {
+
+                if ($('#resp_loan_case').val() == "" && $('#resp_account_number').val() == ""){
+                     alert("Please either Loan Case No. or Account No. to proceed"); return false;
+                }
 
                 if ($('#listofRespPersons tbody tr#tr_' + g_respUser[0].ppNumber).length == 0) {
                     var srNo = $('#listofRespPersons tbody tr').length;
                     srNo++;
-                    $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    g_respUsersArr.push(g_respUser[0]);
                 } else { alert("Responsibility already added"); return false; }
-            } else
+            }
+            else
             {
-                alert("Please tick Checkbox to add responsibility"); return false;
+                alert("Please Check checkbox to proceed"); return false;
             }            
         }       
 
+    }
+    function addResponsibilityToObsPanel() {
+        if (g_respUser[0].id > 0) {
+            if ($('#listofRespPersons tbody tr#tr_' + g_respUser[0].ppNumber).length == 0) {
+                    var srNo = $('#listofRespPersons tbody tr').length;
+                    srNo++;
+                    $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    g_respUsersArr.push(g_respUser[0]);
+                }
+        }
+
+    }
+
+    function getSubCheckListStatus(){
+        $.ajax({
+            url: "/ApiCalls/get_subchecklist_status",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId,
+                'S_ID': S_ID
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data,function(i,v){
+                    if(v.status=='Y')
+                    {
+                        $('#checklistaction_'+v.cD_ID).val(1);
+                         $('#checklistaction_'+v.cD_ID).attr('disabled',true);
+                    }
+                    else 
+                    {
+                        $('#checklistaction_'+v.cD_ID).val(0);
+                        $('#checklistaction_'+v.cD_ID).attr('disabled',false);
+                    }
+                });           
+            },
+            dataType: "json",
+        });
     }
 </script>
 <div class="row mt-3">
@@ -228,10 +284,12 @@
                             <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
                                 <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                     <tr>
-                                        <th class="font-weight-bold">Sr.No</th>
-                                        <th class="font-weight-bold">P.P. No</th>
-                                        <th class="font-weight-bold">Name</th>
-                                        <th class="text-center font-weight-bold"><button type="button" onclick="openResponsiblePPs();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></th>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto text-center font-weight-bold"><button type="button" onclick="openResponsiblePPs();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></th>
                                     </tr>
                                 </thead>
                                 <tbody>

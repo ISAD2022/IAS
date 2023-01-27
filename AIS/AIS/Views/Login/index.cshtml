@@ -4,7 +4,11 @@
 }
 <script type="text/javascript">
     var g_reqSend = true;
+    var g_retUrl = "";
     $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_retUrl = url.searchParams.get("retUrl");
         $(document).keydown(function (event) {
             var id = event.key || event.which || event.keyCode || 0;
             if (id == "Enter") {
@@ -58,13 +62,21 @@
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
                 } else {
-                    window.location.href = "/home";
+                    if (g_retUrl != null && g_retUrl != "") {
+                        window.location.href = g_retUrl;
+                    } else {
+                        window.location.href = "/home";
+                    }
+                    
                 }
                 $('#submitLoginButton').attr('disabled', false);
             },
             dataType: "json",
         });
     }
+
+  
+
 </script>
 
 <div class="text-center">

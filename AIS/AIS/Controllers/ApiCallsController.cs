@@ -195,34 +195,54 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);            
         }
         [HttpPost]
-        public bool update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID, string AUDITOR_COMMENT)
+        public string update_observation_text(int OBS_ID, string OBS_TEXT)
         {
+            string response = "";
+            response=dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
+        public string update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID, string AUDITOR_COMMENT)
+        {
+            string response = "";
 
             if (NEW_STATUS_ID == 4)
                 if (RISK_ID != 3)
-                    return false;
+                    return "{\"Status\":false,\"Message\":\"Only Low Risk para can be settled by Team Lead\"}";
 
-            if (dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID,AUDITOR_COMMENT))
-                return true;
-            else
-                return false;
+            response= dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID, AUDITOR_COMMENT);
+
+            return "{\"Status\":true,\"Message\":\""+response+"\"}";
+
         }
         [HttpPost]
-        public bool drop_observation(int OBS_ID)
+        public string drop_observation(int OBS_ID)
         {
-            return dBConnection.DropAuditObservation(OBS_ID);
-               
+            string response = "";
+            response = dBConnection.DropAuditObservation(OBS_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+
         }
         [HttpPost]
-        public bool submit_observation_to_auditee(int OBS_ID)
+        public string submit_observation_to_auditee(int OBS_ID)
         {
-            return dBConnection.SubmitAuditObservationToAuditee(OBS_ID);
+            string response = "";
+            response = dBConnection.SubmitAuditObservationToAuditee(OBS_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+
         }
         [HttpPost]
         public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID=0)
         {
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
         }
+        [HttpPost]
+        public List<SubCheckListStatus> get_subchecklist_status(int ENG_ID = 0, int S_ID = 0)
+        {
+            return dBConnection.GetSubChecklistStatus(ENG_ID, S_ID);
+        }
+
+
         [HttpPost]
         public List<ManageObservations> get_observation_branches(int ENG_ID=0, int OBS_ID = 0)
         {
@@ -442,23 +462,51 @@ namespace AIS.Controllers
         public bool divisional_head_remarks_on_functional_legacy_para(int CONCERNED_DEPT_ID = 0, string COMMENTS="", int REF_PARA_ID=0)
         {
             return dBConnection.AddDivisionalHeadRemarksOnFunctionalLegacyPara(CONCERNED_DEPT_ID, COMMENTS, REF_PARA_ID);
-        }
+        }        
+		[HttpPost]
+	  public bool menu_pages_updation(int MENU_ID = 0, int[] PAGE_IDS=null)
+	  {
+	  	if (PAGE_IDS != null)
+	  	{
+	  		foreach (var PAGE_ID in PAGE_IDS)
+	  		{
+	  			dBConnection.UpdateMenuPagesAssignment(MENU_ID, PAGE_ID);
+			}
+			return true;
+		}
+		else
+			return false;
+		
+	 }
+
+
 
         [HttpPost]
-        public bool menu_pages_updation(int MENU_ID = 0, int[] PAGE_IDS=null)
+        public bool addinpectioncriteria(string fquat= "", string squat = "", string tquat = "", string frquat = "")
         {
-            if (PAGE_IDS != null)
-            {
-                foreach (var PAGE_ID in PAGE_IDS)
-                {
-                    dBConnection.UpdateMenuPagesAssignment(MENU_ID, PAGE_ID);
-                }
-                return true;
-            }
-            else
-                return false;
-            
+            return true;// dBConnection.AddInspectionCriteria(fquat, squat, tquat, frquat);
         }
+
+
+
+        [HttpPost]
+
+        public bool add_inspection_team(int teamid = 0, string tname = "", int pop = 0)
+        {
+            return true;// dBConnection.AddInspectionTeam(teamid, tname, pop);
+        }
+
+
+        
+
+ [HttpPost]
+
+        public bool Join_inspection_team(int e_id = 0, int t_m_ppno = 0, int e_b = 0)
+        {
+            return true;// dBConnection.InspectionTeamJoining(e_id, t_m_ppno, e_b);
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

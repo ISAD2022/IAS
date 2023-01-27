@@ -12,6 +12,7 @@ namespace AIS.Models
         public string CODE { get; set; }
         public string ENTITY_NAME { get; set; }
         public int? ENTITY_ID { get; set; }
+        public int? ENTITY_TYPE_ID { get; set; }
         public string BR_NAME { get; set; }
         public string RISK { get; set; }
         public string BR_SIZE { get; set; }

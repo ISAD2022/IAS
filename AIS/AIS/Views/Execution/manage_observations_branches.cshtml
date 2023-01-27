@@ -15,6 +15,14 @@
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
+
+        
+        $('#updateMemoContent').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
     });
     function reloadLocation() {
         location.reload();
@@ -72,6 +80,25 @@
         });
 
     }
+    function ObservationUpdatePanel(obs_id) {
+        g_obsId = obs_id;
+        $.ajax({
+            url: "/ApiCalls/get_observation_branches",
+            type: "POST",
+            data: {
+                'OBS_ID': obs_id
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $('#updateMemoModel').modal('show');
+                $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');                
+            },
+            dataType: "json",
+        });
+
+    }
+    
     function finalCommentsButtonSave() {
         if ($('#commentAreaInCommentsBox').val() == "") {
             alert("Auditor Comments are Mandatory");
@@ -88,8 +115,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data) {
-                    alert("Successfully done");
+                if (data.Status==true) {
+                    alert(data.Message);
                     onAlertCallback(reloadLocation);
                 } else {
                     alert("Failed!! please try again");
@@ -119,8 +146,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data) {
-                    alert("Successfully done");
+                if (data.status==true) {
+                    alert(data.Message);
                     onAlertCallback(reloadLocation);
                 } else {
                     alert("Failed!! please try again");
@@ -144,8 +171,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data) {
-                    alert("Successfully done");
+                if (data.Status==true) {
+                    alert(data.Message);
                     onAlertCallback(reloadLocation);
                 } else {
                     alert("Failed!! please try again");
@@ -154,6 +181,30 @@
             },
             dataType: "json",
         });
+    }
+
+    function finalUpdateMemoContent(obs_id){
+        g_obsId = obs_id;      
+        $.ajax({
+            url: "/ApiCalls/update_observation_text",
+            type: "POST",
+            data: {
+                'OBS_ID': g_obsId,
+                'OBS_TEXT': $('.richText-editor').html()
+            },
+            cache: false,
+            success: function (data) {
+                if (data.Status == true) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                } else {
+                    alert("Failed!! please try again");
+                    onAlertCallback(reloadLocation);
+                }
+            },
+            dataType: "json",
+        });
+
     }
 
     function getEntityObservation() {
@@ -169,7 +220,10 @@
                 success: function (data) {
                     $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
+                        if (v.obS_STATUS_ID==1)
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
+                        else
+                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td>--</td></tr>');
                     });
 
                 },
@@ -218,17 +272,18 @@
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-1">Memo No.</th>
-                    <th class="col-md-1">Process</th>
-                    <th class="col-md-2">Sub Process</th>
-                    <th class="col-md-2">Checklist Detail</th>
-                    <th class="col-md-1 d-none">Observation</th>
-                    <th class="col-md-2 d-none">Auditee Response</th>
-                    <th class="col-md-2">Risk Category</th>
-                    <th class="col-md-1">Status</th>
+                    <th class="col-md-auto">Memo No.</th>
+                    <th class="col-md-auto">Process</th>
+                    <th class="col-md-auto">Sub Process</th>
+                    <th class="col-md-auto">Checklist Detail</th>
+                    <th class="col-md-auto d-none">Observation</th>
+                    <th class="col-md-auto d-none">Auditee Response</th>
+                    <th class="col-md-auto">Risk Category</th>
+                    <th class="col-md-auto">Status</th>
                     <th class="d-none"></th>
                     <th class="d-none"></th>
-                    <th class="col-md-1 text-center">Action</th>
+                    <th class="col-md-auto text-center"></th>
+                    <th class="col-md-auto text-center"></th>
                 </tr>
             </thead>
             <tbody>
@@ -247,9 +302,8 @@
                                     <td class="d-none period_name_field">@item.PERIOD</td>
                                     <td>@item.OBS_RISK</td>
                                     <td>@item.OBS_STATUS</td>
-
                                     <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                   
+                                    <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>                                   
                                 </tr>
                         }
                     }
@@ -324,6 +378,37 @@
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
                 <button id="settleButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 1, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Settle Observation</button>
                 <button id="addDraftButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Add to Draft</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="updateMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
+                        <textarea id="updateMemoContent" rows="5" class="form-control">
+
+                        </textarea>
+                        </div>
+                   
+
+                </form>
+            </div>
+            <div class="modal-footer">
+               
+                <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Update Memo Text</button>
+                
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

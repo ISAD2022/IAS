@@ -22,27 +22,27 @@ namespace AIS
     {
         private readonly EmailCredentails emailCredentails = new EmailCredentails();
      
-        public bool ConfigEmail()
+        public bool ConfigEmail(string to="", string cc="", string subj="", string body="")
         {
             try
             {
-                return true;
+                //return true;
                 //------WORKING CODE COMMENTED DO NOT DELETE ------
 
-               /* EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
+                EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient(em.Host);
                 mail.From = new MailAddress(em.EMAIL);
-                mail.To.Add("khattak.aqib@ztbl.com.pk");
-                mail.CC.Add("svp.isad@ztbl.com.pk");
-                mail.Subject = "Criteria Approval Notification";
-                mail.Body = "<div><b><u><span style=\"font - size:14.0pt\">Notification from Audit & amp; Inspection System<o:p ></ o:p ></ span ></ u ></ b ></ div >< div >< b >< u > (DON’T REPLY THIS EMAIL)</ u ></ b ></ div > Criteria has been approved by CIA";
+                mail.To.Add(to);
+                mail.CC.Add(cc);
+                mail.Subject = subj;
+                mail.Body = body;
                 SmtpServer.Host = em.Host;
                 SmtpServer.Port = em.Port;
                 SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);
                 SmtpServer.EnableSsl = true;
                 SmtpServer.Send(mail);
-                return true;*/
+                return true;
             }
             catch (Exception) { return false; }
         }

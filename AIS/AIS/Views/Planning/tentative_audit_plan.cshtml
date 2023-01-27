@@ -21,8 +21,8 @@
 </style>
 
 <script type="text/javascript">
-    function createAuditEngagement(planId, name, size, risk, freq, days, auditperiod, periodId, code, zoneId, entity_id) {
-        window.location.href = '/planning/tentative_engagement_plan?planId=' + planId + '&name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=6' + '&zoneId=' + zoneId + '&entityId=' + entity_id;
+    function createAuditEngagement(planId, name, size, risk, freq, days, auditperiod, periodId, code, zoneId, entity_id, ent_type_id) {
+        window.location.href = '/planning/tentative_engagement_plan?planId=' + planId + '&name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=' +ent_type_id+ '&zoneId=' + zoneId + '&entityId=' + entity_id;
     }
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
@@ -76,7 +76,7 @@
                                     <td align="center">@item.RISK</td>
                                     <td align="center">@item.FREQUENCY_DESCRIPTION</td>
                                     <td align="center">@item.NO_OF_DAYS</td>
-                                    <td align="center"><small onclick="createAuditEngagement(@item.PLAN_ID,'@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDITEDBY','@item.ENTITY_ID');" class="text-center text-danger text-hover">Create</small></td>
+                                <td align="center"><small onclick="createAuditEngagement(@item.PLAN_ID,'@item.ENTITY_NAME','@item.BR_SIZE','@item.RISK','@item.FREQUENCY_DESCRIPTION','@item.NO_OF_DAYS', '@item.PERIOD_NAME','@item.AUDIT_PERIOD_ID','@item.CODE','@item.AUDITEDBY','@item.ENTITY_ID', '@item.ENTITY_TYPE_ID');" class="text-center text-danger text-hover">Create</small></td>
                                 </tr>
                             sr = sr + 1;
                         }
