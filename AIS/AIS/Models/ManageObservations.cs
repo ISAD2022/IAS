@@ -23,5 +23,6 @@ namespace AIS.Models
         public int OBS_STATUS_ID { get; set; }
         public string OBS_STATUS { get; set; }
         public string PERIOD { get; set; }
+        public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
     }
 }

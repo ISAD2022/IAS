@@ -49,18 +49,28 @@
                 $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
                 $('#viewMemo_violation').html(data[0].checklist_Details);
 
+                if (data[0].RESPONSIBLE_PPs.length > 0) {
+                    $.each(data[0].RESPONSIBLE_PPs, function (j, pp) {
+                        var srNo = $('#listofRespPersons tbody tr').length;
+                        srNo++;
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.PP_NO + '"><td>' + srNo + '</td><td>' + pp.PP_NO + '</td><td>' + pp.EMP_NAME + '</td><td>' + pp.LOAN_CASE + '</td><td>' + pp.LC_AMOUNT + '</td><td>' + pp.ACCOUNT_NUMBER + '</td><td>' + pp.ACC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    });
+                }
+
                 if (g_currentStatus == 1) {
                     $('#dropButton_memoReply').removeClass('d-none');
                     $('#submitAuditeeButton_memoReply').removeClass('d-none');
                     $('#settleButton_memoReply').addClass('d-none');
                     $('#addDraftButton_memoReply').addClass('d-none');
-                } else if (g_currentStatus == 3) {
+                }
+                else if (g_currentStatus == 3) {
                     if (g_riskId == 3) {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
                         $('#settleButton_memoReply').removeClass('d-none');
                         $('#addDraftButton_memoReply').removeClass('d-none');
-                    } else {
+                    }
+                    else {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
                         $('#settleButton_memoReply').removeClass('d-none');
@@ -362,6 +372,27 @@
                     <div class="form-group">
                         <label for="viewMemo_violation" class="font-weight-bold">Checklist Details</label>
                         <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
+                        <div class="row col-sm-12">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openResponsiblePPs();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo" class="font-weight-bold">Memo</label>

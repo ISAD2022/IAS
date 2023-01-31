@@ -3221,14 +3221,18 @@ namespace AIS
                 {
                     if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId>0)
                     {
-                        foreach (int pp in ob.RESPONSIBLE_PPNO)
+                        foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
                         {
                             cmd.CommandText = "pkg_ais.P_responibilityassigned";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
                             cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                            cmd.Parameters.Add("PP", OracleDbType.Int32).Value = pp;
+                            cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
+                            cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
+                            cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
+                            cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
                             cmd.ExecuteReader();
                         }
                     }
@@ -3291,6 +3295,7 @@ namespace AIS
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
+                    chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
                     list.Add(chk);
                 }
             }
@@ -3382,6 +3387,35 @@ namespace AIS
                     object result = new object();
                     result = rdr2["REPLY"];
                     list.Add(result);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
+        {
+            var con = this.DatabaseConnection();
+            List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetObservationResponsible";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
+                    usr.EMP_NAME = rdr["EMP_NAME"].ToString();
+                    usr.PP_NO = rdr["PP_NO"].ToString();
+                    usr.LOAN_CASE = rdr["LOANCASE"].ToString();
+                    usr.LC_AMOUNT = rdr["LCAMOUNT"].ToString();
+                    usr.ACCOUNT_NUMBER = rdr["ACCNUMBER"].ToString();
+                    usr.ACC_AMOUNT = rdr["ACAMOUNT"].ToString();
+                    list.Add(usr);
+
                 }
             }
             con.Close();
@@ -3612,6 +3646,7 @@ namespace AIS
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
                 }
             }
@@ -3653,6 +3688,7 @@ namespace AIS
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
                 }
             }
@@ -3706,6 +3742,7 @@ namespace AIS
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
                 }
@@ -3755,6 +3792,7 @@ namespace AIS
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
                 }
@@ -3835,6 +3873,7 @@ namespace AIS
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     chk.PERIOD = rdr["PERIOD"].ToString();
                     list.Add(chk);
                 }
@@ -3856,7 +3895,7 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3884,7 +3923,7 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -3923,7 +3962,7 @@ namespace AIS
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("NEW_STATUS_ID", OracleDbType.Int32).Value = NEW_STATUS_ID;
                 cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Remarks;
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();

@@ -28,9 +28,7 @@ using AIS.Models;
 #nullable disable
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"35617e477f1c148bfbeb81510fe289f4326e47a5", @"/Views/Engagement/audit_criteria_old.cshtml")]
     [global::Microsoft.AspNetCore.Razor.Hosting.RazorSourceChecksumAttribute(@"SHA1", @"a83575d9a718d128afbe97793893afb3e648698d", @"/Views/_ViewImports.cshtml")]
-    #nullable restore
     public class Views_Engagement_audit_criteria_old : global::Microsoft.AspNetCore.Mvc.Razor.RazorPage<dynamic>
-    #nullable disable
     {
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_0 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("value", "0", global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
         private static readonly global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute __tagHelperAttribute_1 = new global::Microsoft.AspNetCore.Razor.TagHelpers.TagHelperAttribute("id", new global::Microsoft.AspNetCore.Html.HtmlString("0"), global::Microsoft.AspNetCore.Razor.TagHelpers.HtmlAttributeValueStyle.DoubleQuotes);
@@ -310,7 +308,7 @@ using AIS.Models;
         <h5>Select Department</h5>
         <select id=""deptSelectionBox"" onchange=""ShowDepartmentAuditPeriods();"" class=""form-select form-control"">
             ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a514752", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a514706", async() => {
                 WriteLiteral("Select Your Department");
             }
             );
@@ -341,7 +339,7 @@ using AIS.Models;
 #line hidden
 #nullable disable
             WriteLiteral("                        ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a516655", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a516609", async() => {
 #nullable restore
 #line 242 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\audit_criteria_old.cshtml"
                                                               Write(item.NAME);
@@ -401,7 +399,7 @@ AddHtmlAttributeValue("", 10479, item.CODE, 10479, 10, false);
                     <h5>Select Audit Zone</h5>
                     <select id=""auditZoneSelectionBox"" onchange=""ShowSelectedZonesBranches();"" class=""form-select form-control"" aria-label=""Default select example"">
                         ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a519737", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a519691", async() => {
                 WriteLiteral("--Select Audit Zone--");
             }
             );
@@ -433,7 +431,7 @@ AddHtmlAttributeValue("", 10479, item.CODE, 10479, 10, false);
 #line hidden
 #nullable disable
             WriteLiteral("                                    ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a521790", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a521744", async() => {
 #nullable restore
 #line 262 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\audit_criteria_old.cshtml"
                                                                                   Write(item.ZONENAME);
@@ -496,7 +494,7 @@ AddHtmlAttributeValue("", 11503, item.ZONECODE, 11503, 14, false);
                     <h5>Select Audit Division</h5>
                     <select id=""divSelectionBox"" onchange=""ShowSelectedDivisionDepartments();"" class=""form-select form-control"" aria-label=""Default select example"">
                         ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a525130", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a525084", async() => {
                 WriteLiteral("--Select Audit Division--");
             }
             );
@@ -528,7 +526,7 @@ AddHtmlAttributeValue("", 11503, item.ZONECODE, 11503, 14, false);
 #line hidden
 #nullable disable
             WriteLiteral("                                    ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a527185", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a527139", async() => {
 #nullable restore
 #line 285 "D:\Audit Inspection Sol\ais\AIS\AIS\Views\Engagement\audit_criteria_old.cshtml"
                                                                           Write(item.NAME);
@@ -701,7 +699,7 @@ AddHtmlAttributeValue("", 12743, item.CODE, 12743, 10, false);
             </div>
             <div class=""modal-body"">
                 ");
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a534987", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "35617e477f1c148bfbeb81510fe289f4326e47a534941", async() => {
                 WriteLiteral(@"
                     <div class=""form-group"">
                         <center class=""col-md-12""><h3 id=""auditorDept""></h3></center>
@@ -838,26 +836,16 @@ AddHtmlAttributeValue("", 12743, item.CODE, 12743, 10, false);
 ");
         }
         #pragma warning restore 1998
-        #nullable restore
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; } = default!;
-        #nullable disable
-        #nullable restore
+        public global::Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider ModelExpressionProvider { get; private set; }
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; } = default!;
-        #nullable disable
-        #nullable restore
+        public global::Microsoft.AspNetCore.Mvc.IUrlHelper Url { get; private set; }
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; } = default!;
-        #nullable disable
-        #nullable restore
+        public global::Microsoft.AspNetCore.Mvc.IViewComponentHelper Component { get; private set; }
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; } = default!;
-        #nullable disable
-        #nullable restore
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper Json { get; private set; }
         [global::Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
-        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; } = default!;
-        #nullable disable
+        public global::Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html { get; private set; }
     }
 }
 #pragma warning restore 1591

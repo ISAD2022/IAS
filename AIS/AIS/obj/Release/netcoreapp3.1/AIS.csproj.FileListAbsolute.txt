@@ -387,11 +387,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.MvcApplication
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.RazorAssemblyInfo.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.RazorAssemblyInfo.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Manifest.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Pack.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.AIS.Microsoft.AspNetCore.StaticWebAssets.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.build.AIS.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.AIS.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.AIS.props
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.TagHelpers.input.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.TagHelpers.output.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.RazorCoreGenerate.cache

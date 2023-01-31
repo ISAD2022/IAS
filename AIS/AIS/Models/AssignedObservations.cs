@@ -29,5 +29,6 @@ namespace AIS.Models
         public string MEMO_DATE { get; set; }
         public string MEMO_NUMBER { get; set; }
         public string MEMO_REPLY_DATE{ get; set; }
+        public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNOs { get; set; }
     }
 }
