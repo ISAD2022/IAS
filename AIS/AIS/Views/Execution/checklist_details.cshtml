@@ -8,14 +8,14 @@
     var g_observationId = 0;
     var g_engId = 0;
     var S_ID = 0;
-    var g_respUsersArr=[];
+    var g_respUsersArr = [];
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
         var checklistsub_id = url.searchParams.get("id");
         S_ID = checklistsub_id;
         g_engId = url.searchParams.get("engId");
-        getSubCheckListStatus();
+        
         $.ajax({
             url: "/ApiCalls/checklist_details",
             type: "POST",
@@ -28,9 +28,10 @@
                 $('#checklistDetailsPanel tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select id="checklistaction_'+v.id+'" class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="-1" id="-1" selected>--Please Select--</option><option value="0" id="0">No</option><option value="1" id="1">Yes</option></select></td><td class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
+                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select id="checklistaction_' + v.id + '" class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="-1" id="-1" selected>--Please Select--</option><option value="0" id="0">No</option><option value="1" id="1">Yes</option></select></td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
                     sr++;
                 });
+                getSubCheckListStatus();
 
             },
             dataType: "json",
@@ -44,7 +45,7 @@
     });
     function showObservationArea(value, id) {
         g_observationId = id;
-        if (value ==1) {
+        if (value == 1) {
             $('#viewMemoModel').modal('show');
             $('.richText-editor').html('');
             $('#viewMemo_replydays').val(1);
@@ -53,7 +54,6 @@
             $('#viewMemo_attachments').val('');
         }
     }
-
     function saveChecklistObservations() {
         $.ajax({
             url: "/ApiCalls/save_observations",
@@ -72,7 +72,6 @@
         });
 
     }
-
     function saveMemoContent() {
         var resP = [];
         $.each($('#listofRespPersons tbody tr'), function (i, v) {
@@ -92,7 +91,7 @@
             'LOANCASE': $('#viewMemo_loancase').val(),
             'ATTACHMENTS': $('#viewMemo_attachments').val(),
             'RESPONSIBLE_PPNO': resP,
-            'RESP_TABLE_ROWS':g_respUsersArr
+            'RESP_TABLE_ROWS': g_respUsersArr
         };
         var isFound = false;
         $.each(g_memoObj, function (i, v) {
@@ -161,14 +160,14 @@
             url: "/ApiCalls/get_matched_pp_numbers",
             type: "POST",
             data: {
-                'PPNO': $('#responsiblePPNoEntryField').val()               
+                'PPNO': $('#responsiblePPNoEntryField').val()
             },
             cache: false,
             success: function (data) {
                 g_respUser.push(data);
                 if (data.id > 0) {
                     $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
-                }                    
+                }
                 else
                     $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
             },
@@ -193,14 +192,13 @@
                     g_respUsersArr.push(g_respUser[0]);
                 } else { alert("Responsibility already added"); return false; }
             }
-            else
-            {
+            else {
                 alert("Please Check checkbox to proceed"); return false;
-            }            
-        }       
+            }
+        }
 
     }
-    function getSubCheckListStatus(){
+    function getSubCheckListStatus() {
         $.ajax({
             url: "/ApiCalls/get_subchecklist_status",
             type: "POST",
@@ -210,21 +208,54 @@
             },
             cache: false,
             success: function (data) {
-                $.each(data,function(i,v){
-                    if(v.status=='Y')
-                    {
-                        $('#checklistaction_'+v.cD_ID).val(1);
-                         $('#checklistaction_'+v.cD_ID).attr('disabled',true);
+                $.each(data, function (i, v) {
+                    if (v.status == 'Y') {
+                        $('#checklistaction_' + v.cD_ID).val(1);
+                        $('#checklistaction_' + v.cD_ID).attr('disabled', true);
                     }
-                    else 
-                    {
-                        $('#checklistaction_'+v.cD_ID).val(0);
-                        $('#checklistaction_'+v.cD_ID).attr('disabled',false);
+                    else if (v.status == 'N') {
+                        $('#checklistaction_' + v.cD_ID).val(0);
+                        $('#checklistaction_' + v.cD_ID).attr('disabled', false);
                     }
-                });           
+                    else {
+                        $('#checklistaction_' + v.cD_ID).val(-1);
+                        $('#checklistaction_' + v.cD_ID).attr('disabled', false);
+                    }
+                });
             },
             dataType: "json",
         });
+    }
+
+    function ObservationViewerPanel(obs_id) {
+        $.ajax({
+            url: "/ApiCalls/get_observation_branches",
+            type: "POST",
+            data: {
+                'OBS_ID': obs_id
+            },
+            cache: false,
+            success: function (data) {
+
+                $('#viewMemoModel').modal('show');
+                $('#viewMemo_memo').html(data[0].obS_TEXT);
+                $('#viewMemo_response').html(data[0].obS_REPLY);
+
+                $('#viewMemo_process').html(data[0].process);
+                $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
+                $('#viewMemo_violation').html(data[0].checklist_Details);
+                $('#listofRespPersons tbody').empty();
+                if (data[0].responsiblE_PPs.length > 0) {
+                    $.each(data[0].responsiblE_PPs, function (j, pp) {
+                        var srNo = $('#listofRespPersons tbody tr').length;
+                        srNo++;
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    });
+                }               
+            },
+            dataType: "json",
+        });
+
     }
 </script>
 <div class="row mt-3">
@@ -242,7 +273,7 @@
                 <th class="col-md-3 font-weight-bold">Voilation</th>
                 <th class="col-md-3 font-weight-bold">Heading/Sublist Detail</th>
                 <th class="col-md-2 font-weight-bold text-center">Yes/No</th>
-                <th class="col-md-2 font-weight-bold"></th>
+                <th class="col-md-2 font-weight-bold"></th>                
             </tr>
         </thead>
         <tbody>
@@ -287,7 +318,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
                                 </tbody>
                             </table>
                         </div>
@@ -340,8 +370,8 @@
                             <div class="col-sm-2 w-100">
                                 <button onclick="getMatchedPP();" type="button" class="btn btn-danger">Find</button>
                             </div>
-                        </div> 
-                    </div>  
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div id="matchedPPNoPanels" style="padding:20px;">
 
@@ -350,11 +380,74 @@
 
                 </form>
             </div>
-            <div class="modal-footer">                
+            <div class="modal-footer">
                 <button onclick="addResponsibilityToMainTable();" type="button" class="btn btn-danger">Add Responsibility</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_process" class="font-weight-bold">Process</label>
+                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_subprocess" class="font-weight-bold">Sub Process</label>
+                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_violation" class="font-weight-bold">Checklist Details</label>
+                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
+                        <div class="col-md-12 pl-0 pr-0">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto text-center font-weight-bold"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
+                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_response" class="font-weight-bold">Auditee Response</label>
+                        <div id="viewMemo_response" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 

@@ -48,12 +48,12 @@
                 $('#viewMemo_process').html(data[0].process);
                 $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
                 $('#viewMemo_violation').html(data[0].checklist_Details);
-
-                if (data[0].RESPONSIBLE_PPs.length > 0) {
-                    $.each(data[0].RESPONSIBLE_PPs, function (j, pp) {
+                $('#listofRespPersons tbody').empty();
+                if (data[0].responsiblE_PPs.length > 0) {
+                    $.each(data[0].responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
-                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.PP_NO + '"><td>' + srNo + '</td><td>' + pp.PP_NO + '</td><td>' + pp.EMP_NAME + '</td><td>' + pp.LOAN_CASE + '</td><td>' + pp.LC_AMOUNT + '</td><td>' + pp.ACCOUNT_NUMBER + '</td><td>' + pp.ACC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
                     });
                 }
 
@@ -375,7 +375,7 @@
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
-                        <div class="row col-sm-12">
+                        <div class="col-md-12 pl-0 pr-0">
                             <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
                                 <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                     <tr>
@@ -386,7 +386,7 @@
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
                                         <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openResponsiblePPs();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                                        <th class="col-md- auto text-center font-weight-bold"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -438,7 +438,7 @@
             </div>
             <div class="modal-footer">
                
-                <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Update Memo Text</button>
+                <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger">Update Memo Text</button>
                 
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>

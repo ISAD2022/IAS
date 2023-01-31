@@ -43,20 +43,13 @@
         for (var i = 0; i < numAdd; i++) {
             var dataTemp = dataAvui;
             dataTemp.setDate(dataTemp.getDate() + 1)
-            if(g_entityType == 6 || g_entityType==25){
-                if (dataTemp.getDay() == 7) {
-                    dataTemp.setDate(dataTemp.getDate() + 1)
-                } else if (dataTemp.getDay() == 0) {
-                    dataTemp.setDate(dataTemp.getDate() + 1)
-                }
-            }else{
-                if (dataTemp.getDay() == 6) {
-                    dataTemp.setDate(dataTemp.getDate() + 2)
-                } else if (dataTemp.getDay() == 0) {
-                    dataTemp.setDate(dataTemp.getDate() + 1)
-                }
+           
+            if (dataTemp.getDay() == 6) {
+                dataTemp.setDate(dataTemp.getDate() + 2)
             }
-
+            else if (dataTemp.getDay() == 0) {
+                dataTemp.setDate(dataTemp.getDate() + 1)
+            }
             dataAvui = dataTemp;
 
         }

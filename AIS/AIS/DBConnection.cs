@@ -705,8 +705,6 @@ namespace AIS
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
                     {
                         isAlreadyAdded = false;
-
-                       
                     }
                    
                 }
@@ -939,6 +937,10 @@ namespace AIS
         }
         public List<AuditCriteriaModel> GetPostChangesAuditCriterias()
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -947,6 +949,7 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetPostChangesAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -1002,7 +1005,7 @@ namespace AIS
                 while (rdr.Read())
                 {
                     resMsg=rdr["REMARKS"].ToString();
-                                  }
+                }
 
             }
             con.Close();
@@ -3402,7 +3405,7 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetObservationResponsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3826,6 +3829,8 @@ namespace AIS
                         chk.CD_ID = Convert.ToInt32(rdr["CHECKLIST_ID"].ToString());
                     if (rdr["STATUS"].ToString() != null && rdr["STATUS"].ToString() != "")
                         chk.Status = rdr["STATUS"].ToString();
+                    if (rdr["OBSID"].ToString() != null && rdr["OBSID"].ToString() != "")
+                        chk.OBS_ID = Convert.ToInt32(rdr["OBSID"].ToString());
                     list.Add(chk);
                 }
             }
@@ -4018,20 +4023,13 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("OBTEXT", OracleDbType.Varchar2).Value = OBS_TEXT;
-                //cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                cmd.ExecuteReader();
-                /*
+                cmd.Parameters.Add("OBTEXT", OracleDbType.Clob).Value = OBS_TEXT;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     resp = rdr["REMARKS"].ToString();
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
-                        
-                    }
-                }*/
-
+                }
             }
             con.Close();
             return resp;
@@ -4180,7 +4178,7 @@ namespace AIS
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.ExecuteReader();
 
-                cmd.CommandText = "pkg_ais_email.P_ADDAUDITCRITERIA";
+                /*cmd.CommandText = "pkg_ais_email.P_ADDAUDITCRITERIA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -4210,7 +4208,7 @@ namespace AIS
                     }
                     EmailConfiguration email = new EmailConfiguration();
                     email.ConfigEmail(email_to, email_cc, email_subject, email_body);
-                }
+                }*/
 
             }
             con.Close();
