@@ -69,6 +69,10 @@
                                             {
                                                 <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
+                                            else if (item.ENTITY_TYPE == 25)
+                                            {
+                                                <a href="/Execution/cau_observation?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
                                             else
                                             {
                                                 <a href="/Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>

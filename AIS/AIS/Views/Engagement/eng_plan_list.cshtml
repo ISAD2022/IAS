@@ -57,10 +57,12 @@
 </div>
 <div class="row col-md-12 mt-3">
     <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead>
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th>Entity Name</th>
                 <th>Team Name</th>
+                <th>Operation Start Date</th>
+                <th>Operation End Date</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Action</th>
@@ -76,9 +78,15 @@
                         sDate = sDate.Split(" ")[0];
                         string eDate = @item.AUDIT_ENDDATE.ToString();
                         eDate = eDate.Split(" ")[0];
+                        string osDate = @item.OP_STARTDATE.ToString();
+                        osDate = osDate.Split(" ")[0];
+                        string oeDate = @item.OP_ENDDATE.ToString();
+                        oeDate = oeDate.Split(" ")[0];
                         <tr id="@item.ENG_ID">
                             <td class="col-md-auto">@item.ENTITY_NAME</td>
                             <td class="col-md-auto">@item.TEAM_NAME</td>
+                            <td class="col-md-auto">@osDate</td>
+                            <td class="col-md-auto">@oeDate</td>
                             <td class="col-md-auto">@sDate</td>
                             <td class="col-md-auto">@eDate</td>
                             <td class="col-md-auto"><a onclick="referredBackEngagementPlan(@item.ENG_ID);" href="#" class="text-danger text-hover">Reject</a><a onclick="approveEngagementPlan(@item.ENG_ID);" href="#" class="text-success text-hover ml-5">Approve</a></td>

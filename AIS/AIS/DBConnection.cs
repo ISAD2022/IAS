@@ -1982,6 +1982,8 @@ namespace AIS
                     eng.ENTITY_NAME = ardr["name"].ToString();
                     eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString());
                     eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
+                    eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString());
+                    eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString());
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
                 }
@@ -2013,8 +2015,11 @@ namespace AIS
                     eng.TEAM_NAME = ardr["team_name"].ToString();
                     eng.TEAM_ID = Convert.ToInt32(ardr["team_id"].ToString());
                     eng.ENTITY_NAME = ardr["name"].ToString();
+                    eng.COMMENTS = this.GetLatestCommentsOnEngagement(Convert.ToInt32(eng.ENG_ID)).ToString();
                     eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString());
                     eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
+                    eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString());
+                    eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString());
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
                 }
@@ -2048,6 +2053,8 @@ namespace AIS
                 cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
                 cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = ePlan.TEAM_NAME;
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
+                cmd.Parameters.Add("OP_STARTDATE", OracleDbType.Date).Value = ePlan.OP_STARTDATE;
+                cmd.Parameters.Add("OP_ENDDATE", OracleDbType.Date).Value = ePlan.OP_ENDDATE;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -2098,7 +2105,7 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
+        public bool RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2117,6 +2124,8 @@ namespace AIS
                 cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = TEAM_ID;
                 cmd.Parameters.Add("UPDATEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = PLAN_ID;
+                cmd.Parameters.Add("OP_STARTDATE", OracleDbType.Date).Value = OP_START_DATE;
+                cmd.Parameters.Add("OP_ENDDATE", OracleDbType.Date).Value = OP_END_DATE;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.ExecuteReader();
             }
@@ -3588,6 +3597,28 @@ namespace AIS
             con.Close();
             return response;
         }
+
+        public string GetLatestCommentsOnEngagement(int engId = 0)
+        {
+            var con = this.DatabaseConnection();
+            string response = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetLatestCommentsOnEngagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = engId;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    response = rdr["remarks"].ToString();
+                }
+            }
+            con.Close();
+            return response;
+        }
         public string GetLatestAuditeeResponse(int obs_id = 0)
         {
             var con = this.DatabaseConnection();
@@ -4160,10 +4191,8 @@ namespace AIS
         }
         public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
         {
-            string email_to = "";
-            string email_body = "";
-            string email_cc = "";
-            string email_subject = "";
+           
+
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;

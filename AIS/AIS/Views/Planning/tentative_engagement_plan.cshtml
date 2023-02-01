@@ -29,6 +29,16 @@
         g_entityType = url.searchParams.get("entityType");
         g_zoneId = url.searchParams.get("zoneId");
         g_entityId = url.searchParams.get("entityId");
+
+        if(g_entityType==25 || g_entityType==6){
+            $('#travellingDayWrapper').removeClass('d-none');
+            $('#revenueCollWrapper').removeClass('d-none');
+            $('#discussionDayWrapper').removeClass('d-none');
+        }else{
+            $('#travellingDayWrapper').addClass('d-none');
+            $('#revenueCollWrapper').addClass('d-none');
+            $('#discussionDayWrapper').addClass('d-none');
+        }
         
         $('#auditperiod_label').text(periodName);
         $('#auditentity_label').text(entityName);
@@ -39,20 +49,37 @@
     });
     function getAutoEndDate() {
         var numAdd = $('#days_label').text();
+
+        console.log('number added',numAdd);
+
+        
+
         var dataAvui = new Date($('#startplan_date').val());
-        for (var i = 0; i < numAdd; i++) {
+        for (var i = 1; i < numAdd; i++) {
             var dataTemp = dataAvui;
             dataTemp.setDate(dataTemp.getDate() + 1)
            
+            if (g_entityType == 25) {
+                
+            }else{
+
             if (dataTemp.getDay() == 6) {
                 dataTemp.setDate(dataTemp.getDate() + 2)
             }
             else if (dataTemp.getDay() == 0) {
                 dataTemp.setDate(dataTemp.getDate() + 1)
             }
+            }
+            
             dataAvui = dataTemp;
-
         }
+
+
+        if (g_entityType == 25 || g_entityType == 6) {
+        var addDays = parseInt($('#discussionDaysSelectField').val()) +parseInt($('#revenueDaysSelectField').val()) + parseInt($('#travellingDaysSelectField').val()); 
+        dataAvui.setDate(dataAvui.getDate() + addDays)
+        }
+
         var month = (dataAvui.getMonth() + 1);
         var day = dataAvui.getDate();
         if (month < 10)
@@ -149,6 +176,27 @@
             return;
         }
 
+
+         if ($('#startop_date').val() == '') {
+            alert('Select Operational Start Date');
+            return;
+        }
+
+        if ($('#endop_date').val() == '') {
+            alert('Select Operational End Date');
+            return;
+        }
+
+        if ($('#startplan_date').val() == '') {
+            alert('Select Audit Start Date');
+            return;
+        }
+        if ($('#endplan_date').val() == '') {
+            alert('Select Audit End Date');
+            return;
+        }
+
+
         var status = 1;
         var desc = $('#descriptionAuditPlanField').val();
 
@@ -166,6 +214,8 @@
                 'AUDITBY_ID': g_zoneId,
                 'AUDIT_STARTDATE': $('#startplan_date').val(),
                 'AUDIT_ENDDATE': $('#endplan_date').val(),
+                'OP_STARTDATE': $('#startop_date').val(),
+                'OP_ENDDATE': $('#endop_date').val(),
                 'TEAM_NAME': $('#auditTeam_box option:selected').text(),
                 'STATUS': 1,
                 'TEAM_ID': $('#auditTeam_box').val(),                
@@ -292,7 +342,60 @@
         <input id="startplan_date"  onchange="getAutoEndDate();" type="date" class="form-control form-select">
     </div>
 </div>
+<div class="row col-md-12 mt-3">
+    <div class="col-md-3">
+        <h5>Travelling/Travelling Day Required</h5>
+    </div>
+    <div class="col-md-9">
+        <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
+    </div>
+</div>
+<div id="travellingDayWrapper" class="row col-md-12 mt-3 d-none">
+    <div class="col-md-3">
+        <h5>Travelling Day</h5>
+    </div>
+    <div class="col-md-9">
+        <select id="travellingDaysSelectField" class="form-control form-select">
+            <option selected="selected" value="0">-- Nil --</option>
+            <option value="1">1 Day</option>
+            <option value="2">2 Days</option>
+            <option value="3">3 Days</option>
+            <option value="4">4 Days</option>
+            <option value="5">5 Days</option>
+        </select>
+    </div>
+</div>
 
+<div id="revenueCollWrapper" class="row col-md-12 mt-3 d-none">
+    <div class="col-md-3">
+        <h5>Revenue Record Review Day</h5>
+    </div>
+    <div class="col-md-9">
+        <select id="revenueDaysSelectField" class="form-control form-select">
+            <option selected="selected" value="0">-- Nil --</option>
+            <option value="1">1 Day</option>
+            <option value="2">2 Days</option>
+            <option value="3">3 Days</option>
+            <option value="4">4 Days</option>
+            <option value="5">5 Days</option>
+        </select>
+    </div>
+</div>
+<div id="discussionDayWrapper" class="row col-md-12 mt-3 d-none">
+    <div class="col-md-3">
+        <h5>Discussion Day</h5>
+    </div>
+    <div class="col-md-9">
+        <select id="discussionDaysSelectField" class="form-control form-select">
+            <option selected="selected" value="0">-- Nil --</option>
+            <option value="1">1 Day</option>
+            <option value="2">2 Days</option>
+            <option value="3">3 Days</option>
+            <option value="4">4 Days</option>
+            <option value="5">5 Days</option>
+        </select>
+    </div>
+</div>
 <div class="row col-md-12 mt-3">
     <div class="col-md-3">
         <h5>End Date</h5>
@@ -314,7 +417,7 @@
         <h5>Operational Period End Date</h5>
     </div>
     <div class="col-md-9">
-        <input disabled="disabled" id="endop_date"  type="date" class="form-control form-select">
+        <input id="endop_date"  type="date" class="form-control form-select">
     </div>
 </div>
 
@@ -356,14 +459,7 @@
     </div>
 </div>
 
-<div class="row col-md-12 mt-3">
-    <div class="col-md-3">
-        <h5>Travelling/Travelling Day Required</h5>
-    </div>
-    <div class="col-md-9">
-        <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
-    </div>
-</div>
+
 <div class="row col-md-12 mt-4">
    <button onclick="publishNewAuditPlanChanges();" class="col-md-2 btn btn-success">Save Changes</button>
   </div>

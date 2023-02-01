@@ -67,10 +67,15 @@
             success: function (data) {
 
                 alert("<p> " + data.success + "  Memo(s) Successfully Saved</p><p>" + data.failed + " Memo(s) Already Saved</p>");
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
 
+    }
+
+    function reloadLocation() {
+        window.location.reload();
     }
     function saveMemoContent() {
         var resP = [];
@@ -212,6 +217,9 @@
                     if (v.status == 'Y') {
                         $('#checklistaction_' + v.cD_ID).val(1);
                         $('#checklistaction_' + v.cD_ID).attr('disabled', true);
+                        $('#actionTd_'+v.cD_ID).empty();
+                        $('#actionTd_' + v.cD_ID).append('<a class="text-center text-danger" onclick = "ObservationViewerPanel(' + v.obS_ID + ')"> View Memo </a>');                       
+
                     }
                     else if (v.status == 'N') {
                         $('#checklistaction_' + v.cD_ID).val(0);
@@ -237,19 +245,19 @@
             cache: false,
             success: function (data) {
 
-                $('#viewMemoModel').modal('show');
-                $('#viewMemo_memo').html(data[0].obS_TEXT);
-                $('#viewMemo_response').html(data[0].obS_REPLY);
+                $('#viewMemoModel_ObSent').modal('show');
+                $('#viewMemo_memo_ObSent').html(data[0].obS_TEXT);
+                $('#viewMemo_response_ObSent').html(data[0].obS_REPLY);
 
-                $('#viewMemo_process').html(data[0].process);
-                $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
-                $('#viewMemo_violation').html(data[0].checklist_Details);
-                $('#listofRespPersons tbody').empty();
+                $('#viewMemo_process_ObSent').html(data[0].process);
+                $('#viewMemo_subprocess_ObSent').html(data[0].suB_PROCESS);
+                $('#viewMemo_violation_ObSent').html(data[0].checklist_Details);
+                $('#listofRespPersons_ObSent tbody').empty();
                 if (data[0].responsiblE_PPs.length > 0) {
                     $.each(data[0].responsiblE_PPs, function (j, pp) {
-                        var srNo = $('#listofRespPersons tbody tr').length;
+                        var srNo = $('#listofRespPersons_ObSent tbody tr').length;
                         srNo++;
-                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                        $('#listofRespPersons_ObSent tbody').append('<tr id="tr__ObSent_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
                 }               
             },
@@ -389,7 +397,7 @@
 </div>
 
 
-<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+<div id="viewMemoModel_ObSent" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -401,21 +409,21 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_process" class="font-weight-bold">Process</label>
-                        <div id="viewMemo_process" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_process_ObSent" class="font-weight-bold">Process</label>
+                        <div id="viewMemo_process_ObSent" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_subprocess" class="font-weight-bold">Sub Process</label>
-                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_subprocess_ObSent" class="font-weight-bold">Sub Process</label>
+                        <div id="viewMemo_subprocess_ObSent" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_violation" class="font-weight-bold">Checklist Details</label>
-                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_violation_ObSent" class="font-weight-bold">Checklist Details</label>
+                        <div id="viewMemo_violation_ObSent" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
+                        <label for="viewMemo_respPP_ObSent" class="font-weight-bold">Responsible Personals</label>
                         <div class="col-md-12 pl-0 pr-0">
-                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                            <table id="listofRespPersons_ObSent" class="table table-hover table-bordered table-hover mt-3 table-striped">
                                 <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                     <tr>
                                         <th class="col-md- auto font-weight-bold">Sr.No</th>
@@ -425,7 +433,6 @@
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
                                         <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th class="col-md- auto text-center font-weight-bold"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -434,12 +441,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
-                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_memo_ObSent" class="font-weight-bold">Memo</label>
+                        <div id="viewMemo_memo_ObSent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_response" class="font-weight-bold">Auditee Response</label>
-                        <div id="viewMemo_response" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="viewMemo_response_ObSent" class="font-weight-bold">Auditee Response</label>
+                        <div id="viewMemo_response_ObSent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                 </form>
             </div>
