@@ -216,6 +216,9 @@
                 'AUDIT_ENDDATE': $('#endplan_date').val(),
                 'OP_STARTDATE': $('#startop_date').val(),
                 'OP_ENDDATE': $('#endop_date').val(),
+                'TRAVELDAY': $('#travellingDaysSelectField').val(),
+                'RRDAY': $('#revenueDaysSelectField').val(),
+                'D_Day': $('#discussionDaysSelectField').val(),
                 'TEAM_NAME': $('#auditTeam_box option:selected').text(),
                 'STATUS': 1,
                 'TEAM_ID': $('#auditTeam_box').val(),                
@@ -342,37 +345,24 @@
         <input id="startplan_date"  onchange="getAutoEndDate();" type="date" class="form-control form-select">
     </div>
 </div>
-<div class="row col-md-12 mt-3">
-    <div class="col-md-3">
-        <h5>Travelling/Travelling Day Required</h5>
-    </div>
-    <div class="col-md-9">
-        <input id="auditCriteriaVisitField" class="form-check" type="checkbox" />
-    </div>
-</div>
 <div id="travellingDayWrapper" class="row col-md-12 mt-3 d-none">
     <div class="col-md-3">
         <h5>Travelling Day</h5>
     </div>
     <div class="col-md-9">
-        <select id="travellingDaysSelectField" class="form-control form-select">
-            <option selected="selected" value="0">-- Nil --</option>
+        <select id="travellingDaysSelectField" onchange="getAutoEndDate(); " type="date" class="form-control form-select">
+            <option selected="selected" value="0">-- Not Required --</option>
             <option value="1">1 Day</option>
-            <option value="2">2 Days</option>
-            <option value="3">3 Days</option>
-            <option value="4">4 Days</option>
-            <option value="5">5 Days</option>
         </select>
     </div>
 </div>
-
 <div id="revenueCollWrapper" class="row col-md-12 mt-3 d-none">
     <div class="col-md-3">
         <h5>Revenue Record Review Day</h5>
     </div>
     <div class="col-md-9">
-        <select id="revenueDaysSelectField" class="form-control form-select">
-            <option selected="selected" value="0">-- Nil --</option>
+        <select id="revenueDaysSelectField" onchange="getAutoEndDate(); " type="date" class=" form-control form-select">
+            <option selected="selected" value="0">-- Not Required --</option>
             <option value="1">1 Day</option>
             <option value="2">2 Days</option>
             <option value="3">3 Days</option>
@@ -386,16 +376,13 @@
         <h5>Discussion Day</h5>
     </div>
     <div class="col-md-9">
-        <select id="discussionDaysSelectField" class="form-control form-select">
-            <option selected="selected" value="0">-- Nil --</option>
+        <select id="discussionDaysSelectField" onchange="getAutoEndDate(); " type="date" class="form-control form-select">
+            <option selected="selected" value="0">-- Not Required --</option>
             <option value="1">1 Day</option>
-            <option value="2">2 Days</option>
-            <option value="3">3 Days</option>
-            <option value="4">4 Days</option>
-            <option value="5">5 Days</option>
         </select>
     </div>
 </div>
+
 <div class="row col-md-12 mt-3">
     <div class="col-md-3">
         <h5>End Date</h5>

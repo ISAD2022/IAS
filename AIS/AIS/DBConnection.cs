@@ -2055,6 +2055,9 @@ namespace AIS
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ePlan.PLAN_ID;
                 cmd.Parameters.Add("OP_STARTDATE", OracleDbType.Date).Value = ePlan.OP_STARTDATE;
                 cmd.Parameters.Add("OP_ENDDATE", OracleDbType.Date).Value = ePlan.OP_ENDDATE;
+                cmd.Parameters.Add("TRAVELDAY", OracleDbType.Int32).Value = ePlan.TRAVELDAY;
+                cmd.Parameters.Add("RRDAY", OracleDbType.Int32).Value = ePlan.RRDAY;
+                cmd.Parameters.Add("D_Day", OracleDbType.Int32).Value = ePlan.D_Day;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();

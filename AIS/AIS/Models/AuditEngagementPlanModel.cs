@@ -23,6 +23,9 @@ namespace AIS.Models
         public int? TEAM_ID { get; set; }
         public int? ENTITY_ID { get; set; }
         public int? ENTITY_CODE { get; set; }
+        public int? TRAVELDAY { get; set; }
+        public int? RRDAY { get; set; }
+        public int? D_Day { get; set; }
         public string ENTITY_NAME { get; set; }
         public string REMARKS_OUT { get; set; }
         public string IS_SUCCESS { get; set; }
