@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 namespace AIS
 {
@@ -2109,8 +2110,9 @@ namespace AIS
             con.Close();
             return true;
         }
-        public bool RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
+        public string RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
         {
+            string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -2131,10 +2133,14 @@ namespace AIS
                 cmd.Parameters.Add("OP_STARTDATE", OracleDbType.Date).Value = OP_START_DATE;
                 cmd.Parameters.Add("OP_ENDDATE", OracleDbType.Date).Value = OP_END_DATE;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = COMMENTS;
-                cmd.ExecuteReader();
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();                   
+                }
             }
             con.Close();
-            return true;
+            return resp;
         }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
         {
