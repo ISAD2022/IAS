@@ -1489,6 +1489,7 @@ namespace AIS
                 cmd.CommandText = "pkg_ais.P_GetBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("Zone_Id", OracleDbType.Int32).Value = zone_code;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
