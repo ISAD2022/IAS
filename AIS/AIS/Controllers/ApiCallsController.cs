@@ -190,6 +190,33 @@ namespace AIS.Controllers
             return "{\"success\":"+success+" , \"failed\":"+failed+"}";
         }
         [HttpPost]
+        public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID=0, int BRANCH_ID=0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0)
+        {
+            int success = 0;
+            int failed = 0;
+            foreach (ListObservationModel m in LIST_OBS)
+            {
+                ObservationModel ob = new ObservationModel();
+                ob.SUBCHECKLIST_ID = SUB_CHECKLISTID;
+                ob.CHECKLISTDETAIL_ID = CHECKLIST_ID;
+               
+                ob.ENGPLANID = ENG_ID;
+                ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
+                ob.OBSERVATION_TEXT = m.MEMO;
+                ob.SEVERITY = 1;
+                ob.BRANCH_ID = BRANCH_ID;
+                ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
+                ob.STATUS = 1;
+                if (dBConnection.SaveAuditObservationCAU(ob))
+                    success++;
+                else
+                    failed++;
+            }
+            return "{\"success\":" + success + " , \"failed\":" + failed + "}";
+        }
+
+
+        [HttpPost]
         public bool reply_observation(ObservationResponseModel or)
         {
             return dBConnection.ResponseAuditObservation(or);            

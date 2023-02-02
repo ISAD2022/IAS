@@ -3257,6 +3257,50 @@ namespace AIS
             con.Close();
             return true;
         }
+        public bool SaveAuditObservationCAU(ObservationModel ob)
+        {
+            //105400
+            int addedObsId = 0;
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            if (ob.ENGPLANID == 0)
+                ob.ENGPLANID = this.GetLoggedInUserEngId();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_SaveAuditObservationCAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
+                cmd.Parameters.Add("STATUS", OracleDbType.Int32).Value = ob.STATUS;
+                cmd.Parameters.Add("REPLYDATE", OracleDbType.Date).Value = ob.REPLYDATE;
+                cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Severity", OracleDbType.Int32).Value = ob.SEVERITY;
+                cmd.Parameters.Add("SUBCHECKLISTID", OracleDbType.Varchar2).Value = ob.SUBCHECKLIST_ID;
+                cmd.Parameters.Add("CHECKLISTDETAILID", OracleDbType.Int32).Value = ob.CHECKLISTDETAIL_ID;              
+                cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
+                cmd.Parameters.Add("BRANCHID", OracleDbType.Int32).Value = ob.BRANCH_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                    {
+                        return false;
+                    }
+                    else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
+                    {
+                        addedObsId = Convert.ToInt32(rdr["ID"].ToString());
+
+                    }
+                }
+               
+            }
+            con.Close();
+            return true;
+        }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
         {
             sessionHandler = new SessionHandler();
