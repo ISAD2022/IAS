@@ -139,12 +139,24 @@ label.heading{
             alert('Select Risk');
             return;
         }
+        var resP = [];
+        $.each($('#listofRespPersons tbody tr'), function (i, v) {
+            resP.push({
+                'PP_NO': $(v).attr('id').split('tr_')[1],
+                'EMP_NAME': $(v).find('td').eq(2).html(),
+                'LOAN_CASE': $(v).find('td').eq(3).html(),
+                'LC_AMOUNT': $(v).find('td').eq(4).html(),
+                'ACCOUNT_NUMBER': $(v).find('td').eq(5).html(),
+                'ACC_AMOUNT': $(v).find('td').eq(6).html()
+            });
+        });
         var g_memoObj = [];
         var memo = {
             'MEMO': $('.richText-editor').html(),
             'ID': 'obs_0',
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
+            'RESPONSIBLE_PPNO': resP,
             'ATTACHMENTS': ''
         };
         g_memoObj.push(memo);
@@ -164,10 +176,16 @@ label.heading{
                     alert("<p>Memo Already Saved</p>");
                 else
                     alert("<p>Memo Successfully Saved</p>");
+
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
 
+    }
+
+    function reloadLocation() {
+        window.location.reload();
     }
 
     function openResponsiblePPs() {

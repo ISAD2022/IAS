@@ -40,8 +40,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -3297,7 +3297,28 @@ namespace AIS
 
                     }
                 }
-               
+                if (ob.RESPONSIBLE_PPNO != null)
+                {
+                    if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
+                    {
+                        foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                        {
+                            cmd.CommandText = "pkg_ais.P_responibilityassigned";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
+                            cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
+                            cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
+                            cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
+                            cmd.ExecuteReader();
+                        }
+                    }
+
+                }
+
             }
             con.Close();
             return true;

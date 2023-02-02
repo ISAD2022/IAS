@@ -34,10 +34,10 @@
         g_planId = planId;
         g_entityId = entityId;
         $('#commentsBox').modal('show');
-        $('#selectDateInputField').val(startDate);
-        $('#selectEndDateInputField').val(endData);
-        $('#selectOPDateInputField').val(op_startDate);
-        $('#selectOPEndDateInputField').val(op_endDate);
+        $('#selectDateInputField').val(new Date(startDate).toISOString().slice(0, 10));
+        $('#selectEndDateInputField').val(new Date(endData).toISOString().slice(0, 10));
+        $('#selectOPDateInputField').val(new Date(op_startDate).toISOString().slice(0, 10));
+        $('#selectOPEndDateInputField').val(new Date(op_endDate).toISOString().slice(0, 10));
         $('#teamSelectionBox').val(teamId);
     }
       function reloadLocation() {

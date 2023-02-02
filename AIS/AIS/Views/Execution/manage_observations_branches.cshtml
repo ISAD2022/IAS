@@ -53,7 +53,7 @@
                     $.each(data[0].responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
-                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
                 }
 
@@ -385,8 +385,7 @@
                                         <th class="col-md- auto font-weight-bold">Loan Case</th>
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
-                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th class="col-md- auto text-center font-weight-bold"></th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>                                        
                                     </tr>
                                 </thead>
                                 <tbody>
