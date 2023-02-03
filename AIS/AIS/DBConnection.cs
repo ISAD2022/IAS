@@ -2942,20 +2942,24 @@ periodList.Add(period);
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetGlheadDetails";
+                cmd.CommandText = "pkg_ais.p_getglheadsummary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                // cmd.Parameters.Add("GLSUBCODE", OracleDbType.Int32).Value = gl_code;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadDetails.GL_TYPEID = Convert.ToInt32(rdr["GL_TYPEID"]);
+
                     GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
-                    GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    // GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    //GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    //GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
                     GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
                     GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
@@ -2966,17 +2970,23 @@ periodList.Add(period);
             return list;
 
         }
-        public GlHeadSubDetailsModel GetGlheadSubDetails(int gl_code = 0)
+        public GlHeadSubDetailsModel GetGlheadSubDetails(int gltypeid = 0)
         {
             var con = this.DatabaseConnection();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
             GlHeadSubDetailsModel GlHeadSubDetails = new GlHeadSubDetailsModel();
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetGlheadSubDetails";
+                cmd.CommandText = "pkg_ais.p_getglheadsum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("gl_code", OracleDbType.Int32).Value = gl_code;
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("gltypeid", OracleDbType.Int32).Value = gltypeid;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2985,12 +2995,15 @@ periodList.Add(period);
 
                     GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
 
-                    GHSD.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GHSD.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GHSD.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+
                     GHSD.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GHSD.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    GHSD.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    //GHSD.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GHSD.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GHSD.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
-                    GHSD.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]);
+                    GHSD.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    GHSD.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     GlSubHeadList.Add(GHSD);
                     GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
                 }
@@ -5209,5 +5222,219 @@ periodList.Add(period);
             con.Close();
             return true;
         }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        public bool AddInspectionCriteria(string fquat = "", string squat = "", string tquat = "", string frquat = "")
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+
+                cmd.CommandText = "pkg_ins.inspection_criteria";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = 2; ////may select from DD in frontend
+                cmd.Parameters.Add("ENTITY_TYPEID", OracleDbType.Int32).Value = 6; //for branch may select from DD in frontend
+                cmd.Parameters.Add("FIRST_QUARTER", OracleDbType.Varchar2).Value = fquat;
+                cmd.Parameters.Add("SECOND_QUARTER", OracleDbType.Varchar2).Value = squat;
+                cmd.Parameters.Add("THIRD_QUARTER", OracleDbType.Varchar2).Value = tquat;
+                cmd.Parameters.Add("FORTH_QUARTER", OracleDbType.Varchar2).Value = frquat;
+                cmd.Parameters.Add("APPROVAL_STATUS", OracleDbType.Int32).Value = 1;
+                cmd.Parameters.Add("CREATED_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("CRITERIA_SUBMITTED", OracleDbType.Varchar2).Value = "N";
+
+                cmd.ExecuteReader();
+
+
+            }
+            con.Close();
+            return true;
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        public bool AddInspectionTeam(int tid = 0, string tname = "", int pop = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+
+                cmd.CommandText = "pkg_ins.ins_teams";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("TEAM_ID", OracleDbType.Int32).Value = tid; ////may select from DD in frontend
+                cmd.Parameters.Add("TEAM_NAME", OracleDbType.Varchar2).Value = tname; //for branch may select from DD in frontend
+                cmd.Parameters.Add("placeofposting", OracleDbType.Int32).Value = pop;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        public bool InspectionTeamJoining(int e_p_id = 0, int t_m_ppno = 0, int enteredby = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+
+                cmd.CommandText = "pkg_ins.ins_joining";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_PLAN_ID", OracleDbType.Int32).Value = e_p_id; ////may select from DD in frontend
+                cmd.Parameters.Add("TEAM_MEM_PPNO", OracleDbType.Int32).Value = t_m_ppno; //for branch may select from DD in frontend
+                cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = enteredby;
+                cmd.Parameters.Add("JOINING_DATE", OracleDbType.Date).Value = DateTime.Now;
+                cmd.Parameters.Add("COMPLETION_DATE", OracleDbType.Date).Value = DateTime.Now;
+
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        public List<AuditeeFADOldParasModel> GetAuditeeOldParasFad()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeFADOldParasModel> list = new List<AuditeeFADOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetAuditeeOldParasFAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeFADOldParasModel chk = new AuditeeFADOldParasModel();
+                
+        chk.NAME = rdr["NAME"].ToString();
+
+      
+        chk.ID = Convert.ToInt32(rdr["ID"]);
+    
+        chk.REF_P = rdr["REF_P"].ToString();
+     
+        chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
+     
+        chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
+      
+        chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+
+        chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+      
+        chk.PARA_NO = rdr["PARA_NO"].ToString();
+ 
+        chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+   
+        chk.ANNEXURE = rdr["ANNEXURE"].ToString();
+    
+        chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+   
+        chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+        
+        chk.AUDITED_BY = Convert.ToInt32(rdr["AUDITED_BY"]);
+       
+        chk.PROCESS = Convert.ToInt32(rdr["PROCESS"]);
+       
+        chk.SUB_PROCESS = Convert.ToInt32(rdr["SUB_PROCESS"]);
+    
+        chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"]);
+    
+        chk.STATUS = Convert.ToInt32(rdr["STATUS"]);
+       
+        chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
+
+       // if (rdr["ENTERED_ON"].ToString() != null && rdr["ENTERED_ON"].ToString() != "")
+         //chk.ENTERED_ON = Convert.ToDateTime(rdr["ENTERED_ON"]);
+
+      
+        //chk.ENTERED_BY = Convert.ToInt32(rdr["ENTERED_BY"]);
+       
+        chk.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
+        
+        chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+      
+      ///  chk.C_STATUS = Convert.ToInt32(rdr["C_STATUS"]);
+       
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public AuditeeFADOldParasModel GetAuditeeOldParasFadParatext(string refp="")
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            AuditeeFADOldParasModel am = new AuditeeFADOldParasModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.p_getauditeeoldparasfadtext";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = refp;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                      am.PARA_TEXT=rdr["PARA_TEXT"].ToString();
+
+                }
+            }
+            con.Close();
+            return am;
+        }
+
+
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     }
 }
