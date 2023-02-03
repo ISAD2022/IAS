@@ -156,13 +156,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data.status==true) {
-                    alert(data.Message);
-                    onAlertCallback(reloadLocation);
-                } else {
-                    alert("Failed!! please try again");
-                    onAlertCallback(reloadLocation);
-                }
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
@@ -181,13 +176,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data.Status==true) {
-                    alert(data.Message);
-                    onAlertCallback(reloadLocation);
-                } else {
-                    alert("Failed!! please try again");
-                    onAlertCallback(reloadLocation);
-                }
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
@@ -204,13 +194,8 @@
             },
             cache: false,
             success: function (data) {
-                if (data.Status == true) {
-                    alert(data.Message);
-                    onAlertCallback(reloadLocation);
-                } else {
-                    alert("Failed!! please try again");
-                    onAlertCallback(reloadLocation);
-                }
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });

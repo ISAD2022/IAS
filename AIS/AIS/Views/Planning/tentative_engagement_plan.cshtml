@@ -13,6 +13,7 @@
     var g_zoneId = 0;
     var g_entityId = 0;
     var g_entityName = '';
+    var g_public_days = ['05-02','23-03', '01-05', '14-08', '25-12']; //dd-mm
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -50,7 +51,6 @@
     function getAutoEndDate() {
         var numAdd = parseInt($('#days_label').text());
 
-        console.log('number added',numAdd);
 
         if (g_entityType == 25 || g_entityType == 6) {
             var addDays = parseInt($('#discussionDaysSelectField').val()) + parseInt($('#revenueDaysSelectField').val()) + parseInt($('#travellingDaysSelectField').val());
@@ -59,26 +59,32 @@
 
         var dataAvui = new Date($('#startplan_date').val());
         for (var i = 1; i < numAdd; i++) {
+
             var dataTemp = dataAvui;
             dataTemp.setDate(dataTemp.getDate() + 1)
            
-            if (g_entityType == 25) {
+            if (g_entityType == 25)
+            {
                 
-            }else{
-
-            if (dataTemp.getDay() == 6) {
-                dataTemp.setDate(dataTemp.getDate() + 2)
             }
-            else if (dataTemp.getDay() == 0) {
+            else
+            {
+                if (dataTemp.getDay() == 6)
+                {
+                    dataTemp.setDate(dataTemp.getDate() + 2)
+                }               
+                if (dataTemp.getDay() == 0)
+                {
                 dataTemp.setDate(dataTemp.getDate() + 1)
+                }               
             }
+            var datemonth = ("0" + dataTemp.getDate()).slice(-2) + '-' + ("0" + (dataTemp.getMonth()+1)).slice(-2);
+            if (g_public_days.indexOf(datemonth) !== -1) {
+                dataTemp.setDate(dataTemp.getDate() + 1)
             }
             
             dataAvui = dataTemp;
-        }
-
-
-       
+        }      
 
         var month = (dataAvui.getMonth() + 1);
         var day = dataAvui.getDate();
