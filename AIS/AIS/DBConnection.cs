@@ -2137,7 +2137,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["REMARKS"].ToString();                   
+                    resp = rdr["REMARK"].ToString();                   
                 }
             }
             con.Close();
