@@ -5,6 +5,6 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PublishTargetUrl>D:\Audit Inspection Sol\Published</_PublishTargetUrl>
-    <History>True|2023-02-03T06:55:41.0002414Z;True|2022-12-21T15:12:26.6593917+05:00;True|2022-12-20T12:32:23.3948347+05:00;</History>
+    <History>True|2023-02-03T10:26:28.9759719Z;True|2023-02-03T11:55:41.0002414+05:00;True|2022-12-21T15:12:26.6593917+05:00;True|2022-12-20T12:32:23.3948347+05:00;</History>
   </PropertyGroup>
 </Project>

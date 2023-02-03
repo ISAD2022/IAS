@@ -41,8 +41,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -536,6 +536,54 @@ namespace AIS
             con.Close();
             return periodList;
         }
+		public List<AuditPlanEngagementModel> GetAuditPlanEngagement(int periodid)
+		        {
+            var con = this.DatabaseConnection();
+            List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais_reports.r_audit_plan_engagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("periodid", OracleDbType.Int32).Value = periodid;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPlanEngagementModel period = new AuditPlanEngagementModel();
+           
+
+   
+                    period.AUDITPERIOD = rdr["AUDITPERIOD"].ToString();
+                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
+                    period.ENITIY_NAME = rdr["ENITIY_NAME"].ToString(); 
+                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
+
+                    period.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
+
+                    period.AUDIT_ENDDATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
+                    if (rdr["TRAVEL_DAY"].ToString() != null && rdr["TRAVEL_DAY"].ToString() != "")
+                        period.TRAVEL_DAY = Convert.ToInt32(rdr["TRAVEL_DAY"]);
+                    if (rdr["REVENUE_RECORD_DAY"].ToString() != null && rdr["REVENUE_RECORD_DAY"].ToString() != "")
+                        period.REVENUE_RECORD_DAY = Convert.ToInt32(rdr["REVENUE_RECORD_DAY"]);
+                    if (rdr["DISCUSSION_DAY"].ToString() != null && rdr["DISCUSSION_DAY"].ToString() != "")
+                        period.DISCUSSION_DAY = Convert.ToInt32(rdr["DISCUSSION_DAY"]);
+
+                    period.TEAM_NAME = rdr["TEAM_NAME"].ToString();
+                    period.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    period.STATUS = rdr["STATUS"].ToString();
+
+
+periodList.Add(period);
+                }
+            }
+            con.Close();
+            return periodList;
+        }
+
+
+
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
             bool result = false;
@@ -3344,7 +3392,7 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                //cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 

@@ -189,6 +189,54 @@ namespace AIS.Controllers
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////
+
+        public IActionResult Glhead_Transaction_Details()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        
+
+  public IActionResult Audit_Plan_Engagement()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
         public IActionResult income_expenditure()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

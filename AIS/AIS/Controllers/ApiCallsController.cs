@@ -325,7 +325,16 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
-      
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+
+          [HttpPost]
+        public List<AuditPlanEngagementModel> getauditplanengagement(int b_id)
+        {
+            return dBConnection.GetAuditPlanEngagement(b_id);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpPost]
         public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
         {
