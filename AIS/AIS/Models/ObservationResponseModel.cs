@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace AIS.Models
 {
@@ -16,6 +17,7 @@ namespace AIS.Models
         public int REPLY_ROLE { get; set; }
         public string REMARKS { get; set; }
         public string SUBMITTED { get; set; }
+        public List<AuditeeResponseEvidenceModel> EVIDENCE_LIST {get; set;}
 
     }
 }

@@ -10,6 +10,7 @@ using System.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
+using System.IO;
 
 namespace AIS
 {
@@ -22,10 +23,12 @@ namespace AIS
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         public ISession _session;
         public IHttpContextAccessor _httpCon;
-        public DBConnection(IHttpContextAccessor httpContextAccessor)
+        private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
+        public DBConnection(IHttpContextAccessor httpContextAccessor, Microsoft.AspNetCore.Hosting.IHostingEnvironment env )
         {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
+            _env = env;
         }
         public DBConnection()
         {
@@ -3400,6 +3403,7 @@ periodList.Add(period);
                 {
                     AssignedObservations chk = new AssignedObservations();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
+
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_TEXT_ID = Convert.ToInt32(rdr["OBS_TEXT_ID"]);
                     chk.ASSIGNEDTO_ROLE = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -3409,7 +3413,8 @@ periodList.Add(period);
                     chk.REPLIED = rdr["REPLIED"].ToString();                   
                     chk.REPLY_TEXT = rdr["REPLYTEXT"].ToString();
                     chk.OBSERVATION_TEXT = rdr["OBSERVATION_TEXT"].ToString();
-
+                    if (rdr["RESP_ID"].ToString() != null && rdr["RESP_ID"].ToString() != "")
+                        chk.RESP_ID = Convert.ToInt32(rdr["RESP_ID"].ToString());
                     if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
                         chk.VIOLATION = rdr["VIOLATION"].ToString();
 
@@ -3490,7 +3495,7 @@ periodList.Add(period);
             con.Close();
             return list;
         }
-        public List<object> GetObservationText(int OBS_ID)
+        public List<object> GetObservationText(int OBS_ID, int RESP_ID)
         {
             var con = this.DatabaseConnection();
             List<object> list = new List<object>();
@@ -3524,6 +3529,24 @@ periodList.Add(period);
                     result = rdr2["REPLY"];
                     list.Add(result);
                 }
+
+                List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
+                cmd.CommandText = "pkg_ais.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("RESP_ID", OracleDbType.Int32).Value = RESP_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr3 = cmd.ExecuteReader();
+                while (rdr3.Read())
+                {
+                    AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
+                    am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
+                    am.IMAGE_DATA = rdr3["FILE_DATA"].ToString();
+                    am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
+                    am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
+                    modellist.Add(am);
+                }
+                list.Add(modellist);
             }
             con.Close();
             return list;
@@ -3559,6 +3582,7 @@ periodList.Add(period);
         }
         public bool ResponseAuditObservation(ObservationResponseModel ob)
         {
+            int AUD_RESP_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -3581,7 +3605,37 @@ periodList.Add(period);
                 cmd.Parameters.Add("REPLY_ROLE", OracleDbType.Int32).Value = ob.REPLY_ROLE;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = ob.REMARKS;
                 cmd.Parameters.Add("SUBMITTED", OracleDbType.Varchar2).Value = ob.SUBMITTED;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AUD_RESP_ID = Convert.ToInt32(rdr["RESP_ID"]);
+                }
+                if(ob.EVIDENCE_LIST!=null)
+                {
+                    if (ob.EVIDENCE_LIST.Count > 0)
+                    {
+                        foreach ( var item in ob.EVIDENCE_LIST)
+                        {
+                            string fileName= AUD_RESP_ID + "_" + item.IMAGE_NAME;
+                            cmd.CommandText = "pkg_ais.P_AUDITEE_OBSERVATION_RESPONSE_EVIDENCES";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
+                            cmd.Parameters.Add("AUOBSID", OracleDbType.Int32).Value = ob.AU_OBS_ID;
+                            cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
+                            cmd.Parameters.Add("FILETYPE", OracleDbType.Varchar2).Value = item.IMAGE_TYPE;
+                            cmd.Parameters.Add("LENGTH", OracleDbType.Int32).Value = item.LENGTH;
+                            cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
+                            cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (item.SEQUENCE+1);
+                            cmd.Parameters.Add("TEXT_ID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
+                            cmd.ExecuteReader();
+                            this.SaveImage(item.IMAGE_DATA, fileName);
+                        }
+                    }
+                        
+                }
             }
             con.Close();
             return true;
@@ -4682,6 +4736,46 @@ periodList.Add(period);
             con.Close();
             return list;
         }
+
+        public List<OldParasModelCAD> GetOldParasManagement()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            List<OldParasModelCAD> list = new List<OldParasModelCAD>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetOldParaManagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModelCAD chk = new OldParasModelCAD();
+                    chk.PARA_ID = Convert.ToInt32(rdr["PARA_ID"]);
+                    chk.AUDIT_PERIOD = rdr["PERIOD"].ToString();
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
+                    if (rdr["V_CAT_ID"].ToString() != null && rdr["V_CAT_ID"].ToString() != "")
+                        chk.V_CAT_ID = Convert.ToInt32(rdr["V_CAT_ID"].ToString());
+                    if (rdr["V_CAT_NATURE_ID"].ToString() != null && rdr["V_CAT_NATURE_ID"].ToString() != "")
+                        chk.V_CAT_NATURE_ID = Convert.ToInt32(rdr["V_CAT_NATURE_ID"].ToString());
+                    if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
+                        chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
         public List<OldParasModel> GetOldParasForResponse()
         {
             sessionHandler = new SessionHandler();
@@ -4842,6 +4936,31 @@ periodList.Add(period);
             con.Close();
             return success;
         }
+        public bool AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_updateoldparamanagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PARAID", OracleDbType.Int32).Value = ID;
+                cmd.Parameters.Add("V_CAT_ID", OracleDbType.Int32).Value = V_CAT_ID;
+                cmd.Parameters.Add("V_CAT_NATURE_ID", OracleDbType.Int32).Value = V_CAT_NATURE_ID;
+                cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("TEXT", OracleDbType.Clob).Value = REPLY;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();              
+                success = true;
+            }
+            con.Close();
+            return success;
+        }
         public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
         {
             sessionHandler = new SessionHandler();
@@ -4946,7 +5065,7 @@ periodList.Add(period);
                 cmd.CommandText = "pkg_ais.p_GetObservationEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -5208,6 +5327,16 @@ periodList.Add(period);
             }
             con.Close();
             return true;
+        }
+
+        public void SaveImage(string base64img, string outputImgFilename = "image.jpg")
+        {
+            var folderPath = System.IO.Path.Combine(_env.WebRootPath, "Auditee_Evidences");
+            if (!System.IO.Directory.Exists(folderPath))
+            {
+                System.IO.Directory.CreateDirectory(folderPath);
+            }
+            System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
     }
 }

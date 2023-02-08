@@ -19,6 +19,8 @@
     $(document).ready(function () {
         getPieChartData();
     });
+
+    var y=[100,200,300,400]
     function getPieChartData() {
         $.ajax({
             url: "/ApiCalls/get_pie_chart_data",
@@ -154,15 +156,15 @@ window.onload = function() {
             shared: true
         },
         data: [{
-            name: "VOL-I",
+            name: "ASSEST_CR",
             type: "spline",
             yValueFormatString: "#0.##",
             showInLegend: true,
             dataPoints: [
-                { x: new Date(2018, 12, 31), y: 1200 },
-                { x: new Date(2019, 6, 30), y: 1350 },
-                { x: new Date(2019, 12, 31), y: 1410 },
-                { x: new Date(2020, 6, 30), y: 1507 },
+                { x: new Date(2018, 12, 31), y: y[0] },
+                { x: new Date(2019, 6, 30), y: y[1] },
+                { x: new Date(2019, 12, 31), y: y[2] },
+                { x: new Date(2020, 6, 30), y: y[3] },
                 { x: new Date(2020, 12, 31), y: 1589 },
                 { x: new Date(2021, 6, 30), y: 1612 },
                 { x: new Date(2021, 12, 31), y: 1688 },
@@ -170,7 +172,7 @@ window.onload = function() {
             ]
         },
         {
-            name: "VOL-II",
+            name: "ASSEST_DR",
             type: "spline",
             yValueFormatString: "#0.##",
             showInLegend: true,
@@ -185,7 +187,42 @@ window.onload = function() {
                 { x: new Date(2022, 6, 30), y: 712 },
                 
             ]
-        }]
+            },
+         {
+                name: "VOL-III",
+                type: "spline",
+                yValueFormatString: "#0.##",
+                showInLegend: true,
+                dataPoints: [
+                    { x: new Date(2018, 12, 31), y: 100 },
+                    { x: new Date(2019, 6, 30), y: 250 },
+                    { x: new Date(2019, 12, 31), y: 310 },
+                    { x: new Date(2020, 6, 30), y: 407 },
+                    { x: new Date(2020, 12, 31), y: 389 },
+                    { x: new Date(2021, 6, 30), y: 612 },
+                    { x: new Date(2021, 12, 31), y: 488 },
+                    { x: new Date(2022, 6, 30), y: 912 },
+
+                ]
+            },
+            {
+                name: "VOL-IV",
+                type: "spline",
+                yValueFormatString: "#0.##",
+                showInLegend: true,
+                dataPoints: [
+                    { x: new Date(2018, 12, 31), y: 130 },
+                    { x: new Date(2019, 6, 30), y: 170 },
+                    { x: new Date(2019, 12, 31), y: 220 },
+                    { x: new Date(2020, 6, 30), y: 315 },
+                    { x: new Date(2020, 12, 31), y: 415 },
+                    { x: new Date(2021, 6, 30), y: 715 },
+                    { x: new Date(2021, 12, 31), y: 588 },
+                    { x: new Date(2022, 6, 30), y: 488 },
+
+                ]
+            }
+        ]
     });
     chartC.render();
     function toggleDataSeries(e) {

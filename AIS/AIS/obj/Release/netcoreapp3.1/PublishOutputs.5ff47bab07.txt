@@ -3,10 +3,14 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\favicon.ico
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\ajax_loader.gif
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\Home.png
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\no-image-available.png
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\photo-camera-gray.svg
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\profile.png
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\ztbllogo.png
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\idleSessionHandler.js
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\site.js
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\bootstrap-image-uploader\jquery.imagesloader-1.0.1.js
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\bootstrap-image-uploader\jquery.imagesloader.css
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css

@@ -7,6 +7,7 @@ namespace AIS.Models
     public class AssignedObservations
     {        
         public int ID { get; set; }
+        public int? RESP_ID { get; set; }
         public int OBS_ID { get; set; }
         public int OBS_TEXT_ID { get; set; }
         public int ASSIGNEDTO_ROLE { get; set; }

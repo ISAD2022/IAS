@@ -401,9 +401,9 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public List<object> get_observation_text(int OBS_ID)
+        public List<object> get_observation_text(int OBS_ID, int RESP_ID)
         {
-            return dBConnection.GetObservationText(OBS_ID);
+            return dBConnection.GetObservationText(OBS_ID, RESP_ID);
             
         }
         [HttpPost]
@@ -415,6 +415,11 @@ namespace AIS.Controllers
         public List<OldParasModel> get_legacy_para(string AUDITED_BY, string AUDIT_YEAR)
         {
             return dBConnection.GetOldParas(AUDITED_BY, AUDIT_YEAR);
+        }
+        [HttpPost]
+        public List<OldParasModelCAD> get_old_para_management()
+        {
+            return dBConnection.GetOldParasManagement();
         }
         [HttpPost]
         public List<OldParasModel> get_legacy_para_for_response()
@@ -435,6 +440,11 @@ namespace AIS.Controllers
         public bool add_legacy_para_reply(int ID, string REPLY)
         {
             return dBConnection.AddOldParasReply(ID,REPLY);
+        }
+        [HttpPost]
+        public bool add_legacy_para_cad_reply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
+        {
+            return dBConnection.AddOldParasCADReply(ID, V_CAT_ID, V_CAT_NATURE_ID,RISK_ID,REPLY);
         }
         [HttpPost]
         public ActiveInactiveChart get_pie_chart_data()
