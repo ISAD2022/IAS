@@ -302,17 +302,21 @@ namespace AIS.Controllers
           return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE);
         }
         [HttpPost]
-        public GlHeadSubDetailsModel Glhead_Sub_Details(int GL_CODE)
+        public GlHeadSubDetailsModel Glhead_Sub_Details(int GLTYPEID)
         {
-            return dBConnection.GetGlheadSubDetails(GL_CODE);
+            return dBConnection.GetGlheadSubDetails(GLTYPEID);
         }
-
-       
         [HttpPost]
         public List<DepositAccountModel> GetDepositAccountSubdetails(string b_name)
         {
             return dBConnection.GetDepositAccountSubdetails(b_name);
         }
+        [HttpPost]
+        public List<DepositAccountCatDetailsModel> GetDepositAccountcatdetails(int catid)
+        {
+            return dBConnection.GetDepositAccountcatdetails(catid);
+        }
+
 
         [HttpPost]
         public List<LoanCaseModel> GetBranchDesbursementaccountdetails(int b_id)
@@ -325,10 +329,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
 
-          [HttpPost]
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        [HttpPost]
         public List<AuditPlanEngagementModel> getauditplanengagement(int b_id)
         {
             return dBConnection.GetAuditPlanEngagement(b_id);

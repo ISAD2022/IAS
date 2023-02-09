@@ -51,7 +51,7 @@
                     console.log(data);
                     $.each(data, function (i, v) {
                         console.log(v);
-                        $('#b_d_T tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.glcode + '</td><td class="pr-2">' + v.gldesp + '</td><td class="pl-1, pr-1">' + v.monthend.split('T')[0] + '</td><td>' + v.runninG_CR + '</td><td>' + v.runninG_DR + '</td><td>' + v.balance + '</td> </tr>')
+                        $('#b_d_T tbody').append('<tr><td>' + v.name + '</td><td>' + v.glsubname + '</td><td class="pr-2">' + v.glsubcode + '</td><td class="pr-2">' + v.daY_END_BALANCE_DATE + '</td><td>' + v.debit + '</td><td>' + v.credit + '</td> </tr>')
                     });
                 },
                 dataType: "json",
@@ -81,14 +81,16 @@
     <table id="b_d_T" class="col-md-12 table table-hover table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
+              
+              
+                <th class="col-md-auto">Branch</th>
+                <th class="col-md-auto">GL Head Name</th>
+                <th class="col-md-auto">GL Sub-Code</th>
+                <th class="col-md-auto">Day End Balance Date</th>
 
-                <th class="col-md-2">BRANCH ID</th>
-                <th class="col-md-2">GL Head</th>
-                <th class="col-md-2">GL Description</th>
-                <th class="col-md-2">Date</th>
-                <th class="col-md-1">Credit</th>
-                <th class="col-md-2">Debit</th>
-                <th class="col-md-1">Balance</th>
+                <th class="col-md-auto">Credit</th>
+                <th class="col-md-auto">Debit</th>
+
 
 
             </tr>

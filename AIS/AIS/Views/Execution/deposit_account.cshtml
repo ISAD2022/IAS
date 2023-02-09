@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Fresh Disbursement Information";
+    ViewData["Title"] = "Deposit Accounts";
     Layout = "_Layout";
 }
 
@@ -41,7 +41,7 @@
         var bid = $('#b_i').val();
         if (bid != 0) {
             $.ajax({
-                url: "/ApiCalls/GetBranchDesbursementaccountdetails",
+                url: "/ApiCalls/get",
                 type: "POST",
                 data: {
                     'b_id': bid
@@ -51,7 +51,7 @@
                     console.log(data);
                     $('#b_d_T tbody').empty();
                     $.each(data, function (i, v) {
-                        $('#b_d_T tbody').append('<tr><td>' + v.loaN_CASE_NO + '</td><td class="pr-2">' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
+                        $('#b_d_T tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.loaN_CASE_NO + '</td><td class="pr-2">' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
                     });
                 },
                 dataType: "json",
@@ -64,7 +64,7 @@
 
 </script>
 <div class="row col-md-12 mt-3">
-    <h4 style="display: block; color: #45c545;">Fresh Disbursement Information</h4>
+    <h4 style="display: block; color: #45c545;">Deposit Accounts</h4>
 </div>
 
 <!--<div class="row col-md-12 mt-1">
@@ -88,18 +88,53 @@
     <table id="b_d_T" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-              
-                <th class="col-md-1">LC #</th>
-                <th class="col-md-1">CNIC</th>
-                <th class="col-md-2">CUSTOMER NAME</th>
-                <th class="col-md-2">DISB AMOUNT</th>
-                <th class="col-md-1">PRINCIPLE</th>
-                <th class="col-md-1">MARKUP</th>
-                <th class="col-md-1">DISB DATE</th>
-                <th class="col-md-2">DISB STATUS ID</th>
+                <th class="col-md-1">Branch Name</th>
+                <th class="col-md-1">Account Category</th>
+                <th class="col-md-1">Account Status</th>
+          
+                <th class="col-md-2">Amount</th>
+                <th class="col-md-2">Action</th>
+
+
             </tr>
         </thead>
-        <tbody style="font-size:small">
+        <tbody>
+            @{
+                if (ViewData["Depositcat"] != null)
+                {
+
+
+                    foreach (var item in (dynamic)(ViewData["Depositcat"]))
+                    {
+
+                     
+
+                        <tr>
+
+                            <td class="gl_id">
+                                <p class="fw-normal mb-1">@item.BRANCH_NAME</p>
+                            </td>
+                            <td class="gl_des">
+                                <p class="fw-normal mb-1">@item.ACCOUNTCATEGORY</p>
+                            </td>
+                         
+                            <td class="run_crt">
+                                <p class="fw-normal mb-1">@item.ACCOCUNTSTATUS</p>
+
+                            </td>
+                            <td class="run_deb; text-right">
+                                <p class="fw-normal mb-1">@item.AMOUNT</p>
+                            </td>
+                         
+
+
+                            <td>
+                                <a href='/execution/deposit_account_details?acccatid=@item.ACCOUNTCATEGORYID'>Details</a>
+                            </td>
+
+                        </tr>
+                    }
+                }}
         </tbody>
     </table>
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
 {
-    public class DepositAccountModel
+    public class DepositAccountCatDetailsModel
     {        
         public string BRANCH_NAME { get; set; }
         public double ACC_NUMBER { get; set; }

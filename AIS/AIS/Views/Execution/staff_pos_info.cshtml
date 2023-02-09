@@ -37,28 +37,7 @@
 
     });
 
-    function getb_depositinfo() {
-
-        var bid = $('#b_i').val();
-        if (bid != 0) {
-            $.ajax({
-                url: "/ApiCalls/GetBranchDesbursementaccountdetails",
-                type: "POST",
-                data: {
-                    'b_id': bid
-                },
-                cache: false,
-                success: function (data) {
-                    console.log(data);
-                    $('#b_d_T tbody').empty();
-                    $.each(data, function (i, v) {
-                        $('#b_d_T tbody').append('<tr><td>' + v.branchid + '</td><td>' + v.loaN_CASE_NO + '</td><td class="pr-2">' + v.cnic + '</td><td>' + v.customername + '</td><td>' + v.disburseD_AMOUNT + '</td><td>' + v.prin + '</td><td>' + v.markup + '</td><td>' + v.disB_DATE.split('T')[0] + '</td>  <td>' + v.disB_STATUSID + '</td> </tr>')
-                    });
-                },
-                dataType: "json",
-            });
-        }
-    }
+ 
 
 
 
@@ -92,9 +71,13 @@
             <tr>
                 <th class="col-md-auto">PP. No.</th>
                 <th class="col-md-auto">Name</th>
+                <th class="col-md-auto">Qualification</th>
+
                 <th class="col-md-auto">Designation</th>
                 <th class="col-md-auto">Rank Desc</th>
                 <th class="col-md-auto">Zone Desc</th>
+                <th class="col-md-auto">Date Of Posting</th>
+
 
             </tr>
         </thead>
@@ -108,31 +91,38 @@
                 foreach (var item in (dynamic)(ViewData["staffpos"]))
                 {
 
-            <tr>
-                <td>
-                    <p>@item.PPNO</p>
-                </td>
-                <td>
-                    <p>@item.EMPLOYEE_NAME</p>
-                </td>
-                <td>
-                    <p>@item.DESIGNATION</p>
+                        <tr>
+                            <td>
+                                <p>@item.PPNO</p>
+                            </td>
+                            <td>
+                                <p>@item.EMPLOYEE_NAME</p>
+                            </td>
+                            <td>
+                                <p>@item.QUALIFICATION</p>
+                            </td>
+                            <td>
+                                <p>@item.DESIGNATION</p>
 
-                </td>
-                <td>
-                    <p>@item.RANK_DESC</p>
+                            </td>
+                            <td>
+                                <p>@item.RANK_DESC</p>
 
-                </td>
+                            </td>
 
-                <td>
-                    <p>@item.PLACE_OF_POSTING</p>
+                            <td>
+                                <p>@item.PLACE_OF_POSTING</p>
 
-                </td>
+                            </td>
+
+                            <td>
+                                <p>@item.DATE_OF_POSTING</p>
+
+                            </td>
 
 
 
-
-            </tr>
+                        </tr>
                     }
                 }
             }

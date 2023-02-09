@@ -2945,23 +2945,29 @@ periodList.Add(period);
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetGlheadDetails";
+                cmd.CommandText = "pkg_ais.p_getglheadsummary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                // cmd.Parameters.Add("GLSUBCODE", OracleDbType.Int32).Value = gl_code;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadDetails.GL_TYPEID = Convert.ToInt32(rdr["GL_TYPEID"]);
+
                     GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
-                    GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    // GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    //GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    //GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
-                    GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
+                    if (rdr["DEBIT"].ToString() != null && rdr["DEBIT"].ToString() != "")
+                        GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    if (rdr["CREDIT"].ToString() != null && rdr["CREDIT"].ToString() != "")
+                        GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
                 }
             }
@@ -2969,17 +2975,24 @@ periodList.Add(period);
             return list;
 
         }
-        public GlHeadSubDetailsModel GetGlheadSubDetails(int gl_code = 0)
+
+        public GlHeadSubDetailsModel GetGlheadSubDetails(int gltypeid = 0)
         {
             var con = this.DatabaseConnection();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
             GlHeadSubDetailsModel GlHeadSubDetails = new GlHeadSubDetailsModel();
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetGlheadSubDetails";
+                cmd.CommandText = "pkg_ais.p_getglheadsum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("gl_code", OracleDbType.Int32).Value = gl_code;
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("gltypeid", OracleDbType.Int32).Value = gltypeid;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2988,12 +3001,15 @@ periodList.Add(period);
 
                     GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
 
-                    GHSD.GLCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GHSD.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GHSD.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+
                     GHSD.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GHSD.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    GHSD.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    //GHSD.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
                     GHSD.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GHSD.RUNNING_DR = Convert.ToDouble(rdr["RUNNING_DR"]);
-                    GHSD.RUNNING_CR = Convert.ToDouble(rdr["RUNNING_CR"]);
+                    GHSD.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    GHSD.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     GlSubHeadList.Add(GHSD);
                     GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
                 }
@@ -3002,6 +3018,9 @@ periodList.Add(period);
             return GlHeadSubDetails;
 
         }
+
+
+
         public List<LoanCaseModel> GetLoanCaseDetails(int lid = 0, string type = "")
         {
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -3018,14 +3037,14 @@ periodList.Add(period);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("Loantype", OracleDbType.Varchar2).Value = type;
+                cmd.Parameters.Add("loantype", OracleDbType.Varchar2).Value = type;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
-              while (rdr.Read())
+                while (rdr.Read())
                 {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
-                    LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    //LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
                     LoanCaseDetails.LOAN_CASE_NO = Convert.ToInt32(rdr["LOAN_CASE_NO"]);
                     LoanCaseDetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
@@ -3034,7 +3053,7 @@ periodList.Add(period);
                     LoanCaseDetails.PRIN = Convert.ToDouble(rdr["PRIN"]);
                     LoanCaseDetails.MARKUP = Convert.ToDouble(rdr["MARKUP"]);
                     LoanCaseDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
-                    LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
+                    // LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
                     LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
                     LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
                     list.Add(LoanCaseDetails);
@@ -3043,6 +3062,7 @@ periodList.Add(period);
             con.Close();
             return list;
         }
+
         public List<LoanCasedocModel> GetLoanCaseDocuments()
         {
             List<LoanCasedocModel> list = new List<LoanCasedocModel>();
@@ -3101,18 +3121,24 @@ periodList.Add(period);
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
-               
+
                 while (rdr.Read())
                 {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
-                    GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
-                    GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    //GlHeadDetails.TEAM_MEM_PPNO = Convert.ToDouble(rdr["TEAM_MEM_PPNO"]);
+                    GlHeadDetails.NAME = rdr["NAME"].ToString();
                     GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
-                    GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
-                    GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
-                    GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
+                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    // GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+
+
+
+                    GlHeadDetails.DAY_END_BALANCE_DATE = Convert.ToDateTime(rdr["DAY_END_BALANCE_DATE"]);
+                    // GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
+                    if (rdr["DEBIT"].ToString() != null && rdr["DEBIT"].ToString() != "")
+                        GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
+                    if (rdr["CREDIT"].ToString() != null && rdr["CREDIT"].ToString() != "")
+                        GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
                 }
             }
@@ -3120,6 +3146,7 @@ periodList.Add(period);
             return list;
 
         }
+
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
             List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
@@ -3166,19 +3193,21 @@ periodList.Add(period);
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();               
+                OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     DepositAccountModel depositaccsubdetails = new DepositAccountModel();
 
-                    depositaccsubdetails.NAME = rdr["NAME"].ToString();
+                    depositaccsubdetails.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
                     if (rdr["ACC_NUMBER"].ToString() != null && rdr["ACC_NUMBER"].ToString() != "")
                         depositaccsubdetails.ACC_NUMBER = Convert.ToDouble(rdr["ACC_NUMBER"]);
                     if (rdr["ACCOUNTCATEGORY"].ToString() != null && rdr["ACCOUNTCATEGORY"].ToString() != "")
                         depositaccsubdetails.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
 
-                    if (rdr["CUST_NAME"].ToString() != null && rdr["CUST_NAME"].ToString() != "")
-                        depositaccsubdetails.CUST_NAME = rdr["CUST_NAME"].ToString();
+                    if (rdr["CUSTOMERNAME"].ToString() != null && rdr["CUSTOMERNAME"].ToString() != "")
+                        depositaccsubdetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    if (rdr["BMVS_VERIFIED"].ToString() != null && rdr["BMVS_VERIFIED"].ToString() != "")
+                        depositaccsubdetails.BMVS_VERIFIED = rdr["BMVS_VERIFIED"].ToString();
 
 
                     if (rdr["OPENINGDATE"].ToString() != null && rdr["OPENINGDATE"].ToString() != "")
@@ -3189,11 +3218,10 @@ periodList.Add(period);
                     {
                         depositaccsubdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
                     }
-                    if (rdr["ACC_TITLE"].ToString() != null && rdr["ACC_TITLE"].ToString() != "")
-                        depositaccsubdetails.ACC_TITLE = rdr["ACC_TITLE"].ToString();
+                    if (rdr["TITLE"].ToString() != null && rdr["TITLE"].ToString() != "")
+                        depositaccsubdetails.TITLE = rdr["TITLE"].ToString();
 
-                    if (rdr["OLDACCOUNTNO"].ToString() != null && rdr["OLDACCOUNTNO"].ToString() != "")
-                        depositaccsubdetails.OLDACCOUNTNO = Convert.ToDouble(rdr["OLDACCOUNTNO"]);
+
                     if (rdr["ACCOCUNTSTATUS"].ToString() != null && rdr["ACCOCUNTSTATUS"].ToString() != "")
                         depositaccsubdetails.ACCOUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
                     if (rdr["LASTTRANSACTIONDATE"].ToString() != null && rdr["LASTTRANSACTIONDATE"].ToString() != "")
@@ -3210,6 +3238,7 @@ periodList.Add(period);
             con.Close();
             return depositaccsublist;
         }
+
         public List<LoanCaseModel> GetBranchDesbursementAccountdetails(int bid = 0)
         {
             sessionHandler = new SessionHandler();
@@ -3229,10 +3258,10 @@ periodList.Add(period);
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
-                 while (rdr.Read())
+                while (rdr.Read())
                 {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
-                    LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    //  LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
                     LoanCaseDetails.LOAN_CASE_NO = Convert.ToInt32(rdr["LOAN_CASE_NO"]);
                     LoanCaseDetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
@@ -3241,7 +3270,7 @@ periodList.Add(period);
                     LoanCaseDetails.PRIN = Convert.ToDouble(rdr["PRIN"]);
                     LoanCaseDetails.MARKUP = Convert.ToDouble(rdr["MARKUP"]);
                     LoanCaseDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
-                    LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
+                    //  LoanCaseDetails.LOAN_DISB_ID = Convert.ToDouble(rdr["LOAN_DISB_ID"]);
                     LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
                     LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
                     list.Add(LoanCaseDetails);
@@ -3250,7 +3279,8 @@ periodList.Add(period);
             con.Close();
             return list;
         }
-              
+
+
         public bool SaveAuditObservation(ObservationModel ob)
         {
             //105400
@@ -5250,6 +5280,9 @@ periodList.Add(period);
                     StaffPositionModel staffposition = new StaffPositionModel();
                     staffposition.PPNO = Convert.ToInt32(rdr["PPNO"]);
                     staffposition.EMPLOYEE_NAME = Convert.ToString(rdr["EMPLOYEE_NAME"]);
+
+                    staffposition.QUALIFICATION = Convert.ToString(rdr["QUALIFICATION"]);
+                    staffposition.DATE_OF_POSTING = Convert.ToDateTime(rdr["DATE_OF_POSTING"]);
                     staffposition.DESIGNATION = Convert.ToString(rdr["DESIGNATION"]);
                     staffposition.RANK_DESC = Convert.ToString(rdr["RANK_DESC"]);
                     staffposition.PLACE_OF_POSTING = Convert.ToString(rdr["PLACE_OF_POSTING"]);
@@ -5261,6 +5294,7 @@ periodList.Add(period);
             con.Close();
             return list;
         }
+
         public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -5338,5 +5372,167 @@ periodList.Add(period);
             }
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
+
+        public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
+        {
+            int ENG_ID = this.GetLoggedInUserEngId();
+            var con = this.DatabaseConnection();
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<Glheadsummaryyearlymodel> list = new List<Glheadsummaryyearlymodel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.p_getglheadsummary_Yearly";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                // cmd.Parameters.Add("GLSUBCODE", OracleDbType.Int32).Value = gl_code;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    Glheadsummaryyearlymodel GlHeadDetails = new Glheadsummaryyearlymodel();
+                    GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
+                    GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
+                    GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    //GlHeadDetails.GL_TYPEID = Convert.ToInt32(rdr["GL_TYPEID"]);
+
+                    //GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+
+
+                    //GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                    if (rdr["BALANCE_2021"].ToString() != null && rdr["BALANCE_2021"].ToString() != "")
+                        GlHeadDetails.BALANCE_2021 = Convert.ToDouble(rdr["BALANCE_2021"]);
+                    if (rdr["DEBIT_2021"].ToString() != null && rdr["DEBIT_2021"].ToString() != "")
+                        GlHeadDetails.DEBIT_2021 = Convert.ToDouble(rdr["DEBIT_2021"]);
+                    if (rdr["CREDIT_2021"].ToString() != null && rdr["CREDIT_2021"].ToString() != "")
+                        GlHeadDetails.CREDIT_2021 = Convert.ToDouble(rdr["CREDIT_2021"]);
+                    if (rdr["BALANCE_2022"].ToString() != null && rdr["BALANCE_2022"].ToString() != "")
+                        GlHeadDetails.BALANCE_2022 = Convert.ToDouble(rdr["BALANCE_2022"]);
+                    if (rdr["DEBIT_2022"].ToString() != null && rdr["DEBIT_2022"].ToString() != "")
+                        GlHeadDetails.DEBIT_2022 = Convert.ToDouble(rdr["DEBIT_2022"]);
+                    if (rdr["CREDIT_2022"].ToString() != null && rdr["CREDIT_2022"].ToString() != "")
+                        GlHeadDetails.CREDIT_2022 = Convert.ToDouble(rdr["CREDIT_2022"]);
+                    list.Add(GlHeadDetails);
+                }
+            }
+            con.Close();
+            return list;
+
+        }
+        public List<DepositAccountCatModel> GetDepositCat()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            int ENG_ID = this.GetLoggedInUserEngId();
+
+            var con = this.DatabaseConnection();
+            List<DepositAccountCatModel> list = new List<DepositAccountCatModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS.P_GetDepositACCOUNTCATEGORY";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    DepositAccountCatModel depcat = new DepositAccountCatModel();
+
+                    depcat.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
+                    depcat.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
+                    depcat.ACCOUNTCATEGORYID = Convert.ToInt32(rdr["ACCOUNTCATEGORYID"]);
+
+                    depcat.ACCOCUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
+
+                    if (rdr["AMOUNT"].ToString() != null && rdr["AMOUNT"].ToString() != "")
+                        depcat.AMOUNT = Convert.ToDouble(rdr["AMOUNT"]);
+
+                    list.Add(depcat);
+                }
+            }
+            con.Close();
+            return list;
+
+        }
+
+        //////////////////////////////////////////////
+        public List<DepositAccountCatDetailsModel> GetDepositAccountcatdetails(int catid = 0)
+
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            int ENG_ID = this.GetLoggedInUserEngId();
+            var con = this.DatabaseConnection();
+            List<DepositAccountCatDetailsModel> depositaccsublist = new List<DepositAccountCatDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS.P_GetDepositACCOUNTCATEGORY_details";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("catid", OracleDbType.Int32).Value = catid;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DepositAccountCatDetailsModel depositaccsubdetails = new DepositAccountCatDetailsModel();
+
+                    depositaccsubdetails.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
+                    if (rdr["ACC_NUMBER"].ToString() != null && rdr["ACC_NUMBER"].ToString() != "")
+                        depositaccsubdetails.ACC_NUMBER = Convert.ToDouble(rdr["ACC_NUMBER"]);
+                    if (rdr["ACCOUNTCATEGORY"].ToString() != null && rdr["ACCOUNTCATEGORY"].ToString() != "")
+                        depositaccsubdetails.ACCOUNTCATEGORY = rdr["ACCOUNTCATEGORY"].ToString();
+
+                    if (rdr["CUSTOMERNAME"].ToString() != null && rdr["CUSTOMERNAME"].ToString() != "")
+                        depositaccsubdetails.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    if (rdr["BMVS_VERIFIED"].ToString() != null && rdr["BMVS_VERIFIED"].ToString() != "")
+                        depositaccsubdetails.BMVS_VERIFIED = rdr["BMVS_VERIFIED"].ToString();
+
+
+                    if (rdr["OPENINGDATE"].ToString() != null && rdr["OPENINGDATE"].ToString() != "")
+                    {
+                        depositaccsubdetails.OPENINGDATE = Convert.ToDateTime(rdr["OPENINGDATE"]);
+                    }
+                    if (rdr["CNIC"].ToString() != null && rdr["CNIC"].ToString() != "")
+                    {
+                        depositaccsubdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
+                    }
+                    if (rdr["TITLE"].ToString() != null && rdr["TITLE"].ToString() != "")
+                        depositaccsubdetails.TITLE = rdr["TITLE"].ToString();
+
+
+                    if (rdr["ACCOCUNTSTATUS"].ToString() != null && rdr["ACCOCUNTSTATUS"].ToString() != "")
+                        depositaccsubdetails.ACCOUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
+                    if (rdr["LASTTRANSACTIONDATE"].ToString() != null && rdr["LASTTRANSACTIONDATE"].ToString() != "")
+                    {
+                        depositaccsubdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
+                    }
+                    if (rdr["CNICEXPIRYDATE"].ToString() != null && rdr["CNICEXPIRYDATE"].ToString() != "")
+                    {
+                        depositaccsubdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
+                    }
+                    depositaccsublist.Add(depositaccsubdetails);
+                }
+            }
+            con.Close();
+            return depositaccsublist;
+        }
+
+
     }
 }
