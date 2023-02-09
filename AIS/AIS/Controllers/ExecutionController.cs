@@ -621,6 +621,27 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult Concluding_Closing_Audit()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult deposit_account_details()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
