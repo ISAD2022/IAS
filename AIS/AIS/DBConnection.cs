@@ -4984,6 +4984,7 @@ periodList.Add(period);
                 cmd.Parameters.Add("V_CAT_NATURE_ID", OracleDbType.Int32).Value = V_CAT_NATURE_ID;
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
                 cmd.Parameters.Add("TEXT", OracleDbType.Clob).Value = REPLY;
+                cmd.Parameters.Add("CREATEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();              
                 success = true;
