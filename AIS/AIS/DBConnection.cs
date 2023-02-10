@@ -11,6 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using System.Reflection.Metadata;
+using iTextSharp.text.pdf;
+using iText.Html2pdf;
 
 namespace AIS
 {
@@ -5372,6 +5376,76 @@ periodList.Add(period);
                 System.IO.Directory.CreateDirectory(folderPath);
             }
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
+        }
+
+        public void CreateAuditReport()
+        {
+            List<ManageObservations> list = new List<ManageObservations>();
+
+            list= this.GetManagedObservations(1010,0);
+            var folderPath = "";
+
+            using (MemoryStream mem = new MemoryStream())
+            {
+                StringBuilder sb = new StringBuilder();
+                //Table For Practice
+
+                sb.Append("<div style=' height:100%; padding:50px;'>\r\n<div style='height:100%; border: 2px solid; padding:20px;'>\r\n\r\n<h2 style='line-height:50px;margin-top:30px; text-align:center; text-transform:uppercase;'>Audit Report on <br/> I.S. AUDIT OF CBAS - 2023</h2>\r\n\r\n\r\n\r\n<h3>Audit Conducted by</h3>\r\n\r\n<p>Asfand Yar Javaid (Team Lead)</p>\r\n<p>Ali Asif (Team Member)</p>\r\n\r\n\r\n\r\n\r\n\r\n</div>\r\n</div>\r\n<div style=' height:100%; padding:50px;'>\r\n<div style='height:100%; border: 2px solid; padding:20px;'>\r\n\r\n<h2 style='line-height:50px;margin-top:30px; text-align:center; text-transform:uppercase;'>Audit Observations/h2>");
+                foreach (ManageObservations ob in list)
+                {
+                    sb.Append("<div>"+ob.OBS_TEXT+"</div>");
+
+                }
+                sb.Append("</div>");
+                sb.Append("</div>");
+
+                string path = "";
+                string filename = "";
+
+                //ltTable.Text = sb.ToString();
+                folderPath = System.IO.Path.Combine(_env.WebRootPath, "Audit_Reports");
+                if (!System.IO.Directory.Exists(folderPath))
+                {
+                    System.IO.Directory.CreateDirectory(folderPath);
+                }
+
+                filename = DateTime.Now.ToFileTimeUtc() + ".Pdf";
+                //path = Path.Combine(contentRootPath, filename + ".Pdf");
+                path = Path.Combine(folderPath, filename);
+
+                PdfWriter writer = new PdfWriter(path);
+
+                PdfDocument pdf = new PdfDocument(writer);
+                ConverterProperties converterProperties = new ConverterProperties();
+                PdfDocument pdfDocument = new PdfDocument(writer);
+
+
+                Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
+
+                var xmlParse = new XMLParser();
+                //document.open();
+                xmlParse.Parse(new StringReader(sb.ToString()));
+                xmlParse.Flush();
+                //pdfDocument.Close();
+
+
+
+                //// Page numbers
+                //int n = pdf.GetNumberOfPages();
+                //for (int i = 1; i <= n; i++)
+                //{
+                //    document.ShowTextAligned(new Paragraph(String
+                //       .Format("page" + i + " of " + n)),
+                //       559, 806, i, TextAlignment.RIGHT,
+                //       VerticalAlignment.TOP, 0);
+                //}
+
+
+                //// Close document
+                document.Close();
+               
+            }
+
         }
 
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)

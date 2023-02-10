@@ -97,21 +97,9 @@
                 $.each(data[2], function (i, v) {
                     $('#evidencePortal').append('<div style="display:inline-block, height:190px; width:190px, border: 2px dashed; margin:5px;"><img style="height:184px; width:184px;" src="data: ' + v.imagE_TYPE + '; base64,' + v.imagE_DATA+'" /></div>')
 
-                    auctionImages.push({
-                        'Name': v.imagE_NAME,
-                        'ImgName': v.imagE_NAME,
-                        'Url': 'data:' + v.imagE_TYPE + ';base64,' + v.imagE_DATA
-                    })
+                  
                 });
-                console.log(auctionImages);
-
-                g_imgLoader = $('[data-type=imagesloaderViewer]').imagesloader({
-                    maxFiles: 10,
-                    minSelect: 1,
-                    imagesToLoad: auctionImages
-                });
-
-
+              
             },
             dataType: "json",
         });
