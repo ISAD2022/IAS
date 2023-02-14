@@ -7,14 +7,14 @@ using System.Text;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Data;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection.Metadata;
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
+using iText.Layout;
 using iText.Html2pdf;
+using iTextSharp.tool.xml.parser;
+
 
 namespace AIS
 {
@@ -27,8 +27,11 @@ namespace AIS
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         public ISession _session;
         public IHttpContextAccessor _httpCon;
-        private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
-        public DBConnection(IHttpContextAccessor httpContextAccessor, Microsoft.AspNetCore.Hosting.IHostingEnvironment env )
+        [Obsolete]
+        private readonly IHostingEnvironment _env;
+
+        [Obsolete]
+        public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env )
         {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
@@ -60,6 +63,8 @@ namespace AIS
             }
             catch (Exception) { return null; }
         }
+
+        [Obsolete]
         public UserModel AutheticateLogin(LoginModel login)
         {
             var con = this.DatabaseConnection();
@@ -167,6 +172,7 @@ namespace AIS
                         cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
                         cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = user.UserPostingAuditZone;
                         cmd.ExecuteReader();
+                        this.CreateAuditReport();
                     }
                 }
             }
@@ -3632,11 +3638,11 @@ periodList.Add(period);
                 cmd.CommandText = "pkg_ais.P_AUDITEE_OBSERVATION_RESPONSE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("AU_OBS_ID", OracleDbType.Int32).Value = ob.AU_OBS_ID;
-                cmd.Parameters.Add("REPLY_DATA", OracleDbType.Clob).Value = ob.REPLY;
+                cmd.Parameters.Add("AUOBSID", OracleDbType.Int32).Value = ob.AU_OBS_ID;
+                cmd.Parameters.Add("REPLYDATA", OracleDbType.Clob).Value = ob.REPLY;
                 cmd.Parameters.Add("REPLIEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("OBS_TEXT_ID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
-                cmd.Parameters.Add("REPLY_ROLE", OracleDbType.Int32).Value = ob.REPLY_ROLE;
+                cmd.Parameters.Add("OBSTEXTID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
+                cmd.Parameters.Add("REPLYROLE", OracleDbType.Int32).Value = ob.REPLY_ROLE;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = ob.REMARKS;
                 cmd.Parameters.Add("SUBMITTED", OracleDbType.Varchar2).Value = ob.SUBMITTED;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -5368,6 +5374,7 @@ periodList.Add(period);
             return true;
         }
 
+        [Obsolete]
         public void SaveImage(string base64img, string outputImgFilename = "image.jpg")
         {
             var folderPath = System.IO.Path.Combine(_env.WebRootPath, "Auditee_Evidences");
@@ -5378,6 +5385,7 @@ periodList.Add(period);
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
 
+        [Obsolete]
         public void CreateAuditReport()
         {
             List<ManageObservations> list = new List<ManageObservations>();
@@ -5418,36 +5426,18 @@ periodList.Add(period);
                 PdfDocument pdf = new PdfDocument(writer);
                 ConverterProperties converterProperties = new ConverterProperties();
                 PdfDocument pdfDocument = new PdfDocument(writer);
-
-
-                Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
+                iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
 
                 var xmlParse = new XMLParser();
                 //document.open();
                 xmlParse.Parse(new StringReader(sb.ToString()));
                 xmlParse.Flush();
-                //pdfDocument.Close();
 
-
-
-                //// Page numbers
-                //int n = pdf.GetNumberOfPages();
-                //for (int i = 1; i <= n; i++)
-                //{
-                //    document.ShowTextAligned(new Paragraph(String
-                //       .Format("page" + i + " of " + n)),
-                //       559, 806, i, TextAlignment.RIGHT,
-                //       VerticalAlignment.TOP, 0);
-                //}
-
-
-                //// Close document
                 document.Close();
                
             }
 
         }
-
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
