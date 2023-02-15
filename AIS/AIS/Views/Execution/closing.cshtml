@@ -84,8 +84,8 @@
                 'ENG_ID': g_engId
             },
             cache: false,
-            success: function () {
-                alert("Audit Closed Successfully");
+            success: function (data) {
+                alert(data.Message);
                 onAlertCallback(reloadLocationToUrl);
             },
             dataType: "json",
@@ -105,13 +105,14 @@
     <table id="auditorWiseProgessTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-2">Auditor</th>
-                <th class="col-md-1">Team Lead</th>
-                <th class="col-md-2">Total Memos</th>
-                <th class="col-md-2">Submitted to Auditee</th>
-                <th class="col-md-2">Responded by Auditee</th>
-                <th class="col-md-1">Resolved</th>
-                <th class="col-md-2">Add to Draft Report</th>
+                <th class="col-md-auto">Auditor</th>
+                <th class="col-md-auto">Team Lead</th>
+                <th class="col-md-auto">Total Memos</th>
+                <th class="col-md-auto">Observation Dropped</th>
+                <th class="col-md-auto">Submitted to Auditee</th>
+                <th class="col-md-auto">Responded by Auditee</th>
+                <th class="col-md-auto">Resolved</th>
+                <th class="col-md-auto">Add to Draft Report</th>
             </tr>
         </thead>
         <tbody>

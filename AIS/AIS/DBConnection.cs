@@ -172,7 +172,7 @@ namespace AIS
                         cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
                         cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = user.UserPostingAuditZone;
                         cmd.ExecuteReader();
-                        this.CreateAuditReport();
+                       // this.CreateAuditReport();
                     }
                 }
             }
@@ -4290,27 +4290,26 @@ periodList.Add(period);
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
+           
             List<ObservationModel> list = new List<ObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ais.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     ObservationModel chk = new ObservationModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-                    chk.ENGPLANID = Convert.ToInt32(rdr["ENGPLANID"]);
-                    chk.STATUS = Convert.ToInt32(rdr["STATUS"]);
-                    chk.ENTEREDBY = Convert.ToInt32(rdr["ENTEREDBY"]);
-                   // chk.REPLYBY = Convert.ToInt32(rdr["REPLYBY"]);
-                    chk.SEVERITY = Convert.ToInt32(rdr["SEVERITY"]);
-                    chk.TEAM_LEAD = rdr["isteamlead"].ToString();
+                    chk.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.ENGPLANID = Convert.ToInt32(rdr["ENGPLANID"].ToString());
+                    chk.STATUS = Convert.ToInt32(rdr["STATUSID"].ToString());
+                    chk.STATUS_NAME = rdr["STATUS"].ToString();
+                    chk.ENTEREDBY = Convert.ToInt32(rdr["ENTEREDBY"].ToString());
+                    chk.SEVERITY = Convert.ToInt32(rdr["SEVERITY"].ToString());
+                    chk.TEAM_LEAD = rdr["isteamlead"].ToString();                    
                     list.Add(chk);
                 }
             }
@@ -4347,23 +4346,33 @@ periodList.Add(period);
             con.Close();
             return list;
         }
-        public bool CloseDraftAuditReport(int ENG_ID)
+        public string CloseDraftAuditReport(int ENG_ID)
         {
+            string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
+            if (ENG_ID == 0)
+                ENG_ID=this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_CloseDraftAuditReport";
+                cmd.CommandText = "pkg_ais.P_Closeaudit";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+
+                }
             }
             con.Close();
-            return true;
+            return resp;
         }
         public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
         {
@@ -4409,9 +4418,6 @@ periodList.Add(period);
         }
         public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
         {
-           
-
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4824,7 +4830,6 @@ periodList.Add(period);
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
-
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ais.P_GetOldParasForResponse";

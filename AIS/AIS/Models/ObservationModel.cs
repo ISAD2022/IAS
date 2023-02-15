@@ -12,6 +12,7 @@ namespace AIS.Models
         public string OBSERVATION_TEXT_PLAIN { get; set; }
         public int ENGPLANID { get; set; }
         public int STATUS { get; set; }
+        public string STATUS_NAME{ get; set; }
         public int ENTEREDBY { get; set; }
         public DateTime ENTEREDDATE { get; set; }
         public int LASTUPDATEDBY { get; set; }

@@ -292,9 +292,11 @@ namespace AIS.Controllers
             return dBConnection.GetClosingDraftTeamDetails(ENG_ID);
         }
         [HttpPost]
-        public bool close_draft_audit(int ENG_ID)
+        public object close_draft_audit(int ENG_ID)
         {
-            return dBConnection.CloseDraftAuditReport(ENG_ID);
+            string response = "";
+            response = dBConnection.CloseDraftAuditReport(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
  		[HttpPost]
         public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE="")
