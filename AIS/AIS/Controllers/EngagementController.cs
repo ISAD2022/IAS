@@ -44,7 +44,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-           // ViewData["TaskList"] = dBConnection.GetTaskList();
+           ViewData["TaskList"] = dBConnection.GetTaskList();
             var loggedInUser=sessionHandler.GetSessionUser();
             ViewData["PPNumber"] = loggedInUser.PPNumber;
             ViewData["EMP_NAME"] = loggedInUser.Name;
