@@ -8,13 +8,27 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Data;
 using System.IO;
+using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection.Metadata;
+<<<<<<< Updated upstream
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Html2pdf;
 using iTextSharp.tool.xml.parser;
 
+=======
+<<<<<<< HEAD
+using iText.Html2pdf;
+using iTextSharp.tool.xml.parser;
+=======
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Html2pdf;
+using iTextSharp.tool.xml.parser;
+
+>>>>>>> 507b966445126146a99a1821790c01326d54ec0a
+>>>>>>> Stashed changes
 
 namespace AIS
 {
@@ -2730,6 +2744,9 @@ periodList.Add(period);
                     tlist.ENG_STATUS = rdr["ENG_STATUS"].ToString();
                     tlist.ENG_NEXT_STATUS = rdr["ENG_NEXT_STATUS"].ToString();
                     tlist.ISACTIVE = rdr["ISACTIVE"].ToString();
+                    tlist.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
+                    tlist.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]);
+                    tlist.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]);
                     tasklist.Add(tlist);
                 }
             }
@@ -3476,6 +3493,10 @@ periodList.Add(period);
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
+                    chk.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
+                    chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]);
+                    chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]);
+
                     chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
                     list.Add(chk);
                 }
@@ -5426,12 +5447,22 @@ periodList.Add(period);
                 //path = Path.Combine(contentRootPath, filename + ".Pdf");
                 path = Path.Combine(folderPath, filename);
 
-                PdfWriter writer = new PdfWriter(path);
+                iText.Kernel.Pdf.PdfWriter writer = new PdfWriter(path);
 
-                PdfDocument pdf = new PdfDocument(writer);
+                iText.Kernel.Pdf.PdfDocument pdf = new PdfDocument(writer);
                 ConverterProperties converterProperties = new ConverterProperties();
                 PdfDocument pdfDocument = new PdfDocument(writer);
+<<<<<<< Updated upstream
                 iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
+=======
+<<<<<<< HEAD
+
+
+  iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
+=======
+                iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
+>>>>>>> 507b966445126146a99a1821790c01326d54ec0a
+>>>>>>> Stashed changes
 
                 var xmlParse = new XMLParser();
                 //document.open();

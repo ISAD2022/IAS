@@ -23,5 +23,9 @@ namespace AIS.Models
         public string ISACTIVE { get; set; }
         public string TEAM_NAME { get; set; }
         public string EMP_NAME { get; set; }
+        public string AUDIT_YEAR { get; set; }
+        public DateTime OPERATION_STARTDATE { get; set; }
+        public DateTime OPERATION_ENDDATE { get; set; }
+
     }
 }
