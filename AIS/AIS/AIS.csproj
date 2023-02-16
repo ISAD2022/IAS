@@ -9,7 +9,6 @@
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="itext7" Version="7.2.5" />
     <PackageReference Include="itext7.pdfhtml" Version="4.0.5" />
-    <PackageReference Include="itextsharp.xmlworker" Version="5.5.13.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.29" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.32" />
@@ -19,6 +18,11 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
+    <PackageReference Include="Portable.itextsharp.xmlworker" Version="5.5.13.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Audit_Reports\" />
   </ItemGroup>
 
 </Project>

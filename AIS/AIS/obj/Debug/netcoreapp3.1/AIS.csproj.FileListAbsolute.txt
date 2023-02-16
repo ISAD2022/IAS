@@ -391,12 +391,10 @@ D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Runtime.
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Runtime.Serialization.Xml.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Claims.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Algorithms.dll
-D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Cng.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Csp.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Encoding.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Primitives.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.X509Certificates.dll
-D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Cryptography.Xml.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.Principal.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\refs\System.Security.SecureString.dll
@@ -1374,3 +1372,9 @@ E:\AIS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.Views.pdb
 E:\AIS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.CopyComplete
 E:\AIS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.genruntimeconfig.cache
 E:\AIS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\System.Formats.Asn1.dll
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\System.Security.Cryptography.Cng.dll
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\System.Security.Cryptography.Pkcs.dll
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\System.Security.Cryptography.Xml.dll
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Security.Cryptography.Cng.dll
+D:\Audit Inspection Sol\ais\AIS\AIS\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Security.Cryptography.Pkcs.dll

@@ -282,7 +282,7 @@ namespace AIS.Controllers
            return dBConnection.GetManagedObservations(ENG_ID);
         }
         [HttpPost]
-        public List<ObservationModel> closing_draft_report_status(int ENG_ID = 0)
+        public List<ClosingDraftTeamDetailsModel> closing_draft_report_status(int ENG_ID = 0)
         {
             return dBConnection.GetClosingDraftObservations(ENG_ID);
         }

@@ -10,25 +10,8 @@ using System.Data;
 using System.IO;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Hosting;
-using System.Reflection.Metadata;
-<<<<<<< Updated upstream
-using iText.Kernel.Pdf;
-using iText.Layout;
 using iText.Html2pdf;
 using iTextSharp.tool.xml.parser;
-
-=======
-<<<<<<< HEAD
-using iText.Html2pdf;
-using iTextSharp.tool.xml.parser;
-=======
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Html2pdf;
-using iTextSharp.tool.xml.parser;
-
->>>>>>> 507b966445126146a99a1821790c01326d54ec0a
->>>>>>> Stashed changes
 
 namespace AIS
 {
@@ -186,7 +169,7 @@ namespace AIS
                         cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
                         cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = user.UserPostingAuditZone;
                         cmd.ExecuteReader();
-                       // this.CreateAuditReport();
+                        this.CreateAuditReport();
                     }
                 }
             }
@@ -4304,7 +4287,7 @@ periodList.Add(period);
             con.Close();
             return resp;
         }
-        public List<ObservationModel> GetClosingDraftObservations(int ENG_ID = 0)
+        public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations(int ENG_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4312,25 +4295,40 @@ periodList.Add(period);
             var con = this.DatabaseConnection();
             var loggedInUser = sessionHandler.GetSessionUser();
            
-            List<ObservationModel> list = new List<ObservationModel>();
+            List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ais.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ObservationModel chk = new ObservationModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"].ToString());
-                    chk.ENGPLANID = Convert.ToInt32(rdr["ENGPLANID"].ToString());
-                    chk.STATUS = Convert.ToInt32(rdr["STATUSID"].ToString());
-                    chk.STATUS_NAME = rdr["STATUS"].ToString();
-                    chk.ENTEREDBY = Convert.ToInt32(rdr["ENTEREDBY"].ToString());
-                    chk.SEVERITY = Convert.ToInt32(rdr["SEVERITY"].ToString());
-                    chk.TEAM_LEAD = rdr["isteamlead"].ToString();                    
+                    ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
+                    chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
+                    if (rdr["TOTAL_NO_OB"].ToString() != null && rdr["TOTAL_NO_OB"].ToString() != "")
+                        chk.TOTAL_NO_OB = Convert.ToInt32(rdr["TOTAL_NO_OB"]);
+
+                    if (rdr["SUBMITTED_TO_AUDITEE"].ToString() != null && rdr["SUBMITTED_TO_AUDITEE"].ToString() != "")
+                        chk.SUBMITTED_TO_AUDITEE = Convert.ToInt32(rdr["SUBMITTED_TO_AUDITEE"]);
+                    if (rdr["RESOLVED"].ToString() != null && rdr["RESOLVED"].ToString() != "")
+                        chk.RESOLVED = Convert.ToInt32(rdr["RESOLVED"]);
+                    if (rdr["RESPONDED"].ToString() != null && rdr["RESPONDED"].ToString() != "")
+                        chk.RESPONDED = Convert.ToInt32(rdr["RESPONDED"]);
+                    if (rdr["DROPPED"].ToString() != null && rdr["DROPPED"].ToString() != "")
+                        chk.DROPPED = Convert.ToInt32(rdr["DROPPED"]);
+                    if (rdr["ADDED_TO_DRAFT"].ToString() != null && rdr["ADDED_TO_DRAFT"].ToString() != "")
+                        chk.ADDED_TO_DRAFT = Convert.ToInt32(rdr["ADDED_TO_DRAFT"]);
+
+
+                    chk.TEAM_MEM_PPNO = Convert.ToInt32(rdr["MEMBER_PPNO"]);
+                    chk.JOINING_DATE = Convert.ToDateTime(rdr["JOINING_DATE"]);
+                    chk.COMPLETION_DATE = Convert.ToDateTime(rdr["COMPLETION_DATE"]);
+                    chk.ISTEAMLEAD = rdr["TEAMLEAD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
                     list.Add(chk);
                 }
             }
@@ -4339,27 +4337,44 @@ periodList.Add(period);
         }
         public List<ClosingDraftTeamDetailsModel> GetClosingDraftTeamDetails(int ENG_ID = 0)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
+
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetClosingDraftTeamDetails";
+                cmd.CommandText = "pkg_ais.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-                    chk.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"]);
-                    chk.TEAM_MEM_PPNO = Convert.ToInt32(rdr["TEAM_MEM_PPNO"]);
-                    chk.JOINING_DATE = Convert.ToDateTime(rdr["ENTEREDDATE"]);
+                    chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
+                    if (rdr["SUBMITTED_TO_AUDITEE"].ToString()!=null && rdr["SUBMITTED_TO_AUDITEE"].ToString() != "")
+                    chk.SUBMITTED_TO_AUDITEE = Convert.ToInt32(rdr["SUBMITTED_TO_AUDITEE"]);
+                    if (rdr["RESOLVED"].ToString() != null && rdr["RESOLVED"].ToString() != "")
+                        chk.RESOLVED = Convert.ToInt32(rdr["RESOLVED"]);
+                    if (rdr["RESPONDED"].ToString() != null && rdr["RESPONDED"].ToString() != "")
+                        chk.RESPONDED = Convert.ToInt32(rdr["RESPONDED"]);
+                    if (rdr["DROPPED"].ToString() != null && rdr["DROPPED"].ToString() != "")
+                        chk.DROPPED = Convert.ToInt32(rdr["DROPPED"]);
+                    if (rdr["ADDED_TO_DRAFT"].ToString() != null && rdr["ADDED_TO_DRAFT"].ToString() != "")
+                        chk.ADDED_TO_DRAFT = Convert.ToInt32(rdr["ADDED_TO_DRAFT"]);
+
+
+                    chk.TEAM_MEM_PPNO = Convert.ToInt32(rdr["MEMBER_PPNO"]);
+                    chk.JOINING_DATE = Convert.ToDateTime(rdr["JOINING_DATE"]);
                     chk.COMPLETION_DATE = Convert.ToDateTime(rdr["COMPLETION_DATE"]);
-                    chk.ISTEAMLEAD = rdr["ISTEAMLEAD"].ToString();
+                    chk.ISTEAMLEAD = rdr["TEAMLEAD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
                     list.Add(chk);
                 }
@@ -5452,20 +5467,12 @@ periodList.Add(period);
                 iText.Kernel.Pdf.PdfDocument pdf = new PdfDocument(writer);
                 ConverterProperties converterProperties = new ConverterProperties();
                 PdfDocument pdfDocument = new PdfDocument(writer);
-<<<<<<< Updated upstream
+
                 iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
-=======
-<<<<<<< HEAD
 
 
-  iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
-=======
-                iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
->>>>>>> 507b966445126146a99a1821790c01326d54ec0a
->>>>>>> Stashed changes
 
                 var xmlParse = new XMLParser();
-                //document.open();
                 xmlParse.Parse(new StringReader(sb.ToString()));
                 xmlParse.Flush();
 

@@ -14,65 +14,22 @@
             g_engId = eng_id;
 
         $.ajax({
-            url: "/ApiCalls/get_team_details",
+            url: "/ApiCalls/closing_draft_report_status",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
             },
             cache: false,
             success: function (data) {
-                $.each(data, function (i, v)
-                {
-                    g_teamMembers.push(v.teaM_MEM_PPNO);
-                    $('#joiningAuditorDetailsTable tbody').append('<tr><td>' + v.teaM_MEM_PPNO + '</td><td>' + v.membeR_NAME + '</td><td>' + v.joininG_DATE.split('T')[0] + '</td><td>' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
-
-                });
-
-                $.ajax({
-                    url: "/ApiCalls/closing_draft_report_status",
-                    type: "POST",
-                    data: {
-                        'ENG_ID': g_engId
-                    },
-                    cache: false,
-                    success: function (data) {
-                        g_obsList = data;
-                       // g_engId = g_obsList[0].engplanid;
-                        $.each(g_teamMembers, function (i, v) {
-                            var totalObs = 0;
-                            var sendToAuditee = 0;
-                            var noresByAuditee = 0;
-                            var settled = 0;
-                            var addToDraft = 0;
-                            var teamLead = 'N';
-                            $.each(g_obsList, function (k, ob) {
-                                if (ob.enteredby == v) {
-                                    totalObs++;
-                                    sendToAuditee++;
-                                    if (ob.status == 4)
-                                        settled++;
-                                    if (ob.status == 5)
-                                        addToDraft++;
-                                    if (ob.status == 2)
-                                        noresByAuditee++;
-                                    if (ob.teaM_LEAD == 'Y')
-                                        teamLead = 'Y';
-                                }
-
-                            });
-                            $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center">' + v + '</td><td class="text-center">' + teamLead + '</td><td class="text-center">' + totalObs + '</td><td class="text-center">' + sendToAuditee + '</td><td class="text-center">' + (totalObs - noresByAuditee) + '</td><td class="text-center">' + settled + '</td><td class="text-center">' + addToDraft + '</td></tr>')
-                        });
-
-                    },
-                    dataType: "json",
-                });
-
-
-               
-            },
+                $('#entityNameField').html(data[0].entitY_NAME);
+                $.each(data,function(i,v){
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td>' + v.teaM_MEM_PPNO + '</td><td>' + v.membeR_NAME + '</td><td>' + v.joininG_DATE.split('T')[0] + '</td><td>' + v.completioN_DATE.split('T')[0] + '</td></tr>');
+                    $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center">' + v.membeR_NAME + '</td><td class="text-center">' + v.isteamlead + '</td><td class="text-center">' + v.totaL_NO_OB + '</td><td class="text-center">' + v.dropped + '</td><td class="text-center">' + v.submitteD_TO_AUDITEE + '</td><td class="text-center">' + v.responded + '</td><td class="text-center">' + v.resolved + '</td><td class="text-center">' + v.addeD_TO_DRAFT + '</td></tr>');
+                });   
+                },
             dataType: "json",
         });
-    });
+        });
     function reloadLocationToUrl() {
         window.location.href ="/Engagement/task_list"
     }
@@ -93,7 +50,7 @@
     }
 </script>
 <div class="row col-md-12 mt-3">
-    <h4 style="display: block; color: #45c545;">Close Audit</h4>
+    <h4 style="display: block; color: #45c545;">Close Audit of <span id="entityNameField"></span></h4>
 </div>
 
 
