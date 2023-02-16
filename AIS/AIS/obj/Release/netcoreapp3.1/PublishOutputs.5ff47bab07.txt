@@ -1,16 +1,6 @@
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\AIS.exe
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Auditee_Evidences\158_K2-Expedition-Pakistan.jpg
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133207427869945653.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133207496043439793.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208253306822502.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208337987666083.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208367116206060.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208437895334545.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208443014914322.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208445397897397.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208446578139650.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208459056777847.Pdf
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133208469809067449.Pdf
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Audit_Reports\133210075867053567.Pdf
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\site.css
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\favicon.ico
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Images\ajax_loader.gif
