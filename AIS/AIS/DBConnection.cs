@@ -48,8 +48,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -3143,7 +3143,7 @@ periodList.Add(period);
 
 
 
-                    GlHeadDetails.DAY_END_BALANCE_DATE = Convert.ToDateTime(rdr["DAY_END_BALANCE_DATE"]);
+                    //GlHeadDetails.DAY_END_BALANCE_DATE = Convert.ToDateTime(rdr["DAY_END_BALANCE_DATE"]);
                     // GlHeadDetails.BALANCE = Convert.ToDouble(rdr["BALANCE"]);
                     if (rdr["DEBIT"].ToString() != null && rdr["DEBIT"].ToString() != "")
                         GlHeadDetails.DEBIT = Convert.ToDouble(rdr["DEBIT"]);
@@ -3156,6 +3156,8 @@ periodList.Add(period);
             return list;
 
         }
+
+
 
         public List<DepositAccountModel> GetDepositAccountdetails()
         {
@@ -5905,7 +5907,7 @@ periodList.Add(period);
                     LoanSchemeModel LoanSchemeDetails = new LoanSchemeModel();
 
                     LoanSchemeDetails.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
-                    LoanSchemeDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
+                    //LoanSchemeDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
                     LoanSchemeDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     LoanSchemeDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
                     LoanSchemeDetails.DISBURSED_AMOUNT = Convert.ToDouble(rdr["DISBURSED_AMOUNT"]);
@@ -5924,7 +5926,6 @@ periodList.Add(period);
             return list;
         }
 
-        /////////////////////////////////////////////////////////////////////
 
         public List<LoanSchemeYearlyModel> GetLoansSchemeYearly()
         {
