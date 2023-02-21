@@ -35,7 +35,7 @@
                     //console.log(data);
                     $.each(data, function (i, v) {
                         console.log(v);
-                        $('#A_P_E_T tbody').append('<tr><td>' + v.auditperiod + '</td><td>' + v.parenT_OFFICE + '</td><td>' + v.enitiY_NAME + '</td><td class="pr-2">' + v.audiT_STARTDATE.split('T')[0] + '</td><td>' + v.audiT_ENDDATE.split('T')[0] + '</td><td>' + v.traveL_DAY + '</td><td>' + v.revenuE_RECORD_DAY + '</td><td>' + v.discussioN_DAY + '</td><td>' + v.teaM_NAME + '</td><td>' + v.membeR_NAME + '</td><td>' + v.status + '</td> </tr>')
+                        $('#A_P_E_T tbody').append('<tr><td>' + v.auditperiod + '</td><td>' + v.parenT_OFFICE + '</td><td>' + v.enitiY_NAME + '</td><td class="pr-2">' + v.audiT_STARTDATE.split('T')[0] + '</td><td>' + v.audiT_ENDDATE.split('T')[0] + '</td><td>' + v.traveL_DAY + '</td><td>' + v.revenuE_RECORD_DAY + '</td><td>' + v.discussioN_DAY + '</td><td>' + v.teaM_NAME + '</td><td>' + v.status + '</td> </tr>')
                     });
                 },
                 dataType: "json",
@@ -66,33 +66,33 @@ List group
 -->
 <div class="row col-md-12 mt-2">
 
-    <div class="row col-md-6 mr-2">
+    <div class="row col-md-12 mr-2">
         <label><b>Period</b></label>
         <select id="auditCriteriaPeriodField" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Audit Period--</option>
             @{
-            if (ViewData["AuditPeriodList"] != null)
-            {
+                if (ViewData["AuditPeriodList"] != null)
+                {
 
-            foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
-            {
-            <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
-            }
+                    foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
+                    {
+                        <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
+                    }
 
-            }
+                }
             }
         </select>
 
- 
+
     </div>
-    <div class="row col-md-6">
-        <label><b> Entity Types</b></label>
-        <select id="A_dept" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0">--Select Entity Types--</option>
+    <!--- <div class="row col-md-6">
+          <label><b> Entity Types</b></label>
+          <select id="A_dept" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
+              <option value="0" id="0">--Select Entity Types--</option>
 
 
-        </select>
-    </div>
+          </select>
+      </div>-->
 
 </div>
 <div class="row col-md-12 w-100 mt-3">
@@ -121,7 +121,7 @@ List group
                 <th>Revenue Record Review Day</th>
                 <th>Discussion Day</th>
                 <th>Team Name</th>
-                <th>Member Name</th>
+                <!--<th>Member Name</th>-->
                 <th>Status</th>
 
 

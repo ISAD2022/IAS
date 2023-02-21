@@ -170,7 +170,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["ReportingDepartmentList"] = dBConnection.Getchildposting();
+           
 
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");

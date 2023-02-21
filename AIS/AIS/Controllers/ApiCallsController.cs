@@ -37,6 +37,12 @@ namespace AIS.Controllers
             return true;
         }
         [HttpPost]
+        public List<AuditPlanEngagementModel> getauditplanengagement(int b_id)
+        {
+            return dBConnection.GetAuditPlanEngagement(b_id);
+        }
+
+        [HttpPost]
         public BranchModel branch_add(BranchModel br)
         {
             if (br.ISACTIVE == "Active")
@@ -287,6 +293,11 @@ namespace AIS.Controllers
             return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
+        public List<FunctionalResponsibilityWiseParas> get_fad_paras(int ENG_ID = 0)
+        {
+            return dBConnection.GetFadBranchesParas(ENG_ID);
+        }
+        [HttpPost]
         public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID=0)
         {
             return dBConnection.GetClosingDraftTeamDetails(ENG_ID);
@@ -331,18 +342,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        [HttpPost]
-        public List<AuditPlanEngagementModel> getauditplanengagement(int b_id)
-        {
-            return dBConnection.GetAuditPlanEngagement(b_id);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [HttpPost]
+         [HttpPost]
         public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
         {
             return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);

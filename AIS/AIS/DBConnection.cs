@@ -48,8 +48,8 @@ namespace AIS
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -169,7 +169,7 @@ namespace AIS
                         cmd.Parameters.Add("UserPostingBranch", OracleDbType.Int32).Value = user.UserPostingBranch;
                         cmd.Parameters.Add("UserPostingAuditZone", OracleDbType.Int32).Value = user.UserPostingAuditZone;
                         cmd.ExecuteReader();
-                        this.CreateAuditReport();
+                        //this.CreateAuditReport();
                     }
                 }
             }
@@ -546,54 +546,7 @@ namespace AIS
             con.Close();
             return periodList;
         }
-		public List<AuditPlanEngagementModel> GetAuditPlanEngagement(int periodid)
-		        {
-            var con = this.DatabaseConnection();
-            List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ais_reports.r_audit_plan_engagement";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("periodid", OracleDbType.Int32).Value = periodid;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
-                {
-                    AuditPlanEngagementModel period = new AuditPlanEngagementModel();
-           
-
-   
-                    period.AUDITPERIOD = rdr["AUDITPERIOD"].ToString();
-                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
-                    period.ENITIY_NAME = rdr["ENITIY_NAME"].ToString(); 
-                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
-
-                    period.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
-
-                    period.AUDIT_ENDDATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
-                    if (rdr["TRAVEL_DAY"].ToString() != null && rdr["TRAVEL_DAY"].ToString() != "")
-                        period.TRAVEL_DAY = Convert.ToInt32(rdr["TRAVEL_DAY"]);
-                    if (rdr["REVENUE_RECORD_DAY"].ToString() != null && rdr["REVENUE_RECORD_DAY"].ToString() != "")
-                        period.REVENUE_RECORD_DAY = Convert.ToInt32(rdr["REVENUE_RECORD_DAY"]);
-                    if (rdr["DISCUSSION_DAY"].ToString() != null && rdr["DISCUSSION_DAY"].ToString() != "")
-                        period.DISCUSSION_DAY = Convert.ToInt32(rdr["DISCUSSION_DAY"]);
-
-                    period.TEAM_NAME = rdr["TEAM_NAME"].ToString();
-                    period.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
-                    period.STATUS = rdr["STATUS"].ToString();
-
-
-periodList.Add(period);
-                }
-            }
-            con.Close();
-            return periodList;
-        }
-
-
-
+		
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
             bool result = false;
@@ -5348,14 +5301,13 @@ periodList.Add(period);
             con.Close();
             return list;
         }
-
         public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-         
+
             List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
             var con = this.DatabaseConnection();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5388,6 +5340,53 @@ periodList.Add(period);
                     para.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
                     para.OBS_RISK = rdr["OBS_RISK"].ToString();
                     para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
+                    para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    list.Add(para);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+        public List<FunctionalResponsibilityWiseParas> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+         
+            List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "PKG_AIS_reports.r_functionalresp";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("CDID", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+
+                while (rdr.Read())
+                {
+                    FunctionalResponsibilityWiseParas para = new FunctionalResponsibilityWiseParas();
+                   // para.PROCESS_ID = Convert.ToInt32(rdr["PROCESS_ID"].ToString());
+                    para.PROCESS = rdr["PROCESS"].ToString();
+                    //para.SUB_PROCESS_ID = Convert.ToInt32(rdr["SUB_PROCESS_ID"].ToString());
+                    //para.VIOLATION = rdr["VIOLATION"].ToString();
+                    //para.CHECK_LIST_DETAIL_ID = Convert.ToInt32(rdr["CHECK_LIST_DETAIL_ID"].ToString());
+                    para.PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    para.OBS_ID = Convert.ToInt32(rdr["OBS_ID"].ToString());
+                    para.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    para.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    para.MEMO_NO = rdr["PARA_NO"].ToString();
+                    para.OBS_TEXT = rdr["GIST_OF_PARAS"].ToString();
+                   // para.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
+                    para.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    //para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
                     para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     list.Add(para);
                 }
@@ -5880,6 +5879,60 @@ periodList.Add(period);
             }
             con.Close();
             return depositaccsublist;
+        }
+
+        public List<AuditPlanEngagementModel> GetAuditPlanEngagement(int periodid)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais_reports.r_audit_plan_engagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Audit_Period", OracleDbType.Int32).Value = periodid;
+
+                cmd.Parameters.Add("auditbyid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+
+                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPlanEngagementModel period = new AuditPlanEngagementModel();
+
+
+
+                    period.AUDITPERIOD = rdr["AUDITPERIOD"].ToString();
+                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
+                    period.ENITIY_NAME = rdr["ENITIY_NAME"].ToString();
+                    period.PARENT_OFFICE = rdr["PARENT_OFFICE"].ToString();
+
+                    period.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
+
+                    period.AUDIT_ENDDATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
+                    if (rdr["TRAVEL_DAY"].ToString() != null && rdr["TRAVEL_DAY"].ToString() != "")
+                        period.TRAVEL_DAY = Convert.ToInt32(rdr["TRAVEL_DAY"]);
+                    if (rdr["REVENUE_RECORD_DAY"].ToString() != null && rdr["REVENUE_RECORD_DAY"].ToString() != "")
+                        period.REVENUE_RECORD_DAY = Convert.ToInt32(rdr["REVENUE_RECORD_DAY"]);
+                    if (rdr["DISCUSSION_DAY"].ToString() != null && rdr["DISCUSSION_DAY"].ToString() != "")
+                        period.DISCUSSION_DAY = Convert.ToInt32(rdr["DISCUSSION_DAY"]);
+
+                    period.TEAM_NAME = rdr["TEAM_NAME"].ToString();
+                    // period.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    period.STATUS = rdr["STATUS"].ToString();
+
+
+                    periodList.Add(period);
+                }
+            }
+            con.Close();
+            return periodList;
         }
 
         public List<LoanSchemeModel> GetLoansScheme()

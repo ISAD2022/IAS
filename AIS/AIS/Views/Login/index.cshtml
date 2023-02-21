@@ -61,6 +61,9 @@
                     $('#submitLoginButton').addClass('d-none');
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
+                    $('#inputPPNoField').attr('disabled', true);
+                    $('#inputPassword').attr('disabled', true);
+
                 } else {
                     if (g_retUrl != null && g_retUrl != "") {
                         window.location.href = g_retUrl;
@@ -74,8 +77,7 @@
             dataType: "json",
         });
     }
-
-  
+     
 
 </script>
 

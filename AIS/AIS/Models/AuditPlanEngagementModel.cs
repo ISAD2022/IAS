@@ -15,7 +15,7 @@ namespace AIS.Models
         public int? REVENUE_RECORD_DAY { get; set; }
         public int? DISCUSSION_DAY { get; set; }
         public string TEAM_NAME { get; set; }
-        public string MEMBER_NAME { get; set; }
+        //public string MEMBER_NAME { get; set; }
         public string STATUS { get; set; }
 
   

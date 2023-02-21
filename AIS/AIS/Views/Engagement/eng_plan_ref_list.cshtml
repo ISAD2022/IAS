@@ -29,15 +29,30 @@
             dataType: "json",
         });
     });
-    function reRecommendEngagementPlan(engId,planId,entityId, op_startDate, op_endDate, startDate, endData, teamId) {
+    function formatDate(d) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+    function reRecommendEngagementPlan(engId, planId, entityId, op_startDate, op_endDate, startDate, endDate, teamId) {
+        console.log(op_startDate, op_endDate, startDate, endDate);
+        
         g_engId = engId;
         g_planId = planId;
         g_entityId = entityId;
         $('#commentsBox').modal('show');
-        $('#selectDateInputField').val(new Date(startDate).toISOString().slice(0, 10));
-        $('#selectEndDateInputField').val(new Date(endData).toISOString().slice(0, 10));
-        $('#selectOPDateInputField').val(new Date(op_startDate).toISOString().slice(0, 10));
-        $('#selectOPEndDateInputField').val(new Date(op_endDate).toISOString().slice(0, 10));
+        $('#selectDateInputField').val(formatDate(startDate));
+        $('#selectEndDateInputField').val(formatDate(endDate));
+        $('#selectOPDateInputField').val(formatDate(op_startDate));
+        $('#selectDateInputField').val(formatDate(op_endDate));
         $('#teamSelectionBox').val(teamId);
     }
       function reloadLocation() {
@@ -142,7 +157,7 @@
                             <td class="col-md-auto">@sDate</td>
                             <td class="col-md-auto">@eDate</td>
                             <td class="col-md-auto">@item.COMMENTS</td>
-                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, @item.PLAN_ID,@item.ENTITY_ID,'@item.OP_STARTDATE', '@item.OP_ENDDATE', '@item.AUDIT_STARTDATE', '@item.AUDIT_ENDDATE', @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
+                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, @item.PLAN_ID,@item.ENTITY_ID,'@item.AUDIT_STARTDATE', '@item.AUDIT_ENDDATE', '@item.OP_STARTDATE','@item.OP_ENDDATE', @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
                         </tr>
 
                     }

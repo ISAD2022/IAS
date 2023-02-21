@@ -63,6 +63,24 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult fad_para_res()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+          
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
 
 
         public IActionResult glhead_yearwise_summary()
