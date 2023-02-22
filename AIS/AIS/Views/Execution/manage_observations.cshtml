@@ -17,7 +17,7 @@
         $('#auditPeriodNameField').val(periodName);
     });
     function reloadLocation() {
-        location.reload();
+        getEntityObservation();
     }
 
     function ObservationViewerPanel(obs_id, status_id, risk_id) {
@@ -25,7 +25,7 @@
         g_riskId = risk_id;
         g_currentStatus = status_id;
         $.ajax({
-            url: "/ApiCalls/get_observation",
+            url: "/ApiCalls/get_dept_observation_text",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -42,26 +42,22 @@
                 if (g_currentStatus == 1) {
                     $('#dropButton_memoReply').removeClass('d-none');
                     $('#submitAuditeeButton_memoReply').removeClass('d-none');
-                    $('#settleButton_memoReply').addClass('d-none');
-                    $('#addDraftButton_memoReply').addClass('d-none');
+
                 } else if (g_currentStatus == 3) {
                     if (g_riskId == 3) {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-                        $('#settleButton_memoReply').removeClass('d-none');
-                        $('#addDraftButton_memoReply').removeClass('d-none');
+
                     } else {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-                        $('#settleButton_memoReply').removeClass('d-none');
-                        $('#addDraftButton_memoReply').removeClass('d-none');
+
                     }
 
                 } else {
                     $('#dropButton_memoReply').addClass('d-none');
                     $('#submitAuditeeButton_memoReply').addClass('d-none');
-                    $('#settleButton_memoReply').addClass('d-none');
-                    $('#addDraftButton_memoReply').addClass('d-none');
+
                 }
 
             },
@@ -156,6 +152,13 @@
                         $('#auditPeriodNameField').val(v.period);
                         $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
                     });
+                    setTimeout(function () {
+                        if (g_obsId != 0) {
+                            var rowpos = $('#manageObsPanel tbody tr#' + g_obsId).position();
+                            $('html').scrollTop(rowpos.top);
+                        }
+                    },200)
+                   
 
                 },
                 dataType: "json",
@@ -300,10 +303,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,23,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
+                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
-                <button id="settleButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 1, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Settle Observation</button>
-                <button id="addDraftButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Add to Draft</button>
+               
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

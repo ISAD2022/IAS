@@ -25,7 +25,7 @@
         });
     });
     function reloadLocation() {
-        location.reload();
+        getEntityObservation();
     }
 
     function ObservationViewerPanel(obs_id, status_id, risk_id) {
@@ -33,7 +33,7 @@
         g_riskId = risk_id;
         g_currentStatus = status_id;
         $.ajax({
-            url: "/ApiCalls/get_observation_branches",
+            url: "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -60,29 +60,23 @@
                 if (g_currentStatus == 1) {
                     $('#dropButton_memoReply').removeClass('d-none');
                     $('#submitAuditeeButton_memoReply').removeClass('d-none');
-                    $('#settleButton_memoReply').addClass('d-none');
-                    $('#addDraftButton_memoReply').addClass('d-none');
+
                 }
                 else if (g_currentStatus == 3) {
                     if (g_riskId == 3) {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-                        $('#settleButton_memoReply').removeClass('d-none');
-                        $('#addDraftButton_memoReply').removeClass('d-none');
+
                     }
                     else {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-                        $('#settleButton_memoReply').removeClass('d-none');
-                        $('#addDraftButton_memoReply').removeClass('d-none');
                     }
 
                 }
                 else {
                     $('#dropButton_memoReply').addClass('d-none');
                     $('#submitAuditeeButton_memoReply').addClass('d-none');
-                    $('#settleButton_memoReply').addClass('d-none');
-                    $('#addDraftButton_memoReply').addClass('d-none');
                 }
 
             },
@@ -93,7 +87,7 @@
     function ObservationUpdatePanel(obs_id) {
         g_obsId = obs_id;
         $.ajax({
-            url: "/ApiCalls/get_observation_branches",
+            url: "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -182,7 +176,6 @@
             dataType: "json",
         });
     }
-
     function finalUpdateMemoContent(obs_id){
         g_obsId = obs_id;      
         $.ajax({
@@ -201,7 +194,6 @@
         });
 
     }
-
     function getEntityObservation() {
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {            
@@ -216,10 +208,17 @@
                     $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
                         if (v.obS_STATUS_ID==1)
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td></td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
+                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td>' + v.nO_OF_INSTANCES + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
                         else
-                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td></td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td>--</td></tr>');
+                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td>' + v.nO_OF_INSTANCES + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td>--</td></tr>');
                     });
+
+                    setTimeout(function () {
+                        if (g_obsId != 0) {
+                            var rowpos = $('#manageObsPanel tbody tr#' + g_obsId).position();
+                            $('html').scrollTop(rowpos.top);
+                        }
+                    }, 200)
 
                 },
                 dataType: "json",
@@ -227,7 +226,6 @@
 
         }
     }
-
 </script>
 
 <div class="row">
@@ -294,13 +292,13 @@
                                     <td>@item.PROCESS</td>
                                     <td>@item.SUB_PROCESS</td>
                                     <td>@item.Checklist_Details</td>
-                                <td></td>
+                                    <td>@item.NO_OF_INSTANCES</td>
                                     <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
                                     <td class="d-none period_name_field">@item.PERIOD</td>
                                     <td>@item.OBS_RISK</td>
                                     <td>@item.OBS_STATUS</td>
                                     <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                    <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>                                   
+                                    <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
                                 </tr>
                         }
                     }
@@ -391,11 +389,10 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,23,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
+                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
-                <button id="settleButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 1, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Settle Observation</button>
-                <button id="addDraftButton_memoReply" onclick="updateObservationStatus(g_obsId, g_currentStatus + 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Add to Draft</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

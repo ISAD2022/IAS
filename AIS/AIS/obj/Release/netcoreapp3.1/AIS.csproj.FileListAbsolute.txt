@@ -1219,9 +1219,4 @@ D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\System.Security.Cr
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\System.Security.Cryptography.Xml.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Security.Cryptography.Cng.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Security.Cryptography.Pkcs.dll
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Pack.cache
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.AIS.Microsoft.AspNetCore.StaticWebAssets.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.build.AIS.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.AIS.props
-D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.AIS.props
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\fad_para_res.cshtml.g.cs

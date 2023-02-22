@@ -12,6 +12,7 @@ namespace AIS.Models
         public int DAYS { get; set; }
         public string ATTACHMENTS { get; set; }
         public string LOANCASE { get; set; }
+        public int NO_OF_INSTANCES { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }
     }
 }
