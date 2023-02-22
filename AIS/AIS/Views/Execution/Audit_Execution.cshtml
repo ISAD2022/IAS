@@ -110,6 +110,7 @@
             'ID': 'obs_0',
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
+            'NO_OF_INSTANCES': $('#viewMemo_noinstances').val(),
             'ATTACHMENTS': ''
         };
         g_memoObj.push(memo);
@@ -191,6 +192,12 @@
 
         <div class="row col-md-12 mt-3">
             <div class="col-md-3">
+                <h5>No of Instances</h5>
+            </div>
+            <div class="col-md-3">
+                <input id="viewMemo_noinstances" class="form-control" type="number" min="1" value="1" />
+            </div>
+            <div class="col-md-3">
                 <h5>No. of Days to Reply</h5>
             </div>
             <div class="col-md-3">
@@ -204,10 +211,11 @@
                     <option value="7">7</option>
                 </select>
             </div>
-            <div class="col-md-2">
+
+            <div class="col-md-3 mt-3">
                 <h5>Attachments</h5>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3 mt-3">
                 <input class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />
             </div>
         </div>

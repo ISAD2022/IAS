@@ -31,6 +31,7 @@ namespace AIS.Models
         public int SUBCHECKLIST_ID { get; set; }
         public int CHECKLISTDETAIL_ID { get; set; }
         public int V_CAT_ID { get; set; }
+        public int NO_OF_INSTANCES { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
         public string TEAM_LEAD { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }

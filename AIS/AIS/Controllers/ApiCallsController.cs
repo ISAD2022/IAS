@@ -186,6 +186,7 @@ namespace AIS.Controllers
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
                 ob.SEVERITY = RISK_ID;
+                ob.NO_OF_INSTANCES = m.NO_OF_INSTANCES;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
                 if (dBConnection.SaveAuditObservation(ob))
@@ -270,6 +271,11 @@ namespace AIS.Controllers
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
         }
         [HttpPost]
+        public List<ManageObservations> get_dept_observation_text(int ENG_ID = 0, int OBS_ID = 0)
+        {
+            return dBConnection.GetManagedObservationText(ENG_ID, OBS_ID);
+        }
+        [HttpPost]
         public List<SubCheckListStatus> get_subchecklist_status(int ENG_ID = 0, int S_ID = 0)
         {
             return dBConnection.GetSubChecklistStatus(ENG_ID, S_ID);
@@ -280,6 +286,11 @@ namespace AIS.Controllers
         public List<ManageObservations> get_observation_branches(int ENG_ID=0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
+        }
+        [HttpPost]
+        public List<ManageObservations> get_observation_text_branches(int ENG_ID = 0, int OBS_ID = 0)
+        {
+            return dBConnection.GetManagedObservationTextForBranches(ENG_ID, OBS_ID);
         }
 
         [HttpPost]
@@ -293,9 +304,9 @@ namespace AIS.Controllers
             return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
-        public List<FunctionalResponsibilityWiseParas> get_fad_paras(int ENG_ID = 0)
+        public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, int PROCESS_DETAIL_ID = 0)
         {
-            return dBConnection.GetFadBranchesParas(ENG_ID);
+            return dBConnection.GetFadBranchesParas(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
         [HttpPost]
         public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID=0)
@@ -389,6 +400,26 @@ namespace AIS.Controllers
             return dBConnection.GetManagedDraftObservations(ENG_ID, OBS_ID);
 
         }
+        [HttpPost]
+        public List<ManageObservations> get_observations_draft_text(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetManagedDraftObservationsText(ENG_ID, OBS_ID);
+
+        }
+
+        [HttpPost]
+        public List<ManageObservations> get_observations_draft_auditee_reply(int ENG_ID, int OBS_ID = 0)
+        {
+            List<ManageObservations> resp = new List<ManageObservations>();
+            ManageObservations m = new ManageObservations();
+            m.OBS_ID = OBS_ID;
+            m.OBS_REPLY = dBConnection.GetLatestAuditeeResponse(OBS_ID);
+            resp.Add(m);
+            return resp;
+        }
+
+
+
         [HttpPost]
         public List<AssignedObservations> get_assigned_observation(int ENG_ID)
         {
@@ -554,13 +585,26 @@ namespace AIS.Controllers
 
         
 
- [HttpPost]
+        [HttpPost]
 
         public bool Join_inspection_team(int e_id = 0, int t_m_ppno = 0, int e_b = 0)
         {
             return true;// dBConnection.InspectionTeamJoining(e_id, t_m_ppno, e_b);
         }
 
+        [HttpPost]
+        public List<JoiningCompletionReportModel> get_joining_completion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
+        {
+            return dBConnection.GetJoiningCompletion(DEPT_ID,AUDIT_STARTDATE,AUDIT_ENDDATE);
+
+        }
+
+        [HttpPost]
+        public List<AuditPlanCompletionReportModel> get_auditplan_completion(int DEPT_ID)
+        {
+            return dBConnection.GetauditplanCompletion(DEPT_ID);
+
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
