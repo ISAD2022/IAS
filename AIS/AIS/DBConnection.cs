@@ -3288,7 +3288,6 @@ namespace AIS
                     else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
                     {
                         addedObsId = Convert.ToInt32(rdr["ID"].ToString());
-
                     }
                 }
                 if (ob.RESPONSIBLE_PPNO != null)
@@ -3318,7 +3317,7 @@ namespace AIS
         }
         public bool SaveAuditObservationCAU(ObservationModel ob)
         {
-            //105400
+
             int addedObsId = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -3455,9 +3454,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
-            var loggedInUser = sessionHandler.GetSessionUser();
-
-        
+            var loggedInUser = sessionHandler.GetSessionUser();        
 
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
