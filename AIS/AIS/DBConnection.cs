@@ -12,6 +12,7 @@ using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Hosting;
 using iText.Html2pdf;
 using iTextSharp.tool.xml.parser;
+using System.Globalization;
 
 namespace AIS
 {
@@ -2033,6 +2034,7 @@ namespace AIS
                     eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
                     eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString());
                     eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString());
+
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
                 }
@@ -3975,7 +3977,7 @@ namespace AIS
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
-                    chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
+                    chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
 
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);

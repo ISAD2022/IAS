@@ -2,12 +2,16 @@
     ViewData["Title"] = "Change Request";
     Layout = "_Layout";
 }
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 <script type="text/javascript">
     var g_engId = 0;
     var g_planId = 0;
     var g_entityId = 0;
     $('#document').ready(function () {
+        $('#selectDateInputField').inputmask();
+        $('#selectEndDateInputField').inputmask();
+        $('#selectOPDateInputField').inputmask();
+        $('#selectOPEndDateInputField').inputmask();
 
         $.ajax({
             url: "/Planning/audit_teams",
@@ -29,22 +33,12 @@
             dataType: "json",
         });
     });
-    function formatDate(d) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-
-        if (month.length < 2)
-            month = '0' + month;
-        if (day.length < 2)
-            day = '0' + day;
-
-        return [year, month, day].join('-');
+    function formatDate(date) {
+        return date;
     }
-    function reRecommendEngagementPlan(engId, planId, entityId, op_startDate, op_endDate, startDate, endDate, teamId) {
+    function reRecommendEngagementPlan(engId, planId, entityId, startDate, endDate, op_startDate, op_endDate, teamId) {
         console.log(op_startDate, op_endDate, startDate, endDate);
-        
+       
         g_engId = engId;
         g_planId = planId;
         g_entityId = entityId;
@@ -52,32 +46,57 @@
         $('#selectDateInputField').val(formatDate(startDate));
         $('#selectEndDateInputField').val(formatDate(endDate));
         $('#selectOPDateInputField').val(formatDate(op_startDate));
-        $('#selectDateInputField').val(formatDate(op_endDate));
+        $('#selectOPEndDateInputField').val(formatDate(op_endDate));
         $('#teamSelectionBox').val(teamId);
+
+
+        //$('#selectDateInputField').attr('type', 'date');
+        //$('#selectEndDateInputField').attr('type', 'date');
+        //$('#selectOPDateInputField').attr('type', 'date');
+        //$('#selectOPEndDateInputField').attr('type', 'date');
     }
       function reloadLocation() {
         location.reload();
+    }
+    function validateDate(value) {
+        var error = 0;
+        if (value.indexOf("d") >= 0)
+            error++;
+        if (value.indexOf("m") >= 0)
+            error++;
+        if (value.indexOf("y") >= 0)
+            error++;
+
+        if (error == 0)
+            return true;
+        else
+            return false;
+
+
     }
     function finalreRecommendEngagementPlan() {
         if ($('#commentsAreaEnteredBox').val() == "") {
             alert("Enter Comments to Proceed"); return false;
         }
-         if ($('#selectOPDateInputField').val() == "") {
-            alert("Enter Opearational Start Date to Proceed"); return false;
+        if (!validateDate($('#selectOPDateInputField').val())) {
+            alert("Enter Correct Opearational Start Date to Proceed"); return false;
         }
-        if ($('#selectOPEndDateInputField').val() == "") {
-            alert("Enter Operational End Date to Proceed"); return false;
-        }
-        if ($('#selectDateInputField').val() == "") {
-            alert("Enter Start Date to Proceed"); return false;
-        }
-        if ($('#selectEndDateInputField').val() == "") {
-            alert("Enter End Date to Proceed"); return false;
+        if (!validateDate($('#selectOPEndDateInputField').val())) {
+        
+            alert("Enter Correct Operational End Date to Proceed"); return false;
+            }
+        if (!validateDate($('#selectDateInputField').val())) {
+        
+            alert("Enter Correct Start Date to Proceed"); return false;
+                }
+        if (!validateDate($('#selectEndDateInputField').val())) {
+        
+            alert("Enter Correct End Date to Proceed"); return false;
         }
         if ($('#teamSelectionBox').val() == "") {
             alert("Select Team to Proceed"); return false;
         }
-        
+
         $.ajax({
             url: "/ApiCalls/rerecommend_engagement_plan",
                 type: "POST",
@@ -157,7 +176,7 @@
                             <td class="col-md-auto">@sDate</td>
                             <td class="col-md-auto">@eDate</td>
                             <td class="col-md-auto">@item.COMMENTS</td>
-                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, @item.PLAN_ID,@item.ENTITY_ID,'@item.AUDIT_STARTDATE', '@item.AUDIT_ENDDATE', '@item.OP_STARTDATE','@item.OP_ENDDATE', @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
+                            <td class="col-md-auto"><a onclick="reRecommendEngagementPlan(@item.ENG_ID, @item.PLAN_ID,@item.ENTITY_ID, '@sDate', '@eDate', '@osDate', '@oeDate', @item.TEAM_ID);" href="#" class="text-danger text-hover">Recommend Again</a></td>
                         </tr>
 
                     }
@@ -179,23 +198,23 @@
                 <form>
                      <div class="form-group">
                         <label for="selectOPDateInputField">Operational Start Date</label>
-                        <input id="selectOPDateInputField" class="form-control" type="date" />
+                        <input id="selectOPDateInputField" data-inputmask="'alias': 'date'" class="form-control" type="text" />
                     </div>
                     <div class="form-group">
                         <label for="selectOPEndDateInputField">Operational End Date</label>
-                        <input id="selectOPEndDateInputField" class="form-control" type="date" />
+                        <input id="selectOPEndDateInputField" data-inputmask="'alias': 'date'" class="form-control" type="text" />
                     </div>
                     <div class="form-group">
                         <label for="selectDateInputField">Start Date</label>
-                        <input id="selectDateInputField" class="form-control" type="date" />
+                        <input id="selectDateInputField" data-inputmask="'alias': 'date'" class="form-control" type="text" />
                     </div>
                     <div class="form-group">
                         <label for="selectEndDateInputField">End Date</label>
-                        <input id="selectEndDateInputField" class="form-control" type="date" />
+                        <input id="selectEndDateInputField" data-inputmask="'alias': 'date'" class="form-control" type="trxt" />
                     </div>
 
                     <div class="form-group">
-                        <label for="selectEndDateInputField">Audit Team</label>
+                        <label for="teamSelectionBox">Audit Team</label>
                         <select id="teamSelectionBox" class="form-select form-control" aria-label="Default select example">
                         </select>
                     </div>
