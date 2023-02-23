@@ -304,9 +304,9 @@ namespace AIS.Controllers
             return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
-        public List<FunctionalResponsibilityWiseParas> get_fad_paras(int ENG_ID = 0)
+        public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, int PROCESS_DETAIL_ID = 0)
         {
-            return dBConnection.GetFadBranchesParas(ENG_ID);
+            return dBConnection.GetFadBranchesParas(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
         [HttpPost]
         public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID=0)
@@ -599,6 +599,14 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<AuditPlanCompletionReportModel> get_auditplan_completion(int DEPT_ID)
+        {
+            return dBConnection.GetauditplanCompletion(DEPT_ID);
+
+        }
+
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -5452,52 +5452,7 @@ namespace AIS
             return list;
         }
 
-        public List<FunctionalResponsibilityWiseParas> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var loggedInUser = sessionHandler.GetSessionUser();
-         
-            List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
-            var con = this.DatabaseConnection();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "PKG_AIS_reports.r_functionalresp";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-
-                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = PROCESS_ID;
-                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
-                cmd.Parameters.Add("CDID", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-
-
-                while (rdr.Read())
-                {
-                    FunctionalResponsibilityWiseParas para = new FunctionalResponsibilityWiseParas();
-                   // para.PROCESS_ID = Convert.ToInt32(rdr["PROCESS_ID"].ToString());
-                    para.PROCESS = rdr["PROCESS"].ToString();
-                    //para.SUB_PROCESS_ID = Convert.ToInt32(rdr["SUB_PROCESS_ID"].ToString());
-                    //para.VIOLATION = rdr["VIOLATION"].ToString();
-                    //para.CHECK_LIST_DETAIL_ID = Convert.ToInt32(rdr["CHECK_LIST_DETAIL_ID"].ToString());
-                    para.PERIOD = rdr["AUDIT_PERIOD"].ToString();
-                    para.OBS_ID = Convert.ToInt32(rdr["OBS_ID"].ToString());
-                    para.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    para.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
-                    para.MEMO_NO = rdr["PARA_NO"].ToString();
-                    para.OBS_TEXT = rdr["GIST_OF_PARAS"].ToString();
-                   // para.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
-                    para.OBS_RISK = rdr["OBS_RISK"].ToString();
-                    //para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
-                    para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
-                    list.Add(para);
-                }
-            }
-            con.Close();
-            return list;
-        }
+        
         public bool AddDivisionalHeadRemarksOnFunctionalLegacyPara(int CONCERNED_DEPT_ID = 0, string COMMENTS = "", int REF_PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -6135,6 +6090,42 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        public List<FadOldParaReportModel> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            List<FadOldParaReportModel> list = new List<FadOldParaReportModel>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "PKG_AIS_reports.r_functionalresp";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("CDID", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    FadOldParaReportModel para = new FadOldParaReportModel();
+
+                    para.PERIOD = Convert.ToInt32(rdr["PERIOD"].ToString());
+                    para.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    para.PROCESS = rdr["PROCESS"].ToString();
+                    para.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    para.VIOLATION = rdr["VIOLATION"].ToString();
+                    para.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    para.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    list.Add(para);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
         public List<JoiningCompletionReportModel> GetJoiningCompletion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
         {
             List<JoiningCompletionReportModel> list = new List<JoiningCompletionReportModel>();
@@ -6165,6 +6156,39 @@ namespace AIS
                     jc.STATUS = rdr["STATUS"].ToString();
 
                     list.Add(jc);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+        public List<AuditPlanCompletionReportModel> GetauditplanCompletion(int DEPT_ID)
+        {
+            List<AuditPlanCompletionReportModel> list = new List<AuditPlanCompletionReportModel>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS_REPORTS.R_AUDITPLANPROGRESS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("DEPT_ID", OracleDbType.Int32).Value = DEPT_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPlanCompletionReportModel jac = new AuditPlanCompletionReportModel();
+
+                    jac.AUDITNAME = rdr["AUDITNAME"].ToString();
+                    jac.AUDITS = Convert.ToInt32(rdr["AUDITS"].ToString());
+                    jac.ENGPLAN = Convert.ToInt32(rdr["ENGPLAN"].ToString());
+                    jac.JOINING = Convert.ToInt32(rdr["JOINING"].ToString());
+                    jac.COMPLETED = Convert.ToInt32(rdr["COMPLETED"].ToString());
+                    jac.OBSERVATIONS = Convert.ToInt32(rdr["OBSERVATIONS"].ToString());
+                    jac.HIGHRISKPARA = Convert.ToInt32(rdr["HIGHRISKPARA"].ToString());
+                    jac.MEDIUMRISKPARA = Convert.ToInt32(rdr["MEDIUMRISKPARA"].ToString());
+                    jac.LOWRISKPARA = Convert.ToInt32(rdr["LOWRISKPARA"].ToString());
+                    list.Add(jac);
                 }
             }
             con.Close();

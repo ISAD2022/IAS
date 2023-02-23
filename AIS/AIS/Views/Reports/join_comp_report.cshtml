@@ -21,13 +21,21 @@
                 $.each(data, function (i, v) {
                     v.joininG_DATE = v.joininG_DATE.split('T')[0];
                     var d, m, y, jd;
+
                     d = v.joininG_DATE.split('-')[2];
                     m = v.joininG_DATE.split('-')[1];
                     y = v.joininG_DATE.split('-')[0];
                     y = y.substring(2,4);
-                    jd = d + '-' + m + '-' + y;
+                    jd = d + '-' + m + '-' + y;               
+
                     v.completioN_DATE = v.completioN_DATE.split('T')[0];
-                    $('#JoiningCompletionGrid tbody').append('<tr><td>' + sr + '</td><td>' + v.audiT_BY + '</td><td>' + v.auditeE_NAME + '</td><td>' + v.teaM_NAME + '</td><td>' + v.ppno + '</td><td>' + v.name + '</td><td>' + v.teaM_LEAD + '</td><td>' + jd + '</td><td>' + v.completioN_DATE + '</td><td>' + v.status+'</td></tr>');
+                    var cd, cm, cy, cdd;
+                    cd = v.completioN_DATE.split('-')[2];
+                    cm = v.completioN_DATE.split('-')[1];
+                    cy = v.completioN_DATE.split('-')[0];
+                    cy = cy.substring(2, 4);
+                    cdd = cd + '-' + cm + '-' + cy;
+                    $('#JoiningCompletionGrid tbody').append('<tr><td>' + sr + '</td><td>' + v.audiT_BY + '</td><td>' + v.auditeE_NAME + '</td><td>' + v.teaM_NAME + '</td><td>' + v.ppno + '</td><td>' + v.name + '</td><td>' + v.teaM_LEAD + '</td><td>' + jd + '</td><td>' + cdd + '</td><td>' + v.status+'</td></tr>'); 
                     sr++;
 
                 });
@@ -80,7 +88,7 @@
 </div>
 
 <div class="row col-md-12 w-100 mt-3">
-    <button onclick="FindJoiningCompletionData();" class="btn btn-primary">Find</button>
+    <button onclick="FindJoiningCompletionData();" cache: false, class="btn btn-primary">Find</button> 
 </div>
 
 <div class="mt-3">

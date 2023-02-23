@@ -73,9 +73,8 @@
                 g_obsList = data;
                 $('#observation_panel tbody').empty();
                 $.each(data, function (i, v) {
-                    $('#observation_panel tbody').append('<tr id="' + v.obS_ID + '"><td>' + v.entitY_NAME + '</td><td>' + v.violation + '</td><td>' + v.period + '</td><td class="text-center">' + v.memO_NO + '</td><td><a href="#" onclick="ShowMemo(' + v.obS_ID + ');">View Observation</a></td><td>' + v.obS_RISK + '</td><td><a href="#" onclick="ShowComments(' + v.obS_ID + ');">Comments</a></td></tr>');
-
-                });
+                    $('#observation_panel tbody').append('<tr><td>' + v.period + '</td><td>' + v.entitY_NAME + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.violation + '</td><td>' + v.obS_TEXT + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td></tr>');
+                 });
 
 
             },
@@ -129,7 +128,7 @@
 </script>
 <div class="row col-md-12">
     <div class="col-md-12 mt-3">
-        <center class="w-100"><h3>Functional Responsibilities wise Paras</h3></center>
+        <center class="w-100"><h3>Violation Wise Paras</h3></center>
         <div>
             <h5>Process</h5>
         </div>
@@ -164,11 +163,12 @@
         <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th>Name of Audit Report</th>
-                    <th>Nature of Violation</th>
                     <th>Audit Year</th>
-                    <th>Para No. Outstanding</th>
-                    <th>Observation</th>
+                    <th>Entity Name</th>
+                    <th>CheckList</th>
+                    <th>Sub CHecklist</th>
+                    <th>Violation</th>
+                    <th>Gist of Para</th>
                     <th>Risk Category</th>
                     <th>Action</th>
                 </tr>
