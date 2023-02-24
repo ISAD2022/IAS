@@ -5485,287 +5485,56 @@ namespace AIS
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
 
-        [Obsolete]
-        public void CreateAuditReport()
+        public string CreateAuditReport(int ENG_ID)
         {
             List<ManageObservations> list = new List<ManageObservations>();
-
-            list= this.GetManagedObservations(1010,0);
+            string filename = "";
+            list = this.GetManagedObservations(ENG_ID, 0);
             var folderPath = "";
-
+            string entityname = list[0].ENTITY_NAME;
+            string period = list[0].PERIOD;
             using (MemoryStream mem = new MemoryStream())
             {
                 StringBuilder sb = new StringBuilder();
                 //Table For Practice
+                sb.Append(@"<center><h1><u>Audit Report on " + entityname + " </u></h1><h3>" + period + "</h3><h3>Version: Draft</h3></center>");
 
-                sb.Append(@"<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><strong><u>I.S. AUDIT OF CDMS-DPC MODULE -2023</u></strong></p>
-<p><strong><u>By </u></strong></p>
-<p><u>&nbsp;</u></p>
-<p><u>INFORMATION SYSTEMS AUDIT DEPARTMENT</u></p>
-<p><u>Version: Final</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><u>&nbsp;</u></p>
-<p><strong>Audit Team:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-<p>&nbsp; &nbsp; &nbsp; 1.<strong>&nbsp;&nbsp; Arshad Javed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>(Team Lead)</p>
-<ol start='2'>
-<li><strong>Asfand Yar Javaid&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>(Team Member)</li>
-</ol>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong></p>
-<p><strong>Audit Duration</strong>:&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 02<sup>nd</sup> Jan, 2023 &ndash; 13<sup>th</sup> Jan, 2023</p>
-<p><strong>BACKGROUND</strong></p>
-<p>As per approved I.S Audit Plan 2023, Audit of CDMS-DPC Module-2023 Process was carried out during the month of January 2023.</p>
-<p><strong>OBJECTIVE</strong></p>
-<p>Assess the operational capacity of application w.r.t. regulatory instructions/guidelines, business needs, report generation to ascertain accuracy, and security controls in data capturing and processing to ensure confidentiality and integrity.</p>
-<p><strong>SCOPE</strong></p>
-<p>Activities to be reviewed include following as per regulatory guidelines:</p>
-<ul>
-<li>Operational Capacity</li>
-<li>Report Generation</li>
-<li>Security Controls</li>
-<li>Data Capturing &amp; Processing</li>
-</ul>
-<p><strong>METHODOLOGY</strong></p>
-<p>I.S Audit was carried out by requesting relevant documents as per scope. To understand CDMS-DPC Module data compilation, validation and submission process, requirements as per regulatory instructions were submitted to concerned quarters. Audit team reviewed the requested documents and conducted several meetings with concerned personnel to understand the functionality of the DPC Process.&nbsp;</p>
-<p><strong>DISCLAIMER</strong></p>
-<p>This report does not involve full evaluation of existing systems and controls that is the responsibility of the management. This report is on the basis of data provided and time allocated, hence does not claims to be a comprehensive record of all the existing weaknesses.</p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>INTRODUCTION</strong></p>
-<p>Deposit Protection Corporation (DPC) a subsidiary of State Bank of Pakistan has been established for the protection of small depositors to compensate the depositors for losses incurred by them to the extent of protected deposits in the event of failure of a member institution.</p>
-<p>All member banks are advised to appropriately install or update their systems including software(s)/ database(s) for maintaining a comprehensive depositor-wise database. Such database must have the ability to identify, on any given date, all the accounts of any single depositor and calculate the total liability of a bank towards that depositor (including any interest/ profit accrued on his/ her deposits). This Management Information System (MIS) will be used by DPC in the event of reimbursement at any given cut-off date.</p>
-<p>In order to achieve banking industry-wide standardization of Single Depositor View (SDV) report, a standard format of the report has been developed by the DPC and to facilitate banks in understanding the fields of report and reporting requirements, a document titled &ldquo;Explanatory Notes on Single Depositor View (SDV) Data&rdquo; has also been prepared by SBP.</p>
-<p>At ZTBL, Single Depositor View (SDV) has been developed within ISD as per format provided by DPC.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><strong>EXECUTIVE SUMMARY</strong></p>
-<p>As per approved I.S. Audit Plan 2023 and regulatory compulsion of audit of DPC Process. I.S. Audit of &ldquo;CDMS-DPC Module-2023&rdquo; was carried out. Consolidated management response against the draft report was sought by auditee after the meeting held in the office of Head(ISAD) on 25-01-2023.</p>
-<p>Brief findings of the audit are:</p>
-<p><strong><u>UN-SETTLED </u></strong></p>
-<ul>
-<li>Available balance reflected in SDV dashboard against individual depositor does not match with the running balance in account statement available in iMIS of that respective depositor.</li>
-<li>Total 631 records are observed under SDV Exception Report in iMIS, i.e. records with incomplete/missing data, this is in conflict with regulatory instructions.</li>
-<li>Neither any ownership details of DPC process nor any documented SOPs for processes like data acquisition, validation, aggregation and updating at respective regulatory portal exists.</li>
-</ul>
-<p><strong><u>SETTLED</u></strong></p>
-<ul>
-<li>The readiness and regular testing of information system was not being performed; as the record available on Single Depositor View (SDV) in iMIS reflect reporting date of 01-10-2021. Moreover, the readiness and efficacy exclusively for DPC record was also not being performed in BCP exercise.</li>
-<li>Few depositor profiles are being maintained in CDMS while some are being maintained in CBAS. Therefore, the current solution to generate aggregated DPC report is not fully automated. At present, manual excel file is being created on data received from CDMS and CBAS for creation of aggregated DPC report.</li>
-<li>The &ldquo;single depositor view&rdquo;, available in iMIS, caters only CDMS depositors. while, depositors maintained in CBAS is not the part of same. Thus the regulatory instruction of &ldquo;single depositor view&rdquo; is not fully complied.</li>
-</ul>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p><strong>AUDIT OBSERVATIONS</strong></p>
-<ol>
-<li>Deposit Protection Corporation (DPC) had issued Circular No. 01 of 2019 dated March 15, 2019 on &lsquo;Information System for Protected Depositors of Member Banks&rsquo; where all member banks were required to appropriately install or update their systems including software(s)/ database(s) for maintaining a comprehensive depositor-wise database. Such a database is required to identify, on any given date, all accounts of any single depositor and calculate the total liability of a bank towards that depositor (including any interest/ profit accrued till the given date) referred as &ldquo;Single Depositor View (SDV)&rdquo;.</li>
-</ol>
-<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A Standardized Reporting Format (SRF) for Single Depositor View (SDV) has been provided by DPC of SBP. The format contains fields like Account Balance PKR, Total Balance&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; PKR, Available Balance PKR etc. However, upon assessment of accuracy of data, it is observed that the available balance reflected in SDV dashboard against individual&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; depositor does not match with the running balance in account statement available in iMIS of that respective depositor.</p>
-<p><strong>Risk Category</strong></p>
-<p><strong>High</strong></p>
-<p>Inaccurate data causes ambiguity, miss reporting and may result in regulatory penalties.</p>
-<p><strong>Recommendation</strong></p>
-<p>All measures should be taken to improve the accuracy of data, so that the risk of any punitive action can be avoided.</p>
-<p><strong>Management Reply</strong></p>
-<p>The reports related to DPC and SDV data can be generated at any point of time via iMIS subject to the removal of all types of DPC data exceptions with the coordination of Branch Operations and BP&amp;SMD. In case of where account statement is required, please make sure the account statements are being generated for currently data available from 01 January 2021 onward as old data is offloaded in historical database. Sample data may be shared for review and rectification if required.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>The Software/Utility to generate data of eligible depositors/deposit and Single Depositor View (SDV) in accordance with SBP Circular has been developed, tested and accepted by business users for implementation in production environment. Copy of UAT report is attached for ready reference.</p>
-<p>&nbsp;</p>
-<p>The following options are available in iMIS to generate data of Eligible depositors for SBP:</p>
-<ol>
-<li>Execute process to generate data for a specific date range.</li>
-<li>Generate/Extract data in Excel format</li>
-<li>Generate exceptions (If any):</li>
-</ol>
-<p>Para may kindly be settled.</p>
-<p><strong>Audit Reply</strong></p>
-<p>As per guidelines of DPC, Banks are instructed to give due consideration to regular verification/ update of their depositors&rsquo; key information such as contact details, mailing address, account type, account status etc. Therefore, the para remains un-settled till the accuracy of DPC data at respective portal is maintained.</p>
-<p><strong>Status</strong></p>
-<p>Un-Settled</p>
-<p>&nbsp;</p>
-<ol start='2'>
-<li>DPC instructions vide CL-01-Annex-B under Completeness of Data states:</li>
-</ol>
-<p><strong>Quote</strong></p>
-<p>Incomplete information impedes the reimbursement process requiring frequent manual assessments/ efforts resulting in extended delays of payments to protected depositors. Therefore, completeness of data may be regarded as the most important aspect of SDV database. In this connection, bank should give due consideration to regular verification/ update of their depositors&rsquo; key information such as contact details, mailing address, account type, account status etc.</p>
-<p><strong>Un-Quote</strong></p>
-<p>Despite the importance of completeness of data as mentioned in above instruction; total 631 records are observed under SDV Exception Report in iMIS, i.e. records with incomplete/missing data fields.</p>
-<p><strong>Risk Category</strong></p>
-<p><strong>High</strong></p>
-<p>Data completeness remains doubtful in presence of large amount of exceptional data that may further lead to regulatory penalties.</p>
-<p><strong>Recommendation</strong></p>
-<p>All efforts must be made to remove the exceptions against the depositor record to ensure data accuracy and completeness.</p>
-<p><strong>Management Reply</strong></p>
-<p>Demand-based SDV data generation and exception list is available in iMIS.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>Options to generate reports/data of eligible depositors and SDV is already available in iMIS in accordance with SBP regulations. It may be noted that ZTBL data of depositors (Legacy Data) also includes a number of exceptions which needs data cleansing. This pertains to business quarters. ISD is available to support all types of business decisions. Para may be settled from ISD side.</p>
-<p>Para may kindly be settled.</p>
-<p><strong>Audit Reply</strong></p>
-<p>As per management reply data cleansing issues still prevails, therefore, the Para remains un-settled till the rectification of issue.</p>
-<p><strong>Status</strong></p>
-<p>Un-Settled</p>
-<p>&nbsp;</p>
-<ol start='3'>
-<li>The DPC is a regulatory subsidiary that instructs provisioning of accurate and complete data to regulatory authority. However, upon assessment of DPC process within the Bank it is observed that neither any ownership details of different processes of DPC are available nor any documented SOPs for processes like data acquisition, validation, aggregation and updating at respective regulatory portal exists.</li>
-</ol>
-<p><strong>Risk Category</strong></p>
-<p><strong>High</strong></p>
-<p>In absence of ownership, accuracy and completeness of data cannot be ensured. Moreover, accountability against any negligence may also get compromised, thus resulting in financial and reputational loss to the Bank.</p>
-<p><strong>Recommendation</strong></p>
-<p>Ownership details along with respective SOPs needs to be documented to make the entire process swift, accurate and complete.</p>
-<p><strong>Management Reply</strong></p>
-<p>Matter does not pertain to SD&amp;MD. UAT attached for ready reference at <strong><u>FLAG-A</u></strong> please.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>Submission of SDV and eligible depositors&rsquo; data to SBP is a part of data submission to SBP already done by Regulatory compliance department.</p>
-<p><strong>Audit Reply</strong></p>
-<p>The Para will remain unsettled till the provision of SOPs regarding all relevant processes of DPC along with their respective ownership details.</p>
-<p>Audit also recommends formation of committee with all relevant stakeholders for the development of respective SOPs and process ownerships.</p>
-<p><strong>Status</strong></p>
-<p>Un-Settled</p>
-<p>&nbsp;</p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>&nbsp;</strong></p>
-<p><strong>AUDIT COMMENTS</strong></p>
-<p>During course of audit, following observation was raised in draft audit report. These observations are settled by Head (ISAD) in final audit report after auditee took necessary action and was able to provide acceptable compliance against these observations:</p>
-<ul>
-<li>Para-8 of DPC Circular No. 1 of 2019 specified as &ldquo;the information systems/ SDV database&rsquo;s readiness and efficacy should be tested at regular intervals by the relevant department(s) under the operational risk framework of each bank and also under Business Continuity Planning (BCP) exercise.&rdquo;</li>
-</ul>
-<p>However, upon assessment of SDV, it is observed that the readiness and regular testing of information system is not being performed; as the record available on Single Depositor View (SDV) in iMIS reflect reporting date of 01-10-2021.</p>
-<p>Moreover, the readiness and efficacy exclusively for DPC record is also not being performed in BCP exercise.</p>
-<p><strong>Management Reply</strong></p>
-<p>Demand-based SDV data generation is available in iMIS. Infrastructure, Business continuity Planning (BCP) exercise are conducted regularly as per regulatory and internal guidelines.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>Regular BCP activity covers all the business applications like CDMS, CBAS, IMIS, etc. Similarly, SDV database / application also reside on same infrastructure servers. Therefore, no issues related to SDV is observed and SDV is covered in BCP exercise.</p>
-<p>Para may kindly be settled.</p>
-<p>&nbsp;</p>
-<ul>
-<li>DPC Circular No. 01 dated March 15, 2019, Point 3 states that:</li>
-</ul>
-<p><strong>Quote</strong></p>
-<p><strong>&ldquo;</strong>all member banks are advised to appropriately install or update their systems including software(s)/ database(s) for maintaining a comprehensive depositor-wise database. Such database must have the ability to identify, on any given date, all the accounts of any single depositor and calculate the total liability of a bank towards that depositor (including any interest/ profit accrued on his/ her deposits). This Management Information System (MIS) will be used by DPC in the event of reimbursement at any given cut-off date.<strong>&rdquo;</strong></p>
-<p><strong>Un-Quote </strong></p>
-<p>The instruction against aggregated DPC report against same depositor as narrated in the Appendix-A (i) and Appendix-A (ii) states that:</p>
-<p><strong>Quote</strong></p>
-<p><strong>&ldquo;</strong>If a depositor has more than one deposit accounts! instruments including branchless banking accounts. all those of the same depositor shall be aggregated and shall be reported as a single depositor.&rdquo;</p>
-<p><strong>Un-Quote</strong></p>
-<p>Upon assessment of above instructions, it is observed that few depositor profiles are being maintained in CDMS while some are being maintained in CBAS. However, no automated solution is currently available for the aggregated DPC report. At present, manual excel file is created on data received from CDMS and CBAS for creation of aggregated DPC report.</p>
-<p><strong>Management Reply</strong></p>
-<p>Common Customer profile has already been implemented for SDV/DPC purposes where a single depositor ID is assigned against any ID number (CNIC etc.) irrespective of multiple customer profiles. SDV/DPC data only belongs to Lability natures.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>Summary of eligible deposits and SDV is based on CDMS data. Currently following deposits are not covered in CDMS.</p>
-<ol>
-<li>MMA</li>
-<li>MINFA Deposits</li>
-</ol>
-<p>MOM regarding handling of MMA and MINFA deposits is attached for reference.</p>
-<p>Para may kindly be settled.</p>
-<p>&nbsp;</p>
-<ul>
-<li>Regulatory instruction issued void DPC Circular No. 01 dated March 15, 2019, is not being followed, which states:</li>
-</ul>
-<p><strong>Quote</strong></p>
-<p><strong>&ldquo;</strong></p>
-<p>&hellip;, The banks were advised to prepare a comprehensive depositor-wise database/ Management Information System. A key element of the information system is its capacity to calculate, on any given date, total liability of a bank towards each of its depositors including any interest/ profit accrued on such deposits and generate a report referred as &ldquo;Single Depositor View (SDV)&rdquo;. This would enable DPC to assess the amounts payable to protected depositors and making payout in case of a bank&rsquo;s failure.</p>
-<p><strong>&rdquo;</strong></p>
-<p><strong>Un-Quote </strong></p>
-<p>The &ldquo;Single Depositor View&rdquo; available in iMIS displays data of CDMS depositor profiles only, while data of depositor profiles being maintained in CBAS is not part of the same. This is in conflict with above regulatory instruction.</p>
-<p><strong>Management Reply</strong></p>
-<p>SDV/DPC data only belongs to Lability natures, for further clarification please refer the matter to concerned business quarters.</p>
-<p><strong>2<sup>nd</sup> Management Reply</strong></p>
-<p>Refer Para &ndash; 5 as above.</p>
-<p>Para may kindly be settled.</p>
-<p><strong>&nbsp;</strong></p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p style='text-align: center;'>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;___________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _____________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-<p style='text-align: center;'>Asfand Yar Javaid&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Arshad Javed</p>
-<p style='text-align: center;'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Team Member&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Team Lead&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;</p>");
+                sb.Append(@"<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><h1>Audit Observations</h1>");
+
+
+
+                foreach(var item in list)
+                {
+                    List<object> outText = new List<object>();
+
+                    outText=this.GetObservationText(item.OBS_ID,0);
+                    sb.Append("<h3 style='margin-top:50px;'>Memo No : "+item.MEMO_NO+"</h3>");
+                    sb.Append("<div style='margin-top:10px;'>"+ outText [0]+ "</div>");
+                    sb.Append("<h3 style='margin-top:10px;'>Auditee Reply</h3>");
+                    sb.Append("<div style='margin-top:10px;'>" + outText[1] + "</div>");
+
+                }              
+
                
                 string path = "";
-                string filename = "";
-
+               
                 //ltTable.Text = sb.ToString();
                 folderPath = System.IO.Path.Combine(_env.WebRootPath, "Audit_Reports");
                 if (!System.IO.Directory.Exists(folderPath))
                 {
                     System.IO.Directory.CreateDirectory(folderPath);
                 }
-
-                filename = DateTime.Now.ToFileTimeUtc() + ".Pdf";
+                filename = "DraftReport_" + ENG_ID + ".Pdf"; ;
                 //path = Path.Combine(contentRootPath, filename + ".Pdf");
                 path = Path.Combine(folderPath, filename);
 
-                iText.Kernel.Pdf.PdfWriter writer = new PdfWriter(path);
+                PdfWriter writer = new PdfWriter(path);
+                PdfDocument pdf = new PdfDocument(writer);
+                pdf.SetDefaultPageSize(iText.Kernel.Geom.PageSize.A0);                
 
-                iText.Kernel.Pdf.PdfDocument pdf = new PdfDocument(writer);
                 ConverterProperties converterProperties = new ConverterProperties();
                 PdfDocument pdfDocument = new PdfDocument(writer);
-
+                
                 iText.Layout.Document document = HtmlConverter.ConvertToDocument(sb.ToString(), pdfDocument, converterProperties);
 
 
@@ -5775,8 +5544,10 @@ namespace AIS
                 xmlParse.Flush();
 
                 document.Close();
-               
+
+                
             }
+            return filename;
 
         }
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
@@ -6191,6 +5962,44 @@ namespace AIS
                 }
             }
             con.Close();
+            return list;
+        }
+
+        public DraftReportSummaryModel GetDraftReportSummary(int ENG_ID=0, int OBS_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageObservations> paras = new List<ManageObservations>();
+            DraftReportSummaryModel list = new DraftReportSummaryModel();
+
+            if (loggedInUser.UserLocationType == "Z")
+            {
+                paras = this.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
+            }
+            else
+            { 
+                paras = this.GetManagedObservations(ENG_ID, OBS_ID); 
+            }
+            
+            foreach( var p in paras)
+            {
+                list.Total++;
+                if (p.OBS_STATUS_ID == 7)
+                    list.Dropped++;
+                if (p.OBS_STATUS_ID == 5)
+                    list.AddtoDraft++;
+                if (p.OBS_STATUS_ID == 4)
+                    list.Settled++;
+                if (p.OBS_RISK_ID == 3)
+                    list.Low++;
+                if (p.OBS_RISK_ID == 2)
+                    list.Medium++;
+                if (p.OBS_RISK_ID == 1)
+                    list.High++;
+            }         
+          
             return list;
         }
     }

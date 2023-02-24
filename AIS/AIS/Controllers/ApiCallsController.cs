@@ -294,9 +294,14 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<ManageObservations> draft_report_summary(int ENG_ID)
+        public DraftReportSummaryModel draft_report_summary(int ENG_ID)
         {
-           return dBConnection.GetManagedObservations(ENG_ID);
+            DraftReportSummaryModel resp = new DraftReportSummaryModel();
+            string filename = "";
+            filename = dBConnection.CreateAuditReport(ENG_ID);
+            resp= dBConnection.GetDraftReportSummary(ENG_ID);
+            resp.ReportName = filename;
+            return resp;
         }
         [HttpPost]
         public List<ClosingDraftTeamDetailsModel> closing_draft_report_status(int ENG_ID = 0)

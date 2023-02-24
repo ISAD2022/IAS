@@ -111,7 +111,6 @@
             getReportSummary();
         }
     }
-
     function getReportSummary() {
         $.ajax({
             url: "/ApiCalls/draft_report_summary",
@@ -122,35 +121,19 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                $('#totalObsLabel').text(data.length);
-                var highP = 0;
-                var medP = 0;
-                var lowP = 0;
-                var settled = 0;
-                var atdraft = 0;
-                $.each(data, function (i, v) {
-                    if (v.obS_RISK_ID == 1)
-                        highP++;
-                    else if (v.obS_RISK_ID == 2)
-                        medP++;
-                    else if (v.obS_RISK_ID == 3)
-                        lowP++;
-                    if (v.obS_STATUS_ID == 4)
-                        settled++;
-                    else if (v.obS_STATUS_ID == 5)
-                        atdraft++;
-                });
-
-                $('#highObsLabel').text(highP);
-                $('#mediumObsLabel').text(medP);
-                $('#lowObsLabel').text(lowP);
-                $('#resolvedObsLabel').text(settled);
-                $('#addToDraftLabel').text(atdraft);
+                $('#totalObsLabel').text(data.total);
+                $('#highObsLabel').text(data.high);
+                $('#mediumObsLabel').text(data.medium);
+                $('#lowObsLabel').text(data.low);
+                $('#resolvedObsLabel').text(data.settled);
+                $('#addToDraftLabel').text(data.addtoDraft);
+                $('#downloadReport').html('<a  target="_blank" href="/Audit_Reports/' + data.reportName+'">Download Draft Report</a>');
+               
+             
             },
             dataType: "json",
         });
     }
-
     function finalCommentsButtonSave() {
         var svpComments = "";
         svpComments = $('#commentAreaInCommentsBox').val();
@@ -222,6 +205,7 @@
                     <th>Low Risk</th>
                     <th>Resolved</th>
                     <th>Add to Draft</th>
+                    <th>Download Report</th>
                 </tr>
             </thead>
             <tr>
@@ -231,6 +215,7 @@
                 <td id="lowObsLabel" class="text-center"></td>
                 <td id="resolvedObsLabel" class="text-center"></td>
                 <td id="addToDraftLabel" class="text-center"></td>
+                <td id="downloadReport" class="text-center"></td>
             </tr>
         </table>
     </div>
