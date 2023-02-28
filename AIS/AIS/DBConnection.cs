@@ -6002,5 +6002,65 @@ namespace AIS
           
             return list;
         }
+        public List<CurrentAuditProgress> GetCurrentAuditProgressEntities()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS_REPORTS.R_GetAuditees";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CurrentAuditProgress ent = new CurrentAuditProgress();
+                    ent.CODE = rdr["entity_id"].ToString();
+                    ent.NAME = rdr["Entity_Name"].ToString();
+                    list.Add(ent);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<CurrentAuditProgress> GetCurrentAuditProgress(int ENTITY_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS_REPORTS.R_GetAuditeesobervations";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CurrentAuditProgress ent = new CurrentAuditProgress();
+                    //e.code, e.name as auditee, d.heading as area, count(o.id) as observation
+
+                    ent.CODE = rdr["code"].ToString();
+                    ent.NAME = rdr["auditee"].ToString();
+                    ent.AREA = rdr["area"].ToString();
+                    ent.OBS_COUNT = Convert.ToInt32(rdr["observation"].ToString());
+                    list.Add(ent);
+                }
+            }
+            con.Close();
+            return list;
+        }
     }
 }

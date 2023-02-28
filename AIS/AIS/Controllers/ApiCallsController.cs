@@ -611,7 +611,13 @@ namespace AIS.Controllers
 
         }
 
-        
+        [HttpPost]
+        public List<CurrentAuditProgress> get_current_audit_progress(int ENTITY_ID)
+        {
+            return dBConnection.GetCurrentAuditProgress(ENTITY_ID);
+
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

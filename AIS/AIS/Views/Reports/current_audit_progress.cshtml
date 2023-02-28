@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "join_comp_report";
+    Layout = "_Layout";
+}
+
+
+<script type="text/javascript">
+    function GetCurrentAuditProgress() {
+        $('#CurrentAuditProgressGrid tbody').empty();
+        if ($('#auditDepartmentSelectBox').val() != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_current_audit_progress",
+                type: "POST",
+                data: {
+                    'ENTITY_ID': $('#auditDepartmentSelectBox').val()
+                },
+                cache: false,
+                success: function (data) {
+                    var sr = 1;
+                    $.each(data, function (i, v) {
+
+                        $('#CurrentAuditProgressGrid tbody').append('<tr><td>' + sr + '</td><td>' + v.name + '</td><td>' + v.area + '</td><td>' + v.obS_COUNT + '</td></tr>');
+                        sr++;
+
+                    });
+                },
+                dataType: "json",
+            });
+        }
+        
+       
+    }
+
+
+</script>
+
+<div class="mt-3 mb-4">
+    <h3 style="color: #45c545;">Progress of Current Audit</h3>
+
+
+</div>
+
+
+<div class="row col-md-12 mt-3">  
+    
+        <label class="font-weight-bold"> Audit Department</label>
+        <select id="auditDepartmentSelectBox" class="form-select form-control" aria-label="Default select example">
+            <option value="112215">--All--</option>
+            @{
+                if (ViewData["EntitiesList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                    {
+                        <option value="@item.CODE">@item.NAME</option>
+                    }
+                }
+            }
+        </select>
+  
+</div>
+<div class="row col-md-12 w-100 mt-3">
+    <button onclick="GetCurrentAuditProgress();" class="btn btn-primary col-md-2">Find</button> 
+</div>
+
+<div class="mt-3">
+    <table id="CurrentAuditProgressGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th>Sr. No.</th>                
+                <th>Auditee Entity</th>
+                <th>Area</th>
+                <th>Observation Count</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+
