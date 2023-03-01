@@ -1220,3 +1220,5 @@ D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\System.Security.Cr
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Security.Cryptography.Cng.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\bin\Release\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Security.Cryptography.Pkcs.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\fad_para_res.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\current_audit_progress.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\current_sessions.cshtml.g.cs

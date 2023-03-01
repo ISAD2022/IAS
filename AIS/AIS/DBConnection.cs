@@ -4771,7 +4771,35 @@ namespace AIS
             con.Close();
             return resp;
         }
-        public List<AuditeeOldParasModel> GetAuditeeOldParas()
+        public List<AuditeeOldParasModel> GetAuditeeOldParasEntities()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetAuditeeOldParasEntities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    chk.ENTITY_NAME = rdr["NAME"].ToString();
+                 
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<AuditeeOldParasModel> GetAuditeeOldParas(int ENTITY_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5075,13 +5103,13 @@ namespace AIS
             con.Close();
             return success;
         }
-        public bool AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
+        public string AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
         {
+            string response = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
-            bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5089,17 +5117,21 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PARAID", OracleDbType.Int32).Value = ID;
-                cmd.Parameters.Add("V_CAT_ID", OracleDbType.Int32).Value = V_CAT_ID;
-                cmd.Parameters.Add("V_CAT_NATURE_ID", OracleDbType.Int32).Value = V_CAT_NATURE_ID;
-                cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
-                cmd.Parameters.Add("TEXT", OracleDbType.Clob).Value = REPLY;
+                cmd.Parameters.Add("VCATID", OracleDbType.Int32).Value = V_CAT_ID;
+                cmd.Parameters.Add("VCATNATUREID", OracleDbType.Int32).Value = V_CAT_NATURE_ID;
+                cmd.Parameters.Add("RISKID", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("PARATEXT", OracleDbType.Clob).Value = REPLY;
                 cmd.Parameters.Add("CREATEDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();              
-                success = true;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    response = rdr["REMARKS"].ToString();
+                }
+
             }
             con.Close();
-            return success;
+            return response;
         }
         public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
         {
@@ -6022,7 +6054,7 @@ namespace AIS
                 while (rdr.Read())
                 {
                     CurrentAuditProgress ent = new CurrentAuditProgress();
-                    ent.CODE = rdr["entity_id"].ToString();
+                    ent.CODE = rdr["ENG_ID"].ToString();
                     ent.NAME = rdr["Entity_Name"].ToString();
                     list.Add(ent);
                 }
@@ -6043,7 +6075,7 @@ namespace AIS
                 cmd.CommandText = "pkg_AIS_REPORTS.R_GetAuditeesobervations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -6056,6 +6088,39 @@ namespace AIS
                     ent.NAME = rdr["auditee"].ToString();
                     ent.AREA = rdr["area"].ToString();
                     ent.OBS_COUNT = Convert.ToInt32(rdr["observation"].ToString());
+                    list.Add(ent);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<CurrentActiveUsers> GetCurrentActiveUsers()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CurrentActiveUsers> list = new List<CurrentActiveUsers>();
+            var con = this.DatabaseConnection();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_AIS_REPORTS.R_LOGINUSERS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CurrentActiveUsers ent = new CurrentActiveUsers();
+                    //e.code, e.name as auditee, d.heading as area, count(o.id) as observation
+
+                    ent.DEPARTMENT_NAME = rdr["DEPTNAME"].ToString();
+                    ent.NAME = rdr["EMPNAME"].ToString();
+                    ent.PP_NUMBER =Convert.ToInt32(rdr["PPNO"].ToString());
+                    ent.LOGGED_IN_DATE = Convert.ToDateTime(rdr["LOGINDATE"].ToString());
+                    ent.SESSION_TIME = rdr["SESSIONTIME"].ToString();
                     list.Add(ent);
                 }
             }

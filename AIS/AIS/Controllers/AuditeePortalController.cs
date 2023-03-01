@@ -47,7 +47,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["OldParas"] = dBConnection.GetAuditeeOldParas();
+            ViewData["OldParasEntities"] = dBConnection.GetAuditeeOldParasEntities();
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else

@@ -485,9 +485,12 @@ namespace AIS.Controllers
             return dBConnection.AddOldParasReply(ID,REPLY);
         }
         [HttpPost]
-        public bool add_legacy_para_cad_reply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
+        public string add_legacy_para_cad_reply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
         {
-            return dBConnection.AddOldParasCADReply(ID, V_CAT_ID, V_CAT_NATURE_ID,RISK_ID,REPLY);
+            string response = "";
+            response = dBConnection.AddOldParasCADReply(ID, V_CAT_ID, V_CAT_NATURE_ID, RISK_ID, REPLY);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+           
         }
         [HttpPost]
         public ActiveInactiveChart get_pie_chart_data()
@@ -618,6 +621,19 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<CurrentActiveUsers> get_active_users()
+        {
+            return dBConnection.GetCurrentActiveUsers();
+
+        }
+
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_assigned_observation_old_paras(int ENTITY_ID =0)
+        {
+            return dBConnection.GetAuditeeOldParas(ENTITY_ID);
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

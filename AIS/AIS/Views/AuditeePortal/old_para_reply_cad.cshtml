@@ -31,8 +31,14 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="processdetails('+child.id+');">Add Reply</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="' + child.parA_ID + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="processdetails(' + child.parA_ID+');">Add Para Text</a></td></tr>')
                 });
+                setTimeout(function () {
+                    if (g_paraId != 0) {
+                        var rowpos = $('#' + g_paraId).position();
+                        $('html').scrollTop(rowpos.top);
+                    }
+                }, 200)
 
             },
 
@@ -59,7 +65,7 @@
                 success: function (data) {
                     $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
-                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.v_ID + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
+                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
                     });
 
                 },
@@ -136,14 +142,14 @@
             },
             cache: false,
             success: function (data) {
-                alert("Reply Successfully added");
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
     }
     function reloadLocation() {
-        window.location.reload();
+        getLegacyPara();
     }
 
 </script>
@@ -236,12 +242,11 @@
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Reply</label>
+                        <label class="font-weight-bold">Para Text</label>
 
                     </div>
                     <div class="row mt-3 col-md-12">
                         <textarea class="form-control" id="responseAuditee"></textarea>
-
                     </div>
 
 

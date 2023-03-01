@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "join_comp_report";
+    ViewData["Title"] = "Current Audit Progress";
     Layout = "_Layout";
 }
 
@@ -66,10 +66,11 @@
     <table id="CurrentAuditProgressGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th>Sr. No.</th>                
-                <th>Auditee Entity</th>
-                <th>Area</th>
-                <th>Observation Count</th>
+                <th class="col-md-1 text-center">Sr. No.</th>
+                <th class="col-md-4">Auditee Entity</th>
+                <th class="col-md-4">Status</th>
+                <th class="col-md-3 text-center align-items-center">No of Observations</th>
+
             </tr>
         </thead>
         <tbody>
