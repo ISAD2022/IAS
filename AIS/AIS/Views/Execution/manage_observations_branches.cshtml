@@ -27,6 +27,58 @@
     function reloadLocation() {
         getEntityObservation();
     }
+    function getSubProcessList() {
+        if ($('#updateMemo_process option:selected').val() == 0) {
+            $('#updateMemo_subprocess').empty();
+            $('#updateMemo_violation').empty();
+        }
+        else {
+
+            $('#updateMemo_subprocess').empty();
+            $('#updateMemo_violation').empty();
+            $.ajax({
+                url: "/ApiCalls/sub_checklist",
+                type: "POST",
+                data: {
+                    'T_ID': $('#updateMemo_process option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#updateMemo_subprocess').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                    $.each(data, function (index, item) {
+                        $('#updateMemo_subprocess').append("<option value=\"" + item.s_ID + "\"> " + item.heading + " </option > ");
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function getSubProcessViolationList() {
+        if ($('#updateMemo_subprocess option:selected').val() == 0)
+            $('#updateMemo_violation').empty();
+        else {
+            $('#updateMemo_violation').empty();
+            $.ajax({
+                url: "/ApiCalls/checklist_details",
+                type: "POST",
+                data: {
+                    'S_ID': $('#updateMemo_subprocess option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#updateMemo_violation').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                    $.each(data, function (index, item) {
+                        $('#updateMemo_violation').append("<option value=\"" + item.id + "\"> " + item.heading + "</option>");
+                    });
+
+                },
+                dataType: "json",
+            });
+        }
+           
+      
+    }
 
     function ObservationViewerPanel(obs_id, status_id, risk_id) {
         g_obsId = obs_id;
@@ -96,7 +148,8 @@
             success: function (data) {
                 console.log(data);
                 $('#updateMemoModel').modal('show');
-                $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');                
+                $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');
+                
             },
             dataType: "json",
         });
@@ -183,7 +236,10 @@
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
-                'OBS_TEXT': $('.richText-editor').html()
+                'OBS_TEXT': $('.richText-editor').html(),
+                'PROCESS_ID': $('#updateMemo_process').val(),
+                'SUBPROCESS_ID': $('#updateMemo_subprocess').val(),
+                'CHECKLIST_ID': $('#updateMemo_violation').val()
             },
             cache: false,
             success: function (data) {
@@ -410,12 +466,39 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
+                        <label for="updateMemo_process" class="font-weight-bold">Process</label>
+                        <select id="updateMemo_process" onchange="getSubProcessList();" class="form-select form-control" aria-label="Default select example">
+                            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
+                            @{
+                                if (ViewData["ProcessList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                                    {
+                                        <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateMemo_subprocess" class="font-weight-bold">Sub Process</label>
+                        <select id="updateMemo_subprocess" onchange="getSubProcessViolationList();" class="form-select form-control" aria-label="Default select example">
+                          
+                        </select>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="updateMemo_violation" class="font-weight-bold">Checklist Details</label>
+                        <select id="updateMemo_violation" class="form-select form-control" aria-label="Default select example">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateMemoContent" class="font-weight-bold">Memo</label>
                         <textarea id="updateMemoContent" rows="5" class="form-control">
 
                         </textarea>
-                        </div>
-                   
+                    </div>
+
 
                 </form>
             </div>

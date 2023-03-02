@@ -323,6 +323,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
             {

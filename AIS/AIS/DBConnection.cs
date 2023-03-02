@@ -4319,7 +4319,7 @@ namespace AIS
             con.Close();
             return resp;
         }
-        public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT)
+        public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID=0, int SUBPROCESS_ID=0, int CHECKLIST_ID = 0)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -4335,6 +4335,8 @@ namespace AIS
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("OBTEXT", OracleDbType.Clob).Value = OBS_TEXT;
+                cmd.Parameters.Add("SUBPROCESSID", OracleDbType.Int32).Value = SUBPROCESS_ID;
+                cmd.Parameters.Add("CHECKLISTID", OracleDbType.Int32).Value = CHECKLIST_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5133,6 +5135,37 @@ namespace AIS
             con.Close();
             return response;
         }
+        public string AddOldParasCADCompliance(OldParaComplianceModel opc)
+        {
+            string response = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_UpdateAuditeeOldParasresponse";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Paraid", OracleDbType.Int32).Value = opc.ParaRef;
+                cmd.Parameters.Add("cdate", OracleDbType.Date).Value = opc.ComplianceDate;
+                cmd.Parameters.Add("Text", OracleDbType.Clob).Value = opc.AuditeeCompliance;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Remarks", OracleDbType.Clob).Value = opc.AuditorRemarks;
+                cmd.Parameters.Add("imprec", OracleDbType.NVarchar2).Value = opc.CnIRecommendation;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    response = rdr["REMARKS"].ToString();
+                }
+
+            }
+            con.Close();
+            return response;
+        }
+
         public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
         {
             sessionHandler = new SessionHandler();

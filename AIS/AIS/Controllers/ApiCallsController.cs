@@ -229,10 +229,10 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);            
         }
         [HttpPost]
-        public string update_observation_text(int OBS_ID, string OBS_TEXT)
+        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID=0, int SUBPROCESS_ID=0, int CHECKLIST_ID = 0)
         {
             string response = "";
-            response=dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT);
+            response=dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -491,6 +491,18 @@ namespace AIS.Controllers
             response = dBConnection.AddOldParasCADReply(ID, V_CAT_ID, V_CAT_NATURE_ID, RISK_ID, REPLY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
            
+        }
+        [HttpPost]
+        public string add_legacy_para_cad_compliance(List<OldParaComplianceModel> COMPLIANCE_LIST)
+        {
+            string response = "";
+            foreach(OldParaComplianceModel opc in COMPLIANCE_LIST)
+            {
+                response += dBConnection.AddOldParasCADCompliance(opc)+"\n";
+            }
+            
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+
         }
         [HttpPost]
         public ActiveInactiveChart get_pie_chart_data()
