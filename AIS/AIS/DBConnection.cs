@@ -1671,12 +1671,20 @@ namespace AIS
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection();
             List<DepartmentModel> deptList = new List<DepartmentModel>();
-            var loggedInUser = sessionHandler.GetSessionUser();           
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            if (div_code == 0)
+                div_code =(int)loggedInUser.UserEntityID;
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = sqlParams.GetDepartmentQueryFromParams(div_code, sessionCheck, loggedInUser);
+                cmd.CommandText = "pkg_ais_reprts.R_GetDepartments";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = div_code;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
+
                 while (rdr.Read())
                 {
                     DepartmentModel dept = new DepartmentModel();
