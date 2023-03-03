@@ -1673,15 +1673,15 @@ namespace AIS
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
 
-            if (div_code == 0)
-                div_code =(int)loggedInUser.UserEntityID;
+          
             
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reprts.R_GetDepartments";
+                cmd.CommandText = "pkg_ais_reports.R_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = div_code;
+                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PPNUM", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -5562,7 +5562,9 @@ namespace AIS
         {
             List<ManageObservations> list = new List<ManageObservations>();
             string filename = "";
-            list = this.GetManagedObservations(ENG_ID, 0);
+            return filename;
+
+            /*list = this.GetManagedObservations(ENG_ID, 0);
             var folderPath = "";
             string entityname = list[0].ENTITY_NAME;
             string period = list[0].PERIOD;
@@ -5621,7 +5623,7 @@ namespace AIS
                 
             }
             return filename;
-
+            */
         }
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
         {
