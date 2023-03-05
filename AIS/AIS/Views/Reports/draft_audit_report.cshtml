@@ -63,6 +63,8 @@
         });
     }
     function getEntityObservation() {
+
+        $('#entitySelectField').attr('disabled', 'disabled');
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
@@ -73,6 +75,7 @@
                 },
                 cache: false,
                 success: function (data) {
+                    $('#entitySelectField').removeAttr('disabled');
                     g_obsList = data;
                     var isbranch = false;
                     $.each(data, function (i, v) {
