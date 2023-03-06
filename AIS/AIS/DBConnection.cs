@@ -1702,7 +1702,10 @@ namespace AIS
                     if (rdr["AUDITED_BY_DEPID"].ToString() != null && rdr["AUDITED_BY_DEPID"].ToString() != "")
                     {
                         // dept.AUDITED_BY_NAME = rdr["ADUTIED_BY"].ToString();
+                        
                         dept.AUDITED_BY_DEPID = Convert.ToInt32(rdr["AUDITED_BY_DEPID"]);
+                        cmd.Parameters.Clear();
+                        cmd.CommandType = CommandType.Text;
                         cmd.CommandText = sqlParams.GetDepartmentNameByIdQueryFromParams(dept.AUDITED_BY_DEPID);
                         OracleDataReader rdr2 = cmd.ExecuteReader();
                         while (rdr2.Read())
@@ -4012,24 +4015,11 @@ namespace AIS
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    chk.VIOLATION = rdr["VIOLATION"].ToString();
+                    chk.NATURE = rdr["NATURE"].ToString();
 
 
-                    if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
-                        chk.VIOLATION = rdr["VIOLATION"].ToString();
-
-                    if (rdr["NATURE"].ToString() != null && rdr["NATURE"].ToString() != "")
-                        chk.NATURE = rdr["NATURE"].ToString();
-
-
-                    if (rdr["PROCESS"].ToString() != null && rdr["PROCESS"].ToString() != "")
-                        chk.PROCESS = rdr["PROCESS"].ToString();
-
-                    if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
-                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
-
-                    if (rdr["CHECK_LIST_DETAIL"].ToString() != null && rdr["CHECK_LIST_DETAIL"].ToString() != "")
-                        chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
-
+                  
                    // chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                    // chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
@@ -4039,6 +4029,47 @@ namespace AIS
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
+                    list.Add(chk);
+
+                }
+            }
+            con.Close();
+
+            return list;
+        }
+        public List<ManageObservations> GetManagedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
+        {
+            var con = this.DatabaseConnection();
+            if (ENG_ID == 0)
+                ENG_ID = this.GetLoggedInUserEngId();
+            List<ManageObservations> list = new List<ManageObservations>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservations chk = new ManageObservations();
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    if(rdr["MEMO_NO"].ToString()!= null && rdr["MEMO_NO"].ToString() != "")
+                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);                  
+                    chk.PROCESS = rdr["PROCESS"].ToString();
+                    chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
+
+                    chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
+                    chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
                 }
@@ -5719,7 +5750,6 @@ namespace AIS
 
         }
 
-        //////////////////////////////////////////////
         public List<DepositAccountCatDetailsModel> GetDepositAccountcatdetails(int catid = 0)
 
         {

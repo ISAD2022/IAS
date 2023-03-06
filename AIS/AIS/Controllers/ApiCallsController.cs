@@ -298,7 +298,7 @@ namespace AIS.Controllers
         {
             DraftReportSummaryModel resp = new DraftReportSummaryModel();
             string filename = "";
-            filename = dBConnection.CreateAuditReport(ENG_ID);
+           // filename = dBConnection.CreateAuditReport(ENG_ID);
             resp= dBConnection.GetDraftReportSummary(ENG_ID);
             resp.ReportName = filename;
             return resp;
@@ -403,6 +403,12 @@ namespace AIS.Controllers
         public List<ManageObservations> get_observations_draft(int ENG_ID, int OBS_ID = 0)
         {
             return dBConnection.GetManagedDraftObservations(ENG_ID, OBS_ID);
+
+        }
+        [HttpPost]
+        public List<ManageObservations> get_observations_draft_branch(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetManagedDraftObservationsBranch(ENG_ID, OBS_ID);
 
         }
         [HttpPost]

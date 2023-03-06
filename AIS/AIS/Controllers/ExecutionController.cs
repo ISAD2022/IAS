@@ -360,6 +360,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
+      
         public IActionResult manage_draft_report_paras_branch(int engId = 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
