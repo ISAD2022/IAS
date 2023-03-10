@@ -406,6 +406,18 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
+        public List<ManageObservations> get_finalized_observations_draft(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetFinalizedDraftObservations(ENG_ID, OBS_ID);
+
+        }
+        [HttpPost]
+        public List<ManageObservations> get_finalized_observations_draft_branch(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetFinalizedDraftObservationsBranch(ENG_ID, OBS_ID);
+
+        }
+        [HttpPost]
         public List<ManageObservations> get_observations_draft_branch(int ENG_ID, int OBS_ID = 0)
         {
             return dBConnection.GetManagedDraftObservationsBranch(ENG_ID, OBS_ID);
