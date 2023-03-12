@@ -9,7 +9,7 @@ namespace AIS
 {
     public class SessionHandler
     {
-      //  private static List<SessionModel> sessionArr = new List<SessionModel>();
+        private static List<SessionModel> sessionArr = new List<SessionModel>();
         private static SessionModel smodel = new SessionModel();
         private static DBConnection dBConnection;
         private static LocalIPAddress ipaddr = new LocalIPAddress();
@@ -46,8 +46,8 @@ namespace AIS
             smodel.SessionId = _session.Id;        
             smodel.IPAddress = ipaddr.GetLocalIpAddress();
             smodel.MACAddress = ipaddr.GetMACAddress();
-            smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();  
-
+            smodel.FirstMACCardAddress = ipaddr.GetFirstMACCardAddress();            
+            sessionArr.Add(smodel);
             _session.SetString("_sessionId", Newtonsoft.Json.JsonConvert.SerializeObject(smodel));
             return smodel;          
         }
@@ -64,8 +64,7 @@ namespace AIS
         }
         public bool DisposeUserSession()
         {
-            _session.Clear();
-           //_session.Abandon();
+            _session.Clear();            
             return true;
         }
         public bool IsUserLoggedIn()

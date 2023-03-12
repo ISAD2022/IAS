@@ -27,7 +27,6 @@ namespace AIS
         public IHttpContextAccessor _httpCon;
         [Obsolete]
         private readonly IHostingEnvironment _env;
-        OracleConnection con = new OracleConnection();
 
         [Obsolete]
         public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env )
@@ -40,27 +39,21 @@ namespace AIS
         {
 
         }
-
-        private OracleConnection DatabaseCheckConnection()
+        private OracleConnection DatabaseConnection()
         {
             try
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    return con;
-                }
-                    // create connection
+                // create connection
 
-                 
+                OracleConnection con = new OracleConnection();
                 // create connection string using builder
 
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
-
                 con.Open();
 
                 return con;
@@ -68,16 +61,8 @@ namespace AIS
             }
             catch (Exception) { return null; }
         }
-        private OracleConnection DatabaseConnection()
-        {
-            try
-            {
-                return DatabaseCheckConnection();
 
-            }
-            catch (Exception) { return null; }
-        }
-       
+        [Obsolete]
         public UserModel AutheticateLogin(LoginModel login)
         {
             var con = this.DatabaseConnection();
@@ -189,7 +174,7 @@ namespace AIS
                     }
                 }
             }
-            //con.Close();
+            con.Close();
             return user;
         }
         public bool DisposeLoginSession()
@@ -208,7 +193,7 @@ namespace AIS
                 cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = sessionUser.SessionId;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             sessionHandler.DisposeUserSession();
             return true;
         }
@@ -240,7 +225,7 @@ namespace AIS
                             isSession = true;
                     }
                 }
-                //con.Close();
+                con.Close();
             }
 
             return isSession;
@@ -273,7 +258,7 @@ namespace AIS
                     isSession = true;
                 }
             }
-            //con.Close();
+            con.Close();
             sessionHandler.DisposeUserSession();
             return isSession;
         }
@@ -296,7 +281,7 @@ namespace AIS
                     cmd.ExecuteReader();
                     isTerminate = true;
                 }
-                //con.Close();
+                con.Close();
                 sessionHandler.DisposeUserSession();
             }
             return isTerminate;
@@ -349,7 +334,7 @@ namespace AIS
                     modelList.Add(menu);
                 }
             }
-            //con.Close();
+            con.Close();
             return modelList;
         }
         public List<MenuPagesModel> GetTopMenuPages()
@@ -381,7 +366,7 @@ namespace AIS
                     modelList.Add(menuPage);
                 }
             }
-            //con.Close();
+            con.Close();
             return modelList;
         }
         public List<MenuModel> GetAllTopMenus()
@@ -405,7 +390,7 @@ namespace AIS
                     modelList.Add(menu);
                 }
             }
-            //con.Close();
+            con.Close();
             return modelList;
         }
         public List<MenuPagesModel> GetAllMenuPages(int menuId = 0)
@@ -433,7 +418,7 @@ namespace AIS
                     modelList.Add(menuPage);
                 }
             }
-            //con.Close();
+            con.Close();
             return modelList;
         }
         public List<MenuPagesModel> GetAssignedMenuPages(int groupId, int menuId)
@@ -462,7 +447,7 @@ namespace AIS
                     modelList.Add(menuPage);
                 }
             }
-            //con.Close();
+            con.Close();
             return modelList;
         }
         public bool UpdateMenuPagesAssignment(int menuId, int pageId)
@@ -478,7 +463,7 @@ namespace AIS
                 cmd.Parameters.Add("p_id", OracleDbType.Int32).Value = pageId;
                 cmd.ExecuteReader();               
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public List<GroupModel> GetGroups()
@@ -503,7 +488,7 @@ namespace AIS
                     groupList.Add(grp);
                 }
             }
-            //con.Close();
+            con.Close();
             return groupList;
         }
         public GroupModel AddGroup(GroupModel gm)
@@ -533,7 +518,7 @@ namespace AIS
                     cmd.ExecuteReader();
                 }
             }
-            //con.Close();
+            con.Close();
             return gm;
         }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
@@ -559,7 +544,7 @@ namespace AIS
                     periodList.Add(period);
                 }
             }
-            //con.Close();
+            con.Close();
             return periodList;
         }
 		
@@ -589,7 +574,7 @@ namespace AIS
                 }
                 result = true;
             }
-            //con.Close();
+            con.Close();
             return result;
         }
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
@@ -627,7 +612,7 @@ namespace AIS
                     teamList.Add(team);
                 }
             }
-            //con.Close();
+            con.Close();
             return teamList;
         }
         public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
@@ -653,7 +638,7 @@ namespace AIS
                 cmd.ExecuteReader();
 
             }
-            //con.Close();
+            con.Close();
             return aTeam;
         }
          public bool DeleteAuditTeam(string T_CODE)
@@ -670,7 +655,7 @@ namespace AIS
                       cmd.ExecuteReader();
 
                   }
-                  //con.Close();
+                  con.Close();
                   return true;
               }
               else
@@ -696,7 +681,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return maxTeamId;
         }
              
@@ -737,7 +722,7 @@ namespace AIS
                    
                 }
             }
-            //con.Close();
+            con.Close();
             return !isAlreadyAdded;
         }
         public bool UpdateAuditCriteria(AddAuditCriteriaModel acm, string COMMENTS)
@@ -764,7 +749,7 @@ namespace AIS
                 cmd.Parameters.Add("CREATED_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();               
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool SetAuditCriteriaStatusReferredBack(int ID, string REMARKS)
@@ -788,7 +773,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool SetAuditCriteriaStatusApprove(int ID, string REMARKS)
@@ -811,7 +796,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             //EmailConfiguration email = new EmailConfiguration();
            // email.ConfigEmail();
             return true;
@@ -829,7 +814,7 @@ namespace AIS
                     remarks = rdr["remarks"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return remarks;
         }
         public List<AuditCriteriaModel> GetPendingAuditCriterias()
@@ -875,7 +860,7 @@ namespace AIS
                     criteriaList.Add(acr);
                 }
             }
-            //con.Close();
+            con.Close();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetRefferedBackAuditCriterias()
@@ -920,7 +905,7 @@ namespace AIS
                     criteriaList.Add(acr);
                 }
             }
-            //con.Close();
+            con.Close();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
@@ -960,7 +945,7 @@ namespace AIS
                     criteriaList.Add(acr);
                 }
             }
-            //con.Close();
+            con.Close();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetPostChangesAuditCriterias()
@@ -1006,7 +991,7 @@ namespace AIS
                     criteriaList.Add(acr);
                 }
             }
-            //con.Close();
+            con.Close();
             return criteriaList;
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOutstandingParas(int ENTITY_CODE = 0)
@@ -1036,7 +1021,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return resMsg;
         }
         public List<RoleRespModel> GetRoleResponsibilities()
@@ -1060,7 +1045,7 @@ namespace AIS
                     groupList.Add(grp);
                 }
             }
-            //con.Close();
+            con.Close();
             return groupList;
         }
         public List<UserModel> GetAllUsers(FindUserModel user)
@@ -1149,7 +1134,7 @@ namespace AIS
                     userList.Add(um);
                 }
             }
-            //con.Close();
+            con.Close();
             return userList;
 
         }
@@ -1181,7 +1166,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -1218,7 +1203,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -1252,7 +1237,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -1286,7 +1271,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -1302,7 +1287,7 @@ namespace AIS
                 cmd.Parameters.Add("ENTITYTYPEDESC", OracleDbType.Varchar2).Value = am.ENTITYTYPEDESC;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return am;
 
         }
@@ -1328,7 +1313,7 @@ namespace AIS
                     subEntitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return subEntitiesList;
 
         }
@@ -1358,7 +1343,7 @@ namespace AIS
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             user.PASSWORD = "";
             return user;
         }
@@ -1403,7 +1388,7 @@ namespace AIS
                     res = true;
                 }
             }
-            //con.Close();
+            con.Close();
             return res;
         }
         public void AddGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
@@ -1418,7 +1403,7 @@ namespace AIS
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
         }
         public void RemoveGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
         {
@@ -1432,7 +1417,7 @@ namespace AIS
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
         }
         public List<AuditZoneModel> GetAuditZones(bool sessionCheck = true)
         {
@@ -1473,7 +1458,7 @@ namespace AIS
                     AZList.Add(z);
                 }
             }
-            //con.Close();
+            con.Close();
             return AZList;
         }
         public List<InspectionUnitsModel> GetInspectionUnits()
@@ -1505,7 +1490,7 @@ namespace AIS
                     ICList.Add(z);
                 }
             }
-            //con.Close();
+            con.Close();
             return ICList;
         }
         public List<BranchModel> GetBranches(int zone_code = 0, bool sessionCheck = true)
@@ -1541,7 +1526,7 @@ namespace AIS
                     branchList.Add(br);
                 }
             }
-            //con.Close();
+            con.Close();
             return branchList;
         }
         public BranchModel AddBranch(BranchModel br)
@@ -1580,7 +1565,7 @@ namespace AIS
                     zoneList.Add(z);
                 }
             }
-            //con.Close();
+            con.Close();
             return zoneList;
         }
         public List<BranchSizeModel> GetBranchSizes()
@@ -1603,7 +1588,7 @@ namespace AIS
                     brSizeList.Add(bs);
                 }
             }
-            //con.Close();
+            con.Close();
             return brSizeList;
         }
         public List<ControlViolationsModel> GetControlViolations()
@@ -1628,7 +1613,7 @@ namespace AIS
                     controlViolationList.Add(v);
                 }
             }
-            //con.Close();
+            con.Close();
             return controlViolationList;
         }
         public ControlViolationsModel AddControlViolation(ControlViolationsModel cv)
@@ -1659,7 +1644,7 @@ namespace AIS
                     divList.Add(div);
                 }
             }
-            //con.Close();
+            con.Close();
             return divList;
         }
         public DivisionModel AddDivision(DivisionModel div)
@@ -1672,7 +1657,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
-            //con.Close();
+            con.Close();
             return div;
         }
         public DivisionModel UpdateDivision(DivisionModel div)
@@ -1731,7 +1716,7 @@ namespace AIS
                     deptList.Add(dept);
                 }
             }
-            //con.Close();
+            con.Close();
             return deptList;
         }
         public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
@@ -1765,7 +1750,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
         }
         public SubEntitiesModel AddSubEntity(SubEntitiesModel subentity)
@@ -1783,7 +1768,7 @@ namespace AIS
 
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return subentity;
         }
         public SubEntitiesModel UpdateSubEntity(SubEntitiesModel subentity)
@@ -1803,7 +1788,7 @@ namespace AIS
                 cmd.ExecuteReader();
              
             }
-            //con.Close();
+            con.Close();
             return subentity;
         }
         public DepartmentModel AddDepartment(DepartmentModel dept)
@@ -1819,7 +1804,7 @@ namespace AIS
                 cmd.CommandText = "UPDATE t_auditee_entities_maping  mp SET mp.AUDITEDBY='" + dept.AUDITED_BY_DEPID + "' WHERE mp.CODE=" + dept.CODE;
                 OracleDataReader rdr = cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return dept;
         }
         public List<RiskGroupModel> GetRiskGroup()
@@ -1843,7 +1828,7 @@ namespace AIS
                 }
             }
 
-            //con.Close();
+            con.Close();
             return riskgroupList;
         }
         public List<RiskSubGroupModel> GetRiskSubGroup(int group_id)
@@ -1869,7 +1854,7 @@ namespace AIS
                     risksubgroupList.Add(rsgm);
                 }
             }
-            //con.Close();
+            con.Close();
             return risksubgroupList;
         }
         public List<RiskActivityModel> GetRiskActivities(int Sub_group_id)
@@ -1895,7 +1880,7 @@ namespace AIS
                     riskActivityList.Add(ram);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskActivityList;
         }
         public List<AuditObservationTemplateModel> GetAuditObservationTemplates(int activity_id)
@@ -1932,7 +1917,7 @@ namespace AIS
                     empList.Add(emp);
                 }
             }
-            //con.Close();
+            con.Close();
             return empList;
         }
         public List<TentativePlanModel> GetTentativePlansForFields(bool sessionCheck = true)
@@ -1972,7 +1957,7 @@ namespace AIS
                     tplansList.Add(tplan);
                 }
             }
-            //con.Close();
+            con.Close();
             return tplansList;
         }
         public string GetAuditOperationalStartDate(int auditPeriodId = 0, int entityCode = 0)
@@ -1995,7 +1980,7 @@ namespace AIS
                     result += rdr["DAY"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return result;
         }
         public List<AuditEngagementPlanModel> GetAuditEngagementPlans()
@@ -2028,7 +2013,7 @@ namespace AIS
                     list.Add(eng);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
@@ -2065,7 +2050,7 @@ namespace AIS
                     list.Add(eng);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public AuditEngagementPlanModel AddAuditEngagementPlan(AuditEngagementPlanModel ePlan)
@@ -2125,7 +2110,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return ePlan;
             
         }
@@ -2146,7 +2131,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public string RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
@@ -2179,7 +2164,7 @@ namespace AIS
                     resp = rdr["REMARK"].ToString();                   
                 }
             }
-            //con.Close();
+            con.Close();
             return resp;
         }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
@@ -2198,7 +2183,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
           
             return true;
         }
@@ -2231,7 +2216,7 @@ namespace AIS
                         um.PPNumber = rdr["ppno"].ToString();
                     }
                 }
-                //con.Close();
+                con.Close();
             }
 
             return um;
@@ -2283,7 +2268,7 @@ namespace AIS
                     planList.Add(plan);
                 }
             }
-            //con.Close();
+            con.Close();
             return planList;
         }
         public List<RiskProcessDefinition> GetRiskProcessDefinition()
@@ -2307,7 +2292,7 @@ namespace AIS
                     pdetails.Add(proc);
                 }
             }
-            //con.Close();
+            con.Close();
             return pdetails;
         }
         public List<RiskProcessDetails> GetRiskProcessDetails(int procId = 0)
@@ -2333,7 +2318,7 @@ namespace AIS
                     riskProcList.Add(pdetail);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskProcList;
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
@@ -2373,7 +2358,7 @@ namespace AIS
                     riskTransList.Add(pTran);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskTransList;
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactionsWithStatus(int statusId)
@@ -2412,7 +2397,7 @@ namespace AIS
                     riskTransList.Add(pTran);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskTransList;
         }
         public RiskProcessDefinition AddRiskProcess(RiskProcessDefinition proc)
@@ -2427,7 +2412,7 @@ namespace AIS
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = proc.RISK_ID;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return proc;
         }
         public RiskProcessDetails AddRiskSubProcess(RiskProcessDetails subProc)
@@ -2443,7 +2428,7 @@ namespace AIS
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Varchar2).Value = subProc.ENTITY_TYPE;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return subProc;
         }
         public RiskProcessTransactions AddRiskSubProcessTransaction(RiskProcessTransactions trans)
@@ -2467,7 +2452,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return trans;
         }
         public bool RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS)
@@ -2487,7 +2472,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool RefferedBackProcessTransactionByReviewer(int T_ID, string COMMENTS)
@@ -2507,7 +2492,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool RecommendProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
@@ -2527,7 +2512,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool RefferedBackProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
@@ -2547,7 +2532,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public List<AuditFrequencyModel> GetAuditFrequencies()
@@ -2571,7 +2556,7 @@ namespace AIS
                     freqList.Add(freq);
                 }
             }
-            //con.Close();
+            con.Close();
             return freqList;
         }
         public List<RiskModel> GetRisks()
@@ -2593,7 +2578,7 @@ namespace AIS
                     riskList.Add(risk);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskList;
         }
         public List<RiskModel> GetCOSORisks()
@@ -2616,7 +2601,7 @@ namespace AIS
                     riskList.Add(risk);
                 }
             }
-            //con.Close();
+            con.Close();
             return riskList;
         }     
         public List<AuditVoilationcatModel> GetAuditVoilationcats()
@@ -2640,7 +2625,7 @@ namespace AIS
                     voilationList.Add(voilationcat);
                 }
             }
-            //con.Close();
+            con.Close();
             return voilationList;
         }
         public List<AuditSubVoilationcatModel> GetVoilationSubGroup(int group_id)
@@ -2668,7 +2653,7 @@ namespace AIS
                     voilationsubgroupList.Add(vsgm);
                 }
             }
-            //con.Close();
+            con.Close();
             return voilationsubgroupList;
         }
         public List<TaskListModel> GetTaskList()
@@ -2716,7 +2701,7 @@ namespace AIS
                     tasklist.Add(tlist);
                 }
             }
-            //con.Close();
+            con.Close();
             return tasklist;
         }
         public JoiningModel GetJoiningDetails(int engId = 0)
@@ -2760,7 +2745,7 @@ namespace AIS
                     jm.TEAM_DETAILS = tjlist;
                 }
             }
-            //con.Close();
+            con.Close();
             return jm;
         }
         public bool AddJoiningReport(AddJoiningModel jm)
@@ -2785,7 +2770,7 @@ namespace AIS
                 this.SetEngIdOnHold();
                 response = true;
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public List<AuditChecklistModel> GetAuditChecklist()
@@ -2812,7 +2797,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditChecklistModel> GetAuditChecklistCAD()
@@ -2839,7 +2824,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id = 0, int eng_id = 0)
@@ -2882,7 +2867,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetails(int s_id = 0)
@@ -2921,7 +2906,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
@@ -2964,7 +2949,7 @@ namespace AIS
                     list.Add(GlHeadDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
 
         }
@@ -3007,7 +2992,7 @@ namespace AIS
                     GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
                 }
             }
-            //con.Close();
+            con.Close();
             return GlHeadSubDetails;
 
         }
@@ -3052,7 +3037,7 @@ namespace AIS
                     list.Add(LoanCaseDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -3092,7 +3077,7 @@ namespace AIS
                     list.Add(LoanCaseDetails);
                 }
             }
-            //con.Close();*/
+            con.Close();*/
             return list;
         }
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
@@ -3135,7 +3120,7 @@ namespace AIS
                     list.Add(GlHeadDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
 
         }
@@ -3169,7 +3154,7 @@ namespace AIS
                     depositacclist.Add(depositaccdetails);
                 }
             }
-            //con.Close();*/
+            con.Close();*/
             return depositacclist;
         }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname = "")
@@ -3230,7 +3215,7 @@ namespace AIS
                     depositaccsublist.Add(depositaccsubdetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return depositaccsublist;
         }
 
@@ -3271,7 +3256,7 @@ namespace AIS
                     list.Add(LoanCaseDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -3338,7 +3323,7 @@ namespace AIS
 
                 }                  
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool SaveAuditObservationCAU(ObservationModel ob)
@@ -3403,7 +3388,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
@@ -3471,7 +3456,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AssignedObservations> GetAssignedObservationsForBranch(int ENG_ID)
@@ -3521,7 +3506,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<object> GetObservationText(int OBS_ID, int RESP_ID)
@@ -3577,7 +3562,7 @@ namespace AIS
                 }
                 list.Add(modellist);
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
@@ -3606,7 +3591,7 @@ namespace AIS
 
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public bool ResponseAuditObservation(ObservationResponseModel ob)
@@ -3666,7 +3651,7 @@ namespace AIS
                         
                 }
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public int GetLoggedInUserEngId()
@@ -3690,7 +3675,7 @@ namespace AIS
                     engId = Convert.ToInt32(rdr["eng_plan_id"]);
                 }
             }
-            //con.Close();
+            con.Close();
             return engId;
         }
         public bool SetEngIdOnHold()
@@ -3710,7 +3695,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public string GetLatestAuditorResponse(int obs_id = 0)
@@ -3734,7 +3719,7 @@ namespace AIS
                     response = rdr["Recommendation"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public string GetLatestDepartmentalHeadResponse(int obs_id = 0)
@@ -3758,7 +3743,7 @@ namespace AIS
                     response = rdr["audit_reply"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public string GetRiskDescByID(int risk_id = 0)
@@ -3779,7 +3764,7 @@ namespace AIS
                     response = rdr["DESCRIPTION"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public string GetLatestCommentsOnProcess(int procId = 0)
@@ -3801,7 +3786,7 @@ namespace AIS
                     response = rdr["comments"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
 
@@ -3823,7 +3808,7 @@ namespace AIS
                     response = rdr["remarks"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public string GetLatestAuditeeResponse(int obs_id = 0)
@@ -3843,7 +3828,7 @@ namespace AIS
                     response = rdr["reply"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public List<ManageObservations> GetManagedObservations(int ENG_ID = 0, int OBS_ID = 0)
@@ -3889,7 +3874,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ManageObservations> GetManagedObservationText(int ENG_ID = 0, int OBS_ID = 0)
@@ -3928,7 +3913,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
@@ -3971,7 +3956,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ManageObservations> GetManagedObservationTextForBranches(int ENG_ID = 0, int OBS_ID = 0)
@@ -4006,7 +3991,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0, int OBS_ID=0)
@@ -4048,49 +4033,7 @@ namespace AIS
 
                 }
             }
-            //con.Close();
-
-            return list;
-        }
-        public List<ManageObservations> GetFinalizedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
-        {
-            var con = this.DatabaseConnection();
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
-            List<ManageObservations> list = new List<ManageObservations>();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservations";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ManageObservations chk = new ManageObservations();
-                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
-                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
-                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
-                    chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
-                    chk.VIOLATION = rdr["VIOLATION"].ToString();
-                    chk.NATURE = rdr["NATURE"].ToString();
-
-
-
-                  
-                    chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
-                    chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
-                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
-                    chk.PERIOD = rdr["PERIOD"].ToString();
-                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
-                    list.Add(chk);
-
-                }
-            }
-            //con.Close();
+            con.Close();
 
             return list;
         }
@@ -4131,48 +4074,7 @@ namespace AIS
 
                 }
             }
-            //con.Close();
-
-            return list;
-        }
-        public List<ManageObservations> GetFinalizedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
-        {
-            var con = this.DatabaseConnection();
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
-            List<ManageObservations> list = new List<ManageObservations>();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ManageObservations chk = new ManageObservations();
-                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
-                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
-                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
-                    if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
-                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
-                    chk.PROCESS = rdr["PROCESS"].ToString();
-                    chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
-                    chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
-
-                    chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
-                    chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
-                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
-                    chk.PERIOD = rdr["PERIOD"].ToString();
-                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
-                    list.Add(chk);
-
-                }
-            }
-            //con.Close();
+            con.Close();
 
             return list;
         }
@@ -4197,10 +4099,11 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
 
             return list;
         }
+
         public List<ManageObservations> GetManagedDraftObservationsForBranches(int ENG_ID = 0)
         {
             var con = this.DatabaseConnection();
@@ -4247,7 +4150,7 @@ namespace AIS
 
                 }
             }
-            //con.Close();
+            con.Close();
 
             return list;
         }
@@ -4281,7 +4184,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ManageObservations> GetViolationObservations(int ENTITY_ID = 0, int VIOLATION_ID = 0)
@@ -4330,7 +4233,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public string DropAuditObservation(int OBS_ID)
@@ -4452,7 +4355,7 @@ namespace AIS
                 }               
 
             }
-            //con.Close();
+            con.Close();
             return resp;
         }
         public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID=0, int SUBPROCESS_ID=0, int CHECKLIST_ID = 0)
@@ -4473,7 +4376,6 @@ namespace AIS
                 cmd.Parameters.Add("OBTEXT", OracleDbType.Clob).Value = OBS_TEXT;
                 cmd.Parameters.Add("SUBPROCESSID", OracleDbType.Int32).Value = SUBPROCESS_ID;
                 cmd.Parameters.Add("CHECKLISTID", OracleDbType.Int32).Value = CHECKLIST_ID;
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -4481,7 +4383,7 @@ namespace AIS
                     resp = rdr["REMARKS"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return resp;
         }
         public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations(int ENG_ID = 0)
@@ -4529,7 +4431,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<ClosingDraftTeamDetailsModel> GetClosingDraftTeamDetails(int ENG_ID = 0)
@@ -4576,7 +4478,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public string CloseDraftAuditReport(int ENG_ID)
@@ -4604,7 +4506,7 @@ namespace AIS
 
                 }
             }
-            //con.Close();
+            con.Close();
             return resp;
         }
         public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
@@ -4632,7 +4534,7 @@ namespace AIS
                         count = Convert.ToInt32(rdr2["NO_OF_ENTITY"]);
                 }
             }
-            //con.Close();
+            con.Close();
             return count;
         }
         public bool DeletePendingCriteria(int CID=0)
@@ -4646,7 +4548,7 @@ namespace AIS
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = CID;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
@@ -4697,7 +4599,7 @@ namespace AIS
                 }*/
 
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
@@ -4735,7 +4637,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<COSORiskModel> GetCOSORiskForBranches(int PERIOD_ID = 0)
@@ -4773,7 +4675,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public bool CAUOMAssignment(CAUOMAssignmentModel om)
@@ -4790,7 +4692,7 @@ namespace AIS
                 cmd.Parameters.Add("DIV_ID", OracleDbType.Int32).Value = om.DIV_ID;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public List<CAUOMAssignmentModel> CAUGetAssignedOMs()
@@ -4822,7 +4724,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
 
         }
@@ -4882,7 +4784,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public bool UpdateCCQ(AuditCCQModel ccq)
@@ -4907,7 +4809,7 @@ namespace AIS
                 cmd.ExecuteReader();
                 resp = true;
             }
-            //con.Close();
+            con.Close();
             return resp;
         }
         public List<AuditeeOldParasModel> GetAuditeeOldParasEntities()
@@ -4935,7 +4837,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditeeOldParasModel> GetAuditeeOldParas(int ENTITY_ID=0)
@@ -4978,7 +4880,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public bool AuditeeOldParaResponse(AuditeeOldParasResponseModel ob)
@@ -5001,7 +4903,7 @@ namespace AIS
                 cmd.ExecuteReader();
                 success = true;
             }
-            //con.Close();
+            con.Close();
             return success;
         }
         public List<OldParasModel> GetOldParas(string AUDITED_BY, string AUDIT_YEAR)
@@ -5040,7 +4942,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -5080,7 +4982,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<OldParasModel> GetOldParasForResponse()
@@ -5122,7 +5024,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
@@ -5152,7 +5054,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<OldParasModel> GetOutstandingParasAuditYear()
@@ -5177,7 +5079,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public bool AddOldParas(OldParasModel jm)
@@ -5217,7 +5119,7 @@ namespace AIS
                     cmd.ExecuteReader();
                 }
             }
-            //con.Close();
+            con.Close();
             return true;
         }
         public bool AddOldParasReply(int ID, string REPLY)
@@ -5239,7 +5141,7 @@ namespace AIS
                 cmd.ExecuteReader();
                 success = true;
             }
-            //con.Close();
+            con.Close();
             return success;
         }
         public string AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
@@ -5269,7 +5171,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return response;
         }
         public string AddOldParasCADCompliance(OldParaComplianceModel opc)
@@ -5299,7 +5201,7 @@ namespace AIS
                 }
 
             }
-            //con.Close();
+            con.Close();
             return response;
         }
 
@@ -5336,7 +5238,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<UserWiseOldParasPerformanceModel> GetUserWiseOldParasPerformance()
@@ -5367,7 +5269,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public ActiveInactiveChart GetActiveInactiveChartData()
@@ -5391,7 +5293,7 @@ namespace AIS
                         chk.Inactive_Count = rdr["TOTAL_COUNT"].ToString();
                 }
             }
-            //con.Close();
+            con.Close();
             return chk;
         }
         public List<AuditeeEntitiesModel> GetObservationEntities()
@@ -5421,7 +5323,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditeeEntitiesModel> GetAuditeeAssignedEntities()
@@ -5450,7 +5352,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<AuditeeEntitiesModel> GetCCQsEntities()
@@ -5478,7 +5380,7 @@ namespace AIS
                     list.Add(chk);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
@@ -5510,7 +5412,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -5539,7 +5441,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -5564,7 +5466,7 @@ namespace AIS
                     entitiesList.Add(entity);
                 }
             }
-            //con.Close();
+            con.Close();
             return entitiesList;
 
         }
@@ -5603,7 +5505,7 @@ namespace AIS
                     list.Add(staffposition);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
@@ -5649,7 +5551,7 @@ namespace AIS
                     list.Add(para);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -5672,7 +5574,7 @@ namespace AIS
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            //con.Close();
+            con.Close();
             return true;
         }
 
@@ -5803,7 +5705,7 @@ namespace AIS
                     list.Add(GlHeadDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
 
         }
@@ -5843,7 +5745,7 @@ namespace AIS
                     list.Add(depcat);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
 
         }
@@ -5909,7 +5811,7 @@ namespace AIS
                     depositaccsublist.Add(depositaccsubdetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return depositaccsublist;
         }
 
@@ -5963,7 +5865,7 @@ namespace AIS
                     periodList.Add(period);
                 }
             }
-            //con.Close();
+            con.Close();
             return periodList;
         }
 
@@ -6007,7 +5909,7 @@ namespace AIS
                     list.Add(LoanSchemeDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -6060,7 +5962,7 @@ namespace AIS
                     list.Add(LoanSchemeDetails);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -6095,7 +5997,7 @@ namespace AIS
                     list.Add(para);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -6131,7 +6033,7 @@ namespace AIS
                     list.Add(jc);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -6164,7 +6066,7 @@ namespace AIS
                     list.Add(jac);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
 
@@ -6230,7 +6132,7 @@ namespace AIS
                     list.Add(ent);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<CurrentAuditProgress> GetCurrentAuditProgress(int ENTITY_ID=0)
@@ -6262,7 +6164,7 @@ namespace AIS
                     list.Add(ent);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
         public List<CurrentActiveUsers> GetCurrentActiveUsers()
@@ -6295,7 +6197,7 @@ namespace AIS
                     list.Add(ent);
                 }
             }
-            //con.Close();
+            con.Close();
             return list;
         }
     }

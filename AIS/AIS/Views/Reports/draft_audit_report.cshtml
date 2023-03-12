@@ -14,7 +14,14 @@
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
-     
+        $.each($('.obs_text'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
+        $.each($('.obs_reply'), function (i, ele) {
+            var text = $(ele).attr('data');
+            $(ele).append(text);
+        });
 
     });
     function reloadLocation() {
@@ -61,7 +68,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_finalized_observations_draft",
+                url: "/ApiCalls/get_observations_draft",
                 type: "POST",
                 data: {
                     'ENG_ID': $('#entitySelectField option:selected').val()
@@ -77,13 +84,21 @@
                             isbranch = true;
                         }
                         if (v.obS_STATUS_ID == 5)
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ', 9,' + v.obS_RISK_ID + ');" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',8,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="branchfield">' + v.process + '</td><td class="branchfield">' + v.suB_PROCESS + '</td><td class="branchfield">' + v.checklist_Details + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ', 9,' + v.obS_RISK_ID + ');" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',8,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a></td></tr>');
                        else
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="branchfield">' + v.process + '</td><td class="branchfield">' + v.suB_PROCESS + '</td><td class="branchfield">' + v.checklist_Details + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td></tr>');
 
                     });
 
-                 
+                    if (isbranch) {
+                        $('.deptfield').addClass('d-none');
+                        $('.branchfield').removeClass('d-none');
+                    }
+                    else {
+                        $('.deptfield').removeClass('d-none');
+                        $('.branchfield').addClass('d-none');
+                    }
+
 
                     setTimeout(function () {
                         if (g_obsId != 0) {
@@ -212,8 +227,11 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
-                    <th class="col-md-auto deptfield">Violation</th>
-                    <th class="col-md-auto deptfield">Nature</th>
+                    <th class="col-md-auto deptfield d-none">Violation</th>
+                    <th class="col-md-auto deptfield d-none">Nature</th>
+                    <th class="col-md-auto branchfield d-none">Process</th>
+                    <th class="col-md-auto branchfield d-none">Sub Process</th>
+                    <th class="col-md-auto branchfield d-none">Checklist Detail</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Auditee Response</th>
                     <th class="col-md-auto">Auditor Response</th>
