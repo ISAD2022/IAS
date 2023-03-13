@@ -194,13 +194,17 @@
                      alert("Please either Loan Case No. or Account No. to proceed"); return false;
                 }*/
 
-                if ($('#listofRespPersons tbody tr#tr_' + g_respUser[0].ppNumber).length == 0) {
-                    var srNo = $('#listofRespPersons tbody tr').length;
-                    srNo++;
-                    $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
-                    g_respUsersArr.push(g_respUser[0]);
-                } else { alert("Responsibility already added"); return false; }
-            }
+
+                var lc = $('#resp_loan_case').val();
+                var acc = $('#resp_account_number').val();
+                if (lc == "" && acc == "") {
+                    alert("Please enter Either Loan Case Or Account Number to Proceed"); return false;
+                }
+                var srNo = $('#listofRespPersons tbody tr').length;
+                srNo++;
+                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                g_respUsersArr.push(g_respUser[0]);               
+               }
             else {
                 alert("Please Check checkbox to proceed"); return false;
             }

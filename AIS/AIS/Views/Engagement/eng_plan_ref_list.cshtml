@@ -8,8 +8,8 @@
     var g_planId = 0;
     var g_entityId = 0;
     $('#document').ready(function () {
-        $('#selectDateInputField').inputmask();
-        $('#selectEndDateInputField').inputmask();
+        $('#selectDateInputField').inputmask("dd-mm-yyyy");
+        $('#selectEndDateInputField').inputmask("dd-mm-yyyy");
         $('#selectOPDateInputField').inputmask();
         $('#selectOPEndDateInputField').inputmask();
 
@@ -48,12 +48,6 @@
         $('#selectOPDateInputField').val(formatDate(op_startDate));
         $('#selectOPEndDateInputField').val(formatDate(op_endDate));
         $('#teamSelectionBox').val(teamId);
-
-
-        //$('#selectDateInputField').attr('type', 'date');
-        //$('#selectEndDateInputField').attr('type', 'date');
-        //$('#selectOPDateInputField').attr('type', 'date');
-        //$('#selectOPEndDateInputField').attr('type', 'date');
     }
       function reloadLocation() {
         location.reload();
