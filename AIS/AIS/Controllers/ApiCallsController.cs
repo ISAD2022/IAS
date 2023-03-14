@@ -27,8 +27,8 @@ namespace AIS.Controllers
         [HttpPost]
         public bool kill_session(LoginModel user)
         {
-           return dBConnection.KillExistSession(user);
-           
+            return dBConnection.KillExistSession(user);
+
         }
         [HttpPost]
         public bool terminate_idle_session()
@@ -56,7 +56,7 @@ namespace AIS.Controllers
                 br = dBConnection.UpdateBranch(br);
             return br;
         }
-      
+
         [HttpPost]
         public DivisionModel division_add(DivisionModel div)
         {
@@ -64,14 +64,14 @@ namespace AIS.Controllers
                 div.ISACTIVE = "Y";
             else if (div.ISACTIVE == "InActive")
                 div.ISACTIVE = "N";
-           
+
             if (div.DIVISIONID == 0)
-                div=dBConnection.AddDivision(div);
+                div = dBConnection.AddDivision(div);
             else
-                div=dBConnection.UpdateDivision(div);
+                div = dBConnection.UpdateDivision(div);
             return div;
         }
-      
+
         [HttpPost]
         public DepartmentModel department_add(DepartmentModel dept)
         {
@@ -86,22 +86,22 @@ namespace AIS.Controllers
                 dept = dBConnection.UpdateDepartment(dept);
             return dept;
         }
-        
+
         [HttpPost]
         public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
         {
             return dBConnection.AddControlViolation(cv);
         }
-     
+
         [HttpPost]
         public List<DepartmentModel> get_departments(int div_id)
         {
-            return dBConnection.GetDepartments(div_id,false);
+            return dBConnection.GetDepartments(div_id, false);
         }
         [HttpPost]
-        public List<SubEntitiesModel> get_sub_entities(int div_id=0,int dept_id=0)
+        public List<SubEntitiesModel> get_sub_entities(int div_id = 0, int dept_id = 0)
         {
-            return dBConnection.GetSubEntities(div_id,dept_id);
+            return dBConnection.GetSubEntities(div_id, dept_id);
         }
         [HttpPost]
         public SubEntitiesModel add_sub_entity(SubEntitiesModel entity)
@@ -110,7 +110,7 @@ namespace AIS.Controllers
                 entity.STATUS = "Y";
             else
                 entity.STATUS = "N";
-            if(entity.ID==0)
+            if (entity.ID == 0)
                 return dBConnection.AddSubEntity(entity);
             else
                 return dBConnection.UpdateSubEntity(entity);
@@ -121,14 +121,14 @@ namespace AIS.Controllers
             return dBConnection.GetRiskProcessDetails(ProcessId);
         }
         [HttpPost]
-        public List<RiskProcessTransactions> process_transactions(int ProcessDetailId=0, int transactionId = 0)
+        public List<RiskProcessTransactions> process_transactions(int ProcessDetailId = 0, int transactionId = 0)
         {
             return dBConnection.GetRiskProcessTransactions(ProcessDetailId, transactionId);
         }
         [HttpPost]
         public RiskProcessDefinition process_add(RiskProcessDefinition proc)
         {
-            return dBConnection.AddRiskProcess(proc);            
+            return dBConnection.AddRiskProcess(proc);
         }
         [HttpPost]
         public RiskProcessDetails sub_process_add(RiskProcessDetails subProc)
@@ -143,7 +143,7 @@ namespace AIS.Controllers
         [HttpPost]
         public bool recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RecommendProcessTransactionByReviewer(T_ID,COMMENTS);
+            return dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS);
         }
         public bool reffered_back_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
@@ -163,7 +163,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<AuditChecklistSubModel> sub_checklist(int T_ID, int ENG_ID)
         {
-            return dBConnection.GetAuditChecklistSub(T_ID,ENG_ID);
+            return dBConnection.GetAuditChecklistSub(T_ID, ENG_ID);
         }
         [HttpPost]
         public List<AuditChecklistDetailsModel> checklist_details(int S_ID)
@@ -171,7 +171,7 @@ namespace AIS.Controllers
             return dBConnection.GetAuditChecklistDetails(S_ID);
         }
         [HttpPost]
-        public string save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID=0, int V_CAT_NATURE_ID=0, int RISK_ID=0 )
+        public string save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID = 0, int V_CAT_NATURE_ID = 0, int RISK_ID = 0)
         {
             int success = 0;
             int failed = 0;
@@ -179,7 +179,7 @@ namespace AIS.Controllers
             {
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = S_ID;
-                ob.CHECKLISTDETAIL_ID =Convert.ToInt32(m.ID.Split("obs_")[1]);
+                ob.CHECKLISTDETAIL_ID = Convert.ToInt32(m.ID.Split("obs_")[1]);
                 ob.V_CAT_ID = V_CAT_ID;
                 ob.V_CAT_NATURE_ID = V_CAT_NATURE_ID;
                 ob.ENGPLANID = ENG_ID;
@@ -194,10 +194,10 @@ namespace AIS.Controllers
                 else
                     failed++;
             }
-            return "{\"success\":"+success+" , \"failed\":"+failed+"}";
+            return "{\"success\":" + success + " , \"failed\":" + failed + "}";
         }
         [HttpPost]
-        public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID=0, int BRANCH_ID=0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0)
+        public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID = 0, int BRANCH_ID = 0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0)
         {
             int success = 0;
             int failed = 0;
@@ -206,7 +206,7 @@ namespace AIS.Controllers
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = SUB_CHECKLISTID;
                 ob.CHECKLISTDETAIL_ID = CHECKLIST_ID;
-               
+
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
@@ -226,13 +226,13 @@ namespace AIS.Controllers
         [HttpPost]
         public bool reply_observation(ObservationResponseModel or)
         {
-            return dBConnection.ResponseAuditObservation(or);            
+            return dBConnection.ResponseAuditObservation(or);
         }
         [HttpPost]
-        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID=0, int SUBPROCESS_ID=0, int CHECKLIST_ID = 0)
+        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0)
         {
             string response = "";
-            response=dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID);
+            response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -244,9 +244,9 @@ namespace AIS.Controllers
                 if (RISK_ID != 3)
                     return "{\"Status\":false,\"Message\":\"Only Low Risk para can be settled by Team Lead\"}";
 
-            response= dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID, AUDITOR_COMMENT);
+            response = dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID, AUDITOR_COMMENT);
 
-            return "{\"Status\":true,\"Message\":\""+response+"\"}";
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 
         }
         [HttpPost]
@@ -266,7 +266,7 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID=0)
+        public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
         }
@@ -283,7 +283,7 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public List<ManageObservations> get_observation_branches(int ENG_ID=0, int OBS_ID = 0)
+        public List<ManageObservations> get_observation_branches(int ENG_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
         }
@@ -298,8 +298,8 @@ namespace AIS.Controllers
         {
             DraftReportSummaryModel resp = new DraftReportSummaryModel();
             string filename = "";
-           // filename = dBConnection.CreateAuditReport(ENG_ID);
-            resp= dBConnection.GetDraftReportSummary(ENG_ID);
+            // filename = dBConnection.CreateAuditReport(ENG_ID);
+            resp = dBConnection.GetDraftReportSummary(ENG_ID);
             resp.ReportName = filename;
             return resp;
         }
@@ -309,12 +309,12 @@ namespace AIS.Controllers
             return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
-        public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, int PROCESS_DETAIL_ID = 0)
+        public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
             return dBConnection.GetFadBranchesParas(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
         [HttpPost]
-        public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID=0)
+        public List<ClosingDraftTeamDetailsModel> get_team_details(int ENG_ID = 0)
         {
             return dBConnection.GetClosingDraftTeamDetails(ENG_ID);
         }
@@ -325,10 +325,10 @@ namespace AIS.Controllers
             response = dBConnection.CloseDraftAuditReport(ENG_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
- 		[HttpPost]
-        public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE="")
+        [HttpPost]
+        public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE = "")
         {
-          return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE);
+            return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE);
         }
         [HttpPost]
         public GlHeadSubDetailsModel Glhead_Sub_Details(int GLTYPEID)
@@ -358,13 +358,13 @@ namespace AIS.Controllers
         {
             return dBConnection.GetIncomeExpenceDetails(b_id);
         }
-         [HttpPost]
+        [HttpPost]
         public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
         {
-            return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID,SIZE_ID,ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
+            return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
         }
         [HttpPost]
-        public bool DeletePendingCriteria(int CID=0)
+        public bool DeletePendingCriteria(int CID = 0)
         {
             return dBConnection.DeletePendingCriteria(CID);
         }
@@ -379,7 +379,7 @@ namespace AIS.Controllers
             return dBConnection.SubmitAuditCriteriaForApproval(PERIOD_ID);
         }
         [HttpPost]
-        public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID=0)
+        public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
         {
             return dBConnection.GetCOSORiskForDepartment(PERIOD_ID);
         }
@@ -394,7 +394,7 @@ namespace AIS.Controllers
             return dBConnection.CAUGetAssignedOMs();
         }
         [HttpPost]
-        public List<ManageObservations> get_observations(int ENG_ID, int OBS_ID=0)
+        public List<ManageObservations> get_observations(int ENG_ID, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
 
@@ -403,6 +403,18 @@ namespace AIS.Controllers
         public List<ManageObservations> get_observations_draft(int ENG_ID, int OBS_ID = 0)
         {
             return dBConnection.GetManagedDraftObservations(ENG_ID, OBS_ID);
+
+        }
+        [HttpPost]
+        public List<ManageObservations> get_finalized_observations_draft(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetFinalizedDraftObservations(ENG_ID, OBS_ID);
+
+        }
+        [HttpPost]
+        public List<ManageObservations> get_finalized_observations_draft_branch(int ENG_ID, int OBS_ID = 0)
+        {
+            return dBConnection.GetFinalizedDraftObservationsBranch(ENG_ID, OBS_ID);
 
         }
         [HttpPost]
@@ -453,7 +465,7 @@ namespace AIS.Controllers
         public List<object> get_observation_text(int OBS_ID, int RESP_ID)
         {
             return dBConnection.GetObservationText(OBS_ID, RESP_ID);
-            
+
         }
         [HttpPost]
         public bool old_para_response(AuditeeOldParasResponseModel ob)
@@ -488,7 +500,7 @@ namespace AIS.Controllers
         [HttpPost]
         public bool add_legacy_para_reply(int ID, string REPLY)
         {
-            return dBConnection.AddOldParasReply(ID,REPLY);
+            return dBConnection.AddOldParasReply(ID, REPLY);
         }
         [HttpPost]
         public string add_legacy_para_cad_reply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
@@ -496,17 +508,17 @@ namespace AIS.Controllers
             string response = "";
             response = dBConnection.AddOldParasCADReply(ID, V_CAT_ID, V_CAT_NATURE_ID, RISK_ID, REPLY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
-           
+
         }
         [HttpPost]
         public string add_legacy_para_cad_compliance(List<OldParaComplianceModel> COMPLIANCE_LIST)
         {
             string response = "";
-            foreach(OldParaComplianceModel opc in COMPLIANCE_LIST)
+            foreach (OldParaComplianceModel opc in COMPLIANCE_LIST)
             {
-                response += dBConnection.AddOldParasCADCompliance(opc)+"\n";
+                response += dBConnection.AddOldParasCADCompliance(opc) + "\n";
             }
-            
+
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 
         }
@@ -528,9 +540,9 @@ namespace AIS.Controllers
             return dBConnection.Getchildposting(E_R_ID);
         }
         [HttpPost]
-        public List<ManageObservations> get_violation_observations(int ENTITY_ID,int VIOLATION_ID)
+        public List<ManageObservations> get_violation_observations(int ENTITY_ID, int VIOLATION_ID)
         {
-            return dBConnection.GetViolationObservations(ENTITY_ID,VIOLATION_ID);
+            return dBConnection.GetViolationObservations(ENTITY_ID, VIOLATION_ID);
         }
 
         [HttpPost]
@@ -556,7 +568,7 @@ namespace AIS.Controllers
         {
             string response = "";
             response = dBConnection.RerecommendAuditEngagementPlan(ENG_ID, PLAN_ID, ENTITY_ID, OP_START_DATE, OP_END_DATE, START_DATE, END_DATE, TEAM_ID, COMMENTS);
-            return "{\"Status\":true,\"Message\":\"" + response + "\"}";             
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
 
@@ -566,35 +578,35 @@ namespace AIS.Controllers
             return dBConnection.GetLoanCaseDocuments();
         }
         [HttpPost]
-        public List<FunctionalResponsibilityWiseParas> get_functional_responsibility_wise_paras(int PROCESS_ID=0, int SUB_PROCESS_ID=0, int PROCESS_DETAIL_ID=0)
+        public List<FunctionalResponsibilityWiseParas> get_functional_responsibility_wise_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
-            return dBConnection.GetFunctionalResponsibilityWisePara(PROCESS_ID,SUB_PROCESS_ID,PROCESS_DETAIL_ID);
+            return dBConnection.GetFunctionalResponsibilityWisePara(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
         [HttpPost]
-        public bool divisional_head_remarks_on_functional_legacy_para(int CONCERNED_DEPT_ID = 0, string COMMENTS="", int REF_PARA_ID=0)
+        public bool divisional_head_remarks_on_functional_legacy_para(int CONCERNED_DEPT_ID = 0, string COMMENTS = "", int REF_PARA_ID = 0)
         {
             return dBConnection.AddDivisionalHeadRemarksOnFunctionalLegacyPara(CONCERNED_DEPT_ID, COMMENTS, REF_PARA_ID);
-        }        
-		[HttpPost]
-	  public bool menu_pages_updation(int MENU_ID = 0, int[] PAGE_IDS=null)
-	  {
-	  	if (PAGE_IDS != null)
-	  	{
-	  		foreach (var PAGE_ID in PAGE_IDS)
-	  		{
-	  			dBConnection.UpdateMenuPagesAssignment(MENU_ID, PAGE_ID);
-			}
-			return true;
-		}
-		else
-			return false;
-		
-	 }
+        }
+        [HttpPost]
+        public bool menu_pages_updation(int MENU_ID = 0, int[] PAGE_IDS = null)
+        {
+            if (PAGE_IDS != null)
+            {
+                foreach (var PAGE_ID in PAGE_IDS)
+                {
+                    dBConnection.UpdateMenuPagesAssignment(MENU_ID, PAGE_ID);
+                }
+                return true;
+            }
+            else
+                return false;
+
+        }
 
 
 
         [HttpPost]
-        public bool addinpectioncriteria(string fquat= "", string squat = "", string tquat = "", string frquat = "")
+        public bool addinpectioncriteria(string fquat = "", string squat = "", string tquat = "", string frquat = "")
         {
             return true;// dBConnection.AddInspectionCriteria(fquat, squat, tquat, frquat);
         }
@@ -609,7 +621,7 @@ namespace AIS.Controllers
         }
 
 
-        
+
 
         [HttpPost]
 
@@ -621,7 +633,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<JoiningCompletionReportModel> get_joining_completion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
         {
-            return dBConnection.GetJoiningCompletion(DEPT_ID,AUDIT_STARTDATE,AUDIT_ENDDATE);
+            return dBConnection.GetJoiningCompletion(DEPT_ID, AUDIT_STARTDATE, AUDIT_ENDDATE);
 
         }
 
@@ -647,7 +659,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditeeOldParasModel> get_assigned_observation_old_paras(int ENTITY_ID =0)
+        public List<AuditeeOldParasModel> get_assigned_observation_old_paras(int ENTITY_ID = 0)
         {
             return dBConnection.GetAuditeeOldParas(ENTITY_ID);
 
