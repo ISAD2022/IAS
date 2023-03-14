@@ -2013,14 +2013,14 @@ namespace AIS
             con.Close();
             return list;
         }
-        public List<AuditEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
+        public List<AuditRefEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection();
-            List<AuditEngagementPlanModel> list = new List<AuditEngagementPlanModel>();
+            List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ais.P_GetRefferedBackAuditEngagementPlans";
@@ -2031,17 +2031,17 @@ namespace AIS
                 OracleDataReader ardr = cmd.ExecuteReader();
                 while (ardr.Read())
                 {
-                    AuditEngagementPlanModel eng = new AuditEngagementPlanModel();
+                    AuditRefEngagementPlanModel eng = new AuditRefEngagementPlanModel();
                     eng.PLAN_ID = Convert.ToInt32(ardr["plan_id"].ToString());
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
                     eng.TEAM_NAME = ardr["team_name"].ToString();
                     eng.TEAM_ID = Convert.ToInt32(ardr["team_id"].ToString());
                     eng.ENTITY_NAME = ardr["name"].ToString();
                     eng.COMMENTS = this.GetLatestCommentsOnEngagement(Convert.ToInt32(eng.ENG_ID)).ToString();
-                    eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString());
-                    eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString());
-                    eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString());
-                    eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString());
+                    eng.AUDIT_STARTDATE = ardr["audit_startdate"].ToString();
+                    eng.AUDIT_ENDDATE = ardr["audit_enddate"].ToString();
+                    eng.OP_STARTDATE = ardr["op_startdate"].ToString();
+                    eng.OP_ENDDATE = ardr["op_enddate"].ToString();
 
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
@@ -4042,7 +4042,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservations";
+                cmd.CommandText = "pkg_ais.P_GetFinalizedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4125,7 +4125,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
+                cmd.CommandText = "pkg_ais.P_GetFinalizedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;

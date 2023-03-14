@@ -8,10 +8,10 @@
     var g_planId = 0;
     var g_entityId = 0;
     $('#document').ready(function () {
-        $('#selectDateInputField').inputmask();
-        $('#selectEndDateInputField').inputmask();
-        $('#selectOPDateInputField').inputmask();
-        $('#selectOPEndDateInputField').inputmask();
+        $('#selectDateInputField').inputmask("dd-mm-yyyy");
+        $('#selectEndDateInputField').inputmask("dd-mm-yyyy");
+        $('#selectOPDateInputField').inputmask("dd-mm-yyyy");
+        $('#selectOPEndDateInputField').inputmask("dd-mm-yyyy");
 
         $.ajax({
             url: "/Planning/audit_teams",
@@ -38,6 +38,8 @@
     }
     function reRecommendEngagementPlan(engId, planId, entityId, startDate, endDate, op_startDate, op_endDate, teamId) {
         console.log(op_startDate, op_endDate, startDate, endDate);
+
+
        
         g_engId = engId;
         g_planId = planId;
