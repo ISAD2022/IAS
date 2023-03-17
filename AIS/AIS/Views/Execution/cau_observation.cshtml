@@ -160,6 +160,7 @@ label.heading{
             'ATTACHMENTS': ''
         };
         g_memoObj.push(memo);
+        $('#submitCAUobBtn').attr('disabled', true);
         $.ajax({
             url: "/ApiCalls/save_observations_cau",
             type: "POST",
@@ -172,6 +173,7 @@ label.heading{
             },
             cache: false,
             success: function (data) {
+                $('#submitCAUobBtn').attr('disabled', false);
                 if (data.failed > 0)
                     alert("<p>Memo Already Saved</p>");
                 else
@@ -351,7 +353,7 @@ label.heading{
     </div>
    
     <div class="row col-md-12 mt-5">                
-                <button onclick="submitObservationToAuditee();" style="margin-left:20px;" class="btn btn-primary">Save Observation</button>
+                <button id="submitCAUobBtn" onclick="submitObservationToAuditee();" style="margin-left:20px;" class="btn btn-primary">Save Observation</button>
             </div>           
 </div>
 

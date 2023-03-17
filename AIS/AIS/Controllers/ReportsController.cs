@@ -292,52 +292,7 @@ namespace AIS.Controllers
                 else
                     return View();
             }
-        }
-
-
-        public IActionResult draft_audit_report()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            //ViewData["ObservationsList"] = dBConnection.GetManagedObservations();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult draft_audit_report_branch()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            //ViewData["ObservationsList"] = dBConnection.GetManagedObservations();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
-
-        
+        }      
 
         public IActionResult management_au_report_zonewise()
         {
@@ -358,7 +313,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
 
         public IActionResult audit_report()
         {

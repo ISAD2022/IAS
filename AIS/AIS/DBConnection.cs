@@ -57,7 +57,7 @@ namespace AIS
                 con.Open();
                 return con;
             }
-            catch (Exception) { return null; }
+            catch (Exception e) { return null; }
         }
 
         public UserModel AutheticateLogin(LoginModel login)
