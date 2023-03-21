@@ -659,11 +659,32 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<ManageObservations> get_entity_report_paras_branch(int ENG_ID)
+        {
+            return dBConnection.GetEntityReportParasForBranch(ENG_ID);
+
+        }
+
+        [HttpPost]
         public List<AuditeeOldParasModel> get_assigned_observation_old_paras(int ENTITY_ID = 0)
         {
             return dBConnection.GetAuditeeOldParas(ENTITY_ID);
 
         }
+
+        [HttpPost]
+        public List<AuditeeAddressModel> get_address(int ENT_ID)
+        {
+            return dBConnection.GetAddress(ENT_ID);
+
+        }
+
+        [HttpPost]
+        public List<ParaTextModel> get_report_paras(int ENG_ID)
+        {
+            return dBConnection.GetReportParas(ENG_ID);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

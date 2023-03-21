@@ -15,8 +15,8 @@ namespace AIS.Models
         public int ENTITY_CODE { get; set; }
         public int ENTITY_TYPE { get; set; }
         public string ENTITY_NAME { get; set; }
-        public DateTime? AUDIT_START_DATE { get; set; }
-        public DateTime? AUDIT_END_DATE { get; set; }
+        public string AUDIT_START_DATE { get; set; }
+        public string AUDIT_END_DATE { get; set; }
         public int STATUS_ID { get; set; }
         public string ENG_STATUS { get; set; }
         public string ENG_NEXT_STATUS { get; set; }

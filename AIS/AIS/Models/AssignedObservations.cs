@@ -31,8 +31,8 @@ namespace AIS.Models
         public string MEMO_NUMBER { get; set; }
         public string MEMO_REPLY_DATE{ get; set; }
         public string AUDIT_YEAR { get; set; }
-        public DateTime OPERATION_STARTDATE { get; set; }
-        public DateTime OPERATION_ENDDATE { get; set; }
+        public string OPERATION_STARTDATE { get; set; }
+        public string OPERATION_ENDDATE { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNOs { get; set; }
     }
 }

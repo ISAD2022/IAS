@@ -153,17 +153,11 @@
 
                 $.each(g_obsList, function (i, v) {
                     if (v.obS_ID == g_obsId) {
-
-                        console.log('asddddd', v.obS_ID, g_obsId, v)
                         $('#updateMemo_process').val($('#updateMemo_process option').filter(function () { return $(this).html() == v.process; }).val())
-                        $('#updateMemo_subprocess').append('<option>' + v.suB_PROCESS + '</option>');
-                        $('#updateMemo_violation').append('<option>' + v.checklist_Details + '</option>');
-                        
-                       
+                        $('#updateMemo_subprocess').append('<option value="0">' + v.suB_PROCESS + '</option>');
+                        $('#updateMemo_violation').append('<option value="0">' + v.checklist_Details + '</option>');
                     }
-                });
-
-                
+                });                
             },
             dataType: "json",
         });

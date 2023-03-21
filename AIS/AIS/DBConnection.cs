@@ -49,8 +49,8 @@ namespace AIS
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -2684,8 +2684,8 @@ namespace AIS
                     //tlist.TEAMMEMBER_PPNO = Convert.ToInt32(loggedInUser.PPNumber);
                     tlist.TEAM_NAME = rdr["T_NAME"].ToString();
                     tlist.EMP_NAME = loggedInUser.Name.ToString();
-                    tlist.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"]);
-                    tlist.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"]);
+                    tlist.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"]).ToString("dd/MM/yyyy"); ;
+                    tlist.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"]).ToString("dd/MM/yyyy"); ;
                     tlist.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
                     tlist.ENG_STATUS = rdr["ENG_STATUS"].ToString();
                     tlist.ENG_NEXT_STATUS = rdr["ENG_NEXT_STATUS"].ToString();
@@ -3446,8 +3446,8 @@ namespace AIS
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
                     chk.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
-                    chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]);
-                    chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]);
+                    chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]).ToString("dd/MM/yyyy");
+                    chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]).ToString("dd/MM/yyyy");
 
                     chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
                     list.Add(chk);
@@ -4117,6 +4117,53 @@ namespace AIS
 
             return list;
         }
+
+
+        //
+        public List<ManageObservations> GetEntityReportParasForBranch(int ENG_ID = 0)
+        {
+            var con = this.DatabaseConnection();
+            if (ENG_ID == 0)
+                ENG_ID = this.GetLoggedInUserEngId();
+            List<ManageObservations> list = new List<ManageObservations>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais.R_GetManagedDraftObservationsbranch";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservations chk = new ManageObservations();
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
+                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    chk.PROCESS = rdr["PROCESS"].ToString();
+                    chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
+                   
+                    chk.OBS_TEXT = 
+                    chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
+                    chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
+                    list.Add(chk);
+
+                }
+            }
+            con.Close();
+
+            return list;
+        }
+
+
         public List<ManageObservations> GetFinalizedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
         {
             var con = this.DatabaseConnection();
@@ -6280,5 +6327,88 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        public List<AuditeeAddressModel> GetAddress(int ENT_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais_reports.r_getauditeeaddress";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EngId", OracleDbType.Int32).Value = ENT_ID;
+                cmd.Parameters.Add("ppnum", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeAddressModel chk = new AuditeeAddressModel();
+                    chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"]);
+                    chk.CODE = Convert.ToInt32(rdr["CODE"]);
+
+
+                    chk.P_NAME = rdr["P_NAME"].ToString();
+                    chk.ADDRESS = rdr["ADDRESS"].ToString();
+                    chk.NAME = rdr["NAME"].ToString();
+                    chk.LICENSE = rdr["LICENSE"].ToString();
+                    if (rdr["DATE_OF_OPENING"].ToString() != null && rdr["DATE_OF_OPENING"].ToString() != "")
+                        chk.DATE_OF_OPENING = Convert.ToDateTime(rdr["DATE_OF_OPENING"]);
+                    if (rdr["AUDIT_STARTDATE"].ToString() != null && rdr["AUDIT_STARTDATE"].ToString() != "")
+                        chk.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"]);
+                    if (rdr["AUDIT_ENDDATE"].ToString() != null && rdr["AUDIT_ENDDATE"].ToString() != "")
+                        chk.AUDIT_ENDDATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"]);
+                    if (rdr["OPERATION_STARTDATE"].ToString() != null && rdr["OPERATION_STARTDATE"].ToString() != "")
+                        chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]);
+                    if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
+
+                        chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]);
+
+
+
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+        public List<ParaTextModel> GetReportParas(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ParaTextModel> list = new List<ParaTextModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais_reports.r_getauditeeParas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ParaTextModel chk = new ParaTextModel();
+                    chk.MEMO_NO = Convert.ToInt32(rdr["memo_number"]);
+                  
+                    chk.MEMO_TXT = rdr["text"].ToString();
+
+                    list.Add(chk);
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+
     }
 }

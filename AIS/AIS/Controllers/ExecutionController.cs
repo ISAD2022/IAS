@@ -671,6 +671,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
 
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -686,6 +687,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
 
         public IActionResult deposit_account_details()
         {
