@@ -488,6 +488,11 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasForResponse();
         }
         [HttpPost]
+        public List<OldParasModel> get_manage_legacy_para()
+        {
+            return dBConnection.GetManageLegacyParas();
+        }
+        [HttpPost]
         public List<AuditeeOldParasModel> get_outstanding_para(string ENTITY_ID)
         {
             return dBConnection.GetOutstandingParas(ENTITY_ID);
