@@ -1317,8 +1317,6 @@ C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Vi
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\department_performance.cshtml.g.cs
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\div_out_paras.cshtml.g.cs
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\div_seg_paras.cshtml.g.cs
-C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\draft_audit_report.cshtml.g.cs
-C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\draft_audit_report_branch.cshtml.g.cs
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\emp_info.cshtml.g.cs
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\exec_stats.cshtml.g.cs
 C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\fad_para_res.cshtml.g.cs
@@ -1994,3 +1992,9 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\draft_audit_report.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\draft_audit_report_branch.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\manage_legacy_paras.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\draft_audit_report.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\draft_audit_report_branch.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Execution\manage_legacy_paras.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\current_audit_progress.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\Razor\Views\Reports\current_sessions.cshtml.g.cs
+C:\Users\Asad\Documents\GitHub\IAMS\ais\AIS\AIS\obj\Debug\netcoreapp3.1\AIS.csproj.AssemblyReference.cache

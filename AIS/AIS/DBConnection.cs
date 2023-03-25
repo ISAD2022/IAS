@@ -70,7 +70,7 @@ namespace AIS
             var enc_pass = getMd5Hash(login.Password);
             using (OracleCommand cmd = con.CreateCommand())
             {
-                string _sql = "pkg_ais.p_get_user";
+                string _sql = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
@@ -126,7 +126,7 @@ namespace AIS
                         user.UserRoleID = 0;
 
                     bool isSessionAvailable = false;
-                    string _sql2 = "pkg_ais.p_get_user_id";
+                    string _sql2 = "pkg_lg.p_get_user_id";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
@@ -151,7 +151,7 @@ namespace AIS
                     else
                     {
                         var resp = sessionHandler.SetSessionUser(user);
-                        cmd.CommandText = "pkg_ais.User_SESSION";
+                        cmd.CommandText = "pkg_lg.User_SESSION";
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Clear();
                         cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = user.PPNumber;
@@ -185,7 +185,7 @@ namespace AIS
             con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.Session_END";
+                cmd.CommandText = "pkg_lg.Session_END";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = sessionUser.PPNumber;
@@ -213,7 +213,7 @@ namespace AIS
 
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "pkg_ais.p_get_user_session";
+                    cmd.CommandText = "pkg_lg.p_get_user_session";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = PPNumber;
@@ -241,7 +241,7 @@ namespace AIS
             bool isSession = false;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                string _sql = "pkg_ais.p_get_user";
+                string _sql = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
@@ -251,7 +251,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    cmd.CommandText = "pkg_ais.Session_Kill";
+                    cmd.CommandText = "pkg_lg.Session_Kill";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
@@ -276,7 +276,7 @@ namespace AIS
                 con.Open();
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "pkg_ais.Session_Kill";
+                    cmd.CommandText = "pkg_lg.Session_Kill";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -321,7 +321,7 @@ namespace AIS
             List<MenuModel> modelList = new List<MenuModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetTopMenus";
+                cmd.CommandText = "pkg_lg.p_GetTopMenus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserRoleID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -350,7 +350,7 @@ namespace AIS
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetTopMenuPages";
+                cmd.CommandText = "pkg_lg.p_GetTopMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserGroupID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
@@ -378,7 +378,7 @@ namespace AIS
             List<MenuModel> modelList = new List<MenuModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAllTopMenus";
+                cmd.CommandText = "pkg_ad.P_GetAllTopMenus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -403,7 +403,7 @@ namespace AIS
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetAllMenuPages";
+                cmd.CommandText = "pkg_ad.p_GetAllMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("menuId", OracleDbType.Int32).Value = menuId;
@@ -431,7 +431,7 @@ namespace AIS
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAssignedMenuPages";
+                cmd.CommandText = "pkg_ad.P_GetAssignedMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("groupId", OracleDbType.Int32).Value = groupId;
@@ -459,7 +459,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_updateAllMenuPages";
+                cmd.CommandText = "pkg_ad.P_updateAllMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("menuId", OracleDbType.Int32).Value = menuId;
@@ -475,7 +475,7 @@ namespace AIS
             List<GroupModel> groupList = new List<GroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetGroups";
+                cmd.CommandText = "pkg_ad.P_GetGroups";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -501,7 +501,7 @@ namespace AIS
             {
                 if (gm.GROUP_ID == 0)
                 {
-                    cmd.CommandText = "pkg_ais.p_AddGroup";
+                    cmd.CommandText = "pkg_ad.p_AddGroup";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("GROUP_DESCRIPTION", OracleDbType.Varchar2).Value = gm.GROUP_DESCRIPTION;
@@ -511,7 +511,7 @@ namespace AIS
                 }
                 else if (gm.GROUP_ID != 0)
                 {
-                    cmd.CommandText = "pkg_ais.P_Group_Update";
+                    cmd.CommandText = "pkg_ad.P_Group_Update";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("GROUP_ID", OracleDbType.Varchar2).Value = gm.GROUP_ID;
@@ -530,7 +530,7 @@ namespace AIS
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditPeriods";
+                cmd.CommandText = "pkg_pg.P_GetAuditPeriods";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -557,7 +557,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddAuditPeriod";
+                cmd.CommandText = "pkg_pg.P_AddAuditPeriod";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("DESCRIPTION", OracleDbType.Varchar2).Value = periodModel.DESCRIPTION;
@@ -591,7 +591,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditTeams";
+                cmd.CommandText = "pkg_pg.P_GetAuditTeams";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("dept_code", OracleDbType.Int32).Value = dept_code;
@@ -651,7 +651,7 @@ namespace AIS
                var con = this.DatabaseConnection(); con.Open();
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "pkg_ais.P_DeleteAuditTeam";
+                    cmd.CommandText = "pkg_pg.P_DeleteAuditTeam";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("TID", OracleDbType.Int32).Value = T_CODE;
@@ -670,7 +670,7 @@ namespace AIS
             int maxTeamId = 1;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_MAXTEAMID";
+                cmd.CommandText = "pkg_pg.P_MAXTEAMID";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -699,7 +699,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_ADDAUDITCRITERIA";
+                cmd.CommandText = "pkg_pg.P_ADDAUDITCRITERIA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYTYPEID", OracleDbType.Int32).Value = acm.ENTITY_TYPEID;
@@ -737,7 +737,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_UpdateAuditCriteria";
+                cmd.CommandText = "pkg_pg.P_UpdateAuditCriteria";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = acm.ID;
@@ -768,7 +768,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SetAuditCriteriaStatusReferredBack";
+                cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusReferredBack";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = ID;
@@ -791,7 +791,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SetAuditCriteriaStatusApprove";
+                cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusApprove";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CAID", OracleDbType.Int32).Value = ID;
@@ -830,7 +830,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetPendingAuditCriterias";
+                cmd.CommandText = "pkg_pg.P_GetPendingAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -877,7 +877,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRefferedBackAuditCriterias";
+                cmd.CommandText = "pkg_pg.P_GetRefferedBackAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -917,7 +917,7 @@ namespace AIS
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditCriteriasToAuthorize";
+                cmd.CommandText = "pkg_pg.P_GetAuditCriteriasToAuthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -962,7 +962,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_GetPostChangesAuditCriterias";
+                cmd.CommandText = "pkg_pg.P_GetPostChangesAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -1011,7 +1011,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.Tentative_Audit_Plan";
+                cmd.CommandText = "pkg_pg.Tentative_Audit_Plan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CRITERIA_ID", OracleDbType.Int32).Value = CRITERIA_ID;
@@ -1033,7 +1033,7 @@ namespace AIS
             List<RoleRespModel> groupList = new List<RoleRespModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRoleResponsibilities";
+                cmd.CommandText = "pkg_ad.P_GetRoleResponsibilities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1057,7 +1057,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_get_allusers";
+                cmd.CommandText = "pkg_ad.p_get_allusers";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = user.ENTITYID;
@@ -1153,7 +1153,7 @@ namespace AIS
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditEntities";
+                cmd.CommandText = "pkg_pg.P_GetAuditEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -1220,7 +1220,7 @@ namespace AIS
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditeeEntities";
+                cmd.CommandText = "pkg_ad.P_GetAuditeeEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -1254,7 +1254,7 @@ namespace AIS
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetDepartments";
+                cmd.CommandText = "pkg_ad.P_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
@@ -1283,7 +1283,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddAuditEntity";
+                cmd.CommandText = "pkg_ad.P_AddAuditEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("AUDITABLE", OracleDbType.Varchar2).Value = am.AUDITABLE;
@@ -1300,7 +1300,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditSubEntities";
+                cmd.CommandText = "pkg_ad.P_GetAuditSubEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1333,7 +1333,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.UPDATE_USERS";
+                cmd.CommandText = "pkg_ad.UPDATE_USERS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNUMBER", OracleDbType.Int32).Value = user.PPNO;
@@ -1364,7 +1364,7 @@ namespace AIS
             var enc_new_pass = getMd5Hash(NewPassowrd);
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_get_user";
+                cmd.CommandText = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -1382,7 +1382,7 @@ namespace AIS
                 }
                 if (correctPass)
                 {
-                    cmd.CommandText = "pkg_ais.P_ChangePassword";
+                    cmd.CommandText = "pkg_lg.P_ChangePassword";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -1399,7 +1399,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_AddGroupMenuItemsAssignment";
+                cmd.CommandText = "pkg_ad.p_AddGroupMenuItemsAssignment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("groupid", OracleDbType.Int32).Value = group_id;
@@ -1413,7 +1413,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_RemoveGroupMenuItemsAssignment";
+                cmd.CommandText = "pkg_ad.P_RemoveGroupMenuItemsAssignment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("groupid", OracleDbType.Int32).Value = group_id;
@@ -1438,7 +1438,7 @@ namespace AIS
             }
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditZones";
+                cmd.CommandText = "pkg_ad.P_GetAuditZones";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = entityId;
@@ -1471,7 +1471,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_GetInspectionUnits";
+                cmd.CommandText = "pkg_ad.P_GetInspectionUnits";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1502,7 +1502,7 @@ namespace AIS
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetBranches";
+                cmd.CommandText = "pkg_ad.P_GetBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Zone_Id", OracleDbType.Int32).Value = zone_code;
@@ -1546,7 +1546,7 @@ namespace AIS
             List<ZoneModel> zoneList = new List<ZoneModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetZones";
+                cmd.CommandText = "pkg_ad.P_GetZones";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1577,7 +1577,7 @@ namespace AIS
             List<BranchSizeModel> brSizeList = new List<BranchSizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetBranchSizes";
+                cmd.CommandText = "pkg_ad.P_GetBranchSizes";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1600,7 +1600,7 @@ namespace AIS
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetControlViolations";
+                cmd.CommandText = "pkg_ad.P_GetControlViolations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1680,7 +1680,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reports.R_GetDepartments";
+                cmd.CommandText = "pkg_rpt.R_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -1728,7 +1728,7 @@ namespace AIS
             List<SubEntitiesModel> entitiesList = new List<SubEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetSubEntities";
+                cmd.CommandText = "pkg_ad.P_GetSubEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("dept_code", OracleDbType.Varchar2).Value = dept_code;
@@ -1761,7 +1761,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddSubEntity";
+                cmd.CommandText = "pkg_ad.P_AddSubEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("NAME", OracleDbType.Varchar2).Value = subentity.NAME;
@@ -1779,7 +1779,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_UpdateSubEntity";
+                cmd.CommandText = "pkg_ad.P_UpdateSubEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_id", OracleDbType.Int32).Value = subentity.ID;
@@ -1816,7 +1816,7 @@ namespace AIS
             List<RiskGroupModel> riskgroupList = new List<RiskGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRiskGroup";
+                cmd.CommandText = "pkg_ar.P_GetRiskGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1840,7 +1840,7 @@ namespace AIS
             List<RiskSubGroupModel> risksubgroupList = new List<RiskSubGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRiskSubGroup";
+                cmd.CommandText = "pkg_ar.P_GetRiskSubGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("group_id", OracleDbType.Int32).Value = group_id;
@@ -1866,7 +1866,7 @@ namespace AIS
             List<RiskActivityModel> riskActivityList = new List<RiskActivityModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetRiskActivities";
+                cmd.CommandText = "pkg_ar.p_GetRiskActivities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Sub_group_id", OracleDbType.Int32).Value = Sub_group_id;
@@ -1897,7 +1897,7 @@ namespace AIS
             List<AuditEmployeeModel> empList = new List<AuditEmployeeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditEmployees";
+                cmd.CommandText = "pkg_pg.P_GetAuditEmployees";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("dept_code", OracleDbType.Int32).Value = dept_code;
@@ -1934,7 +1934,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                string _sql = "pkg_ais.p_get_audit_plan";
+                string _sql = "pkg_pg.p_get_audit_plan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("AUDITED_BY", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -1969,7 +1969,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditOperationalStartDate";
+                cmd.CommandText = "pkg_pg.P_GetAuditOperationalStartDate";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("entityCode", OracleDbType.Int32).Value = entityCode;
@@ -1996,7 +1996,7 @@ namespace AIS
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditEngagementPlans";
+                cmd.CommandText = "pkg_pg.P_GetAuditEngagementPlans";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -2029,7 +2029,7 @@ namespace AIS
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRefferedBackAuditEngagementPlans";
+                cmd.CommandText = "pkg_pg.P_GetRefferedBackAuditEngagementPlans";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -2070,7 +2070,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddAuditEngagementPlan";
+                cmd.CommandText = "pkg_pg.P_AddAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PERIODID", OracleDbType.Int32).Value = ePlan.PERIOD_ID;
@@ -2102,7 +2102,7 @@ namespace AIS
 
                 if (isContinue)
                 {
-                    cmd.CommandText = "pkg_ais.P_AddAuditteamtasklist";
+                    cmd.CommandText = "pkg_pg.P_AddAuditteamtasklist";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("TEAMID", OracleDbType.Int32).Value = ePlan.TEAM_ID;
@@ -2126,7 +2126,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_RefferedBackAuditEngagementPlan";
+                cmd.CommandText = "pkg_pg.P_RefferedBackAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -2147,7 +2147,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_RerecommendAuditEngagementPlan";
+                cmd.CommandText = "pkg_pg.P_RerecommendAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -2179,7 +2179,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_ApproveAuditEngagementPlan";
+                cmd.CommandText = "pkg_pg.P_ApproveAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -2202,7 +2202,7 @@ namespace AIS
 
                 using (OracleCommand cmd = con.CreateCommand())
                 {
-                    cmd.CommandText = "pkg_ais.p_get_allusers";
+                    cmd.CommandText = "pkg_ad.p_get_allusers";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = 0;
@@ -2280,7 +2280,7 @@ namespace AIS
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRiskProcessDefinition";
+                cmd.CommandText = "pkg_lg.P_GetRiskProcessDefinition";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2304,7 +2304,7 @@ namespace AIS
             List<RiskProcessDetails> riskProcList = new List<RiskProcessDetails>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRiskProcessDetails";
+                cmd.CommandText = "pkg_ad.P_GetRiskProcessDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("procId", OracleDbType.Int32).Value = procId;
@@ -2330,7 +2330,7 @@ namespace AIS
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRiskProcessTransactions";
+                cmd.CommandText = "pkg_ad.P_GetRiskProcessTransactions";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("procDetailId", OracleDbType.Int32).Value = procDetailId;
@@ -2370,7 +2370,7 @@ namespace AIS
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetRiskProcessTransactionsWithStatus";
+                cmd.CommandText = "pkg_ad.p_GetRiskProcessTransactionsWithStatus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("statusId", OracleDbType.Int32).Value = statusId;
@@ -2408,7 +2408,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_audit_checklist";
+                cmd.CommandText = "pkg_ad.P_audit_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_name", OracleDbType.Varchar2).Value = proc.P_NAME;
@@ -2423,7 +2423,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_audit_checklist_sub";
+                cmd.CommandText = "pkg_ad.P_audit_checklist_sub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_ID", OracleDbType.Int32).Value = subProc.P_ID;
@@ -2443,7 +2443,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.audit_checklist_detail";
+                cmd.CommandText = "pkg_ad.audit_checklist_detail";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_id", OracleDbType.Int32).Value = trans.PD_ID;
@@ -2467,7 +2467,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_Recommend_Process_Transaction_By_Reviewer";
+                cmd.CommandText = "pkg_ad.p_Recommend_Process_Transaction_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -2487,7 +2487,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_RefferedBack_Process_Transaction_By_Reviewer";
+                cmd.CommandText = "pkg_ad.p_RefferedBack_Process_Transaction_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -2507,7 +2507,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_Recommend_Process_Transaction_By_Authorizer";
+                cmd.CommandText = "pkg_ad.p_Recommend_Process_Transaction_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -2527,7 +2527,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_RefferedBack_Process_Transaction_By_Authorizer";
+                cmd.CommandText = "pkg_ad.p_RefferedBack_Process_Transaction_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -2544,7 +2544,7 @@ namespace AIS
             List<AuditFrequencyModel> freqList = new List<AuditFrequencyModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetAuditFrequencies";
+                cmd.CommandText = "pkg_pg.p_GetAuditFrequencies";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2568,7 +2568,7 @@ namespace AIS
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetRisks";
+                cmd.CommandText = "pkg_ad.P_GetRisks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2590,7 +2590,7 @@ namespace AIS
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetCOSORisks";
+                cmd.CommandText = "pkg_ae.p_GetCOSORisks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2613,7 +2613,7 @@ namespace AIS
             List<AuditVoilationcatModel> voilationList = new List<AuditVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditVoilationcats";
+                cmd.CommandText = "pkg_ar.P_GetAuditVoilationcats";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2637,7 +2637,7 @@ namespace AIS
             List<AuditSubVoilationcatModel> voilationsubgroupList = new List<AuditSubVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetVoilationSubGroup";
+                cmd.CommandText = "pkg_ar.P_GetVoilationSubGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("group_id", OracleDbType.Int32).Value = group_id;
@@ -2669,7 +2669,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetTaskList";
+                cmd.CommandText = "pkg_ar.P_GetTaskList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -2720,7 +2720,7 @@ namespace AIS
                 engId = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetJoiningDetails";
+                cmd.CommandText = "pkg_ar.P_GetJoiningDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("engId", OracleDbType.Int32).Value = engId;
@@ -2763,7 +2763,7 @@ namespace AIS
             bool response = false;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddJoiningReport";
+                cmd.CommandText = "pkg_ar.P_AddJoiningReport";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = jm.ENG_PLAN_ID;
@@ -2783,7 +2783,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_GetAuditChecklist";
+                cmd.CommandText = "pkg_ar.P_GetAuditChecklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2810,7 +2810,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_GetAuditChecklistCAD";
+                cmd.CommandText = "pkg_ar.P_GetAuditChecklistCAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -2836,7 +2836,7 @@ namespace AIS
             List<AuditChecklistSubModel> list = new List<AuditChecklistSubModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetAuditChecklistSub";
+                cmd.CommandText = "pkg_ar.p_GetAuditChecklistSub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("tid", OracleDbType.Int32).Value = t_id;
@@ -2879,7 +2879,7 @@ namespace AIS
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditChecklistDetails";
+                cmd.CommandText = "pkg_ar.P_GetAuditChecklistDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("sid", OracleDbType.Int32).Value = s_id;
@@ -2926,7 +2926,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_getglheadsummary";
+                cmd.CommandText = "pkg_ai.p_getglheadsummary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -2969,7 +2969,7 @@ namespace AIS
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_getglheadsum";
+                cmd.CommandText = "pkg_ai.p_getglheadsum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3014,7 +3014,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLoanCaseDetails";
+                cmd.CommandText = "pkg_ai.P_GetLoanCaseDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3096,7 +3096,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetIncomeExpenceDetails";
+                cmd.CommandText = "pkg_ai.P_GetIncomeExpenceDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3171,7 +3171,7 @@ namespace AIS
             List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetDepositAccountSubdetails";
+                cmd.CommandText = "pkg_ai.P_GetDepositAccountSubdetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3234,7 +3234,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetBranchDesbursementAccountdetails";
+                cmd.CommandText = "pkg_ai.P_GetBranchDesbursementAccountdetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3277,7 +3277,7 @@ namespace AIS
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SaveAuditObservation";
+                cmd.CommandText = "pkg_ar.P_SaveAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
@@ -3310,7 +3310,7 @@ namespace AIS
                     {
                         foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
                         {
-                            cmd.CommandText = "pkg_ais.P_responibilityassigned";
+                            cmd.CommandText = "pkg_ar.P_responibilityassigned";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
@@ -3342,7 +3342,7 @@ namespace AIS
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SaveAuditObservationCAD";
+                cmd.CommandText = "pkg_ar.P_SaveAuditObservationCAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ob.ENGPLANID;
@@ -3374,7 +3374,7 @@ namespace AIS
                     {
                         foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
                         {
-                            cmd.CommandText = "pkg_ais.P_responibilityassigned";
+                            cmd.CommandText = "pkg_ar.P_responibilityassigned";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
@@ -3404,7 +3404,7 @@ namespace AIS
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetAssignedObservations";
+                cmd.CommandText = "pkg_ae.p_GetAssignedObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -3473,7 +3473,7 @@ namespace AIS
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAssignedObservationsForBranch";
+                cmd.CommandText = "pkg_ae.P_GetAssignedObservationsForBranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -3522,7 +3522,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetObservationText";
+                cmd.CommandText = "pkg_ae.P_GetObservationText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -3535,7 +3535,7 @@ namespace AIS
                 }
                 list.Add(ob_text);
 
-                cmd.CommandText = "pkg_ais.P_GetOBSERVATIONSAUDITEERESPONSE";
+                cmd.CommandText = "pkg_ar.P_GetOBSERVATIONSAUDITEERESPONSE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -3548,7 +3548,7 @@ namespace AIS
                 }
                 list.Add(ob_resp);
                 List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
-                cmd.CommandText = "pkg_ais.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
+                cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("RESP_ID", OracleDbType.Int32).Value = RESP_ID;
@@ -3575,7 +3575,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetObservationResponsible";
+                cmd.CommandText = "pkg_ae.P_GetObservationResponsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
@@ -3612,7 +3612,7 @@ namespace AIS
             ob.REPLY_ROLE = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AUDITEE_OBSERVATION_RESPONSE";
+                cmd.CommandText = "pkg_ae.P_AUDITEE_OBSERVATION_RESPONSE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("AUOBSID", OracleDbType.Int32).Value = ob.AU_OBS_ID;
@@ -3635,7 +3635,7 @@ namespace AIS
                         foreach (var item in ob.EVIDENCE_LIST)
                         {
                             string fileName = AUD_RESP_ID + "_" + item.IMAGE_NAME;
-                            cmd.CommandText = "pkg_ais.P_AUDITEE_OBSERVATION_RESPONSE_EVIDENCES";
+                            cmd.CommandText = "pkg_ae.P_AUDITEE_OBSERVATION_RESPONSE_EVIDENCES";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
@@ -3667,7 +3667,7 @@ namespace AIS
             int engId = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLoggedInUserEngId";
+                cmd.CommandText = "pkg_lg.P_GetLoggedInUserEngId";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -3691,7 +3691,7 @@ namespace AIS
             int ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SetEngIdOnHold";
+                cmd.CommandText = "pkg_ar.P_SetEngIdOnHold";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -3711,7 +3711,7 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLatestAuditorResponse";
+                cmd.CommandText = "pkg_ar.P_GetLatestAuditorResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = obs_id;
@@ -3735,7 +3735,7 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLatestDepartmentalHeadResponse";
+                cmd.CommandText = "pkg_ar.P_GetLatestDepartmentalHeadResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = obs_id;
@@ -3776,7 +3776,7 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLatestCommentsOnProcess";
+                cmd.CommandText = "pkg_ad.P_GetLatestCommentsOnProcess";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("procId", OracleDbType.Int32).Value = procId;
@@ -3799,7 +3799,7 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLatestCommentsOnEngagement";
+                cmd.CommandText = "pkg_pg.P_GetLatestCommentsOnEngagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = engId;
@@ -3820,7 +3820,7 @@ namespace AIS
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetLatestAuditeeResponse";
+                cmd.CommandText = "pkg_ar.P_GetLatestAuditeeResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = obs_id;
@@ -3852,7 +3852,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedObservations";
+                cmd.CommandText = "pkg_ar.P_GetManagedObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -3898,7 +3898,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedObservationsText";
+                cmd.CommandText = "pkg_ar.P_GetManagedObservationsText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
@@ -3929,7 +3929,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedObservationsForBranches";
+                cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -3972,7 +3972,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedObservationsForBranchesText";
+                cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranchesText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
@@ -4005,7 +4005,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservations";
+                cmd.CommandText = "pkg_ar.P_GetManagedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4048,7 +4048,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetFinalizedDraftObservations";
+                cmd.CommandText = "pkg_hd.P_GetFinalizedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4090,7 +4090,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
+                cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4134,7 +4134,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.R_GetManagedDraftObservationsbranch";
+                cmd.CommandText = "pkg_ar.R_GetManagedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4178,7 +4178,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetFinalizedDraftObservationsbranch";
+                cmd.CommandText = "pkg_hd.P_GetFinalizedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4219,7 +4219,7 @@ namespace AIS
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsText";
+                cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
@@ -4245,7 +4245,7 @@ namespace AIS
             List<ManageObservations> finalList = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetManagedDraftObservationsForBranches";
+                cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4295,7 +4295,7 @@ namespace AIS
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_getauditeecheckklist";
+                cmd.CommandText = "pkg_ar.p_getauditeecheckklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PLANID", OracleDbType.Int32).Value = ENG_ID;
@@ -4378,7 +4378,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_DropAuditObservation";
+                cmd.CommandText = "pkg_ar.P_DropAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -4387,11 +4387,7 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["REMARKS"].ToString();
-                    /*if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
-                        
-                    }*/
+                    resp = rdr["REMARKS"].ToString();           
                 }
             }
             return resp;
@@ -4406,7 +4402,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SubmitAuditObservationToAuditee";
+                cmd.CommandText = "pkg_ar.P_SubmitAuditObservationToAuditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -4416,10 +4412,7 @@ namespace AIS
                 while (rdr.Read())
                 {
                     resp = rdr["REMARKS"].ToString();
-                    /*if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
-                        
-                    }*/
+                    
                 }
             }
             return resp;
@@ -4444,7 +4437,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_UpdateAuditObservationStatus";
+                cmd.CommandText = "pkg_ar.P_UpdateAuditObservationStatus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -4456,15 +4449,11 @@ namespace AIS
                 while (rdr.Read())
                 {
                     resp = rdr["REMARKS"].ToString();
-                    /*if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
-                        
-                    }*/
                 }
 
                 if (NEW_STATUS_ID == 4 || NEW_STATUS_ID == 5)
                 {
-                    cmd.CommandText = "pkg_ais.AUDITOR_RESPONSE";
+                    cmd.CommandText = "pkg_ar.AUDITOR_RESPONSE";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -4476,7 +4465,7 @@ namespace AIS
                 }
                 else if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
                 {
-                    cmd.CommandText = "pkg_ais.AUDITOR_REPLY";
+                    cmd.CommandText = "pkg_ar.AUDITOR_REPLY";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
@@ -4501,7 +4490,7 @@ namespace AIS
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ais.P_UpdateObservation";
+                cmd.CommandText = "pkg_ar.P_UpdateObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
@@ -4530,7 +4519,7 @@ namespace AIS
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetClosingDraftObservations";
+                cmd.CommandText = "pkg_ar.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -4580,7 +4569,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetClosingDraftObservations";
+                cmd.CommandText = "pkg_ar.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -4626,7 +4615,7 @@ namespace AIS
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_Closeaudit";
+                cmd.CommandText = "pkg_ar.P_Closeaudit";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -4675,7 +4664,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_DeletePendingCriteria";
+                cmd.CommandText = "pkg_pg.P_DeletePendingCriteria";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = CID;
@@ -4693,7 +4682,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_SubmitAuditCriteriaForApproval";
+                cmd.CommandText = "pkg_pg.P_SubmitAuditCriteriaForApproval";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -4817,7 +4806,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.T_CAU_OM";
+                cmd.CommandText = "pkg_cm.CAU_OM";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OM_NO", OracleDbType.Varchar2).Value = om.OM_NO;
@@ -4839,7 +4828,7 @@ namespace AIS
             List<CAUOMAssignmentModel> list = new List<CAUOMAssignmentModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_CAUGetAssignedOMs";
+                cmd.CommandText = "pkg_cm.P_CAUGetAssignedOMs";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -4871,7 +4860,7 @@ namespace AIS
             List<AuditCCQModel> list = new List<AuditCCQModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetCCQ";
+                cmd.CommandText = "pkg_pg.P_GetCCQ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -4930,7 +4919,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_UpdateCCQ";
+                cmd.CommandText = "pkg_pg.P_UpdateCCQ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = ccq.ID;
@@ -4955,7 +4944,7 @@ namespace AIS
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditeeOldParasEntities";
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -4983,7 +4972,7 @@ namespace AIS
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditeeOldParas";
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5048,7 +5037,7 @@ namespace AIS
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetOldParas";
+                cmd.CommandText = "pkg_hd.P_GetOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = AUDITED_BY;
@@ -5089,7 +5078,7 @@ namespace AIS
             List<OldParasModelCAD> list = new List<OldParasModelCAD>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetOldParaManagement";
+                cmd.CommandText = "pkg_ae.P_GetOldParaManagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5128,7 +5117,7 @@ namespace AIS
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetOldParasForResponse";
+                cmd.CommandText = "pkg_ae.P_GetOldParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5170,7 +5159,7 @@ namespace AIS
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditeeOldParasFAD";
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5274,7 +5263,7 @@ namespace AIS
                 {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
                 }
-                cmd.CommandText = "pkg_ais.P_AddOldParas";
+                cmd.CommandText = "pkg_hd.P_AddOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PROCESS", OracleDbType.Int32).Value = jm.PROCESS;
@@ -5307,7 +5296,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_AddOldParasReply";
+                cmd.CommandText = "pkg_ae.P_AddOldParasReply";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5329,7 +5318,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_updateoldparamanagement";
+                cmd.CommandText = "pkg_ae.P_updateoldparamanagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PARAID", OracleDbType.Int32).Value = ID;
@@ -5359,7 +5348,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_UpdateAuditeeOldParasresponse";
+                cmd.CommandText = "pkg_ae.P_UpdateAuditeeOldParasresponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Paraid", OracleDbType.Int32).Value = opc.ParaRef;
@@ -5395,7 +5384,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetZoneWiseOldParasPerformance";
+                cmd.CommandText = "pkg_rpt.P_GetZoneWiseOldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5481,7 +5470,7 @@ namespace AIS
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_GetObservationEntities";
+                cmd.CommandText = "pkg_rpt.p_GetObservationEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -5511,7 +5500,7 @@ namespace AIS
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetAuditeeAssignedEntities";
+                cmd.CommandText = "pkg_ae.P_GetAuditeeAssignedEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5540,7 +5529,7 @@ namespace AIS
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetCCQsEntities";
+                cmd.CommandText = "pkg_ae.P_GetCCQsEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -5628,7 +5617,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_Getrealtionshiptype";
+                cmd.CommandText = "pkg_ad.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -5656,7 +5645,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetStaffPosition";
+                cmd.CommandText = "pkg_ai.P_GetStaffPosition";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -5694,7 +5683,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetFunctionalResponsibilityWisePara";
+                cmd.CommandText = "pkg_db.P_GetFunctionalResponsibilityWisePara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -5845,7 +5834,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.p_getglheadsummary_Yearly";
+                cmd.CommandText = "pkg_ai.p_getglheadsummary_Yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -5897,7 +5886,7 @@ namespace AIS
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS.P_GetDepositACCOUNTCATEGORY";
+                cmd.CommandText = "pkg_AI.P_GetDepositACCOUNTCATEGORY";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6000,7 +5989,7 @@ namespace AIS
             List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reports.r_audit_plan_engagement";
+                cmd.CommandText = "pkg_rpt.r_audit_plan_engagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Audit_Period", OracleDbType.Int32).Value = periodid;
@@ -6056,7 +6045,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS.P_preauditinfo_loan_scheme";
+                cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6101,7 +6090,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS.P_preauditinfo_loan_scheme_yearly";
+                cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme_yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6147,7 +6136,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "PKG_AIS_reports.r_functionalresp";
+                cmd.CommandText = "PKG_rpt.r_functionalresp";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
 
@@ -6182,7 +6171,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS_REPORTS.R_JOININGCOMPLETION";
+                cmd.CommandText = "pkg_rpt.R_JOININGCOMPLETION";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("DEPT_ID", OracleDbType.Int32).Value = DEPT_ID;
@@ -6218,7 +6207,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS_REPORTS.R_AUDITPLANPROGRESS";
+                cmd.CommandText = "pkg_rpt.R_AUDITPLANPROGRESS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("DEPT_ID", OracleDbType.Int32).Value = DEPT_ID;
@@ -6292,7 +6281,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS_REPORTS.R_GetAuditees";
+                cmd.CommandText = "pkg_rpt.R_GetAuditees";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6320,7 +6309,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS_REPORTS.R_GetAuditeesobervations";
+                cmd.CommandText = "pkg_rpt.R_GetAuditeesobervations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENTITY_ID;
@@ -6352,7 +6341,7 @@ namespace AIS
            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_AIS_REPORTS.R_LOGINUSERS";
+                cmd.CommandText = "pkg_rpt.R_LOGINUSERS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -6386,7 +6375,7 @@ namespace AIS
             List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reports.r_getauditeeaddress";
+                cmd.CommandText = "pkg_rpt.r_getauditeeaddress";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EngId", OracleDbType.Int32).Value = ENT_ID;
@@ -6437,7 +6426,7 @@ namespace AIS
             List<ParaTextModel> list = new List<ParaTextModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reports.r_getauditeeParas";
+                cmd.CommandText = "pkg_rpt.r_getauditeeParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
