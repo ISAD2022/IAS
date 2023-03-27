@@ -24,7 +24,7 @@ namespace AIS
         private readonly DateTimeHandler dtime = new DateTimeHandler();
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         public ISession _session;
-        public IHttpContextAccessor _httpCon;      
+        public IHttpContextAccessor _httpCon;
 
         [Obsolete]
         private readonly IHostingEnvironment _env;
@@ -42,7 +42,7 @@ namespace AIS
         {
 
         }
-      
+
         private OracleConnection DatabaseConnection()
         {
             try
@@ -54,7 +54,7 @@ namespace AIS
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
-               // con.Open();
+                // con.Open();
                 return con;
             }
             catch (Exception e) { return null; }
@@ -62,7 +62,7 @@ namespace AIS
 
         public UserModel AutheticateLogin(LoginModel login)
         {
-           var con = this.DatabaseConnection();
+            var con = this.DatabaseConnection();
             con.Open();
             UserModel user = new UserModel();
             user.isAlreadyLoggedIn = false;
@@ -181,7 +181,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var sessionUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection();
+            var con = this.DatabaseConnection();
             con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -208,7 +208,7 @@ namespace AIS
             bool isSession = false;
             if (PPNumber != null && PPNumber != "")
             {
-               var con = this.DatabaseConnection();
+                var con = this.DatabaseConnection();
                 con.Open();
 
                 using (OracleCommand cmd = con.CreateCommand())
@@ -236,7 +236,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var enc_pass = getMd5Hash(login.Password);
-           var con = this.DatabaseConnection();
+            var con = this.DatabaseConnection();
             con.Open();
             bool isSession = false;
             using (OracleCommand cmd = con.CreateCommand())
@@ -272,7 +272,7 @@ namespace AIS
             bool isTerminate = false;
             if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
             {
-               var con = this.DatabaseConnection(); 
+                var con = this.DatabaseConnection();
                 con.Open();
                 using (OracleCommand cmd = con.CreateCommand())
                 {
@@ -315,7 +315,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection();
+            var con = this.DatabaseConnection();
             con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuModel> modelList = new List<MenuModel>();
@@ -345,7 +345,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -374,7 +374,7 @@ namespace AIS
         }
         public List<MenuModel> GetAllTopMenus()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<MenuModel> modelList = new List<MenuModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -398,7 +398,7 @@ namespace AIS
         }
         public List<MenuPagesModel> GetAllMenuPages(int menuId = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -426,7 +426,7 @@ namespace AIS
         }
         public List<MenuPagesModel> GetAssignedMenuPages(int groupId, int menuId)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -455,7 +455,7 @@ namespace AIS
         }
         public bool UpdateMenuPagesAssignment(int menuId, int pageId)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -471,7 +471,7 @@ namespace AIS
         }
         public List<GroupModel> GetGroups()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -496,7 +496,7 @@ namespace AIS
         }
         public GroupModel AddGroup(GroupModel gm)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 if (gm.GROUP_ID == 0)
@@ -526,7 +526,7 @@ namespace AIS
         }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -554,7 +554,7 @@ namespace AIS
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
             bool result = false;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_AddAuditPeriod";
@@ -586,7 +586,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditTeamModel> teamList = new List<AuditTeamModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -623,7 +623,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -648,7 +648,7 @@ namespace AIS
         {
             if (T_CODE != "" && T_CODE != null)
             {
-               var con = this.DatabaseConnection(); con.Open();
+                var con = this.DatabaseConnection(); con.Open();
                 using (OracleCommand cmd = con.CreateCommand())
                 {
                     cmd.CommandText = "pkg_pg.P_DeleteAuditTeam";
@@ -666,7 +666,7 @@ namespace AIS
         }
         public int GetLatestTeamID()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             int maxTeamId = 1;
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -696,7 +696,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             bool isAlreadyAdded = true;
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_ADDAUDITCRITERIA";
@@ -734,7 +734,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_UpdateAuditCriteria";
@@ -765,7 +765,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusReferredBack";
@@ -788,7 +788,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusApprove";
@@ -806,7 +806,7 @@ namespace AIS
         }
         public string GetAuditCriteriaLogLastStatus(int Id)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string remarks = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -826,7 +826,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -873,7 +873,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -913,7 +913,7 @@ namespace AIS
         }
         public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -957,7 +957,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1008,7 +1008,7 @@ namespace AIS
         {
             string resMsg = "";
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.Tentative_Audit_Plan";
@@ -1029,7 +1029,7 @@ namespace AIS
         }
         public List<RoleRespModel> GetRoleResponsibilities()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RoleRespModel> groupList = new List<RoleRespModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1054,7 +1054,7 @@ namespace AIS
         public List<UserModel> GetAllUsers(FindUserModel user)
         {
             List<UserModel> userList = new List<UserModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.p_get_allusers";
@@ -1147,7 +1147,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
@@ -1176,7 +1176,7 @@ namespace AIS
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_ID = 0)
         {
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -1212,7 +1212,7 @@ namespace AIS
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntities(int ENTITY_TYPE_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -1246,7 +1246,7 @@ namespace AIS
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForUpdate(int ENTITY_TYPE_ID = 0, int ENTITY_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -1280,7 +1280,7 @@ namespace AIS
         }
         public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_AddAuditEntity";
@@ -1297,7 +1297,7 @@ namespace AIS
         public List<AuditSubEntitiesModel> GetAuditSubEntities()
         {
             List<AuditSubEntitiesModel> subEntitiesList = new List<AuditSubEntitiesModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_GetAuditSubEntities";
@@ -1330,7 +1330,7 @@ namespace AIS
                 setPassword = !setPassword;
             }
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.UPDATE_USERS";
@@ -1356,7 +1356,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             var enc_pass = getMd5Hash(Password);
             bool correctPass = false;
@@ -1396,7 +1396,7 @@ namespace AIS
         }
         public void AddGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.p_AddGroupMenuItemsAssignment";
@@ -1410,7 +1410,7 @@ namespace AIS
         }
         public void RemoveGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_RemoveGroupMenuItemsAssignment";
@@ -1427,7 +1427,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditZoneModel> AZList = new List<AuditZoneModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
             int entityId = 0;
@@ -1466,7 +1466,7 @@ namespace AIS
         }
         public List<InspectionUnitsModel> GetInspectionUnits()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<InspectionUnitsModel> ICList = new List<InspectionUnitsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1498,7 +1498,7 @@ namespace AIS
         }
         public List<BranchModel> GetBranches(int zone_code = 0, bool sessionCheck = true)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1542,7 +1542,7 @@ namespace AIS
         }
         public List<ZoneModel> GetZones(bool sessionCheck = true)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1573,7 +1573,7 @@ namespace AIS
         }
         public List<BranchSizeModel> GetBranchSizes()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<BranchSizeModel> brSizeList = new List<BranchSizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1596,7 +1596,7 @@ namespace AIS
         }
         public List<ControlViolationsModel> GetControlViolations()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1625,7 +1625,7 @@ namespace AIS
         }
         public List<DivisionModel> GetDivisions(bool sessionCheck = true)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<DivisionModel> divList = new List<DivisionModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1653,7 +1653,7 @@ namespace AIS
         public DivisionModel AddDivision(DivisionModel div)
         {
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "INSERT INTO T_DIVISION d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE + "','" + div.NAME + "','" + div.DESCRIPTION + "','" + div.ISACTIVE + "')";
@@ -1672,7 +1672,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -1724,7 +1724,7 @@ namespace AIS
         }
         public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<SubEntitiesModel> entitiesList = new List<SubEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1758,7 +1758,7 @@ namespace AIS
         }
         public SubEntitiesModel AddSubEntity(SubEntitiesModel subentity)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_AddSubEntity";
@@ -1776,7 +1776,7 @@ namespace AIS
         }
         public SubEntitiesModel UpdateSubEntity(SubEntitiesModel subentity)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_UpdateSubEntity";
@@ -1801,7 +1801,7 @@ namespace AIS
         public DepartmentModel UpdateDepartment(DepartmentModel dept)
         {
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "UPDATE t_auditee_entities_maping  mp SET mp.AUDITEDBY='" + dept.AUDITED_BY_DEPID + "' WHERE mp.CODE=" + dept.CODE;
@@ -1812,7 +1812,7 @@ namespace AIS
         }
         public List<RiskGroupModel> GetRiskGroup()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskGroupModel> riskgroupList = new List<RiskGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1836,7 +1836,7 @@ namespace AIS
         }
         public List<RiskSubGroupModel> GetRiskSubGroup(int group_id)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskSubGroupModel> risksubgroupList = new List<RiskSubGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1862,7 +1862,7 @@ namespace AIS
         }
         public List<RiskActivityModel> GetRiskActivities(int Sub_group_id)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskActivityModel> riskActivityList = new List<RiskActivityModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1893,7 +1893,7 @@ namespace AIS
         }
         public List<AuditEmployeeModel> GetAuditEmployees(int dept_code = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditEmployeeModel> empList = new List<AuditEmployeeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1928,7 +1928,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
 
@@ -1966,7 +1966,7 @@ namespace AIS
         public string GetAuditOperationalStartDate(int auditPeriodId = 0, int entityCode = 0)
         {
             string result = "";
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_GetAuditOperationalStartDate";
@@ -1992,7 +1992,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2008,7 +2008,7 @@ namespace AIS
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
                     eng.TEAM_NAME = ardr["team_name"].ToString();
                     eng.ENTITY_NAME = ardr["name"].ToString();
-                    eng.AUDIT_STARTDATE =Convert.ToDateTime(ardr["audit_startdate"].ToString()).ToString("dd/MM/yyyy");
+                    eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString()).ToString("dd/MM/yyyy");
                     eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString()).ToString("dd/MM/yyyy");
                     eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString()).ToString("dd/MM/yyyy");
                     eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString()).ToString("dd/MM/yyyy");
@@ -2025,7 +2025,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2067,7 +2067,7 @@ namespace AIS
             bool isContinue = false;
 
             ePlan.CREATEDBY = Convert.ToInt32(loggedInUser.PPNumber);
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_AddAuditEngagementPlan";
@@ -2123,7 +2123,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_RefferedBackAuditEngagementPlan";
@@ -2144,7 +2144,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_RerecommendAuditEngagementPlan";
@@ -2176,7 +2176,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_ApproveAuditEngagementPlan";
@@ -2198,7 +2198,7 @@ namespace AIS
                 return um;
             if (PPNO != null && PPNO != "")
             {
-               var con = this.DatabaseConnection(); con.Open();
+                var con = this.DatabaseConnection(); con.Open();
 
                 using (OracleCommand cmd = con.CreateCommand())
                 {
@@ -2230,7 +2230,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanModel> planList = new List<AuditPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2276,7 +2276,7 @@ namespace AIS
         }
         public List<RiskProcessDefinition> GetRiskProcessDefinition()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2300,7 +2300,7 @@ namespace AIS
         }
         public List<RiskProcessDetails> GetRiskProcessDetails(int procId = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDetails> riskProcList = new List<RiskProcessDetails>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2326,7 +2326,7 @@ namespace AIS
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2366,7 +2366,7 @@ namespace AIS
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactionsWithStatus(int statusId)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2405,7 +2405,7 @@ namespace AIS
         }
         public RiskProcessDefinition AddRiskProcess(RiskProcessDefinition proc)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_audit_checklist";
@@ -2420,7 +2420,7 @@ namespace AIS
         }
         public RiskProcessDetails AddRiskSubProcess(RiskProcessDetails subProc)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub";
@@ -2439,7 +2439,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2463,7 +2463,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2483,7 +2483,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2503,7 +2503,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2523,7 +2523,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2540,7 +2540,7 @@ namespace AIS
         }
         public List<AuditFrequencyModel> GetAuditFrequencies()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditFrequencyModel> freqList = new List<AuditFrequencyModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2564,7 +2564,7 @@ namespace AIS
         }
         public List<RiskModel> GetRisks()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2586,7 +2586,7 @@ namespace AIS
         }
         public List<RiskModel> GetCOSORisks()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2609,7 +2609,7 @@ namespace AIS
         }
         public List<AuditVoilationcatModel> GetAuditVoilationcats()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditVoilationcatModel> voilationList = new List<AuditVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2633,7 +2633,7 @@ namespace AIS
         }
         public List<AuditSubVoilationcatModel> GetVoilationSubGroup(int group_id)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditSubVoilationcatModel> voilationsubgroupList = new List<AuditSubVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2664,7 +2664,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<TaskListModel> tasklist = new List<TaskListModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2712,7 +2712,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             JoiningModel jm = new JoiningModel();
             List<JoiningTeamModel> tjlist = new List<JoiningTeamModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2756,7 +2756,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
             jm.ENTEREDDATE = System.DateTime.Now;
@@ -2778,7 +2778,7 @@ namespace AIS
         }
         public List<AuditChecklistModel> GetAuditChecklist()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2805,7 +2805,7 @@ namespace AIS
         }
         public List<AuditChecklistModel> GetAuditChecklistCAD()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2832,7 +2832,7 @@ namespace AIS
         }
         public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id = 0, int eng_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistSubModel> list = new List<AuditChecklistSubModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2875,7 +2875,7 @@ namespace AIS
         }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetails(int s_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -2915,7 +2915,7 @@ namespace AIS
         public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2959,7 +2959,7 @@ namespace AIS
 
         public GlHeadSubDetailsModel GetGlheadSubDetails(int gltypeid = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -3011,7 +3011,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanCaseModel> list = new List<LoanCaseModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ai.P_GetLoanCaseDetails";
@@ -3091,7 +3091,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -3167,7 +3167,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -3231,7 +3231,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
             List<LoanCaseModel> list = new List<LoanCaseModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ai.P_GetBranchDesbursementAccountdetails";
@@ -3271,7 +3271,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ob.ENGPLANID == 0)
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
@@ -3336,7 +3336,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ob.ENGPLANID == 0)
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
@@ -3399,7 +3399,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3467,7 +3467,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AssignedObservations> list = new List<AssignedObservations>();
@@ -3514,7 +3514,7 @@ namespace AIS
         }
         public List<object> GetObservationText(int OBS_ID, int RESP_ID)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string ob_text = "";
             string ob_resp = "";
 
@@ -3570,7 +3570,7 @@ namespace AIS
         }
         public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -3603,7 +3603,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
             ob.REPLIEDDATE = System.DateTime.Now;
@@ -3662,7 +3662,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             int engId = 0;
             using (OracleCommand cmd = con.CreateCommand())
@@ -3686,7 +3686,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3706,7 +3706,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
@@ -3730,7 +3730,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
@@ -3751,7 +3751,7 @@ namespace AIS
         }
         public string GetRiskDescByID(int risk_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -3772,7 +3772,7 @@ namespace AIS
         }
         public string GetLatestCommentsOnProcess(int procId = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -3795,7 +3795,7 @@ namespace AIS
 
         public string GetLatestCommentsOnEngagement(int engId = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -3816,7 +3816,7 @@ namespace AIS
         }
         public string GetLatestAuditeeResponse(int obs_id = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -3839,7 +3839,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> list = new List<ManageObservations>();
 
@@ -3885,7 +3885,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> list = new List<ManageObservations>();
 
@@ -3922,7 +3922,7 @@ namespace AIS
         public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
         {
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0 && OBS_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
 
@@ -3965,7 +3965,7 @@ namespace AIS
         public List<ManageObservations> GetManagedObservationTextForBranches(int ENG_ID = 0, int OBS_ID = 0)
         {
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0 && OBS_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
 
@@ -3999,7 +3999,7 @@ namespace AIS
         }
         public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4042,7 +4042,7 @@ namespace AIS
         }
         public List<ManageObservations> GetFinalizedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4084,7 +4084,7 @@ namespace AIS
         }
         public List<ManageObservations> GetManagedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4128,7 +4128,7 @@ namespace AIS
         //
         public List<ManageObservations> GetEntityReportParasForBranch(int ENG_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4151,8 +4151,8 @@ namespace AIS
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
-                   
-                    chk.OBS_TEXT = 
+
+                    chk.OBS_TEXT =
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
                     chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -4172,7 +4172,7 @@ namespace AIS
 
         public List<ManageObservations> GetFinalizedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4213,7 +4213,7 @@ namespace AIS
         }
         public List<ManageObservations> GetManagedDraftObservationsText(int ENG_ID = 0, int OBS_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4238,7 +4238,7 @@ namespace AIS
         }
         public List<ManageObservations> GetManagedDraftObservationsForBranches(int ENG_ID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4290,7 +4290,7 @@ namespace AIS
         public List<SubCheckListStatus> GetSubChecklistStatus(int ENG_ID = 0, int S_ID = 0)
         {
             List<SubCheckListStatus> list = new List<SubCheckListStatus>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
@@ -4324,7 +4324,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<ManageObservations> list = new List<ManageObservations>();
@@ -4374,7 +4374,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -4398,7 +4398,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -4412,7 +4412,6 @@ namespace AIS
                 while (rdr.Read())
                 {
                     resp = rdr["REMARKS"].ToString();
-                    
                 }
             }
             return resp;
@@ -4433,7 +4432,7 @@ namespace AIS
                 Remarks = "Add to Final Report";
             else if (NEW_STATUS_ID == 9)
                 Remarks = "Para settle in discussion";
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
 
@@ -4486,7 +4485,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
 
@@ -4513,7 +4512,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
@@ -4561,7 +4560,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
@@ -4609,7 +4608,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
@@ -4633,7 +4632,7 @@ namespace AIS
         }
         public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             int count = 0;
             int criteria_id = 0;
             using (OracleCommand cmd = con.CreateCommand())
@@ -4661,7 +4660,7 @@ namespace AIS
         }
         public bool DeletePendingCriteria(int CID = 0)
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_DeletePendingCriteria";
@@ -4678,7 +4677,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -4729,7 +4728,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -4767,7 +4766,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -4803,7 +4802,7 @@ namespace AIS
         public bool CAUOMAssignment(CAUOMAssignmentModel om)
         {
             string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_cm.CAU_OM";
@@ -4822,7 +4821,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<CAUOMAssignmentModel> list = new List<CAUOMAssignmentModel>();
@@ -4855,7 +4854,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditCCQModel> list = new List<AuditCCQModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -4915,7 +4914,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -4939,7 +4938,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -4967,7 +4966,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5010,7 +5009,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
@@ -5033,7 +5032,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5074,7 +5073,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<OldParasModelCAD> list = new List<OldParasModelCAD>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5112,7 +5111,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5182,9 +5181,9 @@ namespace AIS
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
-                   // chk.PROCESS_DES = rdr["Process_Des"].ToString();
+                    // chk.PROCESS_DES = rdr["Process_Des"].ToString();
                     //chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-                   // chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
+                    // chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
                     list.Add(chk);
                 }
             }
@@ -5201,7 +5200,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -5226,7 +5225,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -5251,7 +5250,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -5291,7 +5290,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5314,7 +5313,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5344,7 +5343,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5374,7 +5373,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string query = "";
             query = query + "  s.ID=" + loggedInUser.UserEntityID;
@@ -5410,7 +5409,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<UserWiseOldParasPerformanceModel> list = new List<UserWiseOldParasPerformanceModel>();
@@ -5438,11 +5437,11 @@ namespace AIS
         }
         public ActiveInactiveChart GetActiveInactiveChartData()
         {
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             ActiveInactiveChart chk = new ActiveInactiveChart();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_GetActiveInactiveChartData";
+                cmd.CommandText = "pkg_rpt.P_GetActiveInactiveChartData";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -5465,7 +5464,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5495,7 +5494,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5524,7 +5523,7 @@ namespace AIS
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -5558,11 +5557,11 @@ namespace AIS
                 e_r_id = Convert.ToInt32(loggedInUser.UserEntityID);
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_Getchildposting";
+                cmd.CommandText = "pkg_ad.P_Getchildposting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("erid", OracleDbType.Int32).Value = e_r_id;
@@ -5584,11 +5583,11 @@ namespace AIS
         {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais.P_Getparentrepoffice";
+                cmd.CommandText = "pkg_ad.P_Getparentrepoffice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("rid", OracleDbType.Int32).Value = r_id;
@@ -5613,7 +5612,7 @@ namespace AIS
         {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5642,7 +5641,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<StaffPositionModel> list = new List<StaffPositionModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ai.P_GetStaffPosition";
@@ -5680,7 +5679,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_db.P_GetFunctionalResponsibilityWisePara";
@@ -5726,7 +5725,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ais.P_AddDivisionalHeadRemarksOnFunctionalLegacyPara";
@@ -5823,7 +5822,7 @@ namespace AIS
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5881,7 +5880,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
 
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<DepositAccountCatModel> list = new List<DepositAccountCatModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -5922,7 +5921,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<DepositAccountCatDetailsModel> depositaccsublist = new List<DepositAccountCatDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5985,7 +5984,7 @@ namespace AIS
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -6042,7 +6041,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanSchemeModel> list = new List<LoanSchemeModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme";
@@ -6087,7 +6086,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanSchemeYearlyModel> list = new List<LoanSchemeYearlyModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme_yearly";
@@ -6133,7 +6132,7 @@ namespace AIS
         public List<FadOldParaReportModel> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
             List<FadOldParaReportModel> list = new List<FadOldParaReportModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "PKG_rpt.r_functionalresp";
@@ -6168,7 +6167,7 @@ namespace AIS
         public List<JoiningCompletionReportModel> GetJoiningCompletion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
         {
             List<JoiningCompletionReportModel> list = new List<JoiningCompletionReportModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_JOININGCOMPLETION";
@@ -6204,7 +6203,7 @@ namespace AIS
         public List<AuditPlanCompletionReportModel> GetauditplanCompletion(int DEPT_ID)
         {
             List<AuditPlanCompletionReportModel> list = new List<AuditPlanCompletionReportModel>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_AUDITPLANPROGRESS";
@@ -6278,7 +6277,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_GetAuditees";
@@ -6306,7 +6305,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_GetAuditeesobervations";
@@ -6338,7 +6337,7 @@ namespace AIS
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentActiveUsers> list = new List<CurrentActiveUsers>();
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_LOGINUSERS";
@@ -6364,13 +6363,12 @@ namespace AIS
             con.Close();
             return list;
         }
-
         public List<AuditeeAddressModel> GetAddress(int ENT_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6415,13 +6413,12 @@ namespace AIS
             return list;
         }
 
-
         public List<ParaTextModel> GetReportParas(int ENG_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-           var con = this.DatabaseConnection(); con.Open();
+            var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ParaTextModel> list = new List<ParaTextModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6436,11 +6433,46 @@ namespace AIS
                 {
                     ParaTextModel chk = new ParaTextModel();
                     chk.MEMO_NO = Convert.ToInt32(rdr["memo_number"]);
-                  
+
                     chk.MEMO_TXT = rdr["text"].ToString();
 
                     list.Add(chk);
 
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<GetAuditeeParasModel> GetAuditeeParas(int eng_id)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetAuditeeParasModel> list = new List<GetAuditeeParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ais_reports.r_getauditeeparas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("engid", OracleDbType.Int32).Value = eng_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetAuditeeParasModel chk = new GetAuditeeParasModel();
+                    chk.MEMO_NUMBER = Convert.ToInt32(rdr["MEMO_NUMBER"].ToString());
+                    chk.STATUS = Convert.ToInt32(rdr["STATUS"].ToString());
+                    chk.TEXT = rdr["TEXT"].ToString();
+                    chk.REPLY = rdr["REPLY"].ToString();
+                    chk.RECOMMENDATION = rdr["RECOMMENDATION"].ToString();
+                    chk.REMARKS = rdr["REMARKS"].ToString();
+                    chk.REPLYROLE = rdr["REPLYROLE"].ToString();
+                    chk.HEADREMARKS = rdr["HEADREMARKS"].ToString();
+
+                    list.Add(chk);
                 }
             }
             con.Close();

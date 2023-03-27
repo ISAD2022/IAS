@@ -86,7 +86,7 @@
 
     function getaddress() {
 
-        getParas();
+        //getParas();
         var eng_id = $('#entitySelectField').val();
 
         $('#conoffice').empty();
@@ -124,6 +124,7 @@
             },
             dataType: "json",
         });
+        getParas();
     }
 
     function getParas() {
@@ -136,7 +137,7 @@
             url: "/ApiCalls/get_report_paras",
             type: "POST",
             data: {
-                'ENT_ID': eng_id
+                'ENG_ID': eng_id
             },
             cache: false,
             success: function (data) {
@@ -144,8 +145,9 @@
 
                     
 
-                    $('#obs_report_panel').append('<tr><td>' + v.memO_NO + '<td/><td>' + v.memO_TEXT +'</td><td></td><td></td></tr>')
+                    $('#obs_report_panel').append('<tr><td>' + v.memO_NUMBER + '</td><td>' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks +'</td></tr>')
 
+                   
                 });
 
 
@@ -5939,6 +5941,7 @@ normal">Significant Comments: <o:p></o:p></b>
   padding:0cm 5.4pt 0cm 5.4pt;height:1.0pt">
                     <p class="MsoNormal" style="mso-hyphenate:none">
                         <b>
+
                             No. of Bogus/Fake Compliance
                             <o:p></o:p>
                         </b>
@@ -6088,9 +6091,7 @@ page-break-before:always">
           
         </thead>
         <tbody id="obs_report_panel">
-
-
-
+    
         </tbody>
     </table>
 
