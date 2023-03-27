@@ -684,11 +684,13 @@ namespace AIS.Controllers
 
         }
 
+       
         [HttpPost]
-        public List<ParaTextModel> get_report_paras(int ENG_ID)
+        public List<GetAuditeeParasModel> get_report_paras(int ENG_ID)
         {
-            return dBConnection.GetReportParas(ENG_ID);
+            return dBConnection.GetAuditeeParas(ENG_ID);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
