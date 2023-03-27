@@ -6500,9 +6500,92 @@ namespace AIS
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
-                    if(rdr["para_no"].ToString() != null && rdr["para_no"].ToString()!="")
-                    chk.PARA_NO =Convert.ToInt32(rdr["para_no"].ToString());
-                    chk.ID = Convert.ToInt32(rdr["id"].ToString());
+                     chk.PARA_NO =rdr["para_no"].ToString();
+                    chk.ID = rdr["id"].ToString();
+                    chk.REF_P = rdr["ref_p"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFADtext";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    chk.CHECKLIST = rdr["checklist"].ToString();
+                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
+                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
+                    chk.PARA_TEXT = rdr["para_text"].ToString();
+                }
+            }
+            con.Close();
+            return chk;
+        }
+
+        public string AddOldParasBranchComplianceReply(string Para_ID, string Reply, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_AddOldParasReply";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PID", OracleDbType.Int32).Value = Para_ID; 
+                cmd.Parameters.Add("REPLY", OracleDbType.Varchar2).Value = Reply;
+                cmd.ExecuteReader();               
+
+            }
+            con.Close();
+            return "Para Compliance Submitted Successfully";
+        }
+
+        public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceSubmission()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.NAME = rdr["name"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.ID = rdr["id"].ToString();
                     chk.REF_P = rdr["ref_p"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();

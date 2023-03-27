@@ -5,19 +5,43 @@
 <script>
     var g_paraId = 0;
     var g_obsList = [];
+
     $(document).ready(function () {
         getLegacyPara();
-
-        $('#responseAuditee').richText({
+        $('#viewMemo_compliance').richText({
             imageUpload: false,
             fileUpload: false,
             videoEmbed: false,
             urls: false
         });
-        $('#PublishParaText').on('click', function () {
-            publishResponseChanges();
+        g_imgLoader = $('[data-type=imagesloader]').imagesloader({
+            maxFiles: 10,
+            minSelect: 1,
+            imagesToLoad: []
         });
     });
+
+    function viewParaDetails(ref_p,memo_no,paraId){
+        g_paraId=paraId;
+        $.ajax({
+            url: "/ApiCalls/get_old_para_br_compliance_text",
+            type: "POST",
+            data: {
+                'REF_P': ref_p
+            },
+            cache: false,
+            success: function (data) {
+                $('#viewMemoModel').modal('show');
+                $('#viewMemo_memoNumber').val(memo_no);
+                $('#viewMemo_process').val(data.checklist);
+                $('#viewMemo_subprocess').val(data.subchecklist);
+                $('#viewMemo_checklist_detail').val(data.checklistdetail);
+                $('#viewMemo_memo').html(data.parA_TEXT);
+            },
+
+            dataType: "json",
+        });
+    }
     function getLegacyPara() {
        
         $('#manageObsPanel tbody').empty();
@@ -30,67 +54,51 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
+                $('#entityNameField').html(data.length>0?data[0].name:'');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ', 6);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ',8);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>')
                 });
-
             },
 
             dataType: "json",
         });
 
-    }
-
-    function updateObservationStatus(id, new_status) {
-        $.ajax({
-            url: "/ApiCalls/set_manage_legacy_para_status",
-            type: "POST",
-            data: {
-                'OBS_ID': id,
-                'NEW_STATUS': new_status
-            },
-            cache: false,
-            success: function (data) {
-                alert("Observation Status Successfully updated");
-                onAlertCallback(reloadLocation);
-                
-            },
-
-            dataType: "json",
-        });
-
-    }
-    function processdetails(id) {
-        g_paraId = id;
-        $.each(g_obsList, function (i, v) {
-            if (v.id == g_paraId) {
-                console.log(v);
-                $('#processField').val(v.procesS_DES);
-                $('#subprocessField').val(v.suB_PROCESS_DES);
-                $('#checklistDetailField').val(v.procesS_DETAIL_DES);
-                $('#observation').html(v.gisT_OF_PARAS);
-            }
-        });
-        $('#process_detail').modal('show');
-        $('#responseAuditee').val('').trigger('change');
-    }
-
-    function publishResponseChanges() {
+    }   
+  
+    function PublishCompliance() {
        
         if ($('.richText-editor').html() == "") {
             alert("Please enter Reply");
             return;
         }
+        var productImagesArr = [];
+        g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
+        $.each(g_imgFiles, function (i, v) {
+            var ProductObject = {
+                'OBS_ID': g_obsId,
+                'OBS_TEXT_ID': g_obsTextId,
+                'IMAGE_NAME': v.FileName,
+                'IMAGE_DATA': v.Base64,
+                'IMAGE_TYPE': v.MimeType,
+                'LENGTH': v.FileSizeInBytes,
+                'COVER_IMAGE': i == 0 ? true : false,
+                'SEQUENCE': i
+            }
+            productImagesArr.push(ProductObject);
+        });
+
+
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_reply",
+            url: "/ApiCalls/add_old_para_br_compliance_reply",
             type: "POST",
             data: {
-                'ID': g_paraId,
-                'REPLY': $('.richText-editor').html()               
+                'Para_ID': g_paraId,
+                'REPLY': $('.richText-editor').html(),
+                'EVIDENCE_LIST': productImagesArr
             },
             cache: false,
             success: function (data) {
-                alert("Reply Successfully added");
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
@@ -99,23 +107,21 @@
     function reloadLocation() {
         getLegacyPara();
     }
-
 </script>
 
 <div class="row">
     <div class="col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Old Audit Observations</h3>
+        <h5>Branch Name: <span id="entityNameField"></span></h5>
     </div>
     <div class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-auto">Entity</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Observation</th>
-                    <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I II</th>
+                    <th class="col-md-auto">Observation Gist</th>
+                    <th class="col-md-auto">VOL I II</th>            
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -127,66 +133,147 @@
 </div>
 
 
-<div id="process_detail" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog  modal-xl" role="document">
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Sub Process Entry</h5>
+                <h5 class="modal-title">Observation</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="mt-3 modal-body">
+            <div class="modal-body">
                 <form>
-
-                    <div class="row col-md-12">
-
-                        <label class="font-weight-bold">Process</label>
-                        <input class="form-control" id="processField" disabled="disabled" />
-
+                    <div class="form-group">
+                        <label for="viewMemo_memoNumber">Memo Number</label>
+                        <input id="viewMemo_memoNumber" class="form-control" disabled="disabled" />
+                    </div>                   
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Process</label>
+                        <input id="viewMemo_process" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Sub Process</label>
+                        <input id="viewMemo_subprocess" class="form-control" disabled="disabled" />
 
                     </div>
-                    <div class="row mt-3 col-md-12">
-
-                        <label class="font-weight-bold">Sub-Process</label>
-
-                        <input class="form-control" id="subprocessField" disabled="disabled" />
-                    </div>
-
-                    <div class="row mt-3 col-md-12">
-
-                        <label class="font-weight-bold">Checklist Details </label>
-                        <input class="form-control" id="checklistDetailField" disabled="disabled" />
-                    </div>
-
-                    <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Observation</label>
-
-                    </div>
-                    <div class="row mt-3 col-md-12">
-                        <div id="observation" class="col-md-12"></div>
-
-                    </div>
-                    <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Reply</label>
-
-                    </div>
-                    <div class="row mt-3 col-md-12">
-                        <textarea class="form-control" id="responseAuditee"></textarea>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Checklist Detail</label>
+                        <input id="viewMemo_checklist_detail" class="form-control" disabled="disabled" />
 
                     </div>
 
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Memo</label>
+                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_compliance">Compliance</label>
+                        <textarea class="form-control" id="viewMemo_compliance"></textarea>
+                    </div>
 
+                      <div id="evidenceUploader" class="input-field">
+                        <label class="active">Evidences</label>
+                        <!--Image container -->
+                        <div class="row"
+                             data-type="imagesloader"
+                             data-errorformat="Accepted file formats"
+                             data-errorsize="Maximum size accepted"
+                             data-errorduplicate="File already loaded"
+                             data-errormaxfiles="Maximum number of images you can upload"
+                             data-errorminfiles="Minimum number of images to upload"
+                             data-modifyimagetext="Modify image">
+
+                            <!-- Progress bar -->
+                            <div class="col-12 order-1 mt-2">
+                                <div data-type="progress" class="progress" style="height: 25px; display:none;">
+                                    <div data-type="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%;">Load in progress...</div>
+                                </div>
+                            </div>
+
+                            <!-- Model -->
+                            <div data-type="image-model" class="col-4 pl-2 pr-2 pt-2" style="max-width:200px; display:none;">
+
+                                <div class="ratio-box text-center" data-type="image-ratio-box">
+                                    <img data-type="noimage" class="btn btn-light ratio-img img-fluid p-2 image border dashed rounded" src="/images/photo-camera-gray.svg" style="cursor:pointer;">
+                                    <div data-type="loading" class="img-loading" style="color:#218838; display:none;">
+                                        <span class="fa fa-2x fa-spin fa-spinner"></span>
+                                    </div>
+                                    <img data-type="preview" class="btn btn-light ratio-img img-fluid p-2 image border dashed rounded" src="" style="display: none; cursor: default;">
+                                    <span class="badge badge-pill badge-success p-2 w-50 main-tag bg-success " style="display:none; border-radius:20px">Main</span>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div data-type="image-buttons" class="row justify-content-center mt-2">
+                                    <button data-type="add" class="btn btn-outline-success" type="button" style="width:105px"><span class="fa fa-camera mr-2" style="padding-right:5px"></span>Add</button>
+                                    <button data-type="btn-modify" type="button" class="btn btn-outline-success m-0 " data-toggle="popover" data-placement="right" style="display:none; width:105px;">
+                                        <span class="fa fa-pencil-alt mr-2" style="padding-right:5px"></span>Modify
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Popover operations -->
+                            <div data-type="popover-model" style="display:none">
+                                <div data-type="popover" class="ml-3 mr-3" style="min-width:150px;">
+                                    <div class="row">
+                                        <div class="col p-0">
+                                            <button data-operation="main" class="btn btn-block btn-success btn-sm rounded-pill" type="button" style="width:170px"><span class="fa fa-angle-double-up mr-2" style="padding-right:15px"></span>Main</button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6 p-0 pr-1">
+                                            <button data-operation="left" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button" style="width:80px"><span class="fa fa-angle-left mr-2" style="padding-right:5px"></span>Left</button>
+                                        </div>
+                                        <div class="col-6 p-0 pl-1">
+                                            <button data-operation="right" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button" style="width:80px">Right<span class="fa fa-angle-right ml-2" style="padding-left:5px"></span></button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6 p-0 pr-1">
+                                            <button data-operation="rotateanticlockwise" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button" style="width:80px"><span class="fas fa-undo-alt mr-2" style="padding-right:5px"></span>Rotate</button>
+                                        </div>
+                                        <div class="col-6 p-0 pl-1">
+                                            <button data-operation="rotateclockwise" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button" style="width:80px">Rotate<span class="fas fa-redo-alt ml-2" style="padding-left:5px"></span></button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <button data-operation="remove" class="btn btn-outline-danger btn-sm btn-block" type="button"><span class="fa fa-times mr-2" style="padding-right:10px"></span>Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="input-group">
+                                <!--Hidden file input for images-->
+                                <input id="files" type="file" name="files[]" data-button="" multiple="" accept="image/jpeg, image/png, image/gif," style="display:none;">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="evidenceViewer" class="input-field">
+                        <label class="active">Evidences</label>
+                        <!--Image container -->
+                       
+                        <div id="evidencePortal" class="row col-md-12">
+                            
+                        </div>
+                    </div>
+                    
+                  
                 </form>
             </div>
-
-            <div class="mt-3 modal-footer">
-                <button id="PublishParaText" type="button" class="btn btn-danger">Save changes</button>
+            <div class="modal-footer">
+                <button onclick="PublishCompliance()" type="button" class="btn btn-danger">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+
 
 
 
