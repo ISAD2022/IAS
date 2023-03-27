@@ -682,7 +682,9 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAddress(ENT_ID);
 
-        }       
+        }
+
+       
         [HttpPost]
         public List<GetAuditeeParasModel> get_report_paras(int ENG_ID)
         {
@@ -690,29 +692,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance()
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance(int ENG_ID)
         {
             return dBConnection.GetOldParasBranchCompliance();
-        }
-
-        [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P)
-        {
-            return dBConnection.GetOldParasBranchComplianceText(REF_P);
-        }
-
-        [HttpPost]
-        public string add_old_para_br_compliance_reply(string Para_ID, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
-        {
-            string response = "";
-            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, REPLY, EVIDENCE_LIST);
-            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
-        }
-
-        [HttpPost]
-        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_submission()
-        {
-            return dBConnection.GetOldParasBranchComplianceSubmission();
         }
 
 
