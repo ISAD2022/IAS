@@ -691,6 +691,12 @@ namespace AIS.Controllers
             return dBConnection.GetAuditeeParas(ENG_ID);
         }
 
+        [HttpPost]
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance(int ENG_ID)
+        {
+            return dBConnection.GetOldParasBranchCompliance();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
