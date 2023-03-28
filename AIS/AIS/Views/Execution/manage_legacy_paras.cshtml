@@ -7,7 +7,12 @@
     var g_obsList = [];
     $(document).ready(function () {
         getLegacyPara();
-
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#manageObsPanel tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
         $('#responseAuditee').richText({
             imageUpload: false,
             fileUpload: false,
@@ -46,7 +51,7 @@
             url: "/ApiCalls/set_manage_legacy_para_status",
             type: "POST",
             data: {
-                'OBS_ID': id,
+                'ID': id,
                 'NEW_STATUS': new_status
             },
             cache: false,
@@ -106,6 +111,9 @@
     <div class="col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Old Audit Observations</h3>
     </div>
+     <div class="col-md-12">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+     </div>
     <div class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -120,7 +128,7 @@
                 </tr>
             </thead>
             <tbody></tbody>
-          
+
         </table>
     </div>
 

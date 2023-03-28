@@ -697,9 +697,35 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance(int ENG_ID)
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance()
         {
             return dBConnection.GetOldParasBranchCompliance();
+        }
+
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P)
+        {
+            return dBConnection.GetOldParasBranchComplianceText(REF_P);
+        }
+
+        [HttpPost]
+        public string add_old_para_br_compliance_reply(string Para_ID, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        {
+            string response = "";
+            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, REPLY, EVIDENCE_LIST);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
+        public List<GetOldParasForComplianceReviewer> get_branch_comp_review()
+        {
+            return dBConnection.GetOldParasForReviewer();
+        }
+
+
+        [HttpPost]
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_submission()
+        {
+            return dBConnection.GetOldParasBranchComplianceSubmission();
         }
 
 
