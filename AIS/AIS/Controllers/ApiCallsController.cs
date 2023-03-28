@@ -508,6 +508,11 @@ namespace AIS.Controllers
             return dBConnection.AddOldParasReply(ID, REPLY);
         }
         [HttpPost]
+        public bool set_manage_legacy_para_status(int ID, int NEW_STATUS)
+        {
+            return dBConnection.UpdateOldParasStatus(ID, NEW_STATUS);
+        }
+        [HttpPost]
         public string add_legacy_para_cad_reply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
         {
             string response = "";

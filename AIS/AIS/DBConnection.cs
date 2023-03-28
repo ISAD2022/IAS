@@ -5307,6 +5307,28 @@ namespace AIS
             con.Close();
             return success;
         }
+        public bool UpdateOldParasStatus(int ID, int NEW_STATUS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_UpdateOldParasStatus";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
+                cmd.Parameters.Add("PID", OracleDbType.Int32).Value = ID;
+                cmd.Parameters.Add("NEW_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
+                cmd.ExecuteReader();
+                success = true;
+            }
+            con.Close();
+            return success;
+        }
         public string AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
         {
             string response = "";
