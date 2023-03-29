@@ -37,6 +37,7 @@
                 $('#viewMemo_subprocess').val(data.subchecklist);
                 $('#viewMemo_checklist_detail').val(data.checklistdetail);
                 $('#viewMemo_memo').html(data.parA_TEXT);
+                $('#viewMemo_compliance').val('').trigger('change');
             },
 
             dataType: "json",
@@ -105,6 +106,7 @@
         });
     }
     function reloadLocation() {
+        $('#viewMemoModel').modal('hide');
         getLegacyPara();
     }
 </script>

@@ -721,6 +721,15 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasForReviewer();
         }
 
+        [HttpPost]
+        public string AddOldParasComplianceReviewer(string Para_ID, string REPLY, string r_status)
+        {
+            string response = "";
+            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, REPLY, r_status);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+
 
         [HttpPost]
         public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_submission()

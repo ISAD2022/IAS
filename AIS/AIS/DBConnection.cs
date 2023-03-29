@@ -5181,9 +5181,7 @@ namespace AIS
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
-                    // chk.PROCESS_DES = rdr["Process_Des"].ToString();
-                    //chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-                    // chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
+                   
                     list.Add(chk);
                 }
             }
@@ -6627,6 +6625,29 @@ namespace AIS
             return list;
         }
 
+        public string AddOldParasComplianceReviewer(string Para_ID, string Reply, string r_status)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_AddOldParasReviewer";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
+                cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Reply;
+                cmd.Parameters.Add("r_status", OracleDbType.Varchar2).Value = r_status;
+
+                cmd.ExecuteReader();
+
+            }
+            con.Close();
+            return "Reviewer Response Submitted Successfully";
+        }
 
         public List<GetOldParasforComplianceSettlement> GetOldParasBranchComplianceSubmission()
         {

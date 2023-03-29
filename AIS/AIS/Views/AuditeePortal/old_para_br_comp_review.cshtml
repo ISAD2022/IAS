@@ -19,7 +19,7 @@
         });
     });
     function getbranchcompreview() {
-       
+        
         $('#manageObsPanel tbody').empty();
         $.ajax({
             url: "/ApiCalls/get_branch_comp_review",
@@ -31,9 +31,9 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext();" class="text-hover text-danger mr-5px"><small>Branch Response</small></a></td><td class="text-center"><a href="#" onclick="getparatext();" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
+                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext();" class="text-hover text-danger mr-5px"><small>Branch Response</small></a></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
   });
-
+                
             },
 
             dataType: "json",
@@ -41,42 +41,56 @@
 
     }
 
-    function getparatext() {
+    function getparatext(refp) {
+        g_paraId = refp;
         $('#reviewer_response').modal("show");
 
         $.ajax({
-            url: "/ApiCalls/getparatext",
+            url: "/ApiCalls/get_old_para_br_compliance_text",
             type: "POST",
             data: {
-                'refp': refp,
+                'REF_P': refp,
                 
             },
             cache: false,
             success: function (data) {
+                $('#para').html(data.parA_TEXT);
+                $('#processField').val(data.checklist);
+                $('#subprocessField').val(data.subchecklist);
+                $('#checklistDetailField').val(data.checklistdetail);
              //   $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1"></p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
-
-                
+             
             },
 
             dataType: "json",
         });
 
     }
-    function processdetails(id) {
-        g_paraId = id;
-        $.each(g_obsList, function (i, v) {
-            if (v.id == g_paraId) {
-                console.log(v);
-                $('#processField').val(v.procesS_DES);
-                $('#subprocessField').val(v.suB_PROCESS_DES);
-                $('#checklistDetailField').val(v.procesS_DETAIL_DES);
-                $('#observation').html(v.gisT_OF_PARAS);
-            }
-        });
-        $('#process_detail').modal('show');
-        $('#responseAuditee').val('').trigger('change');
-    }
+    function addreviewerresponse(new_status) {
 
+       
+
+        if ($('#ReviewerRemarks').val() =="") {
+            alert("Please enter Reply");
+            return;
+        }
+        $.ajax({
+            url: "/ApiCalls/AddOldParasComplianceReviewer",
+            type: "POST",
+            data: {
+                'Para_ID': g_paraId,
+                'REPLY': $('#ReviewerRemarks').val(),
+                'r_status': new_status,
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+    }
+  
     function publishResponseChanges() {
        
         if ($('.richText-editor').html() == "") {
@@ -160,7 +174,7 @@
                     <div class="row mt-3 col-md-12">
 
                         <label class="font-weight-bold">Checklist Details </label>
-                        <input class="form-control" id="checklistDetailField" disabled="disabled" />
+                        <textarea class="form-control" id="checklistDetailField" disabled="disabled" /></textarea>
                     </div>
 
                     <div class="row mt-3 col-md-12">
@@ -172,16 +186,16 @@
 
                     </div>
                  
-                    <div class="row mt-3 col-md-12">
-                        <textarea class="form-control" id="responseAuditee"></textarea>
+                    <div class="row mt-3 col-md-12" id="para" style="border:solid">
+                     
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Add Response</label>
+                        <label class="font-weight-bold">Add Remarks</label>
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <textarea class="form-control" id="responseAuditee"></textarea>
+                        <textarea class="form-control" id="ReviewerRemarks"></textarea>
 
                     </div>
 
@@ -190,8 +204,8 @@
             </div>
 
             <div class="mt-3 modal-footer">
-                <button id="PublishParaText" type="button" class="btn btn-danger">Reffer Back</button>
-                <button id="PublishParaText" type="button" class="btn btn-success">Submit for Settlement</button>
+                <button id="PublishParaText" onclick="addreviewerresponse(12);" type="button" class="btn btn-danger">Reffer Back</button>
+                <button id="PublishParaText" onclick="addreviewerresponse(11);" type="button" class="btn btn-success">Submit for Settlement</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

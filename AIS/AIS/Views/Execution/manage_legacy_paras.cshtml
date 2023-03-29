@@ -5,6 +5,7 @@
 <script>
     var g_paraId = 0;
     var g_obsList = [];
+    var g_pageNo=1;
     $(document).ready(function () {
         getLegacyPara();
         $("#searchTableRecord").on("keyup", function () {
@@ -35,15 +36,47 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ', 6);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ',8);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
-                });
+                addRecordToGrid();
 
             },
 
             dataType: "json",
         });
 
+    }
+
+    function addRecordToGrid(){
+        $('#manageObsPanel tbody').empty();
+
+        var paginationRow = [];
+        $.each(g_obsList,function(i,v){
+            if (i >= (parseInt(g_pageNo - 1) * 10) && i < (parseInt(g_pageNo) * 10)) {
+                paginationRow.push(v);
+            }
+        })
+       // g_obsList.splice((g_pageNo-1 * 10), g_pageNo * 10); 
+
+        
+
+        $('#pageNoField').html('Page ' + g_pageNo + ' of ' + Math.ceil(g_obsList.length / 10));
+        $('#totalRecordsNoField').html(' Total Records: '+g_obsList.length);
+        $.each(paginationRow, function (index, child) {
+            $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ', 6);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ',8);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
+        });
+    }
+
+    function nextPageClick(){
+        g_pageNo++;
+        if (g_pageNo > Math.ceil(g_obsList.length / 10))
+            g_pageNo = Math.ceil(g_obsList.length / 10);
+        addRecordToGrid();
+    }
+
+    function prevPageClick(){
+        g_pageNo--;
+        if (g_pageNo<1)
+            g_pageNo = 1;
+        addRecordToGrid();
     }
 
     function updateObservationStatus(id, new_status) {
@@ -57,8 +90,14 @@
             cache: false,
             success: function (data) {
                 alert("Observation Status Successfully updated");
-                onAlertCallback(reloadLocation);
-                
+                $('#manageObsPanel tbody tr#div_'+id).hide();               
+                var newObsList=[];
+                $.each(g_obsList,function(i,v){
+                    if(v.id!=id)
+                        newObsList.push(v);
+                });
+                g_obsList=newObsList;   
+                addRecordToGrid();
             },
 
             dataType: "json",
@@ -69,7 +108,6 @@
         g_paraId = id;
         $.each(g_obsList, function (i, v) {
             if (v.id == g_paraId) {
-                console.log(v);
                 $('#processField').val(v.procesS_DES);
                 $('#subprocessField').val(v.suB_PROCESS_DES);
                 $('#checklistDetailField').val(v.procesS_DETAIL_DES);
@@ -130,6 +168,15 @@
             <tbody></tbody>
 
         </table>
+    </div>
+    <div class="row w-100">
+            <div class="col-md-6 offset-md-6">
+            <button onclick="nextPageClick();" style="display:inline-block; float:right;" class="btn btn-primary btn-sm">Next</button>
+            <p id="pageNoField" style="display:inline-block;float:right; margin-right:5px; margin-left:5px;" class="text-primary">Page 1 of 100</p>                    
+            <button onclick="prevPageClick();" style="display:inline-block;float:right;" class="btn btn-primary btn-sm">Previous</button>
+            <p id="totalRecordsNoField" style="display:inline-block;float:right; margin-right:5px; margin-left:5px;" class="text-primary">Total Records: </p>
+        </div>
+           
     </div>
 
 </div>
