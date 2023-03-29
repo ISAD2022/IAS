@@ -30,7 +30,8 @@
       
     }
     function showMemo(obs_id, resp_id) {
-        var obs_text_id, status, violation, nature, process, subprocess, checklist_detail,memo_number;
+        var obs_text_id, status, violation, nature, process, subprocess, checklist_detail,memo_number,canReply;
+
         $.each(g_obsList, function (i, v) {
             if (v.obS_ID == obs_id) {
                 obs_text_id = v.obS_TEXT_ID;
@@ -41,6 +42,7 @@
                 subprocess = v.suB_PROCESS;
                 checklist_detail = v.checklisT_DETAIL;
                 memo_number = v.memO_NUMBER;
+                canReply=v.caN_REPLY;
             }
         });
 
@@ -73,15 +75,25 @@
                     $('#viewMemo_subprocess').val(subprocess);
                     $('#viewMemo_checklist_detail').val(checklist_detail);
                 }
-                
-             
-                if (status == 2) {
-                    $('#replyButton_memoReply').removeClass('d-none');
-                    $('#viewMemo_responded').parent().addClass('d-none');
-                    $('#replyrichTextWrapper').removeClass('d-none');
-                    $('#viewMemo_responded').html('');
-                    $('#evidenceViewer').addClass('d-none');
-                    $('#evidenceUploader').removeClass('d-none');
+
+                if (canReply==1){
+                    if (status == 2) {
+                        $('#replyButton_memoReply').removeClass('d-none');
+                        $('#viewMemo_responded').parent().addClass('d-none');
+                        $('#replyrichTextWrapper').removeClass('d-none');
+                        $('#viewMemo_responded').html('');
+                        $('#evidenceViewer').addClass('d-none');
+                        $('#evidenceUploader').removeClass('d-none');
+
+                    }
+                    else {
+                        $('#replyButton_memoReply').addClass('d-none');
+                        $('#viewMemo_responded').parent().removeClass('d-none');
+                        $('#replyrichTextWrapper').addClass('d-none');
+                        $('#viewMemo_responded').html(data[1]);
+                        $('#evidenceViewer').removeClass('d-none');
+                        $('#evidenceUploader').addClass('d-none');
+                    }
 
                 }
                 else {
@@ -168,11 +180,18 @@
                         var edate = v.memO_REPLY_DATE.split(" ")[0];
                         var opsdate = v.operatioN_STARTDATE.split("T")[0];
                         var opedate = v.operatioN_ENDDATE .split("T")[0];
-
-                        if(v.statuS_ID==2)
-                            $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID+'"><td>' + v.audiT_YEAR + '</td><td>' + v.memO_NUMBER + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ','+v.resP_ID+');" class="text-hover font-weight-bold text-success">Reply</a></td></tr>');
+                        if(v.caN_REPLY==1){
+                            if(v.statuS_ID==2)
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.resP_ID + ');" class="text-hover font-weight-bold text-success">Reply</a></td></tr>');
                         else
-                            $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID +'"><td>' + v.audiT_YEAR + '</td><td>' + v.memO_NUMBER + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.resP_ID +');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.resP_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                        }else{
+                            if(v.statuS_ID==2)
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.resP_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                        else
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + sdate + '</td><td class="text-center">' + edate + '</td><td class="text-center">' + opsdate + '</td><td class="text-center">' + opedate + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.resP_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                        }
+                        
                         sr++;
                     });
 
@@ -219,23 +238,27 @@
         </div>
     </div>
     <div class="row col-md-12 mt-3">
-        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto text-center">Audit Period</th>
-                    <th class="col-md-auto text-center">Memo #</th>
-                    <th class="col-md-1 text-center">Memo Date</th>
-                    <th class="col-md-1 text-center">Reply Till </th>
-                    <th class="col-md-2 text-center">Operational Period Start</th>
-                    <th class="col-md-2 text-center">Operational Period End</th>                    
-                    <th class="col-md-auto text-center">Status</th>
-                    <th class="col-md-auto text-center"></th>
-                </tr>
-            </thead>
-            <tbody>
-              
-            </tbody>
-        </table>
+
+         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                    <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                        <tr>
+                            <th class="col-md-auto text-center">Memo #</th>
+                            <th class="col-md-auto text-center">Audit Year</th>                            
+                            <th class="col-md-auto text-center">Assigned to</th>
+                            <th class="col-md-auto text-center">Memo Date</th>
+                            <th class="col-md-auto text-center">Reply Till </th>
+                            <th class="col-md-auto text-center">Operational Period Start</th>
+                            <th class="col-md-auto text-center">Operational Period End</th>
+                            <th class="col-md-auto text-center">Status</th>
+                            <th class="col-md-auto text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+
+      
     </div>
 </div>
 

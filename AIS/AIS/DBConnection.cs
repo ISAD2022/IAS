@@ -3448,6 +3448,8 @@ namespace AIS
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.STATUS_ID = rdr["STATUS_ID"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    if (rdr["CANREPLY"].ToString() != null && rdr["CANREPLY"].ToString() != "")
+                        chk.CAN_REPLY = Convert.ToInt32(rdr["CANREPLY"].ToString());
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
@@ -3504,6 +3506,8 @@ namespace AIS
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.STATUS_ID = rdr["STATUS_ID"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    if(rdr["CANREPLY"].ToString()!=null && rdr["CANREPLY"].ToString() !="")
+                    chk.CAN_REPLY = Convert.ToInt32(rdr["CANREPLY"].ToString());
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     list.Add(chk);

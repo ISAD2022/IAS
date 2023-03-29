@@ -27,6 +27,7 @@ namespace AIS.Models
         public string STATUS { get; set; }
         public string STATUS_ID { get; set; }
         public string ENTITY_NAME { get; set; }
+        public int? CAN_REPLY { get; set; }
         public string MEMO_DATE { get; set; }
         public string MEMO_NUMBER { get; set; }
         public string MEMO_REPLY_DATE{ get; set; }
