@@ -12,10 +12,10 @@ namespace AIS.Models
         public double AMOUNT_INVOLVED { get; set; }
         public string REF_P { get; set; }
         public string ID { get; set; }
-
+        public string REPLY{ get; set; }
         /* public string LASTUPDATEDBY { get; set; }
          public int? EVIDENCE_ID { get; set; }
-         public string SUBMITTED { get; set; }
+         
          public int? PARA_NO { get; set; }
          public int? ENTITY_ID { get; set; }
 

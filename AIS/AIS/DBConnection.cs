@@ -3447,7 +3447,7 @@ namespace AIS
 
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.STATUS_ID = rdr["STATUS_ID"].ToString();
-                    //chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
@@ -6617,6 +6617,8 @@ namespace AIS
 
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ID = rdr["ID"].ToString();
+                    
+                         chk.REPLY = rdr["REPLY"].ToString();
 
                     list.Add(chk);
                 }

@@ -31,7 +31,7 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext();" class="text-hover text-danger mr-5px"><small>Branch Response</small></a></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
+                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p class="fw-normal mb-1">' + child.reply + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
   });
                 
             },
