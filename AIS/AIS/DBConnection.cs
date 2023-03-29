@@ -6628,17 +6628,17 @@ namespace AIS
         }
 
 
-        public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceSubmission()
+        public List<GetOldParasforComplianceSettlement> GetOldParasBranchComplianceSubmission()
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
+            List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetOldParasforsettlement";
+                cmd.CommandText = "pkg_hd.P_GetOldParasforsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -6647,14 +6647,20 @@ namespace AIS
 
                 while (rdr.Read())
                 {
-                    GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
-                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
-                    chk.NAME = rdr["name"].ToString();
-                    chk.PARA_NO = rdr["para_no"].ToString();
-                    chk.ID = rdr["id"].ToString();
+                    GetOldParasforComplianceSettlement chk = new GetOldParasforComplianceSettlement();
+                    chk.ID =Convert.ToInt32(rdr["ID"].ToString());
                     chk.REF_P = rdr["ref_p"].ToString();
-                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
-                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
+                    chk.REPORTINGOFFICE = rdr["Reportingoffice"].ToString();
+                    chk.AUDITEENAME = rdr["auditeename"].ToString();
+                    chk.AUDITPERIOD = rdr["audit_period"].ToString();
+                    chk.PARANO = rdr["para_no"].ToString();
+                    chk.GISTOFPARA = rdr["gistofpara"].ToString();
+                    chk.AMOUNT =Convert.ToDecimal(rdr["amount_involved"].ToString());
+                    chk.REPLY = rdr["reply"].ToString();
+                    chk.REMARKS = rdr["remarks"].ToString();
+                    chk.SUBMITTED = rdr["submitted"].ToString();
+                    chk.C_STATUS = rdr["c_status"].ToString();
+                    chk.VOL_I_II = rdr["c_status"].ToString();
                     list.Add(chk);
                 }
             }

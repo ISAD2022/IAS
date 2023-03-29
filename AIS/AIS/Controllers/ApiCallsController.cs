@@ -723,7 +723,7 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_submission()
+        public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_submission()
         {
             return dBConnection.GetOldParasBranchComplianceSubmission();
         }
