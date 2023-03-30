@@ -6696,6 +6696,28 @@ namespace AIS
             con.Close();
             return list;
         }
+        public bool AddOldParasReply(int ID, string REPLY)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_AddOldParasReply";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PID", OracleDbType.Int32).Value = ID;
+                cmd.Parameters.Add("REPLY", OracleDbType.Clob).Value = REPLY;
+                cmd.ExecuteReader();
+                success = true;
+            }
+            con.Close();
+            return success;
+        }
 
     }
 }

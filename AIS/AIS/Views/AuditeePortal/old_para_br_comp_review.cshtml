@@ -14,9 +14,9 @@
             videoEmbed: false,
             urls: false
         });
-        $('#PublishParaText').on('click', function () {
-            publishResponseChanges();
-        });
+      //  $('#PublishParaText').on('click', function () {
+       //     publishResponseChanges();
+        //});
     });
     function getbranchcompreview() {
         
@@ -44,6 +44,7 @@
     function getparatext(refp) {
         g_paraId = refp;
         $('#reviewer_response').modal("show");
+        $('#ReviewerRemarks').empty();
 
         $.ajax({
             url: "/ApiCalls/get_old_para_br_compliance_text",
@@ -88,10 +89,13 @@
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
+           
         });
+
+        window.location.reload();
     }
   
-    function publishResponseChanges() {
+   /* function publishResponseChanges() {
        
         if ($('.richText-editor').html() == "") {
             alert("Please enter Reply");
@@ -106,14 +110,14 @@
             },
             cache: false,
             success: function (data) {
-                alert("Reply Successfully added");
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
-    }
+    }*/
     function reloadLocation() {
-        getLegacyPara();
+     //   getbranchcompreview();
     }
 
 </script>
@@ -174,7 +178,7 @@
                     <div class="row mt-3 col-md-12">
 
                         <label class="font-weight-bold">Checklist Details </label>
-                        <textarea class="form-control" id="checklistDetailField" disabled="disabled" /></textarea>
+                        <textarea class="form-control" id="checklistDetailField" disabled="disabled" ></textarea>
                     </div>
 
                     <div class="row mt-3 col-md-12">
@@ -204,9 +208,9 @@
             </div>
 
             <div class="mt-3 modal-footer">
-                <button id="PublishParaText" onclick="addreviewerresponse(12);" type="button" class="btn btn-danger">Reffer Back</button>
-                <button id="PublishParaText" onclick="addreviewerresponse(11);" type="button" class="btn btn-success">Submit for Settlement</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="PublishParaText" onclick="addreviewerresponse(12);" type="button" class="btn btn-danger" >Reffer Back</button>
+                <button id="PublishParaText" onclick="addreviewerresponse(11);" type="button" class="btn btn-success" >Submit for Settlement</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onClick="window.location.reload()">Close</button>
             </div>
         </div>
     </div>
