@@ -2019,6 +2019,39 @@ namespace AIS
             con.Close();
             return list;
         }
+        public List<AuditRefEngagementPlanModel> GetAuditOngoingEngagementPlans()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_pg.P_GetAuditEngagementPlans";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader ardr = cmd.ExecuteReader();
+                while (ardr.Read())
+                {
+                    AuditRefEngagementPlanModel eng = new AuditRefEngagementPlanModel();
+                    eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
+                    eng.TEAM_NAME = ardr["team_name"].ToString();
+                    eng.ENTITY_NAME = ardr["name"].ToString();
+                    eng.AUDIT_STARTDATE = Convert.ToDateTime(ardr["audit_startdate"].ToString()).ToString("dd/MM/yyyy");
+                    eng.AUDIT_ENDDATE = Convert.ToDateTime(ardr["audit_enddate"].ToString()).ToString("dd/MM/yyyy");
+                    eng.OP_STARTDATE = Convert.ToDateTime(ardr["op_startdate"].ToString()).ToString("dd/MM/yyyy");
+                    eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString()).ToString("dd/MM/yyyy");
+                    eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
+                    list.Add(eng);
+                }
+            }
+            con.Close();
+            return list;
+        }
         public List<AuditRefEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
         {
             sessionHandler = new SessionHandler();
@@ -6456,7 +6489,7 @@ namespace AIS
             List<GetAuditeeParasModel> list = new List<GetAuditeeParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ais_reports.r_getauditeeparas";
+                cmd.CommandText = "pkg_rpt.r_getauditeeparas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("engid", OracleDbType.Int32).Value = eng_id;
@@ -6481,6 +6514,8 @@ namespace AIS
             con.Close();
             return list;
         }
+
+      
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchCompliance()
         {
             sessionHandler = new SessionHandler();
