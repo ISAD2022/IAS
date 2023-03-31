@@ -2029,10 +2029,10 @@ namespace AIS
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_pg.P_GetAuditEngagementPlans";
+                cmd.CommandText = "pkg_ad.p_get_audit_team_postchanges";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 while (ardr.Read())
