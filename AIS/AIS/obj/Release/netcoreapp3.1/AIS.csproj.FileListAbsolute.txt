@@ -620,3 +620,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.csproj.CopyCom
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.dll
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.pdb
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\AIS.genruntimeconfig.cache
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Engagement\ongoing_engagements_list.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\auditee_observations_report.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\auditee_position_outlook.cshtml.g.cs

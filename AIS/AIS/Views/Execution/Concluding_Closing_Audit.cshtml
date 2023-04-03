@@ -13,70 +13,9 @@
         $('#reportheading1').empty;
         $('#reportheading2').empty;
 
-        var url_string = window.location;
-        var url = new URL(url_string);
-        var eng_id = url.searchParams.get("engId");
-        if (typeof eng_id != 'undefined')
-            g_engId = eng_id;
+      
 
-        $.ajax({
-            url: "/ApiCalls/get_team_details",
-            type: "POST",
-            data: {
-                'ENG_ID': g_engId
-            },
-            cache: false,
-            success: function (data) {
-                $.each(data, function (i, v) {
-                    g_teamMembers.push(v.teaM_MEM_PPNO);
-                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
-                    // $('#conoffice').html(v.teaM_MEM_PPNO);
-                });
-
-                $.ajax({
-                    url: "/ApiCalls/closing_draft_report_status",
-                    type: "POST",
-                    data: {
-                        'ENG_ID': g_engId
-                    },
-                    cache: false,
-                    success: function (data) {
-                        g_obsList = data;
-                        // g_engId = g_obsList[0].engplanid;
-                        $.each(g_teamMembers, function (i, v) {
-                            var totalObs = 0;
-                            var sendToAuditee = 0;
-                            var noresByAuditee = 0;
-                            var settled = 0;
-                            var addToDraft = 0;
-                            var teamLead = 'N';
-                            $.each(g_obsList, function (k, ob) {
-                                if (ob.enteredby == v) {
-                                    totalObs++;
-                                    sendToAuditee++;
-                                    if (ob.status == 4)
-                                        settled++;
-                                    if (ob.status == 5)
-                                        addToDraft++;
-                                    if (ob.status == 2)
-                                        noresByAuditee++;
-                                    if (ob.teaM_LEAD == 'Y')
-                                        teamLead = 'Y';
-                                }
-
-                            });
-                            $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v + '</td><td class="text-center" style="font-size:xx-small" >' + teamLead + '</td><td class="text-center" style="font-size:xx-small">' + totalObs + '</td><td class="text-center" style="font-size:xx-small">' + sendToAuditee + '</td><td class="text-center" style="font-size:xx-small">' + (totalObs - noresByAuditee) + '</td><td class="text-center" style="font-size:xx-small">' + settled + '</td><td class="text-center" style="font-size:xx-small">' + addToDraft + '</td></tr>')
-                        });
-
-                    },
-                    dataType: "json",
-                });
-
-
-
-            },
-            dataType: "json",
-        });
+      
     });
     function reloadLocationToUrl() {
         window.location.href = "/Engagement/task_list"
@@ -120,6 +59,66 @@
 
                 });
 
+
+            },
+            dataType: "json",
+        });
+
+          $.ajax({
+            url: "/ApiCalls/get_team_details",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    g_teamMembers.push(v.teaM_MEM_PPNO);
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
+                  
+                });
+
+             
+
+
+
+            },
+            dataType: "json",
+        });
+
+        $.ajax({
+            url: "/ApiCalls/closing_draft_report_status",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                $.each(g_teamMembers, function (i, v) {
+                    var totalObs = 0;
+                    var sendToAuditee = 0;
+                    var noresByAuditee = 0;
+                    var settled = 0;
+                    var addToDraft = 0;
+                    var teamLead = 'N';
+                    $.each(g_obsList, function (k, ob) {
+                        if (ob.enteredby == v) {
+                            totalObs++;
+                            sendToAuditee++;
+                            if (ob.status == 4)
+                                settled++;
+                            if (ob.status == 5)
+                                addToDraft++;
+                            if (ob.status == 2)
+                                noresByAuditee++;
+                            if (ob.teaM_LEAD == 'Y')
+                                teamLead = 'Y';
+                        }
+
+                    });
+                    $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v + '</td><td class="text-center" style="font-size:xx-small" >' + teamLead + '</td><td class="text-center" style="font-size:xx-small">' + totalObs + '</td><td class="text-center" style="font-size:xx-small">' + sendToAuditee + '</td><td class="text-center" style="font-size:xx-small">' + (totalObs - noresByAuditee) + '</td><td class="text-center" style="font-size:xx-small">' + settled + '</td><td class="text-center" style="font-size:xx-small">' + addToDraft + '</td></tr>')
+                });
 
             },
             dataType: "json",
