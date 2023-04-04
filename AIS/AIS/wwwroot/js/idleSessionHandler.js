@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const idleDurationSecs = 1800;    // X number of seconds
+    const idleDurationSecs = 1200;    // X number of seconds
     let idleTimeout; // variable to hold the timeout, do not modify
 
     const resetIdleTimeout = function () {
@@ -19,7 +19,11 @@ $(document).ready(function () {
         document.addEventListener(evt, resetIdleTimeout, false)
     );
 });
+function routeToLogin() {
+    window.location.href = "/Login";
+}
 function terminateUserSession() {
+    
     $.ajax({
         url: "/ApiCalls/terminate_idle_session",
         type: "POST",
@@ -28,7 +32,8 @@ function terminateUserSession() {
         },
         cache: false,
         success: function (data) {
-           window.location.href = "/Login";
+            alert('Due to inactivity, your session has been terminated');
+            onAlertCallback(routeToLogin);
         },
         dataType: "json",
     });

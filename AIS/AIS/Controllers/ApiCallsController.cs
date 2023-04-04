@@ -729,13 +729,26 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
-
-
         [HttpPost]
         public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_submission()
         {
             return dBConnection.GetOldParasBranchComplianceSubmission();
         }
+
+        [HttpPost]
+        public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_recommendation()
+        {
+            return dBConnection.GetOldParasBranchComplianceRecommendation();
+        }
+
+        [HttpPost]
+        public string submit_old_para_br_compliance_status(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS)
+        {
+            string response = "";
+            response = dBConnection.AddOldParasStatusUpdate(PARA_ID, REFID, REMARKS, NEW_STATUS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

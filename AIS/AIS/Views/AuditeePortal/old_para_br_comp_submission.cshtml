@@ -1,9 +1,10 @@
 ﻿@{
-    ViewData["Title"] = "Old Paras Branch Compliance";
+    ViewData["Title"] = "Old Paras Branch Compliance Recommendation";
     Layout = "_Layout";
 }
 <script>
     var g_paraId = 0;
+    var g_paraRef = 0;
     var g_obsList = [];
 
     $(document).ready(function () {
@@ -18,12 +19,12 @@
     });
 
     function viewParaDetails(ref_p, memo_no, paraId) {
-        g_paraId = ref_p;
+        g_paraRef = ref_p;
         $.ajax({
             url: "/ApiCalls/get_old_para_br_compliance_text",
             type: "POST",
             data: {
-                'REF_P': ref_p
+                'REF_P': g_paraRef
             },
             cache: false,
             success: function (data) {
@@ -39,12 +40,12 @@
         });
     }
     function viewReviewerResponse(ref_p, memo_no, paraId) {
-        g_paraId = ref_p;
+        g_paraRef = ref_p;
         $.ajax({
             url: "/ApiCalls/get_old_para_br_compliance_text",
             type: "POST",
             data: {
-                'REF_P': ref_p
+                'REF_P': g_paraRef
             },
             cache: false,
             success: function (data) {
@@ -73,7 +74,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ', 6);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ',8);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' , 14);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,13);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
                 });
             },
 
@@ -82,45 +83,65 @@
 
     }
 
-    function PublishCompliance() {
+   
 
-        if ($('.richText-editor').html() == "") {
-            alert("Please enter Reply");
-            return;
+    function updateObservationStatus(id,refP, newStatus)
+    {
+        g_paraId = id;
+        g_paraRef=refP;
+        $("#viewMemoModel").modal('show');
+        if (newStatus == 6) {
+            $('#submitStatusViewModel').attr('onClick', 'setParaStatusSettled()');
+        } else {
+            $('#submitStatusViewModel').attr('onClick', 'setParaStatusUnsettled()');
         }
-        var productImagesArr = [];
-        g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
-        $.each(g_imgFiles, function (i, v) {
-            var ProductObject = {
-                'OBS_ID': g_obsId,
-                'OBS_TEXT_ID': g_obsTextId,
-                'IMAGE_NAME': v.FileName,
-                'IMAGE_DATA': v.Base64,
-                'IMAGE_TYPE': v.MimeType,
-                'LENGTH': v.FileSizeInBytes,
-                'COVER_IMAGE': i == 0 ? true : false,
-                'SEQUENCE': i
-            }
-            productImagesArr.push(ProductObject);
-        });
 
+        
+    }
+
+    function setParaStatusSettled() {
 
         $.ajax({
-            url: "/ApiCalls/add_old_para_br_compliance_reply",
+            url: "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
             data: {
-                'Para_ID': g_paraId,
-                'REPLY': $('.richText-editor').html(),
-                'EVIDENCE_LIST': productImagesArr
+                'PARA_ID': g_paraId,
+                'REFID': g_paraRef,
+                'REMARKS': $('#viewMemo_complianc').val(),
+                'NEW_STATUS':6
             },
             cache: false,
             success: function (data) {
+                $("#viewMemoModel").modal('hide');
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+
+    }
+
+    function setParaStatusUnsettled() {
+        $.ajax({
+            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            type: "POST",
+            data: {
+                'PARA_ID': g_paraId,
+                'REFID': g_paraRef,
+                'REMARKS': $('#viewMemo_complianc').val(),
+                'NEW_STATUS': 8
+            },
+            cache: false,
+            success: function (data) {
+                $("#viewMemoModel").modal('hide');
                 alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
     }
+
+
     function reloadLocation() {
         getLegacyPara();
     }
@@ -156,48 +177,26 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Observation</h5>
+                <h5 class="modal-title">Remarks</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="viewMemo_memoNumber">Memo Number</label>
-                        <input id="viewMemo_memoNumber" class="form-control" disabled="disabled" />
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Process</label>
-                        <input id="viewMemo_process" class="form-control" disabled="disabled" />
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Sub Process</label>
-                        <input id="viewMemo_subprocess" class="form-control" disabled="disabled" />
-
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Checklist Detail</label>
-                        <input id="viewMemo_checklist_detail" class="form-control" disabled="disabled" />
-
-                    </div>
 
                     <div class="form-group">
-                        <label for="viewMemo_memo">Memo</label>
-                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_compliance">Compliance</label>
-                        <textarea class="form-control" id="viewMemo_compliance"></textarea>
+                        <label for="viewMemo_compliance">Add Comment</label>
+                        <textarea class="form-control" id="viewMemo_complianc"></textarea>
                     </div>
 
-                 
-
+                  
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="PublishCompliance()" type="button" class="btn btn-danger">Save changes</button>
+                <button id="submitStatusViewModel" type="button" class="btn btn-danger">Submit</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
             </div>
         </div>
     </div>

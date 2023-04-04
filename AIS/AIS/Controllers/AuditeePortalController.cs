@@ -222,6 +222,24 @@ namespace AIS.Controllers
             }
         }
 
+        //
+        public IActionResult old_para_br_comp_recommendation()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult old_para_br_comp_submission()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
