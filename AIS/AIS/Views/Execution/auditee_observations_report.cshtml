@@ -19,6 +19,7 @@
     var g_endDate = '';
     var g_ostartDate = '';
     var g_oendDate = '';
+    var g_conoffice = '';
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -28,7 +29,11 @@
         g_endDate = url.searchParams.get("endDate");
         g_ostartDate = url.searchParams.get("ostart");
         g_oendDate = url.searchParams.get("oend");
+        g_conoffice = url.searchParams.get("conOffice");
+
         getParas();
+
+        $('.conOffice').html(g_conoffice);
         $('.entNameField').html(g_entName);
         $('#startField').html(g_startDate);
         $('#endField').html(g_endDate);
@@ -197,8 +202,8 @@
 
 
 
-                    $('#obs_report_panel').append('<tr><td>' + v.memO_NUMBER + '</td><td>' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
-                    $('#obs_report_panel2').append('<tr><td>' + v.memO_NUMBER + '</td><td>' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
+                    $('#obs_report_panel').append('<tr><td>' + v.memO_NUMBER + '</td><td style="padding:50px !important;">' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
+                    $('#obs_report_panel2').append('<tr><td>' + v.memO_NUMBER + '</td><td style="padding:50px !important;">' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
 
 
 
@@ -391,7 +396,7 @@ padding:0cm;mso-padding-alt:0cm 4.0pt 1.0pt 4.0pt">
             <b style="mso-bidi-font-weight:
 normal">
                 <span style="font-size:30.0pt;line-height:150%;font-family:&quot;Book Antiqua&quot;,serif;
-mso-bidi-font-family:Arial">OF <span class="entNameField"></span></span>
+mso-bidi-font-family:Arial">OF <span class="conOffice"></span></span>
             </b><b style="mso-bidi-font-weight:normal">
                 <span style="font-size:37.0pt;line-height:
 150%;font-family:&quot;Book Antiqua&quot;,serif;mso-bidi-font-family:Arial"><o:p></o:p></span>
@@ -404,7 +409,7 @@ padding:0cm;mso-padding-alt:0cm 4.0pt 1.0pt 4.0pt">
             <b style="mso-bidi-font-weight:
 normal">
                 <span style="font-size:24.0pt;line-height:150%;font-family:&quot;Book Antiqua&quot;,serif;
-mso-bidi-font-family:Arial">IN RESPECT OF <span class="entNameField"></span><o:p></o:p></span>
+mso-bidi-font-family:Arial">IN RESPECT OF <span style="text-transform:uppercase" class="entNameField"></span><o:p></o:p></span>
             </b>
         </p>
 
@@ -440,12 +445,11 @@ mso-bidi-font-family:Arial">ZARAI TARAQIATI BANK LIMITED<o:p></o:p></span>
 border:none;mso-border-alt:solid windowtext 3.0pt;padding:0cm;mso-padding-alt:
 0cm 4.0pt 1.0pt 4.0pt">
             <b style="mso-bidi-font-weight:normal">
-                <span style="font-size:24.0pt;line-height:150%;font-family:&quot;Book Antiqua&quot;,serif;
-mso-bidi-font-family:Arial">CHHONAWALA</span>
+                <span style="font-size: 24.0pt; line-height: 150%; font-family: &quot; Book Antiqua&quot;,serif; mso-bidi-font-family: Arial; text-transform:uppercase" class="entNameField"></span>
             </b><b style="mso-bidi-font-weight:
 normal">
                 <span style="font-size:25.0pt;line-height:150%;font-family:&quot;Book Antiqua&quot;,serif;
-mso-bidi-font-family:Arial"> BRANCH<o:p></o:p></span>
+mso-bidi-font-family:Arial">&nbsp BRANCH<o:p></o:p></span>
             </b>
         </p>
 

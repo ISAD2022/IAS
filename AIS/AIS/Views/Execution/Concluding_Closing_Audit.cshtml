@@ -24,7 +24,9 @@
 
 
     function getaddress() {
-
+        
+        $('#auditorWiseProgessTable tbody').empty();
+        $('#joiningAuditorDetailsTable tbody').empty();
         //getParas();
         var eng_id = $('#entitySelectField').val();
 
@@ -90,34 +92,16 @@
             url: "/ApiCalls/closing_draft_report_status",
             type: "POST",
             data: {
-                'ENG_ID': g_engId
+                
             },
             cache: false,
             success: function (data) {
-                g_obsList = data;
-                $.each(g_teamMembers, function (i, v) {
-                    var totalObs = 0;
-                    var sendToAuditee = 0;
-                    var noresByAuditee = 0;
-                    var settled = 0;
-                    var addToDraft = 0;
-                    var teamLead = 'N';
-                    $.each(g_obsList, function (k, ob) {
-                        if (ob.enteredby == v) {
-                            totalObs++;
-                            sendToAuditee++;
-                            if (ob.status == 4)
-                                settled++;
-                            if (ob.status == 5)
-                                addToDraft++;
-                            if (ob.status == 2)
-                                noresByAuditee++;
-                            if (ob.teaM_LEAD == 'Y')
-                                teamLead = 'Y';
-                        }
-
-                    });
-                    $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v + '</td><td class="text-center" style="font-size:xx-small" >' + teamLead + '</td><td class="text-center" style="font-size:xx-small">' + totalObs + '</td><td class="text-center" style="font-size:xx-small">' + sendToAuditee + '</td><td class="text-center" style="font-size:xx-small">' + (totalObs - noresByAuditee) + '</td><td class="text-center" style="font-size:xx-small">' + settled + '</td><td class="text-center" style="font-size:xx-small">' + addToDraft + '</td></tr>')
+            
+                $.each(data, function (i, v) {
+              
+            
+                        
+                    $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small" >' + v.isteamlead + '</td><td class="text-center" style="font-size:xx-small">' + v.totaL_NO_OB + '</td><td class="text-center" style="font-size:xx-small">' + v.submitteD_TO_AUDITEE + '</td><td class="text-center" style="font-size:xx-small">' + v.responded + '</td><td class="text-center" style="font-size:xx-small">' + v.resolved + '</td><td class="text-center" style="font-size:xx-small">' + v.addeD_TO_DRAFT + '</td></tr>')
                 });
 
             },
@@ -140,7 +124,7 @@
         if (eng_id == 0)
             alert("Audit Entity Not Selected");
         else
-            window.location.href = '/Execution/auditee_observations_report?engid=' + eng_id + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+            window.location.href = '/Execution/auditee_observations_report?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
 
     }
 
@@ -200,17 +184,16 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
                     <th class="col-md-1" style="font-size:xx-small">Controling Office</th>
-                    <th id="conoffice" Class="col-md-5" style="background-color:wheat"></th>
+                    <th id="conoffice" Class="col-md-5" style="background-color:whitesmoke"></th>
                 </tr>
                 <tr>
                     <th class="col-md-1" style="font-size:xx-small">Entity Name</th>
-                    <th id="EntN" Class="col-md-5" style="background-color:wheat"></th>
+                    <th id="EntN" Class="col-md-5" style="background-color:white"></th>
                 </tr>
                 <tr>
                     <th class="col-md-aut-1" style="font-size:xx-small">Address</th>
-                    <th id="ADD" Class="col-md-5" style="background-color:wheat"></th>
+                    <th id="ADD" Class="col-md-5" style="background-color: whitesmoke"></th>
                 </tr>
-
 
 
             </thead>
@@ -227,16 +210,16 @@
                 <tr>
 
                     <th class="col-md-1" style="font-size:xx-small">Audit S-Date</th>
-                    <th id="a_s_d" Class="col-md-2" style="background-color:wheat"></th>
+                    <th id="a_s_d" Class="col-md-2" style="background-color:white"></th>
                     <th class="col-md-1" style="font-size:xx-small">Audit E-Date</th>
-                    <th id="a_e_d" Class="col-md-2" style="background-color:wheat"></th>
+                    <th id="a_e_d" Class="col-md-2" style="background-color:white"></th>
                 </tr>
 
                 <tr>
                     <th class="col-md-1" style="font-size:xx-small">Operational S-Date</th>
-                    <th id="o_s_d" Class="col-md-2" style="background-color:wheat"></th>
+                    <th id="o_s_d" Class="col-md-2" style="background-color:whitesmoke"></th>
                     <th class="col-md-1" style="font-size:xx-small">Operational E-Date</th>
-                    <th id="o_e_d" Class="col-md-2" style="background-color:wheat"></th>
+                    <th id="o_e_d" Class="col-md-2" style="background-color:whitesmoke"></th>
                 </tr>
 
 

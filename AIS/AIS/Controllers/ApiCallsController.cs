@@ -304,9 +304,9 @@ namespace AIS.Controllers
             return resp;
         }
         [HttpPost]
-        public List<ClosingDraftTeamDetailsModel> closing_draft_report_status(int ENG_ID = 0)
+        public List<ClosingDraftTeamDetailsModel> closing_draft_report_status()
         {
-            return dBConnection.GetClosingDraftObservations(ENG_ID);
+            return dBConnection.GetClosingDraftObservations();
         }
         [HttpPost]
         public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)

@@ -4544,7 +4544,7 @@ namespace AIS
             con.Close();
             return resp;
         }
-        public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations(int ENG_ID = 0)
+        public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations()
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4564,7 +4564,7 @@ namespace AIS
                 while (rdr.Read())
                 {
                     ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
-                    chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
+                    //  chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
                     if (rdr["TOTAL_NO_OB"].ToString() != null && rdr["TOTAL_NO_OB"].ToString() != "")
                         chk.TOTAL_NO_OB = Convert.ToInt32(rdr["TOTAL_NO_OB"]);
 
