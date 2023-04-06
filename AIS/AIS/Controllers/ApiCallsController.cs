@@ -748,7 +748,22 @@ namespace AIS.Controllers
             response = dBConnection.AddOldParasStatusUpdate(PARA_ID, REFID, REMARKS, NEW_STATUS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
+      
 
+        [HttpPost]
+        public List<GetOldParasForFinalSettlement> get_old_para_br_compliance_head()
+        {
+            return dBConnection.GetOldParasForFinalSettlement();
+        }
+       
+
+        [HttpPost]
+        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS)
+        {
+            string response = "";
+            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

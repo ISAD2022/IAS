@@ -64,7 +64,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_submission",
+            url: "/ApiCalls/get_old_para_br_compliance_head",
             type: "POST",
             data: {
 
@@ -74,7 +74,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' , 14);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,13);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.imP_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' , 14);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,13);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
                 });
             },
 
@@ -102,13 +102,13 @@
     function setParaStatusSettled() {
 
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            url: "/ApiCalls/submit_old_para_compliance_head_status",
             type: "POST",
             data: {
                 'PARA_ID': g_paraId,
-                'REFID': g_paraRef,
+           //     'REFID': g_paraRef,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS':6
+                'NEW_STATUS':16
             },
             cache: false,
             success: function (data) {
@@ -123,13 +123,13 @@
 
     function setParaStatusUnsettled() {
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            url: "/ApiCalls/submit_old_para_compliance_head_status",
             type: "POST",
             data: {
                 'PARA_ID': g_paraId,
-                'REFID': g_paraRef,
+               // 'REFID': g_paraRef,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS': 8
+                'NEW_STATUS': 17
             },
             cache: false,
             success: function (data) {
@@ -161,7 +161,7 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto text-center">Zone/Reviewer Remarks</th>
+                    <th class="col-md-auto text-center">Implementation Remarks</th>
                     <th class="col-md-auto text-center">Action</th>
                 </tr>
             </thead>

@@ -6542,6 +6542,7 @@ namespace AIS
                     chk.ID = rdr["id"].ToString();
                     chk.REF_P = rdr["ref_p"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
                     chk.AMOUNT = Convert.ToDecimal(rdr["amount"].ToString());
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
                     list.Add(chk);
@@ -6581,6 +6582,7 @@ namespace AIS
 
         public string AddOldParasBranchComplianceReply(string Para_ID, string Reply, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
+            int AUD_RESP_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -6593,10 +6595,39 @@ namespace AIS
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
-                cmd.Parameters.Add("REPLY", OracleDbType.Varchar2).Value = Reply;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("REPLY", OracleDbType.Clob).Value = Reply;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AUD_RESP_ID = Convert.ToInt32(rdr["RESPID"]);
+                }
+              //  cmd.ExecuteReader();
+                if (EVIDENCE_LIST != null)
+                {
+                    if (EVIDENCE_LIST.Count > 0)
+                    {
+                        foreach (var item in EVIDENCE_LIST)
+                        {
+                            string fileName = Para_ID + "_" + item.IMAGE_NAME;
+                            cmd.CommandText = "pkg_ae.P_AddOldParasReply_evidences";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
+                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = Para_ID;
+                            cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
+                            cmd.Parameters.Add("LENGTH", OracleDbType.Int32).Value = item.LENGTH;
+                            cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
+                            cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
+                            cmd.ExecuteReader();
+                            this.SaveImage(item.IMAGE_DATA, fileName);
+                        }
+                    }
 
-            }
+                }
+            }           
+
             con.Close();
             return "Para Compliance Submitted Successfully";
         }
@@ -6773,6 +6804,61 @@ namespace AIS
             con.Close();
             return success;
         }
+       
+        public List<GetOldParasForFinalSettlement> GetOldParasForFinalSettlement()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetOldParasForFinalSettlement> list = new List<GetOldParasForFinalSettlement>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetOldParasforfinalsettlement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetOldParasForFinalSettlement chk = new GetOldParasForFinalSettlement();
+
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.REPORTINGOFFICE = rdr["REPORTINGOFFICE"].ToString();
+                    chk.AUDITEENAME = rdr["AUDITEENAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GISTOFPARA = rdr["GISTOFPARA"].ToString();
+                    chk.AMOUNT_INVOLVED = Convert.ToDecimal(rdr["AMOUNT_INVOLVED"].ToString());
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+
+                    chk.REPLY = rdr["REPLY"].ToString();
+                    chk.REPLIEDBY = Convert.ToInt32(rdr["REPLIEDBY"].ToString());
+                    chk.REPLIEDDATE = rdr["REPLIEDDATE"].ToString();
+
+                    chk.LASTUPDATEDBY = rdr["LASTUPDATEDBY"].ToString();
+                    chk.LASTUPDATEDDATE = rdr["LASTUPDATEDDATE"].ToString();
+                    chk.REMARKS = rdr["REMARKS"].ToString();
+                    chk.IMP_REMARKS = rdr["IMP_REMARKS"].ToString();
+
+                    chk.SUBMITTED = rdr["SUBMITTED"].ToString();
+                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+
+
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+
+                    chk.C_STATUS = rdr["C_STATUS"].ToString();
+                    chk.ID = Convert.ToInt32(rdr["ID"].ToString());
+
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
 
         public string AddOldParasStatusUpdate(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS)
         {
@@ -6800,6 +6886,30 @@ namespace AIS
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
+        public string AddOldParasheadStatusUpdate(int PARA_ID, string REMARKS, int NEW_STATUS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_AddOldParasstatusupdate";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PID", OracleDbType.Int32).Value = PARA_ID;
+                cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = REMARKS;
+                cmd.Parameters.Add("R_STATUS", OracleDbType.Varchar2).Value = NEW_STATUS;
+
+                cmd.ExecuteReader();
+                success = true;
+            }
+            con.Close();
+            return success ? "Para Status updated successfully" : "Failed to update Para Status";
+        }
 
 
     }
