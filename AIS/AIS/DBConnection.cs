@@ -49,8 +49,8 @@ namespace AIS
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -4661,7 +4661,6 @@ namespace AIS
                 while (rdr.Read())
                 {
                     resp = rdr["REMARKS"].ToString();
-
                 }
             }
             con.Close();

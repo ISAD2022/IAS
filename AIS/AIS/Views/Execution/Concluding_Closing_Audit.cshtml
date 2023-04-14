@@ -9,6 +9,7 @@
 <script type="text/javascript">
     var g_teamMembers = [];
     var g_engId = 0;
+    var g_type_id = 0;
     $(document).ready(function () {
         $('#reportheading1').empty;
         $('#reportheading2').empty;
@@ -29,7 +30,7 @@
         $('#joiningAuditorDetailsTable tbody').empty();
         //getParas();
         var eng_id = $('#entitySelectField').val();
-
+        g_type_id = $('#entitySelectField option:selected').attr("ent_type_id");
         $('#conoffice').empty();
         $('#EntN').empty();
         $('#ADD').empty();
@@ -107,7 +108,7 @@
             },
             dataType: "json",
         });
-        getParas();
+  
     }
 
     function auditeereport() {
@@ -123,8 +124,14 @@
 
         if (eng_id == 0)
             alert("Audit Entity Not Selected");
-        else
-            window.location.href = '/Execution/auditee_observations_report?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+        else {
+            if (g_type_id == 6)
+                window.location.href = '/Execution/auditee_observations_report?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+            else
+                window.location.href = '/Execution/auditee_observations_report_cau?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+
+        }
+            
 
     }
 
@@ -166,7 +173,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
-                        <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                        <option value="@item.ENG_ID" ent_type_id="@item.TYPE_ID">@item.NAME</option>
                     }
                 }
             }
@@ -194,6 +201,7 @@
                     <th class="col-md-aut-1" style="font-size:xx-small">Address</th>
                     <th id="ADD" Class="col-md-5" style="background-color: whitesmoke"></th>
                 </tr>
+
 
 
             </thead>
@@ -277,7 +285,7 @@
     <button onclick="closeDraftAudit();" class="col-md-3 mr-5 btn btn-danger float-right">Generate Risk Rating</button>
     <button onclick="window.location.href='/Execution/auditee_position_outlook';" class="col-md-2 mr-5 d-none  btn btn-success float-right">Auditee position/Outlook</button>
     
-    <button onclick="auditeereport();" class="col-md-2 mr-5  btn btn-success float-right"> Auditee observations report</button>
+    <button onclick="auditeereport();" class="col-md-3 mr-5  btn btn-success float-right"> Auditee observations report</button>
         <button onclick="closeDraftAudit();" class="col-md-3 btn btn-danger float-right"> Close Audit</button>
 
 </div>
