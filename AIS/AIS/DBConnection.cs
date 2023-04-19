@@ -6910,6 +6910,65 @@ namespace AIS
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
+        public List<AuditPlanReportModel> getauditplanreport()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                string _sql = "pkg_rpt.r_eng_plan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditPlanReportModel plan = new AuditPlanReportModel();
+
+
+
+                    plan.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+                    plan.PARRENTOFFICE = rdr["PARRENTOFFICE"].ToString();
+                    plan.AUDITEENAME = rdr["AUDITEENAME"].ToString();
+                    plan.LASTAUDITOPSENDATE = rdr["LASTAUDITOPSENDATE"].ToString();
+
+                    plan.ENTITYRISK = rdr["ENTITYRISK"].ToString();
+                    plan.ENTITYSIZE = rdr["ENTITYSIZE"].ToString();
+                    plan.AUDITEENAME = rdr["AUDITEENAME"].ToString();
+                    plan.LASTAUDITOPSENDATE = rdr["LASTAUDITOPSENDATE"].ToString();
+
+                    if (rdr["ENTITYCODE"].ToString() != null && rdr["ENTITYCODE"].ToString() != "")
+                        plan.ENTITYCODE = Convert.ToInt32(rdr["ENTITYCODE"]);
+                    if (rdr["ANTITYID"].ToString() != null && rdr["ANTITYID"].ToString() != "")
+                        plan.ANTITYID = Convert.ToInt32(rdr["ANTITYID"]);
+                    if (rdr["NORMALDAYS"].ToString() != null && rdr["NORMALDAYS"].ToString() != "")
+                        plan.NORMALDAYS = Convert.ToInt32(rdr["NORMALDAYS"]);
+                    if (rdr["REVENUEDAYS"].ToString() != null && rdr["REVENUEDAYS"].ToString() != "")
+                        plan.REVENUEDAYS = Convert.ToInt32(rdr["REVENUEDAYS"]);
+                    if (rdr["TRAVELDAY"].ToString() != null && rdr["TRAVELDAY"].ToString() != "")
+                        plan.TRAVELDAY = Convert.ToInt32(rdr["TRAVELDAY"]);
+                    if (rdr["DISCUSSIONDAY"].ToString() != null && rdr["DISCUSSIONDAY"].ToString() != "")
+                        plan.DISCUSSIONDAY = Convert.ToInt32(rdr["DISCUSSIONDAY"]);
+
+                    plan.AUDITSTARTDATE = rdr["AUDITSTARTDATE"].ToString();
+                    plan.AUDITENDDATE = rdr["AUDITENDDATE"].ToString();
+                    plan.TNAME = rdr["TNAME"].ToString();
+                    plan.TEAMLEAD = rdr["TEAMLEAD"].ToString();
+
+                    planList.Add(plan);
+                }
+            }
+            con.Close();
+            return planList;
+        }
+
+
 
     }
 }

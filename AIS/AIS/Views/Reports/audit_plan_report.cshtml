@@ -1,89 +1,141 @@
 ﻿@{
-    ViewData["Title"] = "audit_report";
+    ViewData["Title"] = "Audit_Plan_Report";
     Layout = "_Layout";
 }
 
 
-<script type="text/javascript">
-    function FindAuditPlanData() {
-        $.ajax({
-            url: "/ApiCalls/get_auditplan_completion",
-            type: "POST",
-            data: {
-
-                'DEPT_ID': $('#auditDepartmentSelectBox').val(),
-                'AUDIT_STARTDATE': $('#auditStartDateField').val(),
-                'AUDIT_ENDDATE': $('#auditEndDateField').val()
-            },
-            cache: false,
-            success: function (data) {
-                var sr = 1;
-                $.each(data, function (i, v) {
-                    $('#AuditPlanGrid tbody').append('<tr><td>' + sr + '</td><td>' + v.auditname + '</td><td>' + v.audits + '</td><td>' + v.engplan + '</td><td>' + v.joining + '</td><td>' + v.completed + '</td><td>' + v.observations + '</td><td>' + v.highriskpara + '</td><td>' + v.mediumriskpara + '</td><td>' + v.lowriskpara + '</td></tr>');
-                    sr++;
-
-                });
-            },
-            dataType: "json",
-        });
+<style type="text/css">
+    .container {
+        max-width: 100%;
     }
 
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
 
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+
+<script type="text/javascript">
+    function createAuditEngagement(planId, name, size, risk, freq, days, auditperiod, periodId, code, zoneId, entity_id, ent_type_id) {
+        window.location.href = '/planning/tentative_engagement_plan?planId=' + planId + '&name=' + name + '&size=' + size + '&risk=' + risk + '&freq=' + freq + '&period=' + auditperiod + '&days=' + days + '&periodId=' + periodId + '&code=' + code + '&entityType=' +ent_type_id+ '&zoneId=' + zoneId + '&entityId=' + entity_id;
+    }
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tentative_plan_list tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+      
 </script>
-
-<div class="mt-3 mb-4">
-    <h3 style="color: #45c545;">Audit Plan Progess Report</h3>
-
-
-</div>
-
-
 <div class="row col-md-12 mt-3">
-
-    <label class="font-weight-bold"> Audit Department</label>
-    <select id="auditDepartmentSelectBox" class="form-select form-control" aria-label="Default select example">
-        <option value="112215">--All--</option>
-        @{
-            if (ViewData["DepartmentList"] != null)
-            {
-                foreach (var item in (dynamic)(ViewData["DepartmentList"]))
-                {
-                    <option value="@item.ID">@item.NAME</option>
-                }
-            }
-        }
-    </select>
-
+    <h3 style="color: #45c545;">Audit Plan Report</h3>
 </div>
-
-
-
-<div class="row col-md-12 w-100 mt-3">
-    <button onclick="FindAuditPlanData();"  class="btn btn-primary">Find</button>
-</div>
-
-<div class="mt-3">
-    <table id="AuditPlanGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
+<div>
+    
+        <div class="row col-md-12">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+ 
+    <br>
+    <div class="row col-md-12 mt-3">
+        <table  id="tentative_plan_list" class="table table-hover table-bordered table-hover mt-3 table-striped" >
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-            <tr>
-                <th>Sr. No.</th>
-                <th>Department /<br />Audit Zone</th>
-                <th>Number of <br />Audits</th>
-                <th>Engagement <br /> Assinged</th>
-                <th>Under Execution/<br /> In Progress</th>
-                <th>Completed</th>
-                <th>Number of <br />Observation</th>
-                <th>High Risk <br /> Observations</th>
-                <th>Medium Risk <br /> Observations</th>
-                <th>Low Risk <br /> Observations</th>
+            <tr style="text-align:center">
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Sr No</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Auditable Entity</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Branch Code</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Audit Zone</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Operational Zone</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Last Audit Period End (Operational Period)</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Branch Rating (High, Low, Medium)</th>
+                <th class="col-md-auto" style="font-size: x-small" rowspan="2">Branch Size (Small/Medium/Large)</th>
+                <th class="col-md-auto" style="font-size: x-small" colspan="4">Working days</th>
+                <th class="col-md-auto" style="font-size: x-small" colspan="2">Schedule of Audit</th>
+                <th class="col-md-auto" style="font-size: x-small"  colspan="2">Constitution of  Team</th>
+                
             </tr>
-        </thead>
-        <tbody >
-            <tr >
-            </tr>
+            <tr style="text-align:center"
+                >
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Days for Normal Audit</td>
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Days for Checking of revenue Record/ Utilization/Spot Visit  </td>
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Journey Day</td>
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Discussion Day</td>
 
-        </tbody>
-    </table>
+
+
+
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Start date (From)</td>
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">To</td>
+
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Team Name</td>
+                <td class="col-md-auto" style="font-size: x-small" rowspan="1">Team Lead</td>
+
+
+            </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["auditplanreport"] != null)
+                    {
+                        int sr = 1;
+
+                        foreach (var item in (dynamic)(ViewData["auditplanreport"]))
+                        {
+                            String sDate = item.AUDITSTARTDATE != "" && item.AUDITSTARTDATE != null ? item.AUDITSTARTDATE.Split(" ")[0] : item.AUDITSTARTDATE;
+                            String eDate = item.AUDITENDDATE != "" && item.AUDITENDDATE != null ? item.AUDITENDDATE.Split(" ")[0] : item.AUDITENDDATE;
+                            String aoeDate = item.LASTAUDITOPSENDATE != "" && item.LASTAUDITOPSENDATE != null ? item.LASTAUDITOPSENDATE.Split(" ")[0] : item.LASTAUDITOPSENDATE;
+
+                                <tr>
+                                    <td align="center" style="font-size: x-small">@sr</td>
+                                    <td align="justify" style="font-size: x-small">@item.AUDITEENAME</td>
+                                    <td align="left" style="font-size: x-small">@item.ENTITYCODE</td>
+                                    <td align="justify" style="font-size: x-small">@item.AUDITEDBY</td>
+                                    <td align="justify" style="font-size: x-small">@item.PARRENTOFFICE</td>
+                                    <td align="center" style="font-size: x-small">@aoeDate</td>
+                                    <td align="justify" style="font-size: x-small">@item.ENTITYRISK</td>
+                                    <td align="justify" style="font-size: x-small">@item.ENTITYSIZE</td>
+
+                                    <td align="left" style="font-size: x-small">@item.NORMALDAYS</td>
+                                    <td align="left" style="font-size: x-small">@item.REVENUEDAYS</td>
+                                    <td align="left" style="font-size: x-small">@item.TRAVELDAY</td>
+                                    <td align="left" style="font-size: x-small">@item.DISCUSSIONDAY</td>
+                                    <td align="justify" style="font-size: x-small">@sDate</td>
+                                    <td align="justify" style="font-size: x-small">@eDate</td>
+                                    
+
+                                    <td align="justify" style="font-size: x-small">@item.TNAME</td>
+                                    <td align="justify" style="font-size: x-small">@item.TEAMLEAD</td>
+
+                                </tr>
+                            sr = sr + 1;
+                        }
+
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="row w-100 mt-3 d-none">
+            <h4>Audit Zone Head Remarks</h4>
+            <select id="deptSelectionBox" class="form-select form-control" aria-label="Default select example">
+                <option value="0" selected>Remarks</option>
+                <option value="1">1. Recommended for Approval</option>
+                <option value="2">2. Refer back for changes in the above marked plans</option>
+            </select>
+        </div>
+        <div class="row w-100 col-md-12 mt-3 d-none">
+            <div class="col-md-6 mt-5">
+                <button onclick="window.location.href = '';" class="btn-primary">Submit</button>
+            </div>
+            <div class="col-md-6 mt-5">
+                <button onclick="window.location.href = '';" class="btn-primary">Refer Back</button>
+            </div>
+        </div>
+    </div>
 </div>
-
-

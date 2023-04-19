@@ -63,6 +63,29 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult Audit_Plan_Report()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["auditplanreport"] = dBConnection.getauditplanreport();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
+
         public IActionResult fad_para_res()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -534,7 +557,7 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult audit_plan_report()
+        public IActionResult audit_plan_report_old()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();

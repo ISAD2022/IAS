@@ -619,6 +619,7 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Engage
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\auditee_observations_report.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\auditee_position_outlook.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\AuditeePortal\old_para_br_comp_recommendation.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\auditee_observations_report_cau.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\AIS.StaticWebAssets.Pack.cache
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.AIS.Microsoft.AspNetCore.StaticWebAssets.props
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.build.AIS.props
