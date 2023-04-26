@@ -14,6 +14,7 @@ namespace AIS.Models
         public string REMARKS { get; set; }
         public string REPLYROLE { get; set; }
         public string HEADREMARKS { get; set; }
-        
+        public string ASSIGNEDTO { get; set; }
+
     }
 }

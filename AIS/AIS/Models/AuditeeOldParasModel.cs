@@ -6,6 +6,7 @@ namespace AIS.Models
     public class AuditeeOldParasModel
     {        
         public int? ID { get; set; }
+        public string REF_P { get; set; }
         public int? ENTITY_CODE { get; set; }
         public int? TYPE_ID { get; set; }
         public string TYPE_DES { get; set; }
@@ -13,6 +14,7 @@ namespace AIS.Models
         public string AUDIT_PERIOD_DES { get; set; }
         public string ENTITY_NAME { get; set; }
         public int? PARA_NO { get; set; }
+        public string MEMO_NO { get; set; }
         public string GIST_OF_PARAS { get; set; }
         public string AUDITEE_RESPONSE { get; set; }
         public string AUDITOR_REMARKS { get; set; }

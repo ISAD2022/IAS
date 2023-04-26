@@ -688,7 +688,6 @@ namespace AIS.Controllers
             return dBConnection.GetAddress(ENT_ID);
 
         }
-
        
         [HttpPost]
         public List<GetAuditeeParasModel> get_report_paras(int ENG_ID)
@@ -763,6 +762,24 @@ namespace AIS.Controllers
             string response = "";
             response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+        [HttpPost]
+        public List<BranchModel> get_zone_Branches(int ZONEID)
+        {
+            return dBConnection.GetZoneBranches(ZONEID,false);
+            
+        }
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_old_paras_for_monitoring(int ENTITY_ID)
+        {
+            return dBConnection.GetOldParasForMonitoring(ENTITY_ID);
+        }
+
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_para_text(string ref_p)
+        {
+            return dBConnection.GetOldParasForMonitoring(ENTITY_ID);
         }
 
 
