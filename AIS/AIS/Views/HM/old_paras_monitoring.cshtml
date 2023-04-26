@@ -43,7 +43,7 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" onclick="viewParaText(\'' + v.reF_P + '\')"> View Para</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.reF_P + '\')"> View Para</a></td></tr>');
 
                     });
                 },
@@ -54,6 +54,8 @@
     }
 
     function viewParaText(ref_p) {
+        $('#viewMemoModel').modal('show');
+        $('#viewMemo_memo').html("");
         $.ajax({
             url: "/ApiCalls/get_para_text",
             type: "POST",
@@ -61,10 +63,11 @@
                 'ref_p': ref_p
             },
             cache: false,
-            success: function (data) {
-               console.log("paraText",data);                
-            },
-            dataType: "json",
+            success: function (data) {  
+                console.log(data);
+
+                $('#viewMemo_memo').html(data);     
+            }
         });
     }
 

@@ -779,12 +779,11 @@ namespace AIS.Controllers
         [HttpPost]
         public string get_para_text(string ref_p)
         {
-            string response = "";
-            response = dBConnection.GetParaText(ref_p);
-            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+           // string response = "";
+            return dBConnection.GetParaText(ref_p);
+            //return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 
         }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

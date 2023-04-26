@@ -7026,16 +7026,11 @@ namespace AIS
 
         public string GetParaText(string ref_p)
         {
-            string resp= "";
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            string resp= "";            
             var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_hd.P_GetOldParasNDC";
+                cmd.CommandText = "pkg_hd.P_GetOldParastext";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("para_ref", OracleDbType.Varchar2).Value = ref_p;
