@@ -6531,13 +6531,14 @@ namespace AIS
                     chk.REPLYROLE = rdr["REPLYROLE"].ToString();
                     chk.HEADREMARKS = rdr["HEADREMARKS"].ToString();
                     chk.ASSIGNEDTO = rdr["ASSIGNEDTO"].ToString();
+                    chk.NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
                 }
             }
             con.Close();
             return list;
-        }             
+        }
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchCompliance()
         {
             sessionHandler = new SessionHandler();
