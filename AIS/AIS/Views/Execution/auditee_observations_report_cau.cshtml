@@ -199,11 +199,10 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-
-
-
-                    $('#obs_report_panel').append('<tr ><td style="text-align:center">' + v.memO_NUMBER + '</td><td style="padding:50px !important;text-align:justify" >' + v.text + '</td><td style="text-align:center">' + v.reply + '</td ><td style="text-align:center">' + v.recommendation + '</td><td style="text-align:center">' + v.headremarks + '</td></tr>')
-                    //  $('#obs_report_panel2').append('<tr><td>' + v.memO_NUMBER + '</td><td style="padding:50px !important;">' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
+                    if(v.assignedto="CAU")
+                        $('#obs_report_panel').append('<tr ><td style="text-align:center">' + v.memO_NUMBER + '</td><td style="padding:50px !important;text-align:justify" >' + v.text + '</td><td style="text-align:center">' + v.reply + '</td ><td style="text-align:center">' + v.recommendation + '</td><td style="text-align:center">' + v.headremarks + '</td></tr>')
+                        else
+                    $('#obs_report_panel2').append('<tr><td>' + v.memO_NUMBER + '</td><td style="padding:50px !important;">' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
 
 
 

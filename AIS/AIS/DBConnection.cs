@@ -5541,6 +5541,7 @@ namespace AIS
                     chk.NAME = rdr["NAME"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     chk.ENG_ID = Convert.ToInt32(rdr["eng_plan_id"].ToString());
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
                 }
             }
@@ -6521,8 +6522,8 @@ namespace AIS
                 while (rdr.Read())
                 {
                     GetAuditeeParasModel chk = new GetAuditeeParasModel();
-                    chk.MEMO_NUMBER = Convert.ToInt32(rdr["MEMO_NUMBER"].ToString());
-                    chk.STATUS = Convert.ToInt32(rdr["STATUS"].ToString());
+                    chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();// Convert.ToInt32(rdr["STATUS"].ToString());
                     chk.TEXT = rdr["TEXT"].ToString();
                     chk.REPLY = rdr["REPLY"].ToString();
                     chk.RECOMMENDATION = rdr["RECOMMENDATION"].ToString();

@@ -6,8 +6,8 @@ namespace AIS.Models
 {
     public class GetAuditeeParasModel
     {        
-        public int? MEMO_NUMBER { get; set; }
-        public int? STATUS { get; set; }
+        public string MEMO_NUMBER { get; set; }
+        public string STATUS { get; set; }
         public string TEXT { get; set; }
         public string REPLY { get; set; }
         public string RECOMMENDATION { get; set; }
