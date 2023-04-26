@@ -7026,7 +7026,7 @@ namespace AIS
 
         public string GetParaText(string ref_p)
         {
-            string resp== "";
+            string resp= "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -7038,29 +7038,16 @@ namespace AIS
                 cmd.CommandText = "pkg_hd.P_GetOldParasNDC";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("para_ref", OracleDbType.Varchar2).Value = ref_p;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-                    chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
-                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
-                    chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
-                    chk.MEMO_NO = rdr["PARA_NO"].ToString();
-                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.REF_P = rdr["REF_P"].ToString();
-                    list.Add(chk);
+                    resp = rdr["PARA_TEXT"].ToString();
                 }
             }
             con.Close();
-            return list;
-
+            return resp;
         }
-
-
-
     }
 }

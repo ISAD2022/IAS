@@ -777,9 +777,12 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditeeOldParasModel> get_para_text(string ref_p)
+        public string get_para_text(string ref_p)
         {
-            return dBConnection.GetOldParasForMonitoring(ENTITY_ID);
+            string response = "";
+            response = dBConnection.GetParaText(ref_p);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+
         }
 
 
