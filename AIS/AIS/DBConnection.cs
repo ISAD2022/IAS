@@ -7046,5 +7046,48 @@ namespace AIS
             con.Close();
             return resp;
         }
+        public List<AuditeeOldParasPpnoModel> GetOldParasForMonitoringPpno(int ppno)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasPpnoModel> list = new List<AuditeeOldParasPpnoModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.p_ppno_para";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = ppno;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasPpnoModel chk = new AuditeeOldParasPpnoModel();
+                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
+                        chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    if (rdr["AUDIT_PERIOD"].ToString() != null && rdr["AUDIT_PERIOD"].ToString() != "")
+                        chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
+                    if (rdr["PARA_NO"].ToString() != null && rdr["PARA_NO"].ToString() != "")
+                        chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+
+
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    if (rdr["PARA_STATUS"].ToString() != null && rdr["PARA_STATUS"].ToString() != "")
+                        chk.PARA_STATUS = Convert.ToInt32(rdr["PARA_STATUS"]);
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
     }
 }

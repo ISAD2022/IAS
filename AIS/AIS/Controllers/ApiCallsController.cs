@@ -785,6 +785,19 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<AuditeeOldParasPpnoModel> get_old_paras_for_monitoring_ppno(int ppno)
+        {
+            return dBConnection.GetOldParasForMonitoringPpno(ppno);
+        }
+
+        [HttpPost]
+        public List<UserModel> find_users(FindUserModel user)
+        {
+            return dBConnection.GetAllUsers(user);
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
