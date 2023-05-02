@@ -139,8 +139,6 @@
 
     function closeDraftAudit() {
 
-
-
         $.ajax({
 
             url: "/ApiCalls/close_draft_audit",
@@ -149,8 +147,8 @@
                 'ENG_ID': g_engId
             },
             cache: false,
-            success: function () {
-                alert("Audit Closed Successfully");
+            success: function (data) {
+                alert(data.Message);
                 onAlertCallback(reloadLocationToUrl);
             },
             dataType: "json",
@@ -283,7 +281,7 @@
     </div>
 </div>
 <div class="row col-md-12 mt-3 ml-5">
-    <button onclick="closeDraftAudit();" class="col-md-3 mr-5 btn btn-danger float-right">Generate Risk Rating</button>
+    <button onclick="closeDraftAudit();" class="col-md-3 mr-5 btn btn-danger float-right d-none">Generate Risk Rating</button>
     <button onclick="window.location.href='/Execution/auditee_position_outlook';" class="col-md-2 mr-5 d-none  btn btn-success float-right">Auditee position/Outlook</button>
     
     <button onclick="auditeereport();" class="col-md-3 mr-5  btn btn-success float-right"> Auditee observations report</button>
