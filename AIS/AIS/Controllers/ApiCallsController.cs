@@ -488,6 +488,11 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasForResponse();
         }
         [HttpPost]
+        public List<OldParasModel> get_legacy_settled_paras()
+        {
+            return dBConnection.GetOldSettledParasForResponse();
+        }
+        [HttpPost]
         public List<OldParasModel> get_manage_legacy_para()
         {
             return dBConnection.GetManageLegacyParas();
