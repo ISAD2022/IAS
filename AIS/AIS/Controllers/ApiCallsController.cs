@@ -801,6 +801,27 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAllUsers(user);
         }
+        [HttpPost]
+        public string get_user_name(string PPNUMBER)
+        {
+           string response = "";
+            response=dBConnection.GetUserName(PPNUMBER);
+           return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
+        public string Add_Old_Para_Change_status(string REFID, string REMARKS)
+        {
+            string response = "";
+            response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, REMARKS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_zone_brach_para_position(int ENTITY_ID)
+        {
+            return dBConnection.GetOldParasForMonitoring(ENTITY_ID);
+        }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

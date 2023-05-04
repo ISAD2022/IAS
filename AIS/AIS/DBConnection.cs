@@ -514,7 +514,7 @@ namespace AIS
                     cmd.CommandText = "pkg_ad.P_Group_Update";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
-                    cmd.Parameters.Add("GROUP_ID", OracleDbType.Varchar2).Value = gm.GROUP_ID;
+                    cmd.Parameters.Add("GROUPID", OracleDbType.Varchar2).Value = gm.GROUP_ID;
                     cmd.Parameters.Add("GROUP_DESCRIPTION", OracleDbType.Varchar2).Value = gm.GROUP_DESCRIPTION;
                     cmd.Parameters.Add("GROUP_NAME", OracleDbType.Varchar2).Value = gm.GROUP_NAME;
                     cmd.Parameters.Add("ISACTIVE", OracleDbType.Varchar2).Value = gm.ISACTIVE;
@@ -1139,6 +1139,27 @@ namespace AIS
             }
             con.Close();
             return userList;
+
+        }
+        public string GetUserName(string PPNUMBER)
+        {
+            string userName = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.p_ppno_name";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();               
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = PPNUMBER;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    userName = rdr["EMPLOYEE_NAME"].ToString();
+                }
+            }
+            con.Close();
+            return userName;
 
         }
         public List<AuditEntitiesModel> GetAuditEntities()
@@ -7111,17 +7132,14 @@ namespace AIS
                         chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    if (rdr["AUDIT_PERIOD"].ToString() != null && rdr["AUDIT_PERIOD"].ToString() != "")
-                        chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
-                    if (rdr["PARA_NO"].ToString() != null && rdr["PARA_NO"].ToString() != "")
-                        chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
+                   chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
 
 
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    if (rdr["PARA_STATUS"].ToString() != null && rdr["PARA_STATUS"].ToString() != "")
-                        chk.PARA_STATUS = Convert.ToInt32(rdr["PARA_STATUS"]);
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
 
                     list.Add(chk);
                 }
@@ -7129,6 +7147,33 @@ namespace AIS
             con.Close();
             return list;
         }
+
+        public string AddChangeStatusRequestForSettledPara(string REFID, string REMARKS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.p_changestatusrequestforsettledpara";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
+
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
+
+
+                cmd.ExecuteReader();
+                success = true;
+            }
+            con.Close();
+            return success ? "Para Status updated successfully" : "Failed to update Para Status";
+        }
+
 
 
     }

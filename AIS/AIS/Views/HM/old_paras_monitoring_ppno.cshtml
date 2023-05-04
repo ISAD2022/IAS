@@ -5,32 +5,7 @@
 
 <script type="text/javascript">
 
-    function getZoneBranches() {
-        $('#manageObsPanel tbody').empty();
-        $('#branchSelectField').empty();
-
-        if ($('#zoneSelectField option:selected').val() != 0) {
-            $.ajax({
-                url: "/ApiCalls/get_zone_Branches",
-                type: "POST",
-                data: {
-                    'ZONEID': $('#zoneSelectField option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-
-                    $('#branchSelectField').append('<option value="0" id="0">--Select Branch--</option>');
-                    $.each(data, function (i, v) {
-                        $('#branchSelectField').append('<option value="' + v.branchid + '" id="' + v.branchid + '">' + v.branchname + '</option>');
-                    })
-
-                },
-                dataType: "json",
-            });
-
-        }
-    }
-
+   
     function getEntityObservation() {
         $('#manageObsPanel tbody').empty();
         if ($('#branchSelectField option:selected').val() != 0) {
@@ -63,7 +38,7 @@
         else {
         $('#userListTable tbody').empty();
         $.ajax({
-            url: "/ApiCalls/find_users",
+            url: "/ApiCalls/get_user_name",
             type: "POST",
             data: {
                 'PPNUMBER': $('#ppnoSearchField').val(),
@@ -71,12 +46,7 @@
             },
             cache: false,
             success: function (data) {
-
-
-        $('#employeename').val(data[0].name);
-
-       
-
+                $('#employeename').val(data.Message);      
             },
             dataType: "json",
         });
@@ -85,50 +55,33 @@ getEntityObservation();
         }
     }
 
-    function viewParaText(ref_p) {
-        $('#viewMemoModel').modal('show');
-        $('#viewMemo_memo').html("");
-        $.ajax({
-            url: "/ApiCalls/get_para_text",
-            type: "POST",
-            data: {
-                'ref_p': ref_p
-            },
-            cache: false,
-            success: function (data) {  
-                console.log(data);
-
-                $('#viewMemo_memo').html(data);     
-            }
-        });
-    }
+   
 
 </script>
 <h3 style=" display:block;color: #45c545;" class="mt-3">All Outstanding Paras Of The Employee</h3>
-<div class="row col-md-12 mt-3">
-    <div class="col-md-1">
+<div class="row mt-3">
+    <div class="col-md-2">
         <label><b>PPNO:</b></label>
     </div>
 
 
 
-    <div class="col-md-8; pl-sm-4">
-        <input id="ppnoSearchField" type="text"  size="130"  placeholder="Enter P.P.Number">
+    <div class="col-md-8">
+        <input class="form-control" id="ppnoSearchField" type="text"  placeholder="Enter P.P.Number">
     </div>
-    <div class="col-md-1; pl-4">
-        <button id="findButton" onclick="getemployeename();" class="btn btn-danger" style="width:100px; height:30px; text-align:center">Find</button>
-        
-    </div>
-    </div>
-<div class="row col-md-12 mt-2">
     <div class="col-md-1">
-        <label><b>Employee Name:</b></label>
-    </div>
-    <div class="col-md-8; pl-sm-4">
-        <input id="employeename" type="text" size="130" disabled>
+        <button id="findButton" onclick="getemployeename();" class="btn btn-danger w-100">Find</button>        
     </div>
 </div>
-<div class="mt-4">
+<div class="row mt-2">
+    <div class="col-md-2">
+        <label><b>Employee Name:</b></label>
+    </div>
+    <div class="col-md-8">
+        <input id="employeename" class="form-control w-100" type="text" disabled>
+    </div>
+</div>
+<div class="mt-4 row">
     <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
