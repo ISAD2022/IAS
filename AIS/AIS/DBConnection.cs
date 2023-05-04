@@ -7174,7 +7174,45 @@ namespace AIS
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
+        public ZoneBranchParaStatusModel GetZoneBranchParaPositionStatus(int Entity_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ZoneBranchParaStatusModel list = new ZoneBranchParaStatusModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GetParaPositionForZoneBranches";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = Entity_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasPpnoModel chk = new AuditeeOldParasPpnoModel();
+                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
+                        chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
 
+
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
 
     }
 }
