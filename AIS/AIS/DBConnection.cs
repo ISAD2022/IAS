@@ -7193,19 +7193,78 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    AuditeeOldParasPpnoModel chk = new AuditeeOldParasPpnoModel();
-                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
-                        chk.ID = Convert.ToInt32(rdr["ID"]);
+                    list.Total_Paras = Convert.ToInt32(rdr["Total_Paras"].ToString());
+                    list.Settled_Paras = Convert.ToInt32(rdr["Setteled_para"].ToString());
+                    list.Unsettled_Paras = Convert.ToInt32(rdr["UnSetteled_para"].ToString());
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID)
+
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            bool success = false;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.p_authorizechangestatusrequestforsettledpara";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
+
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+            
+
+                cmd.ExecuteReader();
+                success = true;
+            }
+                con.Close();
+                return success ? "Para Status Change Authorized Successfully" : "Failed To Authorize Para Status Change";
+        }
+          public List<OldParasAuthorizeModel> GetOldSettledParasForResponseAuthorize()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasAuthorizeModel> list = new List<OldParasAuthorizeModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.p_getoldparasforresponseauthorize";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasAuthorizeModel chk = new OldParasAuthorizeModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
-                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-
-
+                    chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
+                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
+
+                    chk.PROCESS_DES = rdr["Process_Des"].ToString();
+                    chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
+
+                    chk.REMARKS = rdr["REMARKS"].ToString();
+
 
                     list.Add(chk);
                 }
@@ -7214,5 +7273,6 @@ namespace AIS
             return list;
         }
 
-    }
+
+        }
 }

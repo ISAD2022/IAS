@@ -31,26 +31,20 @@
         }
     }
 
-    function getEntityObservation() {
+    function getParaPositio() {
         $('#manageObsPanel tbody').empty();
-        if ($('#branchSelectField option:selected').val() != 0) {
-            $.ajax({
-                url: "/ApiCalls/get_old_paras_for_monitoring",
+        $.ajax({
+                url: "/ApiCalls/get_zone_brach_para_position",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#branchSelectField option:selected').val()
                 },
                 cache: false,
-                success: function (data) {
-                    $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.reF_P + '\')"> View Para</a></td></tr>');
-
-                    });
+            success: function (data) {
+                $('#manageObsPanel tbody').append('<tr><td>' + data.total_Paras + '</td><td>' + data.settled_Paras + '</td><td>' + data.unsettled_Paras +'</td></tr>');
                 },
                 dataType: "json",
             });
-
-        }
     }
 
     function viewParaText(ref_p) {
@@ -107,22 +101,21 @@
 
 <div class="row col-md-12 justify-content-end mt-3">
     <div class="col-md-2">
-        <button class="btn btn-primary w-100">Search</button>
+        <button onclick="getParaPositio();" class="btn btn-primary w-100">Search</button>
     </div>
 </div>
 <div class="mt-4">
     <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-auto">Entity Name</th>
-                <th class="col-md-auto">Audit Year</th>
+               
                 <th class="col-md-auto">Total Paras</th>
                 <th class="col-md-auto">Settled Paras</th>
                 <th class="col-md-auto">Un-Settled Paras</th>
-                <th class="col-md-auto">Dropped Paras</th>
             </tr>
         </thead>
         <tbody>
+           
         </tbody>
     </table>
 </div>

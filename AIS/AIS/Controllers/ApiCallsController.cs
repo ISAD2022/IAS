@@ -817,10 +817,23 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditeeOldParasModel> get_zone_brach_para_position(int ENTITY_ID)
+        public ZoneBranchParaStatusModel get_zone_brach_para_position(int ENTITY_ID)
         {
-            return dBConnection.GetOldParasForMonitoring(ENTITY_ID);
+            return dBConnection.GetZoneBranchParaPositionStatus(ENTITY_ID);
         }
+        [HttpPost]
+        public string Add_Authorization_Old_Para_Change_status(string REFID)
+        {
+            string response = "";
+            response = dBConnection.AddAuthorizeChangeStatusRequestForSettledPara(REFID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
+        public List<OldParasAuthorizeModel> get_legacy_settled_paras_autorize()
+        {
+            return dBConnection.GetOldSettledParasForResponseAuthorize();
+        }
+
 
 
 

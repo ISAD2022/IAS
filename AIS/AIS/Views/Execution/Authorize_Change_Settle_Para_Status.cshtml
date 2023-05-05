@@ -22,7 +22,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_settled_paras",
+            url: "/ApiCalls/get_legacy_settled_paras_autorize",
             type: "POST",
             data: {
                 
@@ -31,7 +31,7 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.voL_I_II +'</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="parastatuschange('+child.id+');">Authorize</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.remarks + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.voL_I_II + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="Publishchange(\'' + child.reF_P + '\');">Authorize</a></td></tr>')
                 });
 
             },
@@ -47,22 +47,23 @@
      
     }
 
-    function Publishchange() {
-       
-        if ($('.richText-editor').html() == "") {
+
+    function Publishchange(refp) {
+
+        if ($('#Reason_Unsettle').val() == "") {
             alert("Please enter Reply");
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_reply",
+            url: "/ApiCalls/Add_Authorization_Old_Para_Change_status",
             type: "POST",
             data: {
-                'ID': g_paraId,
-                'REPLY': $('.richText-editor').html()               
+                'REFID': refp,
+              
             },
             cache: false,
             success: function (data) {
-                alert("Reply Successfully added");
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",
@@ -86,10 +87,12 @@
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
+                    <th class="col-md-auto">Remarks</th>
+
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto" style="text-align:center">Reason for Un-Settlement</th>
                     <th class="col-md-auto">Action</th>
-                   
+
 
                 </tr>
             </thead>
@@ -105,7 +108,7 @@
     <div class="modal-dialog  modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Change Para Status</h5>
+                <h5 class="modal-title">Authorize Change Para Status</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -128,7 +131,7 @@
 
                         </div>
                         <div class="mt-2 col-md-12">
-                            <textarea class="form-control" id="responseAuditee"></textarea>
+                            <textarea class="form-control" id="responseAuditee" disabled></textarea>
 
                         </div>
 
