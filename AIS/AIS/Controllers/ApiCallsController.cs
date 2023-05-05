@@ -834,6 +834,12 @@ namespace AIS.Controllers
             return dBConnection.GetOldSettledParasForResponseAuthorize();
         }
 
+        [HttpPost]
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_text_update()
+        {
+            return dBConnection.GetOldParasBranchComplianceTextupdate();
+        }
+
 
 
 

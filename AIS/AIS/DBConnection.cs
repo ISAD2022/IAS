@@ -5024,7 +5024,7 @@ namespace AIS
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasEntities";
+                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasentitiesFAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -7279,5 +7279,44 @@ namespace AIS
         }
 
 
+        public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceTextupdate()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetAuditeeAllParasFAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("entityid", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.NAME = rdr["name"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.ID = rdr["id"].ToString();
+                    chk.REF_P = rdr["ref_p"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
+                    chk.AMOUNT = Convert.ToDecimal(rdr["amount"].ToString());
+                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
         }
+
+
+
+
+    }
 }
