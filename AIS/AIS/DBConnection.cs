@@ -1599,8 +1599,9 @@ namespace AIS
                 {
                     ZoneModel z = new ZoneModel();
                     z.ZONEID = Convert.ToInt32(rdr["ZONEID"]);
+                    z.ENTITYID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     z.ZONECODE = rdr["ZONECODE"].ToString();
-                    z.ZONENAME = rdr["ZONENAME"].ToString();
+                    z.ZONENAME = rdr["NAME"].ToString();
                     z.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     if (rdr["ISACTIVE"].ToString() == "Y")
                         z.ISACTIVE = "Active";
@@ -7174,14 +7175,15 @@ namespace AIS
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
-        public ZoneBranchParaStatusModel GetZoneBranchParaPositionStatus(int Entity_ID)
+        public List<ZoneBranchParaStatusModel> GetZoneBranchParaPositionStatus(int Entity_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            ZoneBranchParaStatusModel list = new ZoneBranchParaStatusModel();
+            List<ZoneBranchParaStatusModel> list = new List<ZoneBranchParaStatusModel>();
+
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.P_GetParaPositionForZoneBranches";
@@ -7193,9 +7195,12 @@ namespace AIS
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    list.Total_Paras = Convert.ToInt32(rdr["Total_Paras"].ToString());
-                    list.Settled_Paras = Convert.ToInt32(rdr["Setteled_para"].ToString());
-                    list.Unsettled_Paras = Convert.ToInt32(rdr["UnSetteled_para"].ToString());
+                    ZoneBranchParaStatusModel zb = new ZoneBranchParaStatusModel();
+                    zb.Entity_Name = rdr["Branch_Name"].ToString();
+                    zb.Total_Paras = Convert.ToInt32(rdr["Total_Paras"].ToString());
+                    zb.Settled_Paras = Convert.ToInt32(rdr["Setteled_para"].ToString());
+                    zb.Unsettled_Paras = Convert.ToInt32(rdr["UnSetteled_para"].ToString());
+                    list.Add(zb);
 
                 }
             }

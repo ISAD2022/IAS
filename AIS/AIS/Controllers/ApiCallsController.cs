@@ -817,7 +817,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public ZoneBranchParaStatusModel get_zone_brach_para_position(int ENTITY_ID)
+        public List<ZoneBranchParaStatusModel> get_zone_brach_para_position(int ENTITY_ID)
         {
             return dBConnection.GetZoneBranchParaPositionStatus(ENTITY_ID);
         }

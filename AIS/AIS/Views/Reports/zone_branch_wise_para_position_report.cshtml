@@ -32,16 +32,42 @@
     }
 
     function getParaPositio() {
+
+        var zId=0;
+        var bId=0;
+         if ($('#zoneSelectField option:selected').val()!=0)
+        {
+            
+            zId = $('#zoneSelectField option:selected').attr('id');
+        }
+        if ($('#branchSelectField option:selected').val()!=0){
+            bId=$('#branchSelectField option:selected').val();
+        }
+       
+        if (bId==0 && zId==0) {
+            alert("Please select either Zone or Branch to proceed");
+            return;
+        }
+
+        var EntityId=bId==0?zId:bId;
+
         $('#manageObsPanel tbody').empty();
+
+        
         $.ajax({
                 url: "/ApiCalls/get_zone_brach_para_position",
                 type: "POST",
                 data: {
-                    'ENTITY_ID': $('#branchSelectField option:selected').val()
+                'ENTITY_ID': EntityId
                 },
                 cache: false,
-            success: function (data) {
-                $('#manageObsPanel tbody').append('<tr><td>' + data.total_Paras + '</td><td>' + data.settled_Paras + '</td><td>' + data.unsettled_Paras +'</td></tr>');
+            success: function (data) 
+            {
+                $.each(data,function(i,v)
+                {
+                    $('#manageObsPanel tbody').append('<tr><td class="entity_name">' + v.entity_Name + '</td><td>' + v.total_Paras + '</td><td>' + v.settled_Paras + '</td><td>' + v.unsettled_Paras + '</td></tr>');
+                })
+                
                 },
                 dataType: "json",
             });
@@ -80,7 +106,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["ZonesList"]))
                     {
-                        <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                        <option value="@item.ZONEID" id="@item.ENTITYID">@item.ZONENAME</option>
                     }
                 }
             }
@@ -108,7 +134,7 @@
     <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-               
+                <th class="col-md-auto entity_name">Entity Name</th>
                 <th class="col-md-auto">Total Paras</th>
                 <th class="col-md-auto">Settled Paras</th>
                 <th class="col-md-auto">Un-Settled Paras</th>
