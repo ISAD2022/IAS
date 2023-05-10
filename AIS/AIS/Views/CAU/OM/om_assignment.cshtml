@@ -22,11 +22,7 @@
         if ($('#omNumber_box').val() == "") {
             alert('Please enter OM Number');
             return;
-        }
-        if ($('.richText-editor').html() == "") {
-            alert('Please provide OM Content');
-            return;
-        }
+        }      
        
         $.ajax({
             url: "/ApiCalls/CAU_OM_assignment",
@@ -47,50 +43,123 @@
 
     }
 
+    function gotoNextStage() {
+        $('#collapseOne').removeClass('show');
+        $('#collapseTwo').addClass('show');
+    }
+
 </script>
 <div class="mt-3 col-md-12">
     <h3 style="color: #45c545;">Commercial Audit Memo/Para Assigning</h3>
 </div>
 
 
-<div class="col-md-12 mt-3">
-    
-        <label class="font-weight-bold">O.M/Para No.</label>
-    
-    
-        <input id="omNumber_box" type="text" class="form-select form-control">
-  
+
+<div class="col-md-12">
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        OM STAGE
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <div class="col-md-12 mt-3">
+
+                        <label class="font-weight-bold">O.M/Para No.</label>
+
+
+                        <input id="omNumber_box" type="text" class="form-select form-control">
+
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="page-wrapper box-content">
+                            <textarea id="template_box" class="content" name="example"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-3 mb-4">
+
+                        <label class="font-weight-bold">Division</label>
+
+                        <select id="division_box" class="form-select form-control">
+                            <option value="0" id="0" selected>--Select Division--</option>
+                            @{
+                                if (ViewData["DivisionList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["DivisionList"]))
+                                    {
+                                        <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.DESCRIPTION</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="col-md-12 mt-3 mb-4">
+                            <button onclick="gotoNextStage(this);" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
+                            <button onclick="saveOMAssignment();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
+
+                        </div>
+
+                    </div>                  
+
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        AIR STAGE
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                    <label class="font-weight-bold">O.M/Para No.</label>
+                    <input id="omNumber_box_stage2" type="text" class="form-select form-control">
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        PDP STAGE
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                    Stage three
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingfour">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseThree">
+                        ARPSE STAGE
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFour" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                    Stage four
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 </div>
 
-<div class="col-md-12 mt-3">
-    <div class="page-wrapper box-content">
-        <textarea id="template_box" class="content" name="example"></textarea>
-    </div>
-</div>
-<div class="col-md-12 mt-3 mb-4">
-   
-        <label class="font-weight-bold">Division</label>
-    
-        <select id="division_box" class="form-select form-control">
-            <option value="0" id="0" selected>--Select Division--</option>
-            @{
-                if (ViewData["DivisionList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["DivisionList"]))
-                    {
-                        <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.DESCRIPTION</option>
-                    }
-                }
-            }
-        </select>
-    </div>
 
-
-<div class="row col-md-12 mt-3">
-    <div class="col-md-12 mt-3 mb-4">
-        <button style="float:right;margin-left:15px;" class="btn btn-danger col-md-2">Submit</button>
-        <button onclick="saveOMAssignment();" style="float:right; " class="btn btn-success col-md-2">Save</button>
-
-    </div>
-
-</div>
