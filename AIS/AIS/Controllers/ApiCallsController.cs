@@ -389,6 +389,11 @@ namespace AIS.Controllers
             return dBConnection.CAUOMAssignment(caumodel);
         }
         [HttpPost]
+        public bool CAU_OM_assignmentAIR(CAUOMAssignmentAIRModel caumodel)
+        {
+            return dBConnection.CAUOMAssignmentAIR(caumodel);
+        }
+        [HttpPost]
         public List<CAUOMAssignmentModel> CAU_Get_OMs()
         {
             return dBConnection.CAUGetAssignedOMs();

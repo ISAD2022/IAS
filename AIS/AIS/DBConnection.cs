@@ -4883,15 +4883,94 @@ namespace AIS
         public bool CAUOMAssignment(CAUOMAssignmentModel om)
         {
             string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_cm.CAU_OM";
+                cmd.CommandText = "PKG_CM.P_CAU_OM";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OM_NO", OracleDbType.Varchar2).Value = om.OM_NO;
                 cmd.Parameters.Add("ENCODED_MSG", OracleDbType.Clob).Value = encodedMsg;
                 cmd.Parameters.Add("DIV_ID", OracleDbType.Int32).Value = om.DIV_ID;
+                cmd.Parameters.Add("key_id", OracleDbType.Varchar2).Value = om.KEY;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                //
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool CAUOMAssignmentAIR(CAUOMAssignmentAIRModel om)
+        {
+            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "PKG_CM.T_CAU_AIR";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OM_NO", OracleDbType.Varchar2).Value = om.OM_NO;
+                cmd.Parameters.Add("PARA_NO", OracleDbType.Varchar2).Value = om.PARA_NO;
+                cmd.Parameters.Add("ENCODED_MSG", OracleDbType.Clob).Value = encodedMsg; 
+                cmd.Parameters.Add("STAGE", OracleDbType.Int32).Value = 2; 
+                cmd.Parameters.Add("STATUS", OracleDbType.Int32).Value = 2;
+                cmd.Parameters.Add("key_id", OracleDbType.Varchar2).Value = om.KEY;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+        public bool CAUOMAssignmentPDP(CAUOMAssignmentPDPModel om)
+        {
+            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "PKG_CM.T_CAU_PDP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("DAC_DATES", OracleDbType.Varchar2).Value = om.DAC_DATES;
+                cmd.Parameters.Add("Para_id", OracleDbType.Int32).Value = om.PARA_ID;
+                cmd.Parameters.Add("DAC_Recommendation", OracleDbType.Clob).Value = encodedMsg;
+                cmd.Parameters.Add("Report_frequency", OracleDbType.Int32).Value = om.REPORT_FREQUENCY;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            return true;
+        }
+
+        public bool CAUOMAssignmentPDP2(CAUOMAssignmentPDPModel om)
+        {
+            string encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "PKG_CM.T_CAU_PDP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("DAC_DATES", OracleDbType.Varchar2).Value = om.DAC_DATES;
+                cmd.Parameters.Add("Para_id", OracleDbType.Int32).Value = om.PARA_ID;
+                cmd.Parameters.Add("DAC_Recommendation", OracleDbType.Clob).Value = encodedMsg;
+                cmd.Parameters.Add("Report_frequency", OracleDbType.Int32).Value = om.REPORT_FREQUENCY;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
             con.Close();

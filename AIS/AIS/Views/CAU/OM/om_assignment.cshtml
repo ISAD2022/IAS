@@ -4,15 +4,39 @@
 }
 
 <script type="text/javascript">
-    $('#document').ready(function () {
+    $(document).ready(function () {
         $('#template_box').richText({
             imageUpload: false,
             fileUpload: false,
             videoEmbed: false,
             urls: false
         });
-    });
-
+        $('#template_box_stage2').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+        $('#template_box_stage3').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+        $('#template_box_stage4').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+        $('#template_box_stage5').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+    })
+   
 
     function saveOMAssignment() {
         if ($('#division_box').val() == 0) {
@@ -31,21 +55,80 @@
                 'ID': 0,
                 'DIV_ID': $('#division_box').val(),
                 'OM_NO': $('#omNumber_box').val(),
-                'CONTENTS_OF_OM': $('.richText-editor').html(),
+                'CONTENTS_OF_OM': $('#template_box').html(),
+                'Key': $('#keyPasswordOMStage1').val(),
                 'STATUS': 1,
             },
             cache: false,
             success: function (data) {
-                alert("OM Assignment Successfully Done");
+                alert("OM Saved Successfully");
+                $('#saveOMAssignmentStage1').attr('disabled', true);
+                $('#omNumber_box_stage2').val($('#omNumber_box').val());
+
             },
             dataType: "json",
         });
 
     }
+    function saveOMAssignment_Stage2() {
+       
+        if ($('#paraNumber_box_stage2').val() == "") {
+            alert('Please enter Para Number');
+            return;
+        }
 
-    function gotoNextStage() {
-        $('#collapseOne').removeClass('show');
-        $('#collapseTwo').addClass('show');
+        $.ajax({
+            url: "/ApiCalls/CAU_OM_assignmentAIR",
+            type: "POST",
+            data: {
+                'ID': 0,
+                'PARA_NO': $('#paraNumber_box_stage2').val(),
+                'OM_NO': $('#omNumber_box_stage2').val(),
+                'CONTENTS_OF_OM': $('#template_box_stage2').html(),
+                'Key': $('#keyPasswordOMStage1').val()
+            },
+            cache: false,
+            success: function (data) {
+                alert("Record Saved Successfully");
+                $('#saveOMAssignmentStage2').attr('disabled', true);
+                $('#omNumber_box_stage3').val($('#omNumber_box_stage2').val());
+                $('#omNumber_box_stage3').val($('#omNumber_box_stage2').val());
+
+            },
+            dataType: "json",
+        });
+
+    }
+    function saveOMAssignment_Stage3() {
+
+
+        $.ajax({
+            url: "/ApiCalls/CAU_OM_assignmentPDP",
+            type: "POST",
+            data: {
+                'ID': 0,
+                'PARA_NO': $('#paraNumber_box_stage3').val(),
+                'REPORT_FREQUENCY': $('#reportFreq_box_stage3').val(),
+                'DAC_DATES': $('#dacDates_box_stage3').val(),
+                'OM_NO': $('#omNumber_box_stage3').val(),
+                'CONTENTS_OF_OM': $('#template_box_stage3').html()
+            },
+            cache: false,
+            success: function (data) {
+                alert("Record Saved Successfully");
+                $('#saveOMAssignmentStage3').attr('disabled', true);
+                $('#omNumber_box_stage4').val($('#omNumber_box_stage3').val());
+                $('#omNumber_box_stage4').val($('#omNumber_box_stage3').val());
+
+            },
+            dataType: "json",
+        });
+
+    }
+    function gotoNextStage(source, destination) {
+        $('#' + source).removeClass('show');
+        $('#' + destination).addClass('show');
+        
     }
 
 </script>
@@ -78,6 +161,7 @@
                     </div>
 
                     <div class="col-md-12 mt-3">
+                        <label class="font-weight-bold">OM Content</label>
                         <div class="page-wrapper box-content">
                             <textarea id="template_box" class="content" name="example"></textarea>
                         </div>
@@ -99,16 +183,22 @@
                             }
                         </select>
                     </div>
+                    <div class="col-md-12 mt-3 mb-4 d-none">
+
+                        <label class="font-weight-bold">Password Key</label>
+
+                        <input type="text" class="form-control" id="keyPasswordOMStage1" />
+                    </div>
 
 
                     <div class="row col-md-12 mt-3">
                         <div class="col-md-12 mt-3 mb-4">
-                            <button onclick="gotoNextStage(this);" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
-                            <button onclick="saveOMAssignment();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
+                            <button onclick="gotoNextStage('collapseOne','collapseTwo');" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
+                            <button id="saveOMAssignmentStage1" onclick="saveOMAssignment();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
 
                         </div>
 
-                    </div>                  
+                    </div>
 
                 </div>
             </div>
@@ -123,9 +213,28 @@
             </div>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    <label class="font-weight-bold">O.M/Para No.</label>
-                    <input id="omNumber_box_stage2" type="text" class="form-select form-control">
+                    <label class="font-weight-bold">O.M No.</label>
+                    <input disabled="disabled" id="omNumber_box_stage2" type="text" class="form-select form-control">
                 </div>
+                <div class="card-body">
+                    <label class="font-weight-bold">Para No.</label>
+                    <input id="paraNumber_box_stage2" type="text" class="form-select form-control">
+                </div>
+                <div class="col-md-12 mt-3">
+                    <label class="font-weight-bold">Para Content</label>
+                    <div class="page-wrapper box-content">
+                        <textarea id="template_box_stage2" class="content" name="example"></textarea>
+                    </div>
+                </div>
+                <div class="row col-md-12 mt-3">
+                    <div class="col-md-12 mt-3 mb-4">
+                        <button onclick="gotoNextStage('collapseTwo','collapseThree');" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
+                        <button id="saveOMAssignmentStage2" onclick="saveOMAssignment_Stage2();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
+
+                    </div>
+
+                </div>
+
             </div>
         </div>
         <div class="card">
@@ -137,20 +246,83 @@
                 </h5>
             </div>
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                <div class="card-body">
-                    Stage three
-                </div>
+                 <div class="card-body">
+                            <label class="font-weight-bold">O.M No.</label>
+                            <input disabled="disabled" id="omNumber_box_stage3" type="text" class="form-select form-control">
+                        </div>
+                        <div class="card-body">
+                            <label class="font-weight-bold">Para No.</label>
+                            <input disabled="disabled" id="paraNumber_box_stage3" type="text" class="form-select form-control">
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <label class="font-weight-bold">DAC Recommendation</label>
+                            <div class="page-wrapper box-content">
+                                <textarea id="template_box_stage3" class="content" name="example"></textarea>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <label class="font-weight-bold">Report Frequency</label>
+                            <input id="reportFreq_box_stage3" type="text" class="form-select form-control">
+                        </div>
+                        <div class="card-body">
+                            <label class="font-weight-bold">DAC Dates</label>
+                            <input id="dacDates_box_stage3" type="text" class="form-select form-control">
+                        </div>
+                        <div class="row col-md-12 mt-3">
+                            <div class="col-md-12 mt-3 mb-4">
+                                <button onclick="gotoNextStage('collapseThree','collapseFour');" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
+                                <button id="saveOMAssignmentStage2" onclick="saveOMAssignment_Stage3();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
+
+                            </div>
+
+                        </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-header" id="headingfour">
+            <div class="card-header" id="headingFour">
                 <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseThree">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        PDP STAGE 2
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+             
+                      
+                        <div class="card-body">
+                            <label class="font-weight-bold">Para No.</label>
+                            <input disabled="disabled" id="paraNumber_box_stage4" type="text" class="form-select form-control">
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <label class="font-weight-bold">PAC Directives</label>
+                            <div class="page-wrapper box-content">
+                                <textarea id="template_box_stage4" class="content" name="example"></textarea>
+                            </div>
+                        </div>
+                      
+                        <div class="card-body">
+                            <label class="font-weight-bold">PAC Dates</label>
+                            <input id="dacDates_box_stage3" type="text" class="form-select form-control">
+                        </div>
+                        <div class="row col-md-12 mt-3">
+                            <div class="col-md-12 mt-3 mb-4">
+                                <button onclick="gotoNextStage('collapseFour','collapseFive');" style="float:right; margin-left:20px;" class="btn btn-success col-md-2">Next</button>
+                                <button id="saveOMAssignmentStage2" onclick="saveOMAssignment_Stage4();" style="float:right; " class="btn btn-danger col-md-2">Save</button>
+
+                            </div>
+
+                        </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingfive">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseThree">
                         ARPSE STAGE
                     </button>
                 </h5>
             </div>
-            <div id="collapseFour" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+            <div id="collapseFive" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
                     Stage four
                 </div>

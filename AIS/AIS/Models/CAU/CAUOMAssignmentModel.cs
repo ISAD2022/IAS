@@ -12,5 +12,6 @@ namespace AIS.Models
         public int DIV_ID { get; set; }
         public int STATUS { get; set; }
         public string STATUS_DES { get; set; }
+        public string KEY { get; set; }
     }
 }
