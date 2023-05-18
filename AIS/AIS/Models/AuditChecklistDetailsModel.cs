@@ -19,5 +19,6 @@ namespace AIS.Models
         public int PROCESS_OWNER_ID { get; set; }
         public string PROCESS_OWNER { get; set; }
         public string STATUS { get; set; }
+        public string OB_STATUS { get; set; }
     }
 }

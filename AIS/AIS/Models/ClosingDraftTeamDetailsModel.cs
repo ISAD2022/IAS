@@ -7,8 +7,8 @@ namespace AIS.Models
     {        
       
         public int ENG_PLAN_ID { get; set; }      
-        public DateTime? JOINING_DATE { get; set; }
-        public DateTime? COMPLETION_DATE { get; set; }       
+        public string JOINING_DATE { get; set; }
+        public string COMPLETION_DATE { get; set; }       
         public string MEMBER_NAME { get; set; }
         public string ENTITY_NAME { get; set; }
         public int TEAM_MEM_PPNO { get; set; }

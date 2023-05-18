@@ -9,7 +9,7 @@ namespace AIS.Models
         public int ID { get; set; }
         public string OM_NO { get; set; }
         public int PARA_ID { get; set; }
-        public string DAC_DATES { get; set; }
+        public DateTime DAC_DATES { get; set; }
         public string REPORT_FREQUENCY { get; set; }
         public string CONTENTS_OF_OM { get; set; }        
         public int STATUS { get; set; }

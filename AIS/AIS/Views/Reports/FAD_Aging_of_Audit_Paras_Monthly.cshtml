@@ -18,6 +18,54 @@
     <div class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">FAD Aging of Audit Paras Monthly</h3>
     </div>
+
+    <div class="row col-md-12 mt-2">
+        <div style=" width:155px">
+            <label for="periodStartModalField"><b>Audit Period</b><span class="text-danger">*</span></label>
+        </div>
+        <div class=" col-md-5 mr-1">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Select Period--</option>
+            </select>
+        </div>
+
+        <div style=" width:135px">
+            <label for="periodEndModalField"><b>Para Type</b><span class="text-danger">*</span></label>
+        </div>
+        <div style=" width:545px">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Para Type--</option>
+            </select>
+        </div>
+    </div>
+    <div class="row col-md-12 mt-2">
+        <div style=" width:155px">
+            <label for="periodStartModalField"><b>Audit Zone</b><span class="text-danger">*</span></label>
+        </div>
+        <div class=" col-md-5 mr-1">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Select Audit Zone--</option>
+            </select>
+        </div>
+
+        <div style=" width:135px">
+            <label for="periodEndModalField"><b>Branch Name</b><span class="text-danger">*</span></label>
+        </div>
+        <div style=" width:545px">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Select Branch Name--</option>
+            </select>
+        </div>
+    </div>
+
+
+
+    <div class="row col-md-12 mt-1">
+        <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+
+    </div>
+
+
     <div class="row col-md-12 mt-3 mb-2">
 
         <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
@@ -34,12 +82,12 @@
                     <th class="col-md-auto">Operational Zone</th>
                     <th class="col-md-auto">Branch</th>
                     <th class="col-md-auto">Audit Period</th>
-                    <th class="col-md-auto">Paras At Begining Of The Month</th>
+                    <th class="col-md-auto">Paras(Begining Of The Month)</th>
                     <th class="col-md-auto">Paras Added During The Month</th>
                     <th class="col-md-auto">Total Paras For Settlement</th>
                     <th class="col-md-auto">Paras Settled During The Month</th>
                     <th class="col-md-auto">Percentage Of Settlement</th>
-                    <th class="col-md-auto">Balance At The End Of The Month</th>
+                    <th class="col-md-auto">Balance(End Of The Month)</th>
                     <th class="col-md-auto">Aging</th>
 
                 </tr>
@@ -69,4 +117,7 @@
         </table>
     </div>
 
+</div>
+<div class="col-md-12 offset-md-12 mt-4">
+    <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;">Download Report/Print</button>
 </div>

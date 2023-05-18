@@ -632,3 +632,11 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\ms
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.AIS.props
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.AIS.props
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\AuditeePortal\Para_Text_Update_FAD.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Aging_of_Audit_Paras_Monthly.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Audit_Plan.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Branch_Audit_Status.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Branch_Risk_Rating.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Compliance_Position_Fortnightly.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_DSA_Position_Fortnightly.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Gistwise_Details_Monthly.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Monthly_Review.cshtml.g.cs

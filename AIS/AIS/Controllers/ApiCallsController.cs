@@ -288,6 +288,11 @@ namespace AIS.Controllers
             return dBConnection.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
         }
         [HttpPost]
+        public bool add_observation_gist_and_recommendation(int OBS_ID = 0, string GIST_OF_PARA="", string AUDITOR_RECOMMENDATION="")
+        {
+            return dBConnection.AddObservationGistAndRecommendation(OBS_ID,GIST_OF_PARA,AUDITOR_RECOMMENDATION);
+        }
+        [HttpPost]
         public List<ManageObservations> get_observation_text_branches(int ENG_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservationTextForBranches(ENG_ID, OBS_ID);
@@ -384,15 +389,46 @@ namespace AIS.Controllers
             return dBConnection.GetCOSORiskForDepartment(PERIOD_ID);
         }
         [HttpPost]
-        public bool CAU_OM_assignment(CAUOMAssignmentModel caumodel)
+        public CAUOMAssignmentResponseModel CAU_OM_assignment(CAUOMAssignmentModel caumodel)
         {
-            return dBConnection.CAUOMAssignment(caumodel);
+            return dBConnection.CAUOMAssignment(caumodel);            
         }
         [HttpPost]
-        public bool CAU_OM_assignmentAIR(CAUOMAssignmentAIRModel caumodel)
+        public CAUOMAssignmentResponseModel CAU_OM_assignmentAIR(CAUOMAssignmentAIRModel caumodel)
         {
             return dBConnection.CAUOMAssignmentAIR(caumodel);
         }
+        [HttpPost]
+        public CAUOMAssignmentResponseModel CAU_OM_assignmentPDP(List<CAUOMAssignmentPDPModel> DAC_LIST)
+        {
+            CAUOMAssignmentResponseModel resp= new CAUOMAssignmentResponseModel();
+            foreach (CAUOMAssignmentPDPModel pdp in DAC_LIST)
+            {
+                resp=dBConnection.CAUOMAssignmentPDP(pdp);
+            }
+
+            return resp;
+            
+        }
+        [HttpPost]
+        public CAUOMAssignmentResponseModel CAU_OM_assignmentARPSE(List<CAUOMAssignmentARPSEModel> PAC_LIST)
+        {
+            CAUOMAssignmentResponseModel resp = new CAUOMAssignmentResponseModel();
+            foreach (CAUOMAssignmentARPSEModel pdp in PAC_LIST)
+            {
+                resp = dBConnection.CAUOMAssignmentARPSE(pdp);
+            }
+            return resp;
+        }
+
+        [HttpPost]
+        public CAUOMAssignmentModel CAU_get_Pre_Added_OM(string OM_NO, string INS_YEAR)
+        {
+           
+               return dBConnection.CAUGetPreAddedOM(OM_NO,INS_YEAR);
+            
+        }
+
         [HttpPost]
         public List<CAUOMAssignmentModel> CAU_Get_OMs()
         {
@@ -706,6 +742,12 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<AuditChecklistDetailsModel> get_obs_for_pre_concluding(int ENG_ID)
+        {
+            return dBConnection.GetEntityObservationDetails(ENG_ID);
+        }
+
+        [HttpPost]
         public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance()
         {
             return dBConnection.GetOldParasBranchCompliance();
@@ -845,6 +887,7 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasBranchComplianceTextupdate();
         }
 
+        
 
 
 

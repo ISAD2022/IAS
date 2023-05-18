@@ -93,6 +93,11 @@
             alert("Select Team to Proceed"); return false;
         }
 
+        var ops = $('#selectOPDateInputField').val().split('/')[2] + '-' + $('#selectOPDateInputField').val().split('/')[1] + '-' + $('#selectOPDateInputField').val().split('/')[0];
+        var ope = $('#selectOPEndDateInputField').val().split('/')[2] + '-' + $('#selectOPEndDateInputField').val().split('/')[1] + '-' + $('#selectOPEndDateInputField').val().split('/')[0];
+        var s = $('#selectDateInputField').val().split('/')[2] + '-' + $('#selectDateInputField').val().split('/')[1] + '-' + $('#selectDateInputField').val().split('/')[0];
+        var se = $('#selectEndDateInputField').val().split('/')[2] + '-' + $('#selectEndDateInputField').val().split('/')[1] + '-' + $('#selectEndDateInputField').val().split('/')[0];
+
         $.ajax({
             url: "/ApiCalls/rerecommend_engagement_plan",
                 type: "POST",
@@ -101,10 +106,10 @@
                     'PLAN_ID': g_planId,
                     'ENTITY_ID': g_entityId,
                     'COMMENTS': $('#commentsAreaEnteredBox').val(),
-                    'OP_START_DATE': $('#selectOPDateInputField').val(),
-                    'OP_END_DATE': $('#selectOPEndDateInputField').val(),
-                    'START_DATE': $('#selectDateInputField').val(),
-                    'END_DATE': $('#selectEndDateInputField').val(),
+                    'OP_START_DATE': ops,
+                    'OP_END_DATE': ope,
+                    'START_DATE': s,
+                    'END_DATE': se,
                     'TEAM_ID': $('#teamSelectionBox').val(),
                 },
                 cache: false,

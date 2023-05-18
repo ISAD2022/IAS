@@ -14,10 +14,41 @@
 
     });
 </script>
-<div>
+
     <div class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">FAD Branch Audit Status</h3>
     </div>
+
+    <div class="row col-md-12 mt-2">
+        <div style=" width:155px">
+            <label for="periodStartModalField"><b>Audit Zone</b><span class="text-danger">*</span></label>
+        </div>
+        <div class=" col-md-5 mr-1">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Select Audit Zone--</option>
+            </select>
+        </div>
+
+        <div style=" width:135px">
+            <label for="periodEndModalField"><b>Branch Name</b><span class="text-danger">*</span></label>
+        </div>
+        <div style=" width:545px">
+            <select id="entitySelectField" onchange="" class="form-control form-select">
+                <option value="0" id="0">--Select Branch Name--</option>
+            </select>
+        </div>
+    </div>
+
+
+
+    <div class="row col-md-12 mt-1">
+        <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+
+    </div>
+
+
+
+
     <div class="row col-md-12 mt-3 mb-2">
 
         <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
@@ -30,14 +61,14 @@
                 <tr>
                     <th class="col-md-auto" rowspan="2">Sr. No</th>
                     <th class="col-md-auto" rowspan="2">Audit Zone</th>
-                
+
 
                     <th class="col-md-auto" rowspan="2">Operational Zone</th>
 
                     <th class="col-md-auto" rowspan="2">Branch Name</th>
                     <th class="col-md-auto" colspan="4">Audit Status</th>
-                 
-                  
+
+
 
 
 
@@ -51,10 +82,10 @@
                 </tr>
             </thead>
             <tbody>
-       
             </tbody>
 
         </table>
     </div>
-
-</div>
+    <div class="col-md-12 offset-md-12 mt-4">
+        <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;">Download Report/Print</button>
+    </div>

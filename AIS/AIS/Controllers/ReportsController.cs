@@ -89,31 +89,7 @@ namespace AIS.Controllers
             }
         }
 
-        ////////////////////////////////////////////////////////////////
-        
-                 public IActionResult FAD_Audit_Plan()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
-
-        ////////////////////////////////////////////////////////////////
-        
-
+     
       public IActionResult FAD_DSA_Position_Fortnightly()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -137,7 +113,28 @@ namespace AIS.Controllers
 
         
 
- public IActionResult FAD_Compliance_Position_Fortnightly()
+ public IActionResult FAD_Compliance_Pos_Fortnightly_FAD_Level()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
+
+        public IActionResult FAD_Compliance_Pos_Fortnightly_Zone_Level()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -158,9 +155,9 @@ namespace AIS.Controllers
 
 
         ///////////////////////////////////////////////////////////////////
-        
 
-             public IActionResult FAD_Branch_Risk_Rating()
+
+        public IActionResult FAD_Branch_Risk_Rating()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -514,6 +511,28 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult FAD_Audit_Plan()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["auditplanreport"] = dBConnection.getauditplanreport();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
 
 
 
