@@ -288,9 +288,11 @@ namespace AIS.Controllers
             return dBConnection.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
         }
         [HttpPost]
-        public bool add_observation_gist_and_recommendation(int OBS_ID = 0, string GIST_OF_PARA="", string AUDITOR_RECOMMENDATION="")
+        public string add_observation_gist_and_recommendation(int OBS_ID = 0, string GIST_OF_PARA="", string AUDITOR_RECOMMENDATION="")
         {
-            return dBConnection.AddObservationGistAndRecommendation(OBS_ID,GIST_OF_PARA,AUDITOR_RECOMMENDATION);
+            string response = "";
+            response = dBConnection.AddObservationGistAndRecommendation(OBS_ID, GIST_OF_PARA, AUDITOR_RECOMMENDATION);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";            
         }
         [HttpPost]
         public List<ManageObservations> get_observation_text_branches(int ENG_ID = 0, int OBS_ID = 0)

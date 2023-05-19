@@ -29,6 +29,8 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["InsYearList"] = dBConnection.GetInsYearsForCAU();
+            ViewData["ParaPrintingYearList"] = dBConnection.GetParaPrintingYearsForCAU();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

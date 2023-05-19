@@ -75,6 +75,7 @@
                 'ID': 0,
                 'DIV_ID': $('#division_box').val(),
                 'OM_NO': $('#omNumber_box').val(),
+                'INS_YEAR': $('#inspectionYear_box').val(),
                 'CONTENTS_OF_OM': $('#template_box').val(),
                 'OM_REPLY': $('#template_box_reply').val(),
                 'STATUS': 1
@@ -158,9 +159,10 @@
         $.each($('#listofPACattached tbody tr'), function (i, v) {
             dacP.push({
                 'PARA_ID': g_paraID,
-                'STATUS': $(v).find('td').eq(3).html(),
-                'PAC_DATES': $(v).find('td').eq(1).html(),
-                'CONTENTS_OF_OM': $(v).find('td').eq(2).html()
+                'STATUS': $(v).find('td').eq(4).html(),
+                'PAC_DATES': $(v).find('td').eq(1).html(),             
+                'PRINTING_DATE': $(v).find('td').eq(2).attr('periodId'),
+                'CONTENTS_OF_OM': $(v).find('td').eq(3).html()
             });
         });
 
@@ -207,9 +209,8 @@
     }
     function addPACAssignmentRecordtoGrid() {
         var row = $('#listofPACattached tbody tr').length == 0 ? 1 : $('#listofPACattached tbody tr').length + 1;
-        $('#listofPACattached tbody').append('<tr><td>' + row + '</td><td>' + $('#dacDates_box_stage4Model').val() + '</td><td>' + $('#template_box_stage4Model').val() + '</td><td>' + $('#reportFreq_box_stage4Model option:selected').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+        $('#listofPACattached tbody').append('<tr><td>' + row + '</td><td>' + $('#dacDates_box_stage4Model').val() + '</td><td periodId="' + $('#printingDates_box_stage4Model').val() + '">' + $('#printingDates_box_stage4Model option:selected').text() + '</td><td>' + $('#template_box_stage4Model').val() + '</td><td>' + $('#reportFreq_box_stage4Model option:selected').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
     }
-
     function getPreAddedOM(){
         if ($('#omNumber_box').val() == "" && $('#inspectionYear_box').val() == "")
         {
@@ -279,14 +280,23 @@
                         <div class="col-md-5 mt-3">
 
                             <label class="font-weight-bold">Inspection Year</label>
-                            <input id="inspectionYear_box" type="text" class="form-select form-control">
-
+                            <select id="inspectionYear_box" class="form-select form-control">
+                            <option value="0" id="0" selected>--Select Inspection Year--</option>
+                            @{
+                                if (ViewData["InsYearList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["InsYearList"]))
+                                    {
+                                        <option value="@item.AUDITPERIODID" id="@item.AUDITPERIODID">@item.DESCRIPTION</option>
+                                    }
+                                }
+                            }
+                            </select>
                         </div>
+                      
                         <div class="col-md-2 mt-3">
                            <button onclick="getPreAddedOM();" style="margin-top:16%;" class="btn w-100 btn-danger">Search OM</button>
                         </div>
-
-
                     </div>
                    
                     <div class="col-md-12 mt-3">
@@ -436,6 +446,7 @@
                                 <tr>
                                     <th class="col-md- auto font-weight-bold">Sr.No</th>
                                     <th class="col-md- auto font-weight-bold">PAC Date</th>
+                                    <th class="col-md- auto font-weight-bold">Para Printing Date</th>
                                     <th class="col-md- auto font-weight-bold">PAC Recommendation</th>
                                     <th class="col-md- auto font-weight-bold">Status</th>                                    
                                     <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openPACAssignments();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
@@ -528,6 +539,21 @@
                     <div class="form-group">
                         <label class="font-weight-bold">PAC Dates</label>
                         <input id="dacDates_box_stage4Model" type="date" class="form-select form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Para Printing Date</label>
+                        <select id="printingDates_box_stage4Model" class="form-select form-control">
+                            <option value="0" id="0" selected>--Select Para Printing Year--</option>
+                            @{
+                                if (ViewData["ParaPrintingYearList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["ParaPrintingYearList"]))
+                                    {
+                                        <option value="@item.AUDITPERIODID" id="@item.AUDITPERIODID">@item.DESCRIPTION</option>
+                                    }
+                                }
+                            }
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="font-weight-bold">PAC Recommendation</label>

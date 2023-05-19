@@ -552,6 +552,52 @@ namespace AIS
             con.Close();
             return periodList;
         }
+        public List<AuditPeriodModel> GetInsYearsForCAU(int dept_code = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_cm.p_CAU_OM_YEAR";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPeriodModel period = new AuditPeriodModel();
+                    period.AUDITPERIODID = Convert.ToInt32(rdr["auditperiodid"]);
+                    period.DESCRIPTION = rdr["period"].ToString();
+                    periodList.Add(period);
+                }
+            }
+            con.Close();
+            return periodList;
+        }
+        public List<AuditPeriodModel> GetParaPrintingYearsForCAU(int dept_code = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_cm.p_CAU_ARPSE_YEAR";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPeriodModel period = new AuditPeriodModel();
+                    period.AUDITPERIODID = Convert.ToInt32(rdr["auditperiodid"]);
+                    period.DESCRIPTION = rdr["period"].ToString();
+                    periodList.Add(period);
+                }
+            }
+            con.Close();
+            return periodList;
+        }
 
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
@@ -4938,6 +4984,7 @@ namespace AIS
                 cmd.Parameters.Add("DIV_ID", OracleDbType.Int32).Value = om.DIV_ID;
                 cmd.Parameters.Add("key_id", OracleDbType.Varchar2).Value = CAU_KEY;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("insp_year", OracleDbType.Int32).Value = om.INS_YEAR;
 
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -5087,7 +5134,8 @@ namespace AIS
                 cmd.Parameters.Add("Para_id", OracleDbType.Varchar2).Value = om.PARA_ID;
                 cmd.Parameters.Add("PAC_DIRECTIVE", OracleDbType.Clob).Value = encodedMsg;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = om.STATUS;                
+                cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = om.STATUS;
+                cmd.Parameters.Add("aprse_year", OracleDbType.Int32).Value = om.PRINTING_DATE;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr2 = cmd.ExecuteReader();
@@ -7521,8 +7569,9 @@ namespace AIS
             return list;
         }
 
-        public bool AddObservationGistAndRecommendation(int OBS_ID = 0, string GIST_OF_PARA = "", string AUDITOR_RECOMMENDATION = "")
+        public string AddObservationGistAndRecommendation(int OBS_ID = 0, string GIST_OF_PARA = "", string AUDITOR_RECOMMENDATION = "")
         {
+            string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -7534,16 +7583,52 @@ namespace AIS
 
                 string _sql = "pkg_hd.P_audit_pre_Concluding";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add("obsid", OracleDbType.Int32).Value = "112312";
-                cmd.Parameters.Add("gist", OracleDbType.Int32).Value = "112696";
-                cmd.Parameters.Add("recom", OracleDbType.Int32).Value = "112928";
-                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = "2";
+                cmd.Parameters.Add("obsid", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("gist", OracleDbType.Varchar2).Value = GIST_OF_PARA;
+                cmd.Parameters.Add("recom", OracleDbType.Varchar2).Value = AUDITOR_RECOMMENDATION;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                    
+                }
+            }
+            con.Close();
+            return resp;
+        }
+
+        public List<AuditPlanReportModel> getauditplanreport()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                string _sql = "pkg_rpt.r_eng_plan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = "112312";
+                cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = "112696";
+                cmd.Parameters.Add("azone", OracleDbType.Int32).Value = "112928";
+                cmd.Parameters.Add("risk_rating", OracleDbType.Int32).Value = "2";
+                cmd.Parameters.Add("branch_size", OracleDbType.Int32).Value = "3";
+
+
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     AuditPlanReportModel plan = new AuditPlanReportModel();
+
+
+
                     plan.AUDITEDBY = rdr["AUDITEDBY"].ToString();
                     plan.PARRENTOFFICE = rdr["PARRENTOFFICE"].ToString();
                     plan.AUDITEENAME = rdr["AUDITEENAME"].ToString();
@@ -7578,6 +7663,7 @@ namespace AIS
             con.Close();
             return planList;
         }
+
 
 
 

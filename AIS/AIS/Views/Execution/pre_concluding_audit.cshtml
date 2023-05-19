@@ -29,6 +29,13 @@
                     sr++;
                 });
 
+                setTimeout(function () {
+                    if (g_observationId != 0) {
+                        var rowpos = $('#checklistDetailsPanel tbody tr#obs_' + g_observationId).position();
+                        $('html').scrollTop(rowpos.top);
+                    }
+                }, 200)
+
             },
             dataType: "json",
         });
@@ -91,26 +98,16 @@
             url: "/ApiCalls/add_observation_gist_and_recommendation",
             type: "POST",
             data: {
-                'OBS_ID': obs_id
+                'OBS_ID': g_observationId,
+                'AUDITOR_RECOMMENDATION': $('#audRecommend_response_ObSent').val(),
+                'GIST_OF_PARA': $('#gistPara_response_ObSent').val()
+
             },
             cache: false,
             success: function (data) {
 
-                $('#viewMemoModel_ObSent').modal('show');
-                $('#viewMemo_memo_ObSent').html(data[0].obS_TEXT);
-                $('#viewMemo_response_ObSent').html(data[0].obS_REPLY);
-
-                $('#viewMemo_process_ObSent').html(data[0].process);
-                $('#viewMemo_subprocess_ObSent').html(data[0].suB_PROCESS);
-                $('#viewMemo_violation_ObSent').html(data[0].checklist_Details);
-                $('#listofRespPersons_ObSent tbody').empty();
-                if (data[0].responsiblE_PPs.length > 0) {
-                    $.each(data[0].responsiblE_PPs, function (j, pp) {
-                        var srNo = $('#listofRespPersons_ObSent tbody tr').length;
-                        srNo++;
-                        $('#listofRespPersons_ObSent tbody').append('<tr id="tr__ObSent_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                    });
-                }
+                alert(data.Message);
+                onAlertCallback(getEntityObservations);
             },
             dataType: "json",
         });

@@ -640,3 +640,6 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Report
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_DSA_Position_Fortnightly.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Gistwise_Details_Monthly.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Monthly_Review.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execution\pre_concluding_audit.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Compliance_Pos_Fortnightly_FAD_Level.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Compliance_Pos_Fortnightly_Zone_Level.cshtml.g.cs
