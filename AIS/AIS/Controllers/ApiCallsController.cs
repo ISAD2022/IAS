@@ -889,7 +889,50 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasBranchComplianceTextupdate();
         }
 
-        
+        [HttpPost]
+        public List<AuditeeAddressModel> get_address(int ENT_ID)
+        {
+            return dBConnection.GetAddress(ENT_ID);
+
+        }
+
+
+
+
+        [HttpPost]
+        public List<GetTeamDetailsModel> GetTeamDetails(int ENG_ID)
+        {
+            return dBConnection.GetTeamDetails(ENG_ID);
+        }
+
+
+
+
+        [HttpPost]
+        public List<GetAuditeeParasModel> get_report_status(int ENG_ID)
+        {
+            return dBConnection.GetAuditeReportStatus(ENG_ID);
+        }
+
+
+
+        [HttpPost]
+        public object close_draft_audit(int ENG_ID)
+        {
+            string response = "";
+            response = dBConnection.CloseDraftAuditReport(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+
+        [HttpPost]
+        public List<GetFinalReportModel> get_report_paras(int ENG_ID)
+        {
+            return dBConnection.GetAuditeeParas(ENG_ID);
+        }
+
+
+
 
 
 

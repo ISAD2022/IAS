@@ -7665,6 +7665,268 @@ namespace AIS
         }
 
 
+        public List<AuditeeAddressModel> GetAddress(int ENT_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.r_getauditeeaddress";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EngId", OracleDbType.Int32).Value = ENT_ID;
+                cmd.Parameters.Add("ppnum", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeAddressModel chk = new AuditeeAddressModel();
+                    chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"]);
+                    chk.CODE = Convert.ToInt32(rdr["CODE"]);
+
+
+                    chk.P_NAME = rdr["P_NAME"].ToString();
+                    chk.ADDRESS = rdr["ADDRESS"].ToString();
+                    chk.NAME = rdr["NAME"].ToString();
+                    chk.LICENSE = rdr["LICENSE"].ToString();
+                    if (rdr["DATE_OF_OPENING"].ToString() != null && rdr["DATE_OF_OPENING"].ToString() != "")
+
+                        chk.DATE_OF_OPENING = Convert.ToDateTime(rdr["DATE_OF_OPENING"].ToString()).ToString("dd/MM/yyyy");
+                    if (rdr["AUDIT_STARTDATE"].ToString() != null && rdr["AUDIT_STARTDATE"].ToString() != "")
+                        chk.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"].ToString()).ToString("dd/MM/yyyy");
+                    if (rdr["AUDIT_ENDDATE"].ToString() != null && rdr["AUDIT_ENDDATE"].ToString() != "")
+                        chk.AUDIT_ENDDATE = Convert.ToDateTime(rdr["AUDIT_ENDDATE"].ToString()).ToString("dd/MM/yyyy");
+                    if (rdr["OPERATION_STARTDATE"].ToString() != null && rdr["OPERATION_STARTDATE"].ToString() != "")
+                        chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"].ToString()).ToString("dd/MM/yyyy");
+                    if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
+
+                        chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"].ToString()).ToString("dd/MM/yyyy");
+
+
+
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<ParaTextModel> GetReportParas(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ParaTextModel> list = new List<ParaTextModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.r_getauditeeParas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ParaTextModel chk = new ParaTextModel();
+                    chk.MEMO_NO = Convert.ToInt32(rdr["memo_number"]);
+
+                    chk.MEMO_TXT = rdr["text"].ToString();
+
+                    list.Add(chk);
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+        public List<GetAuditeeParasModel> GetAuditeReportStatus(int eng_id)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<GetAuditeeParasModel> list = new List<GetAuditeeParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.r_getauditeeparas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("engid", OracleDbType.Int32).Value = eng_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetAuditeeParasModel chk = new GetAuditeeParasModel();
+
+                    chk.MESSAGE = rdr["MESSAGE"].ToString();
+                    chk.REF_OUT = rdr["REF_OUT"].ToString();
+
+
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+        public List<AuditConcludingEntitiesModel> GetAuditConcludingEntities()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditConcludingEntitiesModel> list = new List<AuditConcludingEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.p_get_audit_concluding_entities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditConcludingEntitiesModel chk = new AuditConcludingEntitiesModel();
+
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+
+                    chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"].ToString());
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+        public List<GetTeamDetailsModel> GetTeamDetails(int eng_id)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetTeamDetailsModel> list = new List<GetTeamDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_getauditteams";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = eng_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetTeamDetailsModel chk = new GetTeamDetailsModel();
+
+                    chk.TEAM_NAME = rdr["TEAM_NAME"].ToString();
+
+                    chk.MEMBER_PPNO = rdr["MEMBER_PPNO"].ToString();
+                    chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    chk.ISTEAMLEAD = rdr["ISTEAMLEAD"].ToString();
+
+                    chk.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"].ToString()).ToString("dd/MM/yyyy");
+                    chk.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"].ToString()).ToString("dd/MM/yyyy");
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+        public List<GetFinalReportModel> GetAuditeeParas(int eng_id)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetFinalReportModel> list = new List<GetFinalReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.r_getauditeeparas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("engid", OracleDbType.Int32).Value = 1198;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetFinalReportModel chk = new GetFinalReportModel();
+
+
+                    chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    //chk.STATUS = rdr["STATUS"].ToString();
+                    chk.V_HEADER = rdr["V_HEADER"].ToString();
+                    chk.V_DETAIL = rdr["V_DETAIL"].ToString();
+                    chk.RISK = rdr["RISK"].ToString();
+                    chk.OBSERVATION = rdr["OBSERVATION"].ToString();
+                    chk.MANAGEMENT_REPLY = rdr["MANAGEMENT_REPLY"].ToString();
+                    chk.RECOMMENDATION = rdr["RECOMMENDATION"].ToString();
+                    // chk.REMARKS = rdr["REMARKS"].ToString();
+                    chk.ASSIGNEDTO = rdr["ASSIGNEDTO"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.REF_OUT = rdr["REF_OUT"].ToString();
+                    chk.MESSAGE = rdr["MESSAGE"].ToString();
+
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+        public string CloseDraftAuditReport(int ENG_ID)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            if (ENG_ID == 0)
+                ENG_ID = this.GetLoggedInUserEngId();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_audit_concluding";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                // cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+                }
+            }
+            con.Close();
+            return resp;
+        }
+
+
 
 
 
