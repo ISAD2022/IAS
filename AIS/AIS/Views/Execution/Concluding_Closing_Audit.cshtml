@@ -12,7 +12,9 @@
     var g_type_id = 0;
     $(document).ready(function () {
         $('#reportheading1').empty;
-        $('#reportheading2').empty;     
+        $('#reportheading2').empty;
+
+      
 
       
     });
@@ -27,9 +29,7 @@
         $('#auditorWiseProgessTable tbody').empty();
         $('#joiningAuditorDetailsTable tbody').empty();
         //getParas();
-        var eng_id = $('#entitySelectField').val();
-        g_engId=eng_id;
-
+        g_engId = $('#entitySelectField').val();
         g_type_id = $('#entitySelectField option:selected').attr("ent_type_id");
         $('#conoffice').empty();
         $('#EntN').empty();
@@ -42,13 +42,13 @@
             url: "/ApiCalls/get_address",
             type: "POST",
             data: {
-                'ENT_ID': eng_id
+                'ENT_ID': g_engId
             },
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
                     console.log(v);
-                    //  g_teamMembers.push(v.teaM_MEM_PPNO);
+                    g_teamMembers.push(v.teaM_MEM_PPNO);
                     // $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
                     $('#conoffice').html(v.p_NAME);
                     $('#EntN').html(v.name);
@@ -68,17 +68,19 @@
         });
 
           $.ajax({
-            url: "/ApiCalls/get_team_details",
+              url: "/ApiCalls/GetTeamDetails",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
             },
             cache: false,
-            success: function (data) {
+              success: function (data) {
+
+                  console.log(data);
                 $.each(data, function (i, v) {
                     g_teamMembers.push(v.teaM_MEM_PPNO);
-                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + v.completioN_DATE.split('T')[0] + '</td></tr>');
-                  
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.membeR_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.audiT_START_DATE + '</td><td class="text-center" style="font-size:xx-small">' + v.audiT_END_DATE + '</td></tr>');
+                 // 
                 });
 
              
@@ -89,30 +91,12 @@
             dataType: "json",
         });
 
-        $.ajax({
-            url: "/ApiCalls/closing_draft_report_status",
-            type: "POST",
-            data: {
-                
-            },
-            cache: false,
-            success: function (data) {
-            
-                $.each(data, function (i, v) {
-              
-            
-                        
-                    $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small" >' + v.isteamlead + '</td><td class="text-center" style="font-size:xx-small">' + v.totaL_NO_OB + '</td><td class="text-center" style="font-size:xx-small">' + v.submitteD_TO_AUDITEE + '</td><td class="text-center" style="font-size:xx-small">' + v.responded + '</td><td class="text-center" style="font-size:xx-small">' + v.resolved + '</td><td class="text-center" style="font-size:xx-small">' + v.addeD_TO_DRAFT + '</td></tr>')
-                });
-
-            },
-            dataType: "json",
-        });
+  
   
     }
 
     function auditeereport() {
-        var eng_id = $('#entitySelectField').val();
+        g_engId = $('#entitySelectField').val();
 
         $('#conoffice').html();
         $('#EntN').html();
@@ -122,17 +106,56 @@
         $('#o_s_d').html();
         $('#o_e_d').html();
 
+       // if (g_type_id == 6)
+            window.location.href = '/Execution/auditee_observations_report?engid=' + g_engId + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+      //  else
+       //     window.location.href = '/Execution/auditee_observations_report_cau?engid=' + g_engId + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
 
-        if (eng_id == 0)
-            alert("Audit Entity Not Selected");
-        else {
-            if (g_type_id == 6)
-                window.location.href = '/Execution/auditee_observations_report?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
-            else
-                window.location.href = '/Execution/auditee_observations_report_cau?engid=' + eng_id + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
 
-        }
+       
             
+
+    }
+
+    function getreportstatus()
+    {
+        $.ajax({
+            url: "/ApiCalls/get_report_status",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId
+            },
+            cache: false,
+            success: function (data) {
+                if (data[0].reF_OUT == "0") {
+                 //   auditeereport();
+                   // onAlertCallback(auditeereport);
+                   if (g_engId == 0)
+                        alert("Audit Entity Not Selected");
+
+                  
+                    else {
+                    alert(data[0].message);
+                    return;
+                }
+                }
+                else {
+                    if (g_engId == 0)
+                        alert("Audit Entity Not Selected");
+
+                    else {
+                        alert(data[0].message);
+                        onAlertCallback(auditeereport);
+                        //auditeereport();
+                    }
+
+
+                }
+
+
+            },
+            dataType: "json",
+        });
 
     }
 
@@ -149,7 +172,7 @@
             cache: false,
             success: function (data) {
                 alert(data.Message);
-              //  onAlertCallback(reloadLocationToUrl);
+            
             },
             dataType: "json",
         });
@@ -172,7 +195,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
-                        <option value="@item.ENG_ID" ent_type_id="@item.TYPE_ID">@item.NAME</option>
+                        <option value="@item.ENG_ID" ent_type_id="@item.TYPE_ID">@item.ENTITY_NAME</option>
                     }
                 }
             }
@@ -284,7 +307,7 @@
     <button onclick="closeDraftAudit();" class="col-md-3 mr-5 btn btn-danger float-right d-none">Generate Risk Rating</button>
     <button onclick="window.location.href='/Execution/auditee_position_outlook';" class="col-md-2 mr-5 d-none  btn btn-success float-right">Auditee position/Outlook</button>
     
-    <button onclick="auditeereport();" class="col-md-3 mr-5  btn btn-success float-right"> Auditee observations report</button>
+    <button onclick="getreportstatus();" class="col-md-3 mr-5  btn btn-success float-right"> Auditee observations report</button>
         <button onclick="closeDraftAudit();" class="col-md-3 btn btn-danger float-right"> Close Audit</button>
 
 </div>

@@ -1,11 +1,14 @@
 ﻿
 @{
-    ViewData["Title"] = "Auditee_Observations_Report";
+    ViewData["Title"] = "Auditee_Observations_Report_cau";
     Layout = "_Layout";
 }
 
 
 
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 
 
 <script type="text/javascript">
@@ -32,170 +35,48 @@
 
         $('.conOffice').html(g_conoffice);
         $('.entNameField').html(g_entName);
-        $('#startField').html(g_startDate);
-        $('#endField').html(g_endDate);
-        $('#ostartField').html(g_ostartDate);
-        $('#oendField').html(g_oendDate);
-               
-
-        $("#printPreview_btn").printPreview({
-            obj2print: '#mainRPTPanel'
-        });
+        $('.startField').html(g_startDate);
+        $('.endField').html(g_endDate);
+        $('.ostartField').html(g_ostartDate);
+        $('.oendField').html(g_oendDate);
+        
     });
 
     function CreatePDFfromHTML() {
+        $('#wait').show()
+        var HTML_Width = $(".WordSection1").width();
+        var HTML_Height = $(".WordSection1").height();
+        var top_left_margin = 15;
+        var PDF_Width = HTML_Width + (top_left_margin * 2);
+        var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+        var canvas_image_width = HTML_Width;
+        var canvas_image_height = HTML_Height;
 
-        $("#printPreview_btn").printPreview({
-            obj2print: '#mainRPTPanel'
+        var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+        html2canvas($(".WordSection1")[0]).then(function (canvas) {
+            var imgData = canvas.toDataURL("image/jpeg", 1.0);
+            var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+            pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+            for (var i = 1; i <= totalPDFPages; i++) {
+                pdf.addPage(PDF_Width, PDF_Height);
+                pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+            }
+            pdf.save("branchReport.pdf");
+            $('#wait').hide()
+        
         });
-
-        //$('#wait').show()
-        //var HTML_Width = $(".WordSection1").width();
-        //var HTML_Height = $(".WordSection1").height();
-        //var top_left_margin = 15;
-        //var PDF_Width = HTML_Width + (top_left_margin * 2);
-        //var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
-        //var canvas_image_width = HTML_Width;
-        //var canvas_image_height = HTML_Height;
-
-        //var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
-
-        //html2canvas($(".WordSection1")[0]).then(function (canvas) {
-        //    var imgData = canvas.toDataURL("image/jpeg", 1.0);
-        //    var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
-        //    pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
-        //    for (var i = 1; i <= totalPDFPages; i++) {
-        //        pdf.addPage(PDF_Width, PDF_Height);
-        //        pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
-        //    }
-        //    pdf.save("branchReport.pdf");
-        //    $('#wait').hide()
-        //  //  $(".WordSection1").hide();
-        //});
     }
+    function generateParaFormat(v) {
 
-    /* $('#reportheading1').empty;
-     $('#reportheading2').empty;
+        return '<div class="row col-md-12" style="font-family:Times New Roman"><div style="width:1000px; font-size:28.0pt"><b><u>Para No. ' + v.parA_NO + ' (Memo No: ' + v.memO_NUMBER + '):</u></b></div><br><br><div class="col-md-12" style="text-align:justify; font-family:Times New Roman; ; margin-left:-15px; font-size:23.0pt"><u style="font-weight: bold">' + v.v_HEADER + '</u></div></div><br><b style="font-family:Times New Roman; font-size:23.0pt">Violation:</b><br><p style="font-family:Times New Roman; font-size:23.0pt">' + v.v_DETAIL + '</p><b style="font-family:Times New Roman; font-size:23.0pt">Risk Category:</b><br /><div style="font-family:Times New Roman; font-size:23.0pt">' + v.risk + ' </div><br><b style="font-family:Times New Roman; font-size:23.0pt">FINDINGS:</b><br /><br><div class="col-md-12; py-0" style="text-align:justify;font-family:Times New Roman; font-size:23.0pt">' + v.observation + '</div><br><b style="font-family:Times New Roman; font-size:23.0pt">Management Reply:</b><div style="width:1350px; text-align:start; font-family:Times New Roman; font-size:23.0pt">' + v.managemenT_REPLY + '</div><b style="font-family:Times New Roman; font-size:23.0pt">Recomendation:</b><br><div class="col-md-12; py-0" style="font-family:Times New Roman; font-size:23.0pt">' + v.recommendation + '</div><div class="col-md-12; py-0" style="font-family:Times New Roman ; font-size:23.0pt"><b>Status:</b></div><div class="col-md-12; py-0" style="font-family:Times New Roman; font-size:23.0pt" ><b>Un-settled</b><br><br></div><div class="col-md-12"><hr style="border:solid; background-color:gainsboro"   /></div><br />';
 
-     var url_string = window.location;
-     var url = new URL(url_string);
-     var eng_id =
-     if (typeof eng_id != 'undefined')
-         g_engId = eng_id;
-
-     $.ajax({
-         url: "/ApiCalls/get_team_details",
-         type: "POST",
-         data: {
-             'ENG_ID': g_engId
-         },
-         cache: false,
-         success: function (data) {
-             $.each(data, function (i, v) {
-                 g_teamMembers.push(v.teaM_MEM_PPNO);
-                 $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
-                 // $('#conoffice').html(v.teaM_MEM_PPNO);
-             });
-
-             $.ajax({
-                 url: "/ApiCalls/closing_draft_report_status",
-                 type: "POST",
-                 data: {
-                     'ENG_ID': g_engId
-                 },
-                 cache: false,
-                 success: function (data) {
-                     g_obsList = data;
-                     // g_engId = g_obsList[0].engplanid;
-                     $.each(g_teamMembers, function (i, v) {
-                         var totalObs = 0;
-                         var sendToAuditee = 0;
-                         var noresByAuditee = 0;
-                         var settled = 0;
-                         var addToDraft = 0;
-                         var teamLead = 'N';
-                         $.each(g_obsList, function (k, ob) {
-                             if (ob.enteredby == v) {
-                                 totalObs++;
-                                 sendToAuditee++;
-                                 if (ob.status == 4)
-                                     settled++;
-                                 if (ob.status == 5)
-                                     addToDraft++;
-                                 if (ob.status == 2)
-                                     noresByAuditee++;
-                                 if (ob.teaM_LEAD == 'Y')
-                                     teamLead = 'Y';
-                             }
-
-                         });
-                         $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v + '</td><td class="text-center" style="font-size:xx-small" >' + teamLead + '</td><td class="text-center" style="font-size:xx-small">' + totalObs + '</td><td class="text-center" style="font-size:xx-small">' + sendToAuditee + '</td><td class="text-center" style="font-size:xx-small">' + (totalObs - noresByAuditee) + '</td><td class="text-center" style="font-size:xx-small">' + settled + '</td><td class="text-center" style="font-size:xx-small">' + addToDraft + '</td></tr>')
-                     });
-
-                 },
-                 dataType: "json",
-             });
-
-
-
-         },
-         dataType: "json",
-     });
- });
- function reloadLocationToUrl() {
-     window.location.href = "/Engagement/task_list"
- }
-
-
-
- function getaddress() {
-
-     //getParas();
-     var eng_id = $('#entitySelectField').val();
-
-     $('#conoffice').empty();
-     $('#EntN').empty();
-     $('#ADD').empty();
-     $('#a_s_d').empty();
-     $('#a_e_d').empty();
-     $('#o_s_d').empty();
-     $('#o_e_d').empty();
-     $.ajax({
-         url: "/ApiCalls/get_address",
-         type: "POST",
-         data: {
-             'ENT_ID': eng_id
-         },
-         cache: false,
-         success: function (data) {
-             $.each(data, function (i, v) {
-                 console.log(v);
-                 //  g_teamMembers.push(v.teaM_MEM_PPNO);
-                 // $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
-                 $('#conoffice').html(v.p_NAME);
-                 $('#EntN').html(v.name);
-                 $('#ADD').html(v.address);
-                 $('#a_s_d').html(v.audiT_STARTDATE.split('T')[0]);
-                 $('#a_e_d').html(v.audiT_ENDDATE.split('T')[0]);
-                 $('#o_s_d').html(v.operatioN_STARTDATE.split('T')[0]);
-                 $('#o_e_d').html(v.operatioN_ENDDATE.split('T')[0]);
-
-
-
-             });
-
-
-         },
-         dataType: "json",
-     });
-     getParas();
- }
- */
+    }
+    
     function getParas() {
 
-        //  var eng_id = $('#entitySelectField').val();
 
-        $('#conoffice').empty();
+        $('.conOffice').empty();
 
         $.ajax({
             url: "/ApiCalls/get_report_paras",
@@ -205,12 +86,20 @@
             },
             cache: false,
             success: function (data) {
+                console.log(data);
+
+                $('.conOffice').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (i, v) {
+                    if (v.assignedto == "CAU") {
+                        
+                       // $('#obs_report_panel').append('<tr ><td style="text-align:center">' + v.parA_NO + '</td><td style="text-align:center">' + v.name + '</td><td style="padding:50px !important;text-align:justify"><div style="width:1000px; max-width:1000px; overflow-y:auto">' + v.text + '</div></td><td style="text-align:center">' + v.reply + '</td ><td style="text-align:center">' + v.headremarks + '</td><td style="text-align:center">Un-Settled</td></tr>')
+                        $('#parano').append(generateParaFormat(v));
 
+                    }
+                    else
+                      //  $('#obs_report_panel2').append('<tr ><td style="text-align:center">' + v.parA_NO + '</td><td style="text-align:center">' + v.name + '</td><td style="padding:50px !important;text-align:justify"><div style="width:1000px; max-width:1000px; overflow-y:auto">' + v.text + '</div></td><td style="text-align:center">' + v.reply + '</td ><td style="text-align:center">' + v.headremarks + '</td><td style="text-align:center">Un-Settled</td></tr>')
 
-                    $('#obs_report_panel2').append('<tr ><td style="text-align:center">' + v.memO_NUMBER + '</td><td style="padding:50px !important;text-align:justify" >' + v.text + '</td><td style="text-align:center">' + v.reply + '</td ><td style="text-align:center">' + v.recommendation + '</td><td style="text-align:center">' + v.headremarks + '</td></tr>')
-                  //  $('#obs_report_panel2').append('<tr><td>' + v.memO_NUMBER + '</td><td style="padding:50px !important;">' + v.text + '</td><td>' + v.reply + '</td ><td>' + v.recommendation + '</td><td>' + v.headremarks + '</td></tr>')
-
+                    $('#parano').append(generateParaFormat(v));
 
 
                 });
@@ -248,222 +137,120 @@
 
 <div class="row">
     <div class="col-md-4 offset-md-8">
-        <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;" >Download Report</button>
+        <button class="btn btn-danger" style="float:right; margin-bottom:10px; " onclick="CreatePDFfromHTML();">Download Report</button>
     </div>
 </div>
 
-<!--
-<div class="row col-md-12 mt-3">
-    <div class="col-md-2">
-        <label><b>Entity:</b></label>
-    </div>
-    <div class="col-md-10">
-        <input id="entityNameField" disabled="disabled" class="form-control ml-1 d-none" type="text" />
-        <select id="entitySelectField" onchange="getaddress();" class="form-control form-select">
-            <option value="0" id="0">--Select Audit Entity--</option>
-            @{
-                if (ViewData["EntitiesList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
-                    {
-                        <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
-                    }
-                }
-            }
 
-        </select>
-    </div>
-</div>
-<div class="col-md-12 mt-3">
 
-    <div class="row col-md-6">
-        <div>
-            <h5 style="display: block; color: #45c545;">Auditee Information</h5>
+<div class="WordSection1">
+
+    <div class="col-md-12" style="font-family:'Times New Roman'">
+        <br />  <br />  <br /> <br />  <br />  <br /> <br />  <br />  <br />
+        <br />  <br />  <br /> <br />  <br />  <br /> <br />  <br />  <br />
+
+        <h1 style="text-transform: uppercase; font-weight: bold; text-decoration: underline; text-align: right; float: right !important" class="entNameField pr-3"></h1>
+
+        <h1 style="text-align:right; float:right !important"><b><u>AUDIT OF &nbsp;</u></b> </h1>
+
+
+        <br />
+        <br />
+        <br />
+        <div class="col-md-12" style="font-size:28.0pt">
+
+            <p style="float: right"><u>By</u></p>
+
         </div>
-        <table id="reportheading1" class="table table-bordered mb-0 mt-3 bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
-                <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Controling Office</th>
-                    <th id="conoffice" Class="col-md-5" style="background-color:wheat"></th>
-                </tr>
-                <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Entity Name</th>
-                    <th id="EntN" Class="col-md-5" style="background-color:wheat"></th>
-                </tr>
-                <tr>
-                    <th class="col-md-aut-1" style="font-size:xx-small">Address</th>
-                    <th id="ADD" Class="col-md-5" style="background-color:wheat"></th>
-                </tr>
+        <br />  <br />  <br />
 
+        <!--   <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;">
+                <b>
+                    <span style="font-size:24.0pt;line-height:150%; ">IN RESPECT OF <span style="text-transform:uppercase" class="entNameField"></span><o:p></o:p></span>
+                </b>
+            </p>
 
+            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm">
+                <b>
+                    <span style="font-size:24.0pt;line-height:150%;">AND<o:p></o:p></span>
+                </b>
+            </p>
 
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;">
+                <b>
+                    <span style="font-size:1.0pt;line-height:150%;"><o:p>&nbsp;</o:p></span>
+                </b>
+            </p>
 
-    <div class="row col-md-6">
+            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
+                <b>
+                    <span style="font-size:25.0pt;line-height:150%;">ZARAI TARAQIATI BANK LIMITED<o:p></o:p></span>
+                </b>
+            </p>
 
-        <table id="reportheading2" class="table table-bordered mb-0  bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
+                <b>
+                    <span style="font-size: 24.0pt; line-height: 150%;  text-transform:uppercase" class="entNameField"></span>
+                </b><b>
+                    <span style="font-size:25.0pt;line-height:150%;">&nbsp BRANCH<o:p></o:p></span>
+                </b>
+            </p>
+    -->
 
-                <tr>
+        <div class="col-md-12" style="font-size:28.0pt">
 
-                    <th class="col-md-1" style="font-size:xx-small">Audit S-Date</th>
-                    <th id="a_s_d" Class="col-md-2" style="background-color:wheat"></th>
-                    <th class="col-md-1" style="font-size:xx-small">Audit E-Date</th>
-                    <th id="a_e_d" Class="col-md-2" style="background-color:wheat"></th>
-                </tr>
+            <p style="float: right; text-decoration:underline" class="conOffice"></p>
 
-                <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Operational S-Date</th>
-                    <th id="o_s_d" Class="col-md-2" style="background-color:wheat"></th>
-                    <th class="col-md-1" style="font-size:xx-small">Operational E-Date</th>
-                    <th id="o_e_d" Class="col-md-2" style="background-color:wheat"></th>
-                </tr>
-
-
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="row col-md-12 mt-3">
-    <div class="col-md-6">
-        <div>
-            <h5 style="display: block; color: #45c545;">Auditor Wise Memo Status</h5>
         </div>
-        <table id="auditorWiseProgessTable" class="table table-bordered mb-0 mt-3 bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
-                <tr>
-                    <th class="col-md-auto" style="font-size:xx-small">Auditor</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Team Lead</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Total Memos</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Submitted to Auditee</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Responded by Auditee</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Resolved</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Add to Draft Report</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div class="w-100">
-            <button onclick="closeDraftAudit();" class="col-md-4 mt-3 mb-3 btn btn-danger float-right">Generate Risk Rating</button>
+        <br />  <br />  <br /> <br />  <br />  <br /> <br />  <br />  <br /><br />  <br />
+        <br /> <br />  <br />  <br /> <br />  <br />  <br /><br />  <br />  <br />
+
+        <div class="col-md-12" style="font-size:28.0pt">
+
+            <p style="float: left"><b><u>Audit Team:</u></b></p>
+
         </div>
+        <br />  <br />  <br /> <br />  <br />  <br /><br />  <br />
+        <br /> <br />  <br />  <br /> <br />  <br />  <br />
+        <br />
+        <br /><br />  <br />
+
+
+
+
+
+        <div class="col-md-12 mt-2" style="font-size:28.0pt">
+
+            <p style="float: left"><b><u>Audit Duration:</u></b></p>
+
+            <p>  &nbsp; &nbsp; &nbsp;</p>
+
+            <p style="float: left" class="startField"></p>
+            <label style="float: left">&nbsp To &nbsp </label>
+            <p style="float: left" class="endField"></p>
+
+
+        </div>
+        <br />  <br />  <br /> <br />  <br />  <br />
+
+
+
+
+        <div class="col-md-12" style="font-size:28.0pt">
+
+            <p style="float: left"><b><u>Operational Period:</u></b></p>
+            <p>  &nbsp; &nbsp; &nbsp;</p>
+
+            <p style="float: left" class="ostartField"></p>
+            <label style="float: left">&nbsp To &nbsp </label>
+            <p style="float: left" class="oendField"></p>
+
+        </div>
+
+        <br /> <br />  <br />  <br /> <br />  <br />  <br /><br />  <br /> <br />  <br />  <br /> <br />  <br />
 
     </div>
 
-    <div class=" col-md-6">
-        <div>
-            <h5 style="display: block; color: #45c545;">Joining and Closing Dates</h5>
-        </div>
-        <table id="joiningAuditorDetailsTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto" style="font-size:xx-small">P.P. Number</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Name</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Joining Date</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Completion Date </th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <div class="w-100">
-            <button onclick="closeDraftAudit();" class="col-md-2 mt-3 mb-3 btn btn-danger float-right"> Close Audit</button>
-        </div>
-    </div>
-</div>
--->
-
-
-<div id="mainRPTPanel" class="WordSection1">
-
-    <!----><div style="border:solid windowtext 3.0pt;padding:0cm 4.0pt 1.0pt 4.0pt">
-
-        <p class="" align="center" style="text-align:center;line-height:150%;border:none;">
-            <b>
-                <span style="font-size:37.0pt;line-height:150%;">FINAL AUDIT REPORT<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;">
-            <b>
-                <span style="font-size:30.0pt;line-height:150%;">OF &nbsp;<span class="conOffice"> &nbsp; ZONE</span></span>
-            </b>
-            <b>
-                <span style="font-size:37.0pt;line-height:150%;"><o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;">
-            <b>
-                <span style="font-size:24.0pt;line-height:150%;">IN RESPECT OF <span style="text-transform:uppercase" class="entNameField"></span><o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm;">
-            <b>
-                <span style="font-size:24.0pt;line-height:150%;">AND<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;">
-            <b>
-                <span style="font-size:1.0pt;line-height:150%;"><o:p>&nbsp;</o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
-            <b>
-                <span style="font-size:25.0pt;line-height:150%;">ZARAI TARAQIATI BANK LIMITED<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
-            <b>
-                <span style="font-size: 24.0pt; line-height: 150%;  text-transform:uppercase" class="entNameField"></span>
-            </b><b>
-                <span style="font-size:25.0pt;line-height:150%;">&nbsp BRANCH<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;">
-            <b>
-                <span style="font-size:25.0pt;line-height:150%;">BRANCH CODE 22345<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-            <b>
-                <span style="font-size:25.0pt;line-height:150%;">FOR THE PERIOD ENDED ON <span id="oendField"></span>.<o:p></o:p></span>
-            </b>
-        </p>
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-            <b>
-                <span style="font-size:14.0pt;line-height:150%">DATE OF AUDIT.FROM <span id="startField"></span>TO<span id="endField"></span> <span>&nbsp;&nbsp; </span>DATE OF DISCUSSION 24.05.2022</span>
-            </b>
-            <b>
-                <span style="font-size:25.0pt;line-height:150%"><o:p></o:p></span>
-            </b>
-        </p>
-
-
-
-
-
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-            <b>
-                <span style="font-size:19.0pt;line-height:150%;"><o:p>&nbsp;</o:p></span>
-            </b>
-        </p>
-
-    </div>
 
     <b>
         <u>
@@ -483,108 +270,27 @@
 
     <p class="MsoNormal"><b><o:p>&nbsp;</o:p></b></p>
 
-    <div style="border:solid windowtext 3.0pt;padding:0cm 4.0pt 1.0pt 4.0pt">
+    <div class="col-md-12" style="font-family: 'Times New Roman'">
 
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-            <!--<b><span style="font-size:30.0pt;line-height:150%">PART-02</span></b>-->
-            <b>
-                <span style="font-size:25.0pt;line-height:150%"><o:p></o:p></span>
-            </b>
-        </p>
+       <h1 ><b>AUDIT OBSERVATIONS</b></h1>
+      
+  <hr style="border:solid; background-color:black" />
 
-        <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-            <b>
-                <span style="font-size:30.0pt;line-height:150%">
-                    AUDIT
-                    PARAS PERTAINING TO THE BRANCH<o:p></o:p>
-                </span>
-            </b>
-        </p>
-
-        <!--   <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm">
-                    <b>
-                        <span style="font-size:30.0pt;line-height:150%">
-                            PARA
-                            NO. 02<o:p></o:p>
-                        </span>
-                    </b>
-                </p>
-
-                <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-                    <b><span style="font-size:30.0pt;line-height:150%">TO<o:p></o:p></span></b>
-                </p>
-
-                <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm">
-                    <b>
-                        <span style="font-size:30.0pt;line-height:150%">
-                            PARA
-                            NO. 22<o:p></o:p>
-                        </span>
-                    </b>
-                </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm">
-                <b>
-                    <span style="font-size:30.0pt;line-height:150%">
-                        VOL-I(Para
-                        No. 02 to Para No. 04)<o:p></o:p>
-                    </span>
-                </b>
-            </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm">
-                <b>
-                    <span style="font-size:25.0pt;line-height:150%">
-                        VOL-II(Para
-                        No. 05 to Para No.22 )<o:p></o:p>
-                    </span>
-                </b>
-            </p>
-    -->
     </div>
 
-    
 
-    <table class="MsoNormalTable mt-3 mr-5" border="1" cellspacing="0" cellpadding="0"  style="width: 1091.8pt; border: solid windowtext 1.0pt">
+
+    <table class="MsoNormalTable mt-3 mr-5 " border="1" cellspacing="0" cellpadding="0" style="width: 1091.8pt; border:none">
         <thead>
-            <tr style="height:22.75pt">
-                <td width="80" style="width:48.25pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-                    <p class="MsoNormal" align="center" style="text-align:center"><b><span>PARA<o:p></o:p></span></b></p>
-                    <p class="MsoNormal" align="center" style="text-align:center"><b><span>NO<o:p></o:p></span></b></p>
-                </td>
-                <td width="850" style="width:509.75pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-                    <p class="MsoNormal" align="center" style="text-align:center">
-                        <b>
-                            <span>
-                                BRANCH
-                                AUDIT OBSERVATION<o:p></o:p>
-                            </span>
-                        </b>
-                    </p>
-                    <p class="MsoNormal" align="center" style="text-align:center"><b><span>VOL-I<o:p></o:p></span></b></p>
-                </td>
-                <td width="158" style="width:94.5pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-                    <p class="MsoNormal" align="center" style="text-align:center">
-                        <b>
-                            <span> REPLY OF THE BRANCH<o:p></o:p> </span>
-                        </b>
-                    </p>
-                </td>
-                <td width="143" style="width:85.5pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-                    <p class="MsoNormal" align="center" style="text-align:center">
-                        <b>
-                            <span>COMMENTS OF AUDIT<o:p></o:p></span>
-                        </b>
-                    </p>
-                </td>
-                <td width="125" style="width:74.8pt;border:solid windowtext 1.0pt;border-left:none;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-                    <p class="MsoNormal" align="center" style="text-align:center"><b><span>STATUS<o:p></o:p></span></b></p>
-                </td>
-            </tr>
-        </thead>
+       
 
-        <tbody id="obs_report_panel2" style="width:48.25pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:22.75pt">
-        </tbody>
+        </thead>
+<tbody id="obs_report_panel">
+</tbody>
     </table>
+
+    <div id="parano" class="col-md-12">
+
+    </div>
 
 </div>
