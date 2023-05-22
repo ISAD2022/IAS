@@ -903,6 +903,13 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditeReportStatus(ENG_ID);
         }
+        [HttpPost]
+        public string submit_pre_concluding(int ENG_ID)
+        {
+            string response = "";
+            response = dBConnection.SubmitPreConcluding(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
 
 
 

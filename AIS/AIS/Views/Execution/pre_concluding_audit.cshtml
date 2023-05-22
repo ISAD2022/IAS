@@ -25,7 +25,11 @@
                 $('#checklistDetailsPanel tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="ObservationViewerPanel(' + v.id + ')">View Memo</a></td><td>' + v.status + '</td></tr>');
+                    
+                    if (v.status == "Completed")
+                        $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td></td><td class="preconcludingStatusField">' + v.status + '</td></tr>');
+                    else
+                        $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="ObservationViewerPanel(' + v.id + ')">View Memo</a></td><td class="preconcludingStatusField">' + v.status + '</td></tr>');
                     sr++;
                 });
 
@@ -113,6 +117,37 @@
         });
 
     }
+
+    function submitPreConcluding() {
+        var flag = 0;
+        $('.preconcludingStatusField').each(function (i, v) {
+
+            if ($(v).html() == "Pending")
+                flag++;
+
+        });
+
+        if (flag > 0) {
+            alert("Please add Audit Observation Gist and Recommendation for all observations first to proceed");
+            return;
+        }
+
+
+        $.ajax({
+            url: "/ApiCalls/submit_pre_concluding",
+            type: "POST",
+            data: {
+                'ENG_ID': $('#entitySelectField').val()
+
+            },
+            cache: false,
+            success: function (data) {
+
+                alert(data.Message);
+            },
+            dataType: "json",
+        });
+    }
 </script>
 <div class="row mt-3">
     <div>
@@ -159,7 +194,7 @@
 </div>
 <div class="row mt-3">
     
-    <button onclick="saveChecklistObservations();" class="col-md-3 btn btn-success" style="margin-left:10px;">Submit Pre Concluding</button>
+    <button onclick="submitPreConcluding();" class="col-md-3 btn btn-success" style="margin-left:10px;">Submit Pre Concluding</button>
 </div>
 
 

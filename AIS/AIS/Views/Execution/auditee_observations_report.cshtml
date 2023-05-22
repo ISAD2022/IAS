@@ -20,6 +20,8 @@
     var g_ostartDate = '';
     var g_oendDate = '';
     var g_conoffice = '';
+    var sr = 1;
+    var teamlead = '';
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
@@ -32,6 +34,32 @@
         g_conoffice = url.searchParams.get("conOffice");
 
         getParas();
+        $.ajax({
+            url: "/ApiCalls/GetTeamDetails",
+            type: "POST",
+            data: {
+                'ENG_ID': g_engId
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, d) {
+                    console.log(d);
+                    if (d.isteamlead == 'Y')
+                        teamlead = 'TEAM LEAD';
+                    else
+                        teamlead = 'TEAM MEMBER';
+
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td style="font-size:18.0pt; font-family:Times New Roman"><div class="row col-md-12" ><div class="text-left" style=" width:30px; margin-left:260px"><b>' + sr + ' . </b></div>  <div class="col-md-3 text-left" ><b>' + d.membeR_NAME + ' </b></div><div class="col-md-1 text-left" > ' + d.membeR_PPNO + '</div>  <div class="col-md-3 text-left" > ' + teamlead + '</di></div ></td ></tr > ');
+
+
+                    sr++;
+
+                });
+
+
+            },
+            dataType: "json",
+        });
 
         $('.conOffice').html(g_conoffice);
         $('.entNameField').html(g_entName);
@@ -68,6 +96,8 @@
         });
     }
     function generateParaFormat(v) {
+
+       
 
         return '<div class="row col-md-12" style="font-family:Times New Roman"><div style="width:1000px; font-size:28.0pt"><b><u>Para No. ' + v.parA_NO + ' (Memo No: ' + v.memO_NUMBER + '):</u></b></div><br><br><div class="col-md-12" style="text-align:justify; font-family:Times New Roman; ; margin-left:-15px; font-size:23.0pt"><u style="font-weight: bold">' + v.v_HEADER + '</u></div></div><br><b style="font-family:Times New Roman; font-size:23.0pt">Violation:</b><br><p style="font-family:Times New Roman; font-size:23.0pt">' + v.v_DETAIL + '</p><b style="font-family:Times New Roman; font-size:23.0pt">Risk Category:</b><br /><div style="font-family:Times New Roman; font-size:23.0pt">' + v.risk + ' </div><br><b style="font-family:Times New Roman; font-size:23.0pt">FINDINGS:</b><br /><br><div class="col-md-12; py-0" style="text-align:justify;font-family:Times New Roman; font-size:23.0pt">' + v.observation + '</div><br><b style="font-family:Times New Roman; font-size:23.0pt">Management Reply:</b><div style="width:1350px; text-align:start; font-family:Times New Roman; font-size:23.0pt">' + v.managemenT_REPLY + '</div><b style="font-family:Times New Roman; font-size:23.0pt">Recomendation:</b><br><div class="col-md-12; py-0" style="font-family:Times New Roman; font-size:23.0pt">' + v.recommendation + '</div><div class="col-md-12; py-0" style="font-family:Times New Roman ; font-size:23.0pt"><b>Status:</b></div><div class="col-md-12; py-0" style="font-family:Times New Roman; font-size:23.0pt" ><b>Un-settled</b><br><br></div><div class="col-md-12"><hr style="border:solid; background-color:gainsboro"   /></div><br />';
 
@@ -131,7 +161,7 @@
         });
     }
 </script>
-<div class="row col-md-12 mt-3">
+<div class="row col-md-12 mt-3" >
     <h4 style="display: block; color: #45c545;">Auditee Observation Report</h4>
 </div>
 
@@ -164,39 +194,7 @@
         </div>
         <br />  <br />  <br />
 
-        <!--   <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;">
-                <b>
-                    <span style="font-size:24.0pt;line-height:150%; ">IN RESPECT OF <span style="text-transform:uppercase" class="entNameField"></span><o:p></o:p></span>
-                </b>
-            </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;padding:0cm">
-                <b>
-                    <span style="font-size:24.0pt;line-height:150%;">AND<o:p></o:p></span>
-                </b>
-            </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;">
-                <b>
-                    <span style="font-size:1.0pt;line-height:150%;"><o:p>&nbsp;</o:p></span>
-                </b>
-            </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
-                <b>
-                    <span style="font-size:25.0pt;line-height:150%;">ZARAI TARAQIATI BANK LIMITED<o:p></o:p></span>
-                </b>
-            </p>
-
-            <p class="MsoNormal" align="center" style="text-align:center;line-height:150%;border:none;padding:0cm;">
-                <b>
-                    <span style="font-size: 24.0pt; line-height: 150%;  text-transform:uppercase" class="entNameField"></span>
-                </b><b>
-                    <span style="font-size:25.0pt;line-height:150%;">&nbsp BRANCH<o:p></o:p></span>
-                </b>
-            </p>
-    -->
-
+  
         <div class="col-md-12" style="font-size:28.0pt">
 
             <p style="float: right; text-decoration:underline" class="conOffice"></p>
@@ -207,11 +205,21 @@
 
         <div class="col-md-12" style="font-size:28.0pt">
 
-            <p style="float: left"><b><u>Audit Team:</u></b></p>
+            <table id="joiningAuditorDetailsTable" style="border:none">
+                <thead>
+                    <tr>
+
+                        <th class="col-md-5 text-left" style="font-size:28.0pt; font-weight: bold; font-family: 'Times New Roman'">AUDIT TEAM:</th>
+                     
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
 
         </div>
-        <br />  <br />  <br /> <br />  <br />  <br /><br />  <br />
-        <br /> <br />  <br />  <br /> <br />  <br />  <br />
+
         <br />
         <br /><br />  <br />
 
@@ -248,7 +256,8 @@
         </div>
 
         <br /> <br />  <br />  <br /> <br />  <br />  <br /><br />  <br /> <br />  <br />  <br /> <br />  <br />
-
+        <br />  <br />  <br /> <br />  <br />  <br /><br />  <br />
+        
     </div>
 
 
