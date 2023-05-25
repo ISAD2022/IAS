@@ -512,31 +512,6 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult FAD_Audit_Plan()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["auditplanreport"] = dBConnection.getauditplanreport();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
-
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////
         public IActionResult income_expenditure()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -892,6 +867,33 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult FAD_Audit_Plan()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["FADEntityList"] = dBConnection.FADGetReportEntitities();
+            ViewData["FADZoneList"] = dBConnection.FADGetReportZones();
+            ViewData["FADEntitySize"] = dBConnection.FADGetEntitySize();
+            ViewData["FADEntityRisk"] = dBConnection.FADGetEntityRisk();
+
+
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
 
         public IActionResult Error()
         {

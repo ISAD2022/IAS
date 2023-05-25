@@ -49,6 +49,47 @@
         });
     }
 
+    function getauditplanreport() {
+        var sr = 1;
+
+        var entityid = $("#entitySelectField option:selected").attr("id");
+        var zoneid = $("#ZoneSelectField option:selected").attr("id");
+        var risk = $('#RiskSelectField').val();
+        var size =$("#SizeSelectField option:selected").attr("id");
+
+        $.ajax({
+            url: "/ApiCalls/GetFADAuditPlan",
+            type: "POST",
+            data: {
+                'ENT_ID': entityid,
+                'Z_ID': zoneid,
+                'RISK': risk,
+                'SIZE': size
+            },
+            cache: false,
+            success: function (data) {
+
+
+                $.each(data, function (i, v) {
+                    console.log(data);
+                  //  g_teamMembers.push(v.teaM_MEM_PPNO);
+                    
+                    $('#tentative_plan_list tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + sr + '</td><td class="text-center" style="font-size:xx-small">' + v.auditeename + '</td><td class="text-center" style="font-size:xx-small">' + v.entitycode + '</td><td class="text-center" style="font-size:xx-small">' + v.auditedby + '</td><td class="text-center" style="font-size:xx-small">' + v.parrentoffice + '</td><td class="text-center" style="font-size:xx-small">' + v.lastauditopsendate + '</td><td class="text-center" style="font-size:xx-small">' + v.entityrisk + '</td><td class="text-center" style="font-size:xx-small">' + v.entitysize + '</td><td class="text-center" style="font-size:xx-small">' + v.normaldays + '</td><td class="text-center" style="font-size:xx-small">' + v.revenuedays + '</td><td class="text-center" style="font-size:xx-small">' + v.travelday + '</td><td class="text-center" style="font-size:xx-small">' + v.discussionday + '</td><td class="text-center" style="font-size:xx-small">' + v.auditstartdate + '</td><td class="text-center" style="font-size:xx-small">' + v.auditenddate + '</td><td class="text-center" style="font-size:xx-small">' + v.tname + '</td><td class="text-center" style="font-size:xx-small">' + v.teamlead + '</td></tr>');
+                    //
+                    sr++;
+                });
+
+
+
+
+
+            },
+            dataType: "json",
+        });
+
+
+    }
+
 
 </script>
 <div class="reportsec">
@@ -62,6 +103,23 @@
         <div class=" col-md-5 mr-1">
             <select id="entitySelectField" onchange="" class="form-control form-select">
                 <option value="0" id="0">--Select Auditable Entity--</option>
+           
+
+
+
+                @{ 
+                    if(ViewData["FADEntityList"]!=null)
+
+                    {
+                        foreach (var item in (dynamic)(ViewData["FADEntityList"]))
+                {
+                        <option id="@item.ENTITY_ID">@item.ENTITY_NAME</option>
+                }
+                    }
+
+                }
+
+
             </select>
         </div>
 
@@ -69,8 +127,20 @@
             <label for="periodEndModalField"><b>Audit Zone</b><span class="text-danger">*</span></label>
         </div>
         <div style=" width:535px">
-            <select id="entitySelectField" onchange="" class="form-control form-select">
+            <select id="ZoneSelectField" onchange="" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Zone--</option>
+
+                @{
+                    if (ViewData["FADZoneList"] != null)
+
+                    {
+                        foreach (var item in (dynamic)(ViewData["FADZoneList"]))
+                        {
+                            <option id="@item.ENTITY_ID">@item.ENTITY_NAME</option>
+                        }
+                    }
+
+                }
             </select>
         </div>
     </div>
@@ -79,8 +149,21 @@
             <label for="periodStartModalField"><b>Branch Rating</b><span class="text-danger">*</span></label>
         </div>
         <div class=" col-md-5 mr-1">
-            <select id="entitySelectField" onchange="" class="form-control form-select">
+            <select id="RiskSelectField" onchange="" class="form-control form-select">
                 <option value="0" id="0">--Select Branch Rating--</option>
+
+                @{
+                    if (ViewData["FADEntityRisk"] != null)
+
+                    {
+                        foreach (var item in (dynamic)(ViewData["FADEntityRisk"]))
+                        {
+                            <option id="@item.R_ID" value="@item.RATING">@item.DESCRIPTION</option>
+                        }
+                    }
+
+                }
+
             </select>
         </div>
 
@@ -88,8 +171,19 @@
             <label for="periodEndModalField"><b>Branch Size</b><span class="text-danger">*</span></label>
         </div>
         <div style=" width:535px">
-            <select id="entitySelectField" onchange="" class="form-control form-select">
+            <select id="SizeSelectField" onchange="" class="form-control form-select">
                 <option value="0" id="0">--Select Branch Size--</option>
+                @{
+                    if (ViewData["FADEntitySize"] != null)
+
+                    {
+                        foreach (var item in (dynamic)(ViewData["FADEntitySize"]))
+                        {
+                            <option id="@item.ENTITY_SIZE">@item.DESCRIPTION</option>
+                        }
+                    }
+
+                }
             </select>
         </div>
     </div>
@@ -97,7 +191,7 @@
 
 
     <div class="row col-md-12 mt-1">
-        <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+        <button id="findButton" onclick="getauditplanreport();" class="btn btn-danger" style="margin-left:auto;">Search</button>
 
     </div>
 
@@ -150,51 +244,7 @@
 
             </thead>
             <tbody>
-                @{
-                    if (ViewData["auditplanreport"] != null)
-                    {
-                        int sr = 1;
-
-                        foreach (var item in (dynamic)(ViewData["auditplanreport"]))
-                        {
-                            String sDate = item.AUDITSTARTDATE != "" && item.AUDITSTARTDATE != null ? item.AUDITSTARTDATE.Split(" ")[0] : item.AUDITSTARTDATE;
-                            String eDate = item.AUDITENDDATE != "" && item.AUDITENDDATE != null ? item.AUDITENDDATE.Split(" ")[0] : item.AUDITENDDATE;
-                            String aoeDate = item.LASTAUDITOPSENDATE != "" && item.LASTAUDITOPSENDATE != null ? item.LASTAUDITOPSENDATE.Split(" ")[0] : item.LASTAUDITOPSENDATE;
-
-                            <tr>
-                                <td align="center" style="font-size: x-small">@sr</td>
-                                <td align="justify" style="font-size: x-small">@item.AUDITEENAME</td>
-                                <td align="left" style="font-size: x-small">@item.ENTITYCODE</td>
-                                <td align="justify" style="font-size: x-small">@item.AUDITEDBY</td>
-                                <td align="justify" style="font-size: x-small">@item.PARRENTOFFICE</td>
-                                <td align="center" style="font-size: x-small">@aoeDate</td>
-                                <td align="center" style="font-size: x-small">@item.ENTITYRISK</td>
-
-
-                                <td align="center" style="font-size: x-small">@item.ENTITYSIZE</td>
-
-                                <td align="left" style="font-size: x-small">@item.NORMALDAYS</td>
-                                <td align="left" style="font-size: x-small">@item.REVENUEDAYS</td>
-                                <td align="left" style="font-size: x-small">@item.TRAVELDAY</td>
-                                <td align="left" style="font-size: x-small">@item.DISCUSSIONDAY</td>
-
-
-                                <td align="justify" style="font-size: x-small">@sDate</td>
-                                <td align="justify" style="font-size: x-small">@eDate</td>
-
-
-
-
-
-                                <td align="center" style="font-size: x-small">@item.TNAME</td>
-                                <td align="center" style="font-size: x-small">@item.TEAMLEAD</td>
-
-                            </tr>
-                            sr = sr + 1;
-                        }
-
-                    }
-                }
+                
             </tbody>
         </table>
 

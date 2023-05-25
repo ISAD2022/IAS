@@ -678,9 +678,6 @@ namespace AIS.Controllers
             return true;// dBConnection.AddInspectionTeam(teamid, tname, pop);
         }
 
-
-
-
         [HttpPost]
 
         public bool Join_inspection_team(int e_id = 0, int t_m_ppno = 0, int e_b = 0)
@@ -910,6 +907,21 @@ namespace AIS.Controllers
             response = dBConnection.SubmitPreConcluding(ENG_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
+        [HttpPost]
+        public List<OldParasModel> get_legacy_paras_for_update(int ENTITY_ID, string PARA_REF)
+        {
+            return dBConnection.GetLegacyParasForUpdate(ENTITY_ID, PARA_REF);            
+        }
+
+        [HttpPost]
+        public List<AuditPlanReportModel> GetFADAuditPlan(int ENT_ID, int Z_ID, int RISK, int SIZE)
+        {
+            return dBConnection.GetFadAuditPlanReport(ENT_ID, Z_ID, RISK, SIZE);
+
+
+        }
+
+
 
 
 

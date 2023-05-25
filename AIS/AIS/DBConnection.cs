@@ -5559,14 +5559,87 @@ namespace AIS
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
-                   
+                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();                   
                     list.Add(chk);
                 }
             }
             con.Close();
             return list;
         }
+
+        public List<AuditeeOldParasModel> GetLegacyParasEntities()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_FAD.P_GetEntitiesForLegacyPara";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);                    
+                    chk.ENTITY_NAME = rdr["NAME"].ToString();
+
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+        public List<OldParasModel> GetLegacyParasForUpdate(int ENTITY_ID, string PARA_REF)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_GetLeagacyObservations";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("entityId", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
+                    chk.SUB_PROCESS =Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
+                    chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.ANNEXURE = rdr["ANNEXURE"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
+                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
         {
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7810,6 +7883,211 @@ namespace AIS
             con.Close();
             return resp;
         }
+
+        public List<AuditPlanReportModel> GetFadAuditPlanReport(int ent_id, int z_id, int risk, int size)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                string _sql = "pkg_rpt.r_eng_plan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("entityid", OracleDbType.Int32).Value = ent_id;
+                cmd.Parameters.Add("azone", OracleDbType.Int32).Value = z_id;
+                cmd.Parameters.Add("risk_rating", OracleDbType.Int32).Value = risk;
+                cmd.Parameters.Add("branch_size", OracleDbType.Int32).Value = size;
+
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditPlanReportModel plan = new AuditPlanReportModel();
+
+
+
+                    plan.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+                    plan.PARRENTOFFICE = rdr["PARRENTOFFICE"].ToString();
+                    plan.AUDITEENAME = rdr["AUDITEENAME"].ToString();
+                    plan.LASTAUDITOPSENDATE = rdr["LASTAUDITOPSENDATE"].ToString();
+
+                    plan.ENTITYRISK = rdr["ENTITYRISK"].ToString();
+                    plan.ENTITYSIZE = rdr["ENTITYSIZE"].ToString();
+                    plan.AUDITEENAME = rdr["AUDITEENAME"].ToString();
+                    plan.LASTAUDITOPSENDATE = rdr["LASTAUDITOPSENDATE"].ToString();
+
+                    if (rdr["ENTITYCODE"].ToString() != null && rdr["ENTITYCODE"].ToString() != "")
+                        plan.ENTITYCODE = Convert.ToInt32(rdr["ENTITYCODE"]);
+                    if (rdr["ANTITYID"].ToString() != null && rdr["ANTITYID"].ToString() != "")
+                        plan.ANTITYID = Convert.ToInt32(rdr["ANTITYID"]);
+                    if (rdr["NORMALDAYS"].ToString() != null && rdr["NORMALDAYS"].ToString() != "")
+                        plan.NORMALDAYS = Convert.ToInt32(rdr["NORMALDAYS"]);
+                    if (rdr["REVENUEDAYS"].ToString() != null && rdr["REVENUEDAYS"].ToString() != "")
+                        plan.REVENUEDAYS = Convert.ToInt32(rdr["REVENUEDAYS"]);
+                    if (rdr["TRAVELDAY"].ToString() != null && rdr["TRAVELDAY"].ToString() != "")
+                        plan.TRAVELDAY = Convert.ToInt32(rdr["TRAVELDAY"]);
+                    if (rdr["DISCUSSIONDAY"].ToString() != null && rdr["DISCUSSIONDAY"].ToString() != "")
+                        plan.DISCUSSIONDAY = Convert.ToInt32(rdr["DISCUSSIONDAY"]);
+
+                    plan.AUDITSTARTDATE = rdr["AUDITSTARTDATE"].ToString();
+                    plan.AUDITENDDATE = rdr["AUDITENDDATE"].ToString();
+                    plan.TNAME = rdr["TNAME"].ToString();
+                    plan.TEAMLEAD = rdr["TEAMLEAD"].ToString();
+
+                    planList.Add(plan);
+                }
+            }
+            con.Close();
+            return planList;
+        }
+
+        public List<FADGetReportEntititiesModel> FADGetReportEntitities()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADGetReportEntititiesModel> list = new List<FADGetReportEntititiesModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_rpt.p_get_entities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADGetReportEntititiesModel nm = new FADGetReportEntititiesModel();
+
+                    nm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    nm.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+
+                    list.Add(nm);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+        public List<FADGetReportZonesModel> FADGetReportZones()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADGetReportZonesModel> list = new List<FADGetReportZonesModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = " pkg_rpt.p_get_az";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADGetReportZonesModel nm = new FADGetReportZonesModel();
+
+                    nm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    nm.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+
+                    list.Add(nm);
+                }
+            }
+            con.Close();
+            return list;
+        }
+        public List<FADEntitySizeModel> FADGetEntitySize()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADEntitySizeModel> list = new List<FADEntitySizeModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_rpt.p_get_entity_size";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADEntitySizeModel nm = new FADEntitySizeModel();
+
+                    nm.ENTITY_SIZE = rdr["ENTITY_SIZE"].ToString();
+                    nm.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+
+                    list.Add(nm);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+      
+        public List<FADEntityRiskModel> FADGetEntityRisk()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADEntityRiskModel> list = new List<FADEntityRiskModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_rpt.p_get_risk";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADEntityRiskModel nm = new FADEntityRiskModel();
+
+                    nm.R_ID = rdr["R_ID"].ToString();
+                    nm.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    nm.RATING = rdr["RATING"].ToString();
+
+                    list.Add(nm);
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+
+
 
 
 

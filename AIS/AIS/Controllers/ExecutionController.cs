@@ -661,6 +661,29 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult Update_Legacy_Paras()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetLegacyParasEntities();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
         public IActionResult pre_concluding_audit()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
