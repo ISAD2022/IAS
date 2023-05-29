@@ -25,8 +25,50 @@ namespace AIS.Controllers
             tm = _tpMenu;
         }
 
-        ////////////////////////////////////////////////////////////////
-        
+      
+        public IActionResult FAD_New_Para_Performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["NEWPARAPERFORMANCE"] = dBConnection.GetFADNewParaPerformance();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+     
+
+
+        public IActionResult FAD_Legacy_Para_Performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["LAGACYPARAPERFORMANCE"] = dBConnection.GetFADLagacyParaPerformance();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult FAD_Monthly_Review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -46,8 +88,6 @@ namespace AIS.Controllers
             }
         }
 
-
-        //////////////////////////////
         
 
  public IActionResult FAD_Aging_of_Audit_Paras_Monthly()
@@ -69,7 +109,6 @@ namespace AIS.Controllers
             }
         }
 
-        ///////////////////////////////
         public IActionResult FAD_Gistwise_Details_Monthly()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -109,7 +148,7 @@ namespace AIS.Controllers
             }
         }
 
-        //////////////////////////////////////////////////////////////////
+
 
         
 
@@ -132,7 +171,7 @@ namespace AIS.Controllers
             }
         }
 
-        ////////////////////////////////////////////////////////////////////////////
+  
 
         public IActionResult FAD_Compliance_Pos_Fortnightly_Zone_Level()
         {
@@ -154,8 +193,6 @@ namespace AIS.Controllers
         }
 
 
-        ///////////////////////////////////////////////////////////////////
-
 
         public IActionResult FAD_Branch_Risk_Rating()
         {
@@ -176,8 +213,6 @@ namespace AIS.Controllers
             }
         }
 
-
-        ////////////////////////////////////////////////////////////////////
         
 
 
@@ -200,8 +235,6 @@ namespace AIS.Controllers
             }
         }
 
-
-        ////////////////////////////////////////////////////////////////////
         public IActionResult approved_plan()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

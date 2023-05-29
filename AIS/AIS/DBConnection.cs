@@ -8127,6 +8127,75 @@ namespace AIS.Controllers
             con.Close();
             return list;
         }
+        public List<FADNewParaPerformanceModel> GetFADNewParaPerformance()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewParaPerformanceModel> list = new List<FADNewParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_new_paras_performance";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewParaPerformanceModel zb = new FADNewParaPerformanceModel();
+                    zb.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+       
+        public List<FADLagacyParaPerformanceModel> GetFADLagacyParaPerformance()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADLagacyParaPerformanceModel> list = new List<FADLagacyParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = " pkg_rpt.p_get_lagacy_paras_performance";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADLagacyParaPerformanceModel zb = new FADLagacyParaPerformanceModel();
+                    zb.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+
+
+
 
     }
 }

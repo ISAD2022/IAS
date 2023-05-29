@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "FAD_Legacy_Para_Performance";
+    Layout = "_Layout";
+}
+<script>
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#A_P_E_T tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+    });
+</script>
+
+<div class="row col-md-12 mt-3">
+    <h3 style=" display:block;color: #45c545;">FAD Legacy Para Performance</h3>
+</div>
+
+
+
+<!--  <div class="row col-md-12 mt-4">
+      <div style=" width:155px">
+          <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+      </div>
+      <div class=" col-md-5 mr-1">
+          <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
+      </div>
+
+      <div style=" width:135px">
+          <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
+      </div>
+      <div style=" width:545px">
+          <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
+      </div>
+  </div>-->
+<div class="row col-md-12 mt-1">
+    <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+
+</div>
+
+
+
+
+<div class="row col-md-12 mt-3 mb-2">
+
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
+
+</div>
+
+<div class="row col-md-12 mt-3">
+    <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+
+
+                <th class="col-md-auto">SR#</th>
+                <th class="col-md-auto">Audit Zone</th>
+
+                <th class="col-md-auto">Total Paras</th>
+                <th class="col-md-auto">Settled Paras</th>
+                <th class="col-md-auto">Un-Settled Paras</th>
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["LAGACYPARAPERFORMANCE"] != null)
+                {
+
+                    var index = 1;
+                    foreach (var item in (dynamic)(ViewData["LAGACYPARAPERFORMANCE"]))
+                    {
+
+                        <tr>
+                            <td>@index</td>
+                            <td>@item.AUDIT_ZONE</td>
+                            <td>@item.Total_Paras</td>
+                            <td>@item.Setteled_Para</td>
+                            <td>@item.Unsetteled_Para</td>
+                        </tr>
+                        index++;
+                    }
+                }
+            }
+        </tbody>
+
+    </table>
+</div>
+<div class="col-md-12 offset-md-12 mt-4">
+    <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;">Download Report/Print</button>
+</div>
+
