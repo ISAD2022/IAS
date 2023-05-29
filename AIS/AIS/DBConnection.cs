@@ -51,8 +51,8 @@ namespace AIS
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -5611,6 +5611,7 @@ namespace AIS
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("entityId", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8032,7 +8033,6 @@ namespace AIS
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
 
-
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8066,8 +8066,6 @@ namespace AIS
                 cmd.CommandText = "pkg_rpt.p_get_risk";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-
-
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8086,7 +8084,33 @@ namespace AIS
         }
 
 
+        public List<ObservationResponsiblePPNOModel> GetLegacyParaResponsiblePersons(string PARA_REF)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_get_legacy_para_responsibles";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
+                    rp.
 
+                    //list.Add(nm);
+                }
+            }
+            con.Close();
+            return list;
+        }
 
 
 

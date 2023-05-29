@@ -5,18 +5,18 @@
 <script>
     var g_paraId = 0;
     var g_obsList = [];
-    var g_procId=0;
+    var g_procId = 0;
     var g_subprocId = 0;
     var g_procDetailId = 0;
 
     $(document).ready(function () {
-        $('#viewMemo_compliance').richText({
+        $('#responseAuditee').richText({
             imageUpload: false,
             fileUpload: false,
             videoEmbed: false,
             urls: false
         });
-       
+
     });
 
     function viewParaDetails(ref_p, memo_no, paraId) {
@@ -63,7 +63,7 @@
         });
 
     }
-    function updateParaDetails(ref_p, memo_no, paraId) {        
+    function updateParaDetails(ref_p, memo_no, paraId) {
         console.log()
         $('#LagacyParaUpdateModel').modal('show');
 
@@ -72,20 +72,20 @@
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val(),
-                'PARA_REF':ref_p,
+                'PARA_REF': ref_p,
             },
             cache: false,
             success: function (data) {
                 $('#process_detail').modal('show');
                 if (data.length > 0) {
-                   var  v =data[0];
-                    g_procId=v.process;
-                    g_subprocId=v.suB_PROCESS;
-                    g_procDetailId=v.procesS_DETAIL;
+                    var v = data[0];
+                    g_procId = v.process;
+                    g_subprocId = v.suB_PROCESS;
+                    g_procDetailId = v.procesS_DETAIL;
 
                     $('#updateMemo_process').val(v.process);
                     getSubProcessList();
-                   
+
                     $('#observation').html(v.gisT_OF_PARAS);
                     $('#responseAuditee').val('').trigger('change');
                 }
@@ -116,8 +116,8 @@
                 success: function (data) {
                     $('#updateMemo_subprocess').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
-                        var className="";
-                        if (g_subprocId == item.s_ID){
+                        var className = "";
+                        if (g_subprocId == item.s_ID) {
                             className = 'selected = "selected"';
                         }
                         $('#updateMemo_subprocess').append("<option " + className + " value=\"" + item.s_ID + "\"> " + item.heading + " </option > ");
@@ -146,7 +146,7 @@
                     $('#updateMemo_violation').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
 
-                         var className="";
+                        var className = "";
                         if (g_procDetailId == item.id) {
                             className = 'selected = "selected"';
                         }
@@ -154,7 +154,7 @@
                         $('#updateMemo_violation').append("<option " + className + " value=\"" + item.id + "\"> " + item.heading + "</option>");
                     });
 
-                   
+
 
                 },
                 dataType: "json",
@@ -164,8 +164,63 @@
 
     }
 
-     function reloadLocation() {
-       getLegacyPara();
+    function reloadLocation() {
+        getLegacyPara();
+    }
+    function openResponsiblePPs() {
+        $('#ResponsiblePPModel').modal('show');
+        $('#matchedPPNoPanels').empty();
+        return false;
+    }
+    function getMatchedPP() {
+        $('#matchedPPNoPanels').empty();
+        g_respUser = [];
+        $.ajax({
+            url: "/ApiCalls/get_matched_pp_numbers",
+            type: "POST",
+            data: {
+                'PPNO': $('#responsiblePPNoEntryField').val()
+            },
+            cache: false,
+            success: function (data) {
+                g_respUser.push(data);
+                if (data.id > 0) {
+                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
+                }
+                else
+                    $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
+            },
+            dataType: "json",
+        });
+    }
+    function deleteRespRow(e) {
+        $(e).parent().parent().remove();
+    }
+
+    function addResponsibilityToMainTable() {
+        if (g_respUser[0].id > 0) {
+            if ($('#respCheckBOX').is(':checked')) {
+
+                /*if ($('#resp_loan_case').val() == "" && $('#resp_account_number').val() == ""){
+                     alert("Please either Loan Case No. or Account No. to proceed"); return false;
+                }*/
+
+
+                var lc = $('#resp_loan_case').val();
+                var acc = $('#resp_account_number').val();
+                if (lc == "" && acc == "") {
+                    alert("Please enter Either Loan Case Or Account Number to Proceed"); return false;
+                }
+                var srNo = $('#listofRespPersons tbody tr').length;
+                srNo++;
+                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                g_respUsersArr.push(g_respUser[0]);
+            }
+            else {
+                alert("Please Check checkbox to proceed"); return false;
+            }
+        }
+
     }
 </script>
 
@@ -201,7 +256,7 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation Gist</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I II</th>                    
+                    <th class="col-md-auto">VOL I II</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -225,7 +280,7 @@
             <div class="mt-3 modal-body">
                 <form>
 
-                  <div class="form-group">
+                    <div class="form-group">
                         <label for="updateMemo_process" class="font-weight-bold">Process</label>
                         <select id="updateMemo_process" onchange="getSubProcessList();" class="form-select form-control" aria-label="Default select example">
                             <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
@@ -243,9 +298,8 @@
                     <div class="form-group">
                         <label for="updateMemo_subprocess" class="font-weight-bold">Sub Process</label>
                         <select id="updateMemo_subprocess" onchange="getSubProcessViolationList();" class="form-select form-control" aria-label="Default select example">
-                          
                         </select>
-                        
+
                     </div>
                     <div class="form-group">
                         <label for="updateMemo_violation" class="font-weight-bold">Checklist Details</label>
@@ -272,14 +326,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="font-weight-bold">Observation</label>
-
-                    </div>
-                    <div class="form-group">
-                        <div id="observation" class="col-md-12"></div>
-
-                    </div>
                     <div class="row mt-3 col-md-12">
                         <label class="font-weight-bold">Para Text</label>
 
@@ -287,8 +333,27 @@
                     <div class="form-group">
                         <textarea class="form-control" id="responseAuditee"></textarea>
                     </div>
-
-
+                    <div class="form-group">
+                        <label for="viewMemo_loancase">Responsible PP NO.</label>
+                        <div class="row col-sm-12">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openResponsiblePPs();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </form>
             </div>
 
@@ -299,4 +364,45 @@
         </div>
     </div>
 </div>
+
+
+<div id="ResponsiblePPModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Responsible Person</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">P.P No.</label>
+                        <div class="row col-sm-12">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="responsiblePPNoEntryField" />
+                            </div>
+                            <div class="col-sm-2 w-100">
+                                <button onclick="getMatchedPP();" type="button" class="btn btn-danger">Find</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="matchedPPNoPanels" style="padding:20px;">
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="addResponsibilityToMainTable();" type="button" class="btn btn-danger">Add Responsibility</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
