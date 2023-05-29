@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Http;
 using AIS;
+using AIS.Controllers;
 
 namespace IAMS
 {

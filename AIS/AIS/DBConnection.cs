@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using AIS.Models;
 using Oracle.ManagedDataAccess.Client;
 using System.Security.Cryptography;
@@ -15,9 +16,9 @@ using iTextSharp.tool.xml.parser;
 using System.Globalization;
 using iText.Signatures;
 
-namespace AIS
+namespace AIS.Controllers
 {
-    public class DBConnection
+    public class DBConnection : Controller
     {
         private SessionHandler sessionHandler;
         private readonly SQLParams sqlParams = new SQLParams();
@@ -44,15 +45,17 @@ namespace AIS
         {
 
         }
+       
 
         private OracleConnection DatabaseConnection()
         {
             try
             {
+               
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -60,6 +63,12 @@ namespace AIS
                 return con;
             }
             catch (Exception e) { return null; }
+        }
+
+        public IActionResult Logout()
+        {
+            this.DisposeLoginSession();
+            return RedirectToAction("Index", "Login");
         }
 
         public UserModel AutheticateLogin(LoginModel login)
@@ -4078,8 +4087,14 @@ namespace AIS
         }
         public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
         {
-
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();          
+
+
+            //var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0 && OBS_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
 
@@ -4112,6 +4127,7 @@ namespace AIS
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.PPNO_TEST = loggedInUser.PPNumber;
                     //chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
                 }
@@ -4707,6 +4723,7 @@ namespace AIS
                     chk.ISTEAMLEAD = rdr["TEAMLEAD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    chk.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"].ToString());
                     list.Add(chk);
                 }
             }
@@ -8103,7 +8120,6 @@ namespace AIS
                 while (rdr.Read())
                 {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
-                    rp.
 
                     //list.Add(nm);
                 }
