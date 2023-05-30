@@ -2,6 +2,8 @@
     ViewData["Title"] = "FAD_New_Para_Performance";
     Layout = "_Layout";
 }
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <script>
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
@@ -14,60 +16,120 @@
 
     });
 </script>
+<script type="text/javascript">
+    function CreatePDFfromHTML() {
+        $('#wait').show
 
-<div class="row col-md-12 mt-3">
-    <h3 style=" display:block;color: #45c545;">FAD New Para Performance</h3>
-</div>
+        var HTML_Width = $(".reportsec").width();
+        var HTML_Height = $(".reportsec").height();
+        var top_left_margin = 15;
+        var PDF_Width = HTML_Width + (top_left_margin * 2);
+        var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+        var canvas_image_width = HTML_Width;
+        var canvas_image_height = HTML_Height;
 
-<div class="row col-md-12 mt-3 mb-2">
+        var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
 
-    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
-
-</div>
-
-<div class="row col-md-12 mt-3">
-    <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-            <tr>
-
-
-                <th class="col-md-auto">SR#</th>
-                <th class="col-md-auto">Audit Zone</th>
-
-                <th class="col-md-auto">Total Paras</th>
-                <th class="col-md-auto">On Spot Settled</th>
-                <th class="col-md-auto">Un-Settled Paras</th>
+        html2canvas($(".reportsec")[0]).then(function (canvas) {
+            var imgData = canvas.toDataURL("image/jpeg", 1.0);
+            var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+            pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+            for (var i = 1; i <= totalPDFPages; i++) {
+                pdf.addPage(PDF_Width, PDF_Height);
+                pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+            }
+            pdf.save("Report.pdf");
+            $('#wait').hide()
+            //  $(".WordSection1").hide();
+        });
+    }
 
 
+</script>
+
+<div class="reportsec">
+    <div class="row col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">FAD New Para Performance</h3>
+    </div>
 
 
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                if (ViewData["NEWPARAPERFORMANCE"] != null)
-                {
+    <!--
+        <div class="row col-md-12 mt-4">
+            <div style=" width:155px">
+                <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+            </div>
+            <div class=" col-md-5 mr-1">
+                <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
+            </div>
 
-                    var index = 1;
-                    foreach (var item in (dynamic)(ViewData["NEWPARAPERFORMANCE"]))
+            <div style=" width:135px">
+                <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
+            </div>
+            <div style=" width:545px">
+                <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
+            </div>
+        </div>
+        <div class="row col-md-12 mt-1">
+            <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+
+        </div>
+    -->
+
+
+
+    <div class="row col-md-12 mt-3 mb-2">
+
+        <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
+
+    </div>
+
+    <div class="row col-md-12 mt-3">
+        <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+
+
+                    <th class="col-md-auto">SR#</th>
+                    <th class="col-md-auto">Audit Zone</th>
+
+                    <th class="col-md-auto">Total Paras</th>
+                    <th class="col-md-auto">Settled Paras</th>
+                    <th class="col-md-auto">Un-Settled Paras</th>
+
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["NEWPARAPERFORMANCE"] != null)
                     {
 
-                        <tr>
-                            <td>@index</td>
-                            <td>@item.AUDIT_ZONE</td>
-                            <td>@item.Total_Paras</td>
-                            <td>@item.Setteled_Para</td>
-                            <td>@item.Unsetteled_Para</td>
-                        </tr>
-                        index++;
+                        var index = 1;
+                        foreach (var item in (dynamic)(ViewData["NEWPARAPERFORMANCE"]))
+                        {
+
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.AUDIT_ZONE</td>
+                                <td>@item.Total_Paras</td>
+                                <td>@item.Setteled_Para</td>
+                                <td>@item.Unsetteled_Para</td>
+                            </tr>
+                            index++;
+                        }
                     }
                 }
-            }
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
+    </div>
 </div>
-<div class="col-md-12 offset-md-12 mt-4"  style="display:flex; align-content:flex-end">
-        <button id="printPreview_btn" class="btn btn-danger">Download Report/Print</button>    
+<div class="col-md-12  mt-4">
+    <div style="display:flex; flex-direction:row-reverse">
+        <button id="printPreview_btn" class="btn btn-danger" onclick="CreatePDFfromHTML();">Download Report/Print</button>
+    </div>
+
 </div>
 
