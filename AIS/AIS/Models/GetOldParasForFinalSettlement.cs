@@ -12,7 +12,7 @@ namespace AIS.Models
         public string AUDIT_PERIOD { get; set; }
         public string PARA_NO { get; set; }
         public string GISTOFPARA { get; set; }
-        public decimal AMOUNT_INVOLVED { get; set; }
+        public string AMOUNT_INVOLVED { get; set; }
         public string REPLY { get; set; }
         public int? REPLIEDBY { get; set; }
         public string REPLIEDDATE { get; set; }

@@ -4,7 +4,7 @@
 }
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
@@ -12,13 +12,8 @@
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
-
-
     });
 
-
-</script>
-<script type="text/javascript">
     function CreatePDFfromHTML() {
         $('#wait').show
 
@@ -45,92 +40,93 @@
             //  $(".WordSection1").hide();
         });
     }
-
-
 </script>
-<div class="reportsec">
-    <div class="row col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Legacy Para's till 31st Dec, 2022</h3>
-    </div>
+<div class="col-md-12 ">
 
+    <div class="col-md-10 reportsec mx-auto">
 
+        <div class="row col-md-12 mt-3">
+            <h3 style=" display:block;color: #45c545;">Legacy Paras till 31st Dec, 2022 (Before Implementation of AIS)</h3>
+        </div>
 
-    <!--  <div class="row col-md-12 mt-4">
-          <div style=" width:155px">
-              <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+        <!--  <div class="row col-md-12 mt-4">
+              <div style=" width:155px">
+                  <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+              </div>
+              <div class=" col-md-5 mr-1">
+                  <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
+              </div>
+
+              <div style=" width:135px">
+                  <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
+              </div>
+              <div style=" width:545px">
+                  <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
+              </div>
           </div>
-          <div class=" col-md-5 mr-1">
-              <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
-          </div>
+        <div class="row col-md-12 mt-1">
+            <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
 
-          <div style=" width:135px">
-              <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
-          </div>
-          <div style=" width:545px">
-              <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
-          </div>
-      </div>
-    <div class="row col-md-12 mt-1">
-        <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+        </div>-->
 
-    </div>-->
+        <div class="row col-md-12 mt-3 mb-2">
 
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
 
+        </div>
 
-
-    <div class="row col-md-12 mt-3 mb-2">
-
-        <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
-
-    </div>
-
-    <div class="row col-md-12 mt-3">
-        <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-
-
-                    <th class="col-md-auto">SR#</th>
-                    <th class="col-md-auto">Audit Zone</th>
-
-                    <th class="col-md-auto">Total Paras</th>
-                    <th class="col-md-auto">Settled Paras</th>
-                    <th class="col-md-auto">Un-Settled Paras</th>
-
-
-
-
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    if (ViewData["LAGACYPARAPERFORMANCE"] != null)
-                    {
-
-                        var index = 1;
-                        foreach (var item in (dynamic)(ViewData["LAGACYPARAPERFORMANCE"]))
+        <div class="row col-md-12 mt-3">
+            <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                    <tr>
+                        <th class="col-md-1">Sr. No.</th>
+                        <th class="col-md-4">Audit Zone</th>
+                        <th class="col-md-2 text-center">Total Legacy Paras</th>
+                        <th class="col-md-2 text-center">Settled Paras</th>
+                        <th class="col-md-2 text-center">Un-Settled Paras</th>
+                        <th class="col-md-1 text-center">Ratio</th>
+                        <th class="col-md-auto text-center">R1</th>
+                        <th class="col-md-auto text-center">R2</th>
+                        <th class="col-md-auto text-center">R3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (ViewData["LAGACYPARAPERFORMANCE"] != null)
                         {
 
-                            <tr>
-                                <td>@index</td>
-                                <td>@item.AUDIT_ZONE</td>
-                                <td>@item.Total_Paras</td>
-                                <td>@item.Setteled_Para</td>
-                                <td>@item.Unsetteled_Para</td>
-                            </tr>
-                            index++;
+                            var index = 1;
+                            foreach (var item in (dynamic)(ViewData["LAGACYPARAPERFORMANCE"]))
+                            {
+
+                                        <tr>
+                                            <td style="text-align:center;">@index</td>
+                                            <td>@item.Audit_Zone</td>
+                                            <td style="text-align:right;">@item.Total_Paras</td>
+                                            <td style="text-align:right;">@item.Setteled_Para</td>
+                                            <td style="text-align:right;">@item.Unsetteled_Para</td>
+                                            <td style="text-align:right;">@item.Ratio</td>
+                                            <td style="text-align:right;color:red;">@item.R1</td>
+                                            <td style="text-align:right; color:yellow;">@item.R2</td>
+                                            <td style="text-align:right; color:green;">@item.R3</td>
+                                        </tr>
+                                index++;
+                            }
                         }
                     }
-                }
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
+        </div>
+
+        <div class="col-md-12  mt-4">
+            <div style="display:flex; flex-direction:row-reverse">
+                <button id="printPreview_btn" class="btn btn-danger" onclick="CreatePDFfromHTML();">Download Report/Print</button>
+            </div>
+
+        </div>
+
     </div>
-</div>
-<div class="col-md-12  mt-4">
-    <div style="display:flex; flex-direction:row-reverse">
-        <button id="printPreview_btn" class="btn btn-danger" onclick="CreatePDFfromHTML();">Download Report/Print</button>
-    </div>
+
 
 </div>
-

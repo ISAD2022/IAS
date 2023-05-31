@@ -11,7 +11,7 @@ namespace AIS.Models
         public string AUDITPERIOD { get; set; }
         public string PARANO { get; set; }
         public string GISTOFPARA { get; set; }
-        public decimal AMOUNT { get; set; }
+        public string AMOUNT { get; set; }
         public string REPLIEDBY { get; set; }
         public string VOL_I_II { get; set; }
         public string REPLY { get; set; }

@@ -772,10 +772,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string AddOldParasComplianceReviewer(string Para_ID, string REPLY, string r_status)
+        public string AddOldParasComplianceReviewer(string Para_ID, string REPLY, string r_status, int ID)
         {
             string response = "";
-            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, REPLY, r_status);
+            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, REPLY, r_status, ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

@@ -6920,7 +6920,7 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["ref_p"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
                     chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                    chk.AMOUNT = Convert.ToDecimal(rdr["amount"].ToString());
+                    chk.AMOUNT = rdr["amount"].ToString();
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
                     list.Add(chk);
                 }
@@ -7039,7 +7039,7 @@ namespace AIS.Controllers
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GISTOFPARA = rdr["GISTOFPARA"].ToString();
 
-                    chk.AMOUNT_INVOLVED = Convert.ToDouble(rdr["AMOUNT_INVOLVED"].ToString());
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
 
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ID = rdr["ID"].ToString();
@@ -7053,7 +7053,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public string AddOldParasComplianceReviewer(string Para_ID, string Reply, string r_status)
+        public string AddOldParasComplianceReviewer(string Para_ID,  string Reply, string r_status, int ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7104,7 +7104,7 @@ namespace AIS.Controllers
                     chk.AUDITPERIOD = rdr["audit_period"].ToString();
                     chk.PARANO = rdr["para_no"].ToString();
                     chk.GISTOFPARA = rdr["gistofpara"].ToString();
-                    chk.AMOUNT = Convert.ToDecimal(rdr["amount_involved"].ToString());
+                    chk.AMOUNT = rdr["amount_involved"].ToString();
                     chk.REPLY = rdr["reply"].ToString();
                     chk.REMARKS = rdr["remarks"].ToString();
                     chk.REVIEWER_REMARKS = rdr["REVIEWER_REMARKS"].ToString();
@@ -7145,7 +7145,7 @@ namespace AIS.Controllers
                     chk.AUDITPERIOD = rdr["audit_period"].ToString();
                     chk.PARANO = rdr["para_no"].ToString();
                     chk.GISTOFPARA = rdr["gistofpara"].ToString();
-                    chk.AMOUNT = Convert.ToDecimal(rdr["amount_involved"].ToString());
+                    chk.AMOUNT = rdr["amount_involved"].ToString();
                     chk.REPLY = rdr["reply"].ToString();
                     chk.REMARKS = rdr["remarks"].ToString();
                     chk.REVIEWER_REMARKS = rdr["REVIEWER_REMARKS"].ToString();
@@ -7208,7 +7208,7 @@ namespace AIS.Controllers
                     chk.AUDITEENAME = rdr["AUDITEENAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GISTOFPARA = rdr["GISTOFPARA"].ToString();
-                    chk.AMOUNT_INVOLVED = Convert.ToDecimal(rdr["AMOUNT_INVOLVED"].ToString());
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
 
                     chk.REPLY = rdr["REPLY"].ToString();
@@ -7538,7 +7538,7 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["ref_p"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
                     chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                    chk.AMOUNT = Convert.ToDecimal(rdr["amount"].ToString());
+                    chk.AMOUNT =rdr["amount"].ToString();
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
                     list.Add(chk);
                 }
@@ -8148,10 +8148,11 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     FADNewParaPerformanceModel zb = new FADNewParaPerformanceModel();
-                    zb.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
+                    zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
                     zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
                     list.Add(zb);
 
                 }
@@ -8182,10 +8183,11 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     FADLagacyParaPerformanceModel zb = new FADLagacyParaPerformanceModel();
-                    zb.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
+                    zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
                     zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
                     list.Add(zb);
 
                 }

@@ -98,6 +98,8 @@
              return;
         }
 
+        $('#viewMemoModel_ObSent').modal('hide');
+
         $.ajax({
             url: "/ApiCalls/add_observation_gist_and_recommendation",
             type: "POST",

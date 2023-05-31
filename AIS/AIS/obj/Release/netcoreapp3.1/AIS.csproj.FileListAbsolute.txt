@@ -642,3 +642,5 @@ D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Execut
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\FAD\review_gist_recommendation.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\auditee_observations_report.cshtml.g.cs
 D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\Concluding_Closing_Audit.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_Legacy_Para_Performance.cshtml.g.cs
+D:\Audit Inspection Sol\ais\AIS\AIS\obj\Release\netcoreapp3.1\Razor\Views\Reports\FAD_New_Para_Performance.cshtml.g.cs

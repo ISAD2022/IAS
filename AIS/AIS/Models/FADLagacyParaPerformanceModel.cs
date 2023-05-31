@@ -6,10 +6,11 @@ namespace AIS.Models
 {
     public class FADLagacyParaPerformanceModel
     {
-        public string AUDIT_ZONE { get; set; }
+        public string Audit_Zone { get; set; }
         public string Total_Paras { get; set; }
         public string Setteled_Para { get; set; }
         public string Unsetteled_Para { get; set; }
+        public string Ratio { get; set; }
 
     }
 }
