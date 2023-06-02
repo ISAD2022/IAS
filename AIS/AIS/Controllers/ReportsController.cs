@@ -46,7 +46,47 @@ namespace AIS.Controllers
             }
         }
 
-     
+        public IActionResult FAD_New_Old_Para_Performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["FADZoneList"] = dBConnection.FADGetReportZones();
+            ViewData["NEWPARAPERFORMANCE"] = dBConnection.GetFADNewOldParaPerformance(0);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult FAD_Process_Function_Wise_Analysis()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();           
+            ViewData["NEWPARAPERFORMANCE"] = dBConnection.GetFADNewOldParaPerformance(0);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
 
 
         public IActionResult FAD_Legacy_Para_Performance()

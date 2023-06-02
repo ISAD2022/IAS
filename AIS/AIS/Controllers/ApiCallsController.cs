@@ -920,10 +920,13 @@ namespace AIS.Controllers
 
 
         }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_fad_new_old_para_performance(int AUDIT_ZONE_ID)
+        {
+            return dBConnection.GetFADNewOldParaPerformance(AUDIT_ZONE_ID);
 
 
-
-
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

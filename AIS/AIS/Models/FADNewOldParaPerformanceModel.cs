@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
 {
-    public class FADLagacyParaPerformanceModel
+    public class FADNewOldParaPerformanceModel
     {
         public string Audit_Zone { get; set; }
+        public string Checklist { get; set; }
+        public string Sub_Checklist { get; set; }
+        public string Checklist_Details { get; set; }
         public string Total_Paras { get; set; }
         public string Setteled_Para { get; set; }
         public string Unsetteled_Para { get; set; }

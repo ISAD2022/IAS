@@ -8152,7 +8152,10 @@ namespace AIS.Controllers
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
                     zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
-                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString(); 
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
                 }
@@ -8161,7 +8164,45 @@ namespace AIS.Controllers
             return list;
         }
 
-       
+
+        public List<FADNewOldParaPerformanceModel> GetFADNewOldParaPerformance( int AUDIT_ZONE_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_new_old_paras_performance";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
+                    zb.Checklist = rdr["Checklist"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Close();
+            return list;
+        }
+
         public List<FADLagacyParaPerformanceModel> GetFADLagacyParaPerformance()
         {
             sessionHandler = new SessionHandler();
@@ -8188,6 +8229,9 @@ namespace AIS.Controllers
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
                     zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
                     zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
                 }
