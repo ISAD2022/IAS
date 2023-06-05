@@ -54,8 +54,8 @@ namespace AIS.Controllers
                
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -5938,10 +5938,10 @@ namespace AIS.Controllers
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_rpt.p_GetObservationEntities";
+                cmd.CommandText = "pkg_hd.P_get_audit_Concluding_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -5949,9 +5949,9 @@ namespace AIS.Controllers
                 {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
-                    chk.NAME = rdr["NAME"].ToString();
+                    chk.NAME = rdr["entity_name"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
-                    chk.ENG_ID = Convert.ToInt32(rdr["eng_plan_id"].ToString());
+                    chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
                 }
