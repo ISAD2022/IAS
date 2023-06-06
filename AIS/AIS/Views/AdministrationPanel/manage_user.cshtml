@@ -37,7 +37,7 @@
         }
     }
   
-    function getrelation() {
+    function getrelation(parentEntityId=0, userEntityId=0) {
 
 
         $('#controlingsearch').empty();
@@ -52,11 +52,19 @@
 
             cache: false,
             success: function (data) {
-
-                $('#controlingsearch').append('<option id="0" value="0" selected="selected">--Select Controlling/Reporting Office--</option>');
+               
+                
+                $('#controlingsearch').append('<option id="0" value="0">--Select Controlling/Reporting Office--</option>');
                 $.each(data, function (index, contof) {
-                    $('#controlingsearch').append('<option value="' + contof.entitY_ID + '" id="' + contof.entitY_REALTION_ID + '">' + contof.description + '</option>')
+
+                     var selected = '';
+                    if (contof.entitY_ID == parentEntityId)
+                    selected = 'selected="selected"';
+
+                    $('#controlingsearch').append('<option '+selected+' value="' + contof.entitY_ID + '" id="' + contof.entitY_REALTION_ID + '">' + contof.description + '</option>')
                 });
+                if (userEntityId!=0)
+                    getplacepost(userEntityId)
 
                 // console.log(data);
 
@@ -68,7 +76,7 @@
 
     }
 
-  function getplacepost() {
+  function getplacepost(userEntityId=0) {
       $('#childposting').empty();
 
         $.ajax({
@@ -81,10 +89,13 @@
 
             cache: false,
             success: function (data) {
-                //console.log(data);
                 $('#childposting').append('<option id="0" value="0" selected="selected">--Select Place of Posting--</option>');
                 $.each(data, function (index, gpp) {
-                    $('#childposting').append('<option value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
+
+                     var selected = '';
+                    if (gpp.entitY_ID == userEntityId)
+                    selected = 'selected="selected"';
+                    $('#childposting').append('<option ' + selected + ' value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
                 });
             },
             dataType: "json",
@@ -179,14 +190,11 @@
             if (user.id == userId) {
                 $('#ppnoSaveField').val(user.ppNumber);
                 $('#loginSaveField').val(user.ppNumber);
-                if (user.userPostingDiv != null) {
-                    $('#divSaveField').val(user.userParentEntityID);
-                    ShowEditedDivisionDepartments(user.userEntityID);
-                }
-                if (user.userPostingZone != null) {
-                    $('#zoneSaveField').val(user.userParentEntityID);
-                    ShowEditedZonesBranches(user.userEntityID);
-                }
+
+                $('#RelationshipField').val(user.relationshipId);
+                getrelation(user.userParentEntityID, user.userEntityID);
+                
+               
                 $('#emailSaveField').val(user.email);
                 if (user.userGroupID != null)
                     $('#roleSaveField').val(user.userGroupID);
@@ -238,10 +246,10 @@
             $('#deptSaveField').append('<option value="0" id="0">--Select Audit Department--</option>')
 
             $.ajax({
-                url: "/Planning/div_departments",
+                url: "/ApiCalls/get_departments",
                 type: "POST",
                 data: {
-                    'div_code': $('#divSafeField option:selected').val()
+                    'div_id': $('#divSaveField').val()
                 },
                 cache: false,
                 success: function (data) {
@@ -296,6 +304,7 @@
                     'USER_ID': g_userId,
                     'PPNO': $('#ppnoSaveField').val(),
                     'ROLE_ID': $('#roleSaveField option:selected').val(),
+                    'ENTITY_ID': $('#childposting option:selected').val(),
                     'PASSWORD': $('#passSaveField').val(),
                     'ISACTIVE': active,
                 },
@@ -387,65 +396,6 @@
             <input id="loginSearchField" autocomplete="false" readonly onfocus="this.removeAttribute('readonly');" class="form-control" type="text" />
         </div>
     </div>
-
-
-
-    <!-- <div class="row col-md-12 mt-1">
-         <div class="col-md-2">
-             <label>Division</label>
-         </div>
-         <div class="col-md-4">
-             <select id="divSearchField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
-                 <option id="0" value="0" selected="selected">--Select Division--</option>
-                 @{
-                     if (ViewData["DivisionList"] != null)
-                     {
-                         foreach (var item in (dynamic)(ViewData["DivisionList"]))
-                         {
-                             <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                         }
-                     }
-                 }
-             </select>
-         </div>
-         <div class="col-md-2">
-             <label>Department</label>
-         </div>
-         <div class="col-md-4">
-             <select id="deptSearchField" class="form-control form-select">
-                 <option id="0" value="0" selected="selected">--Select Department--</option>
-             </select>
-         </div>
-     </div>
-     <div class="row col-md-12 mt-1">
-         <div class="col-md-2">
-             <label>Zone</label>
-         </div>
-         <div class="col-md-4">
-             <select id="zoneSearchField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
-                 <option id="0" value="0" selected="selected">--Select Zone--</option>
-                 @{
-                     if (ViewData["ZoneList"] != null)
-                     {
-                         foreach (var item in (dynamic)(ViewData["ZoneList"]))
-                         {
-                             <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                         }
-                     }
-                 }
-             </select>
-         </div>
-         <div class="col-md-2">
-             <label>Branches</label>
-         </div>
-         <div class="col-md-4">
-             <select id="brSearchField" class="form-control form-select">
-                 <option id="0" value="0" selected="selected">--Select Branch--</option>
-             </select>
-         </div>
-     </div>-->
-
-
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">
             <label>Email</label>
@@ -473,27 +423,6 @@
             </select>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">

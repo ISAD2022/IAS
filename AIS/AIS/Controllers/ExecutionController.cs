@@ -97,8 +97,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-        ///////
         public IActionResult auditee_observations_report_cau()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -119,8 +117,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-
 
         public IActionResult auditee_position_outlook()
         {
@@ -275,7 +271,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -295,7 +291,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
@@ -317,8 +313,6 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
-
-            //ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

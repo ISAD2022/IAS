@@ -44,18 +44,18 @@ namespace AIS.Controllers
         public DBConnection()
         {
 
-        }
+        }      
        
-
+        #region Database Connection
         private OracleConnection DatabaseConnection()
         {
             try
             {
-               
+
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -65,12 +65,153 @@ namespace AIS.Controllers
             catch (Exception e) { return null; }
         }
 
+        #endregion
+
+        #region Session Handling
+        public static string getMd5Hash(string input)
+        {
+            // Create a new instance of the MD5CryptoServiceProvider object.
+            MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
+
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hasher.ComputeHash(System.Text.Encoding.Default.GetBytes(input));
+
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+        public bool DisposeLoginSession()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var sessionUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection();
+            con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_lg.Session_END";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = sessionUser.PPNumber;
+                cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = sessionUser.SessionId;
+                cmd.ExecuteReader();
+            }
+            con.Close();
+            sessionHandler.DisposeUserSession();
+            return true;
+        }
+        public bool IsLoginSessionExist(string PPNumber = "")
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var sessionUser = sessionHandler.GetSessionUser();
+
+            if (PPNumber == "")
+                PPNumber = sessionUser.PPNumber;
+            bool isSession = false;
+            if (PPNumber != null && PPNumber != "")
+            {
+                var con = this.DatabaseConnection();
+                con.Open();
+
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "pkg_lg.p_get_user_session";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = PPNumber;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
+                            isSession = true;
+                    }
+                }
+                con.Close();
+            }
+
+            return isSession;
+        }
+        public bool KillExistSession(LoginModel login)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var enc_pass = getMd5Hash(login.Password);
+            var con = this.DatabaseConnection();
+            con.Open();
+            bool isSession = false;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                string _sql = "pkg_lg.p_get_user";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
+                cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                cmd.CommandText = _sql;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    cmd.CommandText = "pkg_lg.Session_Kill";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
+                    cmd.ExecuteReader();
+                    isSession = true;
+                }
+            }
+            con.Close();
+            sessionHandler.DisposeUserSession();
+            return isSession;
+        }
+        public bool TerminateIdleSession()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            bool isTerminate = false;
+            if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
+            {
+                var con = this.DatabaseConnection();
+                con.Open();
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "pkg_lg.Session_Kill";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.ExecuteReader();
+                    isTerminate = true;
+                }
+                con.Close();
+                sessionHandler.DisposeUserSession();
+            }
+            return isTerminate;
+        }
         public IActionResult Logout()
         {
             this.DisposeLoginSession();
             return RedirectToAction("Index", "Login");
         }
 
+        #endregion
+
+        #region Authentication
         public UserModel AutheticateLogin(LoginModel login)
         {
             var con = this.DatabaseConnection();
@@ -186,141 +327,9 @@ namespace AIS.Controllers
             con.Close();
             return user;
         }
-        public bool DisposeLoginSession()
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var sessionUser = sessionHandler.GetSessionUser();
-            var con = this.DatabaseConnection();
-            con.Open();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_lg.Session_END";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = sessionUser.PPNumber;
-                cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = sessionUser.SessionId;
-                cmd.ExecuteReader();
-            }
-            con.Close();
-            sessionHandler.DisposeUserSession();
-            return true;
-        }
-        public bool IsLoginSessionExist(string PPNumber = "")
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var sessionUser = sessionHandler.GetSessionUser();
+        #endregion
 
-            if (PPNumber == "")
-                PPNumber = sessionUser.PPNumber;
-            bool isSession = false;
-            if (PPNumber != null && PPNumber != "")
-            {
-                var con = this.DatabaseConnection();
-                con.Open();
-
-                using (OracleCommand cmd = con.CreateCommand())
-                {
-                    cmd.CommandText = "pkg_lg.p_get_user_session";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = PPNumber;
-                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                    OracleDataReader rdr = cmd.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
-                            isSession = true;
-                    }
-                }
-                con.Close();
-            }
-
-            return isSession;
-        }
-        public bool KillExistSession(LoginModel login)
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var enc_pass = getMd5Hash(login.Password);
-            var con = this.DatabaseConnection();
-            con.Open();
-            bool isSession = false;
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                string _sql = "pkg_lg.p_get_user";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
-                cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                cmd.CommandText = _sql;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    cmd.CommandText = "pkg_lg.Session_Kill";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
-                    cmd.ExecuteReader();
-                    isSession = true;
-                }
-            }
-            con.Close();
-            sessionHandler.DisposeUserSession();
-            return isSession;
-        }
-        public bool TerminateIdleSession()
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var loggedInUser = sessionHandler.GetSessionUser();
-            bool isTerminate = false;
-            if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
-            {
-                var con = this.DatabaseConnection();
-                con.Open();
-                using (OracleCommand cmd = con.CreateCommand())
-                {
-                    cmd.CommandText = "pkg_lg.Session_Kill";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                    cmd.ExecuteReader();
-                    isTerminate = true;
-                }
-                con.Close();
-                sessionHandler.DisposeUserSession();
-            }
-            return isTerminate;
-        }
-        public static string getMd5Hash(string input)
-        {
-            // Create a new instance of the MD5CryptoServiceProvider object.
-            MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
-
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hasher.ComputeHash(System.Text.Encoding.Default.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data 
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
-        }
+        #region MenuPage
         public List<MenuModel> GetTopMenus()
         {
             sessionHandler = new SessionHandler();
@@ -480,6 +489,24 @@ namespace AIS.Controllers
             con.Close();
             return true;
         }
+
+        #endregion
+
+        #region Auditors
+
+        #endregion
+
+        #region Auditee
+
+        #endregion
+
+        #region Higher Management
+
+        #endregion
+
+        #region Reports
+        #endregion
+
         public List<GroupModel> GetGroups()
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -607,7 +634,6 @@ namespace AIS.Controllers
             con.Close();
             return periodList;
         }
-
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
         {
             bool result = false;
@@ -744,7 +770,6 @@ namespace AIS.Controllers
             con.Close();
             return maxTeamId;
         }
-
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
         {
             sessionHandler = new SessionHandler();
@@ -1151,6 +1176,8 @@ namespace AIS.Controllers
                         um.UserEntityTypeID = Convert.ToInt32(rdr["c_type_id"].ToString());
 
                     um.UserEntityName = rdr["c_name"].ToString();
+                    if (rdr["relation_type_id"].ToString() != null && rdr["relation_type_id"].ToString() != "")
+                        um.RelationshipId = Convert.ToInt32(rdr["relation_type_id"]);
                     um.UserParentEntityName = rdr["p_name"].ToString();
                     if (Convert.ToInt32(rdr["type_id"].ToString()) == 6)
                     {
@@ -1421,6 +1448,7 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = newPassword;
                 cmd.Parameters.Add("ISACTIVE", OracleDbType.Varchar2).Value = user.ISACTIVE;
                 cmd.Parameters.Add("ROLEID", OracleDbType.Int32).Value = user.ROLE_ID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = user.ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
             }
@@ -1778,14 +1806,18 @@ namespace AIS.Controllers
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
 
-
+            var entityId = 0;
+            if (div_code == 0)
+                entityId = Convert.ToInt32(loggedInUser.UserEntityID);
+            else
+                entityId = div_code;
 
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_rpt.R_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("EntityId", OracleDbType.Int32).Value = entityId;
                 cmd.Parameters.Add("PPNUM", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -5927,6 +5959,37 @@ namespace AIS.Controllers
             }
             con.Close();
             return chk;
+        }
+        public List<AuditeeEntitiesModel> GetObservationEntitiesForManageObservations()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_GetObservationEntities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
+                    chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
+                    chk.NAME = rdr["entity_name"].ToString();
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Close();
+            return list;
         }
         public List<AuditeeEntitiesModel> GetObservationEntities()
         {

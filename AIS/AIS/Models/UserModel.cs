@@ -18,6 +18,7 @@ namespace AIS.Models
         public int? UserPostingAuditZone { get; set; }
         public string DivName { get; set; }
         public int? UserPostingDiv { get; set; }
+        public int? RelationshipId { get; set; }
         public string DeptName { get; set; }
         public int? UserPostingDept { get; set; }
         public string BranchName { get; set; }
