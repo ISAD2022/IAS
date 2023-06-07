@@ -5645,7 +5645,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public List<OldParasModel> GetLegacyParasForUpdate(int ENTITY_ID, string PARA_REF)
+        public List<OldParasModel> GetLegacyParasForUpdate(int ENTITY_ID, string PARA_REF="")
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5674,15 +5674,18 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
-                    chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
-                    chk.SUB_PROCESS =Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
-                    chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
+                    if (PARA_REF=="")
+                    {
+                        chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
+                        chk.SUB_PROCESS =Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
+                        chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
+                    }
+
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+                   
                     list.Add(chk);
                 }
             }
