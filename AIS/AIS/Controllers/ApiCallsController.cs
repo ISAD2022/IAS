@@ -914,15 +914,22 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<OldParasModel> get_legacy_paras_for_update_FAD(int ENTITY_ID, string PARA_REF)
+        public List<OldParasModel> get_legacy_paras_for_update_FAD(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
         {
-            return dBConnection.GetLegacyParasForUpdateFAD(ENTITY_ID, PARA_REF);
+            return dBConnection.GetLegacyParasForUpdateFAD(ENTITY_ID, PARA_REF, PARA_ID);
         }
 
         [HttpPost]
         public string update_legacy_para_with_responsibilities(AddLegacyParaModel LEGACY_PARA)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibility(LEGACY_PARA) + "\"}";
+
+        }
+
+        [HttpPost]
+        public string update_legacy_para_with_responsibilities_FAD(AddLegacyParaModel LEGACY_PARA)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibilityFAD(LEGACY_PARA) + "\"}";
 
         }
 

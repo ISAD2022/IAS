@@ -385,6 +385,7 @@ namespace AIS.Controllers
                     menuPage.Page_Path = rdr["PAGE_PATH"].ToString();
                     menuPage.Page_Order = Convert.ToInt32(rdr["PAGE_ORDER"]);
                     menuPage.Status = rdr["STATUS"].ToString();
+                    if(rdr["HIDE_MENU"].ToString()!=null && rdr["HIDE_MENU"].ToString() != "")
                     menuPage.Hide_Menu = Convert.ToInt32(rdr["HIDE_MENU"]);
                     modelList.Add(menuPage);
                 }
@@ -5729,7 +5730,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public List<OldParasModel> GetLegacyParasForUpdateFAD(int ENTITY_ID, string PARA_REF = "")
+        public List<OldParasModel> GetLegacyParasForUpdateFAD(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5774,6 +5775,8 @@ namespace AIS.Controllers
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
 
+                    if (PARA_REF != null)
+                        chk.PARA_RESP = this.GetLegacyParaResponsiblePersonsFAD(PARA_REF);
                     list.Add(chk);
                 }
 
@@ -5836,6 +5839,69 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("AC_NO", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
                             cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT; 
                             cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
+                            cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                            cmd.ExecuteReader();
+                        }
+                    }
+
+                }
+            }
+            con.Close();
+            return resp;
+        }
+
+
+        public string UpdateLegacyParasWithResponsibilityFAD(AddLegacyParaModel LEGACY_PARA)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_update_legacy_Para_text";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ref_id", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
+                cmd.Parameters.Add("obtext", OracleDbType.Clob).Value = LEGACY_PARA.PARA_TEXT;
+                cmd.Parameters.Add("process", OracleDbType.Int32).Value = LEGACY_PARA.PROCESS_ID;
+                cmd.Parameters.Add("subprocessid", OracleDbType.Int32).Value = LEGACY_PARA.SUB_PROCESS_ID;
+                cmd.Parameters.Add("checklistid", OracleDbType.Int32).Value = LEGACY_PARA.CHECKLIST_DETAIL_ID;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                    {
+                        resp = rdr["REMARKS"].ToString();
+                        return resp;
+                    }
+                    else
+                    {
+                        resp = rdr["REMARKS"].ToString();
+                    }
+
+                }
+                if (LEGACY_PARA.RESP_PP != null)
+                {
+                    if (LEGACY_PARA.RESP_PP.Count > 0)
+                    {
+                        foreach (ObservationResponsiblePPNOModel pp in LEGACY_PARA.RESP_PP)
+                        {
+                            cmd.CommandText = "pkg_fad.p_add_para_responsibility";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("refid", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = pp.PP_NO;
+                            cmd.Parameters.Add("lC_no", OracleDbType.Int32).Value = pp.LOAN_CASE;
+                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
+                            cmd.Parameters.Add("AC_NO", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             cmd.ExecuteReader();
                         }
@@ -8339,7 +8405,7 @@ namespace AIS.Controllers
                 {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
                     rp.LOAN_CASE = "";
-                    rp.EMP_NAME = "";
+                    rp.EMP_NAME = rdr["EMP_NAME"].ToString(); ;
                     rp.LC_AMOUNT = "";
                     rp.ACCOUNT_NUMBER = "";
                     rp.ACC_AMOUNT = "";
@@ -8369,13 +8435,19 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
-
-                    //list.Add(nm);
+                    rp.LOAN_CASE = rdr["LOAN_CASE"].ToString();
+                    rp.EMP_NAME = rdr["EMP_NAME"].ToString(); 
+                    rp.LC_AMOUNT = rdr["LC_AMOUNT"].ToString();
+                    rp.ACCOUNT_NUMBER = rdr["ACCOUNT_NUMBER"].ToString();
+                    rp.ACC_AMOUNT = rdr["AC_AMOUNT"].ToString();
+                    rp.PP_NO = rdr["PP_NO"].ToString();
+                    list.Add(rp);
                 }
             }
             con.Close();
             return list;
         }
+
         public List<FADNewParaPerformanceModel> GetFADNewParaPerformance()
         {
             sessionHandler = new SessionHandler();

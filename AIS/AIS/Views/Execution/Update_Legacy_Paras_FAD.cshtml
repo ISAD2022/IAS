@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Update_Legacy_Paras";
+    ViewData["Title"] = "Update_Legacy_Paras_FAD";
     Layout = "_Layout";
 }
 <script>
@@ -8,6 +8,7 @@
     var g_procId = 0;
     var g_subprocId = 0;
     var g_procDetailId = 0;
+    var g_paraRef = "";
 
     $(document).ready(function () {
         $('#responseAuditee').richText({
@@ -16,32 +17,27 @@
             videoEmbed: false,
             urls: false
         });
-        var counter = 0;
-
-        $("#addrow").on("click", function () {
-            var newRow = $("<tr>");
-            var cols = "";
-
-            cols += '<td><input type="text" class="form-control" name="ppNo' + counter + '"/></td>';
-            cols += '<td><input type="text" class="form-control" name="empName' + counter + '"/></td>';
-            cols += '<td><input type="text" class="form-control" name="loanCase' + counter + '"/></td>';
-            cols += '<td><input type="text" class="form-control" name="lcAMount' + counter + '"/></td>';
-            cols += '<td><input type="text" class="form-control" name="account' + counter + '"/></td>';
-            cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '"/></td>';
-
-            cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
-            newRow.append(cols);
-            $('#listofRespPersons tbody').append(newRow);
-            counter++;
-        });
-
-        $("listofRespPersons").on("click", ".ibtnDel", function (event) {
-            $(this).closest("tr").remove();
-            counter -= 1
-        });
 
     });
 
+    function DeleteRecord(e) {
+        $(e).closest("tr").remove();
+    }
+    function AddNewRespRecord(pp, emp_name, lc, lc_amount, acc, acc_amount) {
+        var newRow = $("<tr>");
+        var cols = "";
+        var counter = $('#listofRespPersons tbody tr').length + 1;
+        cols += '<td><input type="text" class="form-control" name="ppNo' + counter + '" value="' + pp + '" /></td>';
+        cols += '<td><input type="text" class="form-control" name="empName' + counter + '" value="' + emp_name + '"/></td>';
+        cols += '<td><input type="text" class="form-control" name="loanCase' + counter + '" value ="' + lc + '" /></td>';
+        cols += '<td><input type="text" class="form-control" name="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
+        cols += '<td><input type="text" class="form-control" name="account' + counter + '" value="' + acc + '" /></td>';
+        cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
+
+        cols += '<td><input onclick="DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
+        newRow.append(cols);
+        $('#listofRespPersons tbody').append(newRow);
+    }
 
     function calculateRow(row) {
         var price = +row.find('input[name^="price"]').val();
@@ -56,7 +52,7 @@
         $("#grandtotal").text(grandTotal.toFixed(2));
     }
     function getLegacyPara() {
-
+        $('#process_detail').modal('hide');
         $('#manageObsPanel tbody').empty();
         $.ajax({
             url: "/ApiCalls/get_legacy_paras_for_update_FAD",
@@ -78,19 +74,21 @@
 
     }
     function updateParaDetails(ref_p, memo_no, paraId) {
-        console.log()
-        $('#LagacyParaUpdateModel').modal('show');
 
+        g_paraId = paraId;
+        g_paraRef = ref_p;
+        $('#process_detail').modal('show');
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_update",
+            url: "/ApiCalls/get_legacy_paras_for_update_FAD",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val(),
                 'PARA_REF': ref_p,
+                'PARA_ID': paraId
             },
             cache: false,
             success: function (data) {
-                $('#process_detail').modal('show');
+
                 if (data.length > 0) {
                     var v = data[0];
                     g_procId = v.process;
@@ -102,7 +100,13 @@
 
                     $('#observation').html(v.gisT_OF_PARAS);
                     $('#responseAuditee').val(v.parA_TEXT).trigger('change');
+                    $('#listofRespPersons tbody').empty();
 
+                    $.each(v.parA_RESP, function (i, res) {
+
+                        AddNewRespRecord(res.pP_NO, res.emP_NAME, res.loaN_CASE, res.lC_AMOUNT, res.accounT_NUMBER, res.acC_AMOUNT)
+
+                    });
                 }
             },
 
@@ -179,61 +183,62 @@
     function reloadLocation() {
         getLegacyPara();
     }
-    function openResponsiblePPs() {
-        $('#ResponsiblePPModel').modal('show');
-        $('#matchedPPNoPanels').empty();
-        return false;
-    }
-    function getMatchedPP() {
-        $('#matchedPPNoPanels').empty();
-        g_respUser = [];
-        $.ajax({
-            url: "/ApiCalls/get_matched_pp_numbers",
-            type: "POST",
-            data: {
-                'PPNO': $('#responsiblePPNoEntryField').val()
-            },
-            cache: false,
-            success: function (data) {
-                g_respUser.push(data);
-                if (data.id > 0) {
-                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
-                }
-                else
-                    $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
-            },
-            dataType: "json",
+
+    function submitLegacyParaUpdates() {
+        var resP = [];
+        $.each($('#listofRespPersons tbody tr'), function (i, v) {
+            resP.push({
+                'PP_NO': $(v).find('td').eq(0).find('input').eq(0).val(),
+                'EMP_NAME': $(v).find('td').eq(1).find('input').eq(0).val(),
+                'LOAN_CASE': $(v).find('td').eq(2).find('input').eq(0).val(),
+                'LC_AMOUNT': $(v).find('td').eq(3).find('input').eq(0).val(),
+                'ACCOUNT_NUMBER': $(v).find('td').eq(4).find('input').eq(0).val(),
+                'ACC_AMOUNT': $(v).find('td').eq(5).find('input').eq(0).val(),
+            });
         });
-    }
-    function deleteRespRow(e) {
-        $(e).parent().parent().remove();
-    }
-
-    function addResponsibilityToMainTable() {
-        if (g_respUser[0].id > 0) {
-            if ($('#respCheckBOX').is(':checked')) {
-
-                /*if ($('#resp_loan_case').val() == "" && $('#resp_account_number').val() == ""){
-                     alert("Please either Loan Case No. or Account No. to proceed"); return false;
-                }*/
 
 
-                var lc = $('#resp_loan_case').val();
-                var acc = $('#resp_account_number').val();
-                if (lc == "" && acc == "") {
-                    alert("Please enter Either Loan Case Or Account Number to Proceed"); return false;
-                }
-                var srNo = $('#listofRespPersons tbody tr').length;
-                srNo++;
-                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
-                g_respUsersArr.push(g_respUser[0]);
-            }
-            else {
-                alert("Please Check checkbox to proceed"); return false;
-            }
+        if ($('#updateMemo_process').val() == 0) {
+            alert("Please select Process");
+            return;
         }
 
+
+        if ($('#updateMemo_subprocess').val() == 0) {
+            alert("Please select Sub Process");
+            return;
+        }
+
+        if ($('#updateMemo_violation').val() == 0) {
+            alert("Please select Checklist Detail");
+            return;
+        }
+
+
+        var add_leg_data = {
+            'PARA_TEXT': $('.richText-editor').html(),
+            'ID': g_paraId,
+            'PROCESS_ID': $('#updateMemo_process').val(),
+            'SUB_PROCESS_ID': $('#updateMemo_subprocess').val(),
+            'CHECKLIST_DETAIL_ID': $('#updateMemo_violation').val(),
+            'REF_P': g_paraRef,
+            'RESP_PP': resP
+        };
+        $.ajax({
+            url: "/ApiCalls/update_legacy_para_with_responsibilities_FAD",
+            type: "POST",
+            data: add_leg_data,
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(getLegacyPara);
+            },
+
+            dataType: "json",
+        });
+
     }
+
 </script>
 
 <div class="row">
@@ -357,20 +362,12 @@
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
                                         <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th class="col-md- auto text-center font-weight-bold"></th>
+                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="AddNewRespRecord('','','','','','');" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5" style="text-align: left;">
-                                            <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                    </tr>
-                                </tfoot>
+
                             </table>
                         </div>
                     </div>
@@ -378,7 +375,7 @@
             </div>
 
             <div class="mt-3 modal-footer">
-                <button id="PublishParaText" type="button" class="btn btn-danger">Save changes</button>
+                <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button" class="btn btn-danger">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -410,7 +407,6 @@
                     </div>
                     <div class="form-group">
                         <div id="matchedPPNoPanels" style="padding:20px;">
-
                         </div>
                     </div>
 
