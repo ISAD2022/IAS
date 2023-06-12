@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
@@ -31,6 +32,8 @@ namespace AIS.Models
         public int STATUS { get; set; }
         public string PARA_TEXT { get; set; }
         public string ENTERED_BY { get; set; }
+
+        public List<ObservationResponsiblePPNOModel> PARA_RESP { get; set; }
 
     }
 }

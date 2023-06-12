@@ -312,7 +312,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -332,7 +332,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
 
             //ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
             if (!sessionHandler.IsUserLoggedIn())
@@ -676,7 +676,27 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
+        public IActionResult Update_Legacy_Paras_FAD()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetLegacyParasEntitiesFAD();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
 
         public IActionResult pre_concluding_audit()
         {
