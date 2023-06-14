@@ -926,9 +926,16 @@ namespace AIS.Controllers
 
         }
 
-        
+        [HttpPost]
+        public string update_legacy_para_with_responsibilities_no_changes(AddLegacyParaModel LEGACY_PARA)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibilityNoChanges(LEGACY_PARA) + "\"}";
 
-             [HttpPost]
+        }
+
+
+
+        [HttpPost]
         public string get_employee_name_from_pp(int PP_NO)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetEmployeeNameFromPPNO(PP_NO) + "\"}";
