@@ -926,6 +926,15 @@ namespace AIS.Controllers
 
         }
 
+        
+
+             [HttpPost]
+        public string get_employee_name_from_pp(int PP_NO)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetEmployeeNameFromPPNO(PP_NO) + "\"}";
+
+        }
+
         [HttpPost]
         public string update_legacy_para_with_responsibilities_FAD(AddLegacyParaModel LEGACY_PARA)
         {

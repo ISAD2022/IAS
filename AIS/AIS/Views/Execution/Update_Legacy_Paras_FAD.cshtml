@@ -27,12 +27,12 @@
         var newRow = $("<tr>");
         var cols = "";
         var counter = $('#listofRespPersons tbody tr').length + 1;
-        cols += '<td><input type="text" class="form-control" name="ppNo' + counter + '" value="' + pp + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="empName' + counter + '" value="' + emp_name + '"/></td>';
-        cols += '<td><input type="text" class="form-control" name="loanCase' + counter + '" value ="' + lc + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
-        cols += '<td><input type="text" class="form-control" name="account' + counter + '" value="' + acc + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
+        cols += '<td><input type="text" onfocusout="getEmployeeName(this,' + counter + ');" class="form-control" id="ppNo' + counter + '" name="ppNo' + counter + '" value="' + pp + '" /></td>';
+        cols += '<td><input type="text" class="form-control" disabled="disabled" id="empName' + counter + '" value="' + emp_name + '" name="empName' + counter + '" value="' + emp_name + '"  /></td>';
+        cols += '<td><input type="text" class="form-control" name="loanCase' + counter + '" id="loanCase' + counter + '" value ="' + lc + '" /></td>';
+        cols += '<td><input type="text" class="form-control" name="lcAMount' + counter + '" id="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
+        cols += '<td><input type="text" class="form-control" name="account' + counter + '"  id="account' + counter + '" value="' + acc + '" /></td>';
+        cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" id="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
 
         cols += '<td><input onclick="DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
         newRow.append(cols);
@@ -74,10 +74,13 @@
 
     }
     function updateParaDetails(ref_p, memo_no, paraId) {
+        
 
         g_paraId = paraId;
         g_paraRef = ref_p;
         $('#process_detail').modal('show');
+        $('#listofRespPersons tbody').empty();
+
         $.ajax({
             url: "/ApiCalls/get_legacy_paras_for_update_FAD",
             type: "POST",
@@ -97,10 +100,9 @@
 
                     $('#updateMemo_process').val(v.process);
                     getSubProcessList();
-
                     $('#observation').html(v.gisT_OF_PARAS);
                     $('#responseAuditee').val(v.parA_TEXT).trigger('change');
-                    $('#listofRespPersons tbody').empty();
+                    $('#auditCriteriaRiskField').val(v.risK_ID);                  
 
                     $.each(v.parA_RESP, function (i, res) {
 
@@ -180,13 +182,39 @@
 
     }
 
+    function getEmployeeName(e, counter) {
+        console.log(e.value);
+        if (e.value != "" && e.value.length > 4 && e.value != "000000") {
+            $.ajax({
+                url: "/ApiCalls/get_employee_name_from_pp",
+                type: "POST",
+                data: {
+                    'PP_NO': e.value
+                },
+                cache: false,
+                success: function (data) {
+                    console.log($(e));
+                    $('#empName' + counter).val(data.Message);
+                },
+
+                dataType: "json",
+            });
+        }
+    }
+
     function reloadLocation() {
         getLegacyPara();
     }
 
     function submitLegacyParaUpdates() {
         var resP = [];
+          var _error = false;
+
         $.each($('#listofRespPersons tbody tr'), function (i, v) {
+            if ($(v).find('td').eq(0).find('input').eq(0).val() != "" && ($(v).find('td').eq(2).find('input').eq(0).val() == "" || $(v).find('td').eq(3).find('input').eq(0).val() == "") && $(v).find('td').eq(4).find('input').eq(0).val() == "") {
+
+                _error = true;
+            }
             resP.push({
                 'PP_NO': $(v).find('td').eq(0).find('input').eq(0).val(),
                 'EMP_NAME': $(v).find('td').eq(1).find('input').eq(0).val(),
@@ -196,7 +224,10 @@
                 'ACC_AMOUNT': $(v).find('td').eq(5).find('input').eq(0).val(),
             });
         });
-
+        if (_error) {
+            alert("Please enter either Loan Case with Loan Case Amount or Account Number against responsible");
+            return false;
+        }
 
         if ($('#updateMemo_process').val() == 0) {
             alert("Please select Process");
@@ -213,6 +244,10 @@
             alert("Please select Checklist Detail");
             return;
         }
+        if ($('#auditCriteriaRiskField').val() == 0) {
+            alert("Please select Risk");
+            return;
+        }
 
 
         var add_leg_data = {
@@ -221,6 +256,7 @@
             'PROCESS_ID': $('#updateMemo_process').val(),
             'SUB_PROCESS_ID': $('#updateMemo_subprocess').val(),
             'CHECKLIST_DETAIL_ID': $('#updateMemo_violation').val(),
+            'RISK_ID': $('#auditCriteriaRiskField').val(),
             'REF_P': g_paraRef,
             'RESP_PP': resP
         };

@@ -54,8 +54,8 @@ namespace AIS.Controllers
 
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
@@ -5658,7 +5658,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_FAD.P_GetEntitiesForLegacyPara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5700,6 +5700,7 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    //chk.RISK_ID = rdr["RISK"].ToString();
                     chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -5755,6 +5756,7 @@ namespace AIS.Controllers
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.RISK_ID = rdr["RISK"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
                     chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
@@ -5787,7 +5789,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
         public string UpdateLegacyParasWithResponsibility(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -5803,10 +5804,11 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ref_id", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
                 cmd.Parameters.Add("obtext", OracleDbType.Clob).Value = LEGACY_PARA.PARA_TEXT;
-                cmd.Parameters.Add("process", OracleDbType.Int32).Value = LEGACY_PARA.PROCESS_ID;
+                cmd.Parameters.Add("process_id", OracleDbType.Int32).Value = LEGACY_PARA.PROCESS_ID;
                 cmd.Parameters.Add("subprocessid", OracleDbType.Int32).Value = LEGACY_PARA.SUB_PROCESS_ID;
                 cmd.Parameters.Add("checklistid", OracleDbType.Int32).Value = LEGACY_PARA.CHECKLIST_DETAIL_ID;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("risk_id", OracleDbType.Int32).Value = LEGACY_PARA.RISK_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5850,7 +5852,6 @@ namespace AIS.Controllers
             return resp;
         }
 
-
         public string UpdateLegacyParasWithResponsibilityFAD(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -5866,10 +5867,11 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ref_id", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
                 cmd.Parameters.Add("obtext", OracleDbType.Clob).Value = LEGACY_PARA.PARA_TEXT;
-                cmd.Parameters.Add("process", OracleDbType.Int32).Value = LEGACY_PARA.PROCESS_ID;
+                cmd.Parameters.Add("process_id", OracleDbType.Int32).Value = LEGACY_PARA.PROCESS_ID;
                 cmd.Parameters.Add("subprocessid", OracleDbType.Int32).Value = LEGACY_PARA.SUB_PROCESS_ID;
                 cmd.Parameters.Add("checklistid", OracleDbType.Int32).Value = LEGACY_PARA.CHECKLIST_DETAIL_ID;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("risk_id", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5895,9 +5897,9 @@ namespace AIS.Controllers
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("refid", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
-                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = pp.PP_NO;
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = pp.PP_NO;
+                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("lC_no", OracleDbType.Int32).Value = pp.LOAN_CASE;
                             cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
                             cmd.Parameters.Add("AC_NO", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
@@ -8559,6 +8561,35 @@ namespace AIS.Controllers
             }
             con.Close();
             return list;
+        }
+
+        public string GetEmployeeNameFromPPNO(int PP_NO)
+        {
+            string emp_name = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADLagacyParaPerformanceModel> list = new List<FADLagacyParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = " pkg_lg.p_get_emp_name";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = PP_NO;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    emp_name = rdr["emp_name"].ToString();
+
+                }
+            }
+            con.Close();
+            return emp_name;
         }
 
 

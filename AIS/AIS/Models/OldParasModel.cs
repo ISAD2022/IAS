@@ -11,6 +11,7 @@ namespace AIS.Models
         public string ENTITY_CODE { get; set; }
         public string ENTITY_ID { get; set; }
         public string TYPE_ID { get; set; }
+        public string RISK_ID { get; set; }
         public string AUDIT_PERIOD { get; set; }
         public string ENTITY_NAME { get; set; }
         public string PARA_NO { get; set; }
