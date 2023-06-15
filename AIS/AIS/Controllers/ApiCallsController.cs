@@ -933,8 +933,6 @@ namespace AIS.Controllers
 
         }
 
-
-
         [HttpPost]
         public string get_employee_name_from_pp(int PP_NO)
         {
@@ -960,8 +958,17 @@ namespace AIS.Controllers
         public List<FADNewOldParaPerformanceModel> get_fad_new_old_para_performance(int AUDIT_ZONE_ID)
         {
             return dBConnection.GetFADNewOldParaPerformance(AUDIT_ZONE_ID);
+        }
+        [HttpPost]
+        public List<LegacyUserWiseOldParasPerformanceModel> get_legacy_user_wise_performance(DateTime? FILTER_DATE)
+        {
+            return dBConnection.GetLegacyUserWiseOldParasPerformance(FILTER_DATE);
+        }
 
-
+        [HttpPost]
+        public string delete_legacy_para_responsibility(string PARA_REF, int PARA_ID, int PP_NO)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaResponsibility(PARA_REF, PARA_ID, PP_NO) + "\"}";
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

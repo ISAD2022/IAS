@@ -10,6 +10,11 @@ $(document).ready(function () {
         closeFuncCalled();
     });
 
+    $('body').append('<div id="confirmAlertMessagesPopup" class="modal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document">  <div class="modal-content">    <div class="modal-header">      <h5 class="modal-title">Confirmation Box</h5>      <button type="button" class="close" data-dismiss="modal" aria-label="Close">        <span aria-hidden="true">&times;</span>      </button>    </div>    <div class="modal-body">      <div id="content_confirmAlertMessagesPopup"></div>    </div>    <div class="modal-footer"><button type="button" onclick="onConfirmationCallback();" class="btn btn-danger" data-dismiss="modal">Yes</button><button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>    </div>  </div></div></div >');
+    $('#confirmAlertMessagesPopup').on('hidden.bs.modal', function (e) {
+        confirmAlertcloseFuncCalled();
+    });
+
     $('.modal').on("hidden.bs.modal", function (e) { //fire on closing modal box
         if ($('.modal:visible').length) { // check whether parent modal is opend after child modal close
             $('body').addClass('modal-open'); // if open mean length is 1 then add a bootstrap css class to body of the page
@@ -25,6 +30,22 @@ function onAlertCallback(funcToCall) {
     closeFuncCalled = funcToCall;
 }
 function closeFuncCalled() {
+
+}
+
+
+function confirmAlert(message) {
+    $('#content_confirmAlertMessagesPopup').empty();
+    $('#content_confirmAlertMessagesPopup').html(message);
+    $('#confirmAlertMessagesPopup').modal('show');
+}
+function onconfirmAlertCallback(funcToCall) {
+    confirmAlertcloseFuncCalled = funcToCall;
+}
+function confirmAlertcloseFuncCalled() {
+
+}
+function onConfirmationCallback() {
 
 }
 

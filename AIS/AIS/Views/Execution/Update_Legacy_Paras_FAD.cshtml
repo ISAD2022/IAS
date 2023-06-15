@@ -9,6 +9,7 @@
     var g_subprocId = 0;
     var g_procDetailId = 0;
     var g_paraRef = "";
+    var g_event="";
 
     $(document).ready(function () {
         $('#responseAuditee').richText({
@@ -22,19 +23,57 @@
 
     function DeleteRecord(e) {
         $(e).closest("tr").remove();
+
+        }
+
+    function DeleteRecordFromDB(e){
+        g_event=e;
+        confirmAlert("Do you really want to delete this record");
+        onconfirmAlertCallback(DeleteConfirmAlertBox)
     }
-    function AddNewRespRecord(pp, emp_name, lc, lc_amount, acc, acc_amount) {
-        var newRow = $("<tr>");
+
+    function DeleteConfirmAlertBox(){
+       
+        $.ajax({
+            url: "/ApiCalls/delete_legacy_para_responsibility",
+            type: "POST",
+            data: {
+                'PARA_REF': g_paraRef,
+                'PARA_ID': g_paraId,
+                'PP_NO': $($($(g_event).parent().parent()).find('td').eq(0).find('input').eq(0)).val(),
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                $(g_event).closest("tr").remove();              
+            },
+
+            dataType: "json",
+        });
+
+
+    }
+    function AddNewRespRecord(pp, emp_name, lc, lc_amount, acc, acc_amount, mode) {
+        var dis_attr=''
+        if(mode=="disabled")
+            dis_attr = 'disabled="disabled";'
+
+        var newRow = $("<tr \"new_row\">");
+        if (mode == "disabled")
+        newRow = $("<tr class=\"disabled_row\">");
         var cols = "";
         var counter = $('#listofRespPersons tbody tr').length + 1;
-        cols += '<td><input type="text" onfocusout="getEmployeeName(this,' + counter + ');" class="form-control" id="ppNo' + counter + '" name="ppNo' + counter + '" value="' + pp + '" /></td>';
-        cols += '<td><input type="text" class="form-control" disabled="disabled" id="empName' + counter + '" value="' + emp_name + '" name="empName' + counter + '" value="' + emp_name + '"  /></td>';
-        cols += '<td><input type="text" class="form-control" name="loanCase' + counter + '" id="loanCase' + counter + '" value ="' + lc + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="lcAMount' + counter + '" id="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
-        cols += '<td><input type="text" class="form-control" name="account' + counter + '"  id="account' + counter + '" value="' + acc + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" id="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' onfocusout="getEmployeeName(this,' + counter + ');" class="form-control" id="ppNo' + counter + '" name="ppNo' + counter + '" value="' + pp + '" /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' class="form-control" disabled="disabled" id="empName' + counter + '" value="' + emp_name + '" name="empName' + counter + '" value="' + emp_name + '"  /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' class="form-control" name="loanCase' + counter + '" id="loanCase' + counter + '" value ="' + lc + '" /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' class="form-control" name="lcAMount' + counter + '" id="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' class="form-control" name="account' + counter + '"  id="account' + counter + '" value="' + acc + '" /></td>';
+        cols += '<td><input type="text" ' + dis_attr + ' class="form-control" name="accountAmount' + counter + '" id="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
 
-        cols += '<td><input onclick="DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
+        if (mode == "disabled")
+        cols += '<td><input onclick="DeleteRecordFromDB(this);" type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
+        else
+            cols += '<td><input onclick="DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger " value="Delete"></td>';
         newRow.append(cols);
         $('#listofRespPersons tbody').append(newRow);
     }
@@ -106,7 +145,7 @@
 
                     $.each(v.parA_RESP, function (i, res) {
 
-                        AddNewRespRecord(res.pP_NO, res.emP_NAME, res.loaN_CASE, res.lC_AMOUNT, res.accounT_NUMBER, res.acC_AMOUNT)
+                        AddNewRespRecord(res.pP_NO, res.emP_NAME, res.loaN_CASE, res.lC_AMOUNT, res.accounT_NUMBER, res.acC_AMOUNT,'disabled')
 
                     });
                 }
@@ -211,6 +250,10 @@
           var _error = false;
 
         $.each($('#listofRespPersons tbody tr'), function (i, v) {
+            if($(v).hasClass('disabled_row'))
+            {
+                return;
+            }
             if ($(v).find('td').eq(0).find('input').eq(0).val() != "" && ($(v).find('td').eq(2).find('input').eq(0).val() == "" || $(v).find('td').eq(3).find('input').eq(0).val() == "") && $(v).find('td').eq(4).find('input').eq(0).val() == "") {
 
                 _error = true;
@@ -262,6 +305,75 @@
         };
         $.ajax({
             url: "/ApiCalls/update_legacy_para_with_responsibilities_FAD",
+            type: "POST",
+            data: add_leg_data,
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(getLegacyPara);
+            },
+
+            dataType: "json",
+        });
+
+    }
+
+    function submitLegacyParaUpdatesWithNoChanges() {
+        var resP = [];
+        var _error = false;
+        $.each($('#listofRespPersons tbody tr'), function (i, v) {
+            if ($(v).find('td').eq(0).find('input').eq(0).val() != "" && ($(v).find('td').eq(2).find('input').eq(0).val() == "" || $(v).find('td').eq(3).find('input').eq(0).val() == "") && $(v).find('td').eq(4).find('input').eq(0).val() == "") {
+
+                _error = true;
+            }
+            resP.push({
+                'PP_NO': $(v).find('td').eq(0).find('input').eq(0).val(),
+                'EMP_NAME': $(v).find('td').eq(1).find('input').eq(0).val(),
+                'LOAN_CASE': $(v).find('td').eq(2).find('input').eq(0).val(),
+                'LC_AMOUNT': $(v).find('td').eq(3).find('input').eq(0).val(),
+                'ACCOUNT_NUMBER': $(v).find('td').eq(4).find('input').eq(0).val(),
+                'ACC_AMOUNT': $(v).find('td').eq(5).find('input').eq(0).val(),
+            });
+        });
+
+        if (_error) {
+            alert("Please enter either Loan Case and Loan Case Amount or Account Number against responsible");
+            return false;
+        }
+
+
+        if ($('#updateMemo_process').val() == 0) {
+            alert("Please select Process");
+            return;
+        }
+
+        if ($('#updateMemo_subprocess').val() == 0) {
+            alert("Please select Sub Process");
+            return;
+        }
+
+        if ($('#updateMemo_violation').val() == 0) {
+            alert("Please select Checklist Detail");
+            return;
+        }
+
+        if ($('#auditCriteriaRiskField').val() == 0) {
+            alert("Please select Risk");
+            return;
+        }
+
+        var add_leg_data = {
+            'PARA_TEXT': $('.richText-editor').html(),
+            'ID': g_paraId,
+            'PROCESS_ID': $('#updateMemo_process').val(),
+            'SUB_PROCESS_ID': $('#updateMemo_subprocess').val(),
+            'CHECKLIST_DETAIL_ID': $('#updateMemo_violation').val(),
+            'RISK_ID': $('#auditCriteriaRiskField').val(),
+            'REF_P': g_paraRef,
+            'RESP_PP': resP
+        };
+        $.ajax({
+            url: "/ApiCalls/update_legacy_para_with_responsibilities_no_changes",
             type: "POST",
             data: add_leg_data,
             cache: false,
@@ -398,13 +510,14 @@
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
                                         <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="AddNewRespRecord('','','','','','');" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                                        <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="AddNewRespRecord('','','','','','','');" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
 
                             </table>
+                            <p class="text-italic text-danger">Note:<br/>In case of wrong Responsibles added by AZ, delete the record first and reenter in the system</p>
                         </div>
                     </div>
                 </form>
@@ -412,49 +525,11 @@
 
             <div class="mt-3 modal-footer">
                 <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button" class="btn btn-danger">Save changes</button>
+                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaText" type="button" class="btn btn-primary">No changes Required</button>
+
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
-
-
-<div id="ResponsiblePPModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">Responsible Person</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">P.P No.</label>
-                        <div class="row col-sm-12">
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="responsiblePPNoEntryField" />
-                            </div>
-                            <div class="col-sm-2 w-100">
-                                <button onclick="getMatchedPP();" type="button" class="btn btn-danger">Find</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div id="matchedPPNoPanels" style="padding:20px;">
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button onclick="addResponsibilityToMainTable();" type="button" class="btn btn-danger">Add Responsibility</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
