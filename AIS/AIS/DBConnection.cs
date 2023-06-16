@@ -8668,16 +8668,14 @@ namespace AIS.Controllers
             return emp_name;
         }
 
-        public List<LegacyZoneWiseOldParasPerformanceModel> GetLegacyZoneWiseOldParasPerformance()
+        public List<LegacyZoneWiseOldParasPerformanceModel> GetLegacyZoneWiseOldParasPerformance(DateTime? FILTER_DATE)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            string query = "";
-            query = query + "  s.ID=" + loggedInUser.UserEntityID;
-
+           
 
             List<LegacyZoneWiseOldParasPerformanceModel> list = new List<LegacyZoneWiseOldParasPerformanceModel>();
 

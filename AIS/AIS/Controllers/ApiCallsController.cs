@@ -967,6 +967,11 @@ namespace AIS.Controllers
             return dBConnection.GetFADNewOldParaPerformance(AUDIT_ZONE_ID);
         }
         [HttpPost]
+        public List<LegacyZoneWiseOldParasPerformanceModel> get_legacy_zone_wise_performance(DateTime? FILTER_DATE)
+        {
+            return dBConnection.GetLegacyZoneWiseOldParasPerformance(FILTER_DATE);
+        }
+        [HttpPost]
         public List<LegacyUserWiseOldParasPerformanceModel> get_legacy_user_wise_performance(DateTime? FILTER_DATE)
         {
             return dBConnection.GetLegacyUserWiseOldParasPerformance(FILTER_DATE);
