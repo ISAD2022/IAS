@@ -32,7 +32,7 @@
                 g_obsList = data;
        
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.voL_I_II + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="parastatuschange(\'' + child.reF_P +'\');">Change Status</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.voL_I_II + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.parA_STATUS + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="parastatuschange(\'' + child.reF_P + '\');">Change Status</a></td></tr>')
                 });
 
             },
@@ -111,7 +111,8 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-1" style="text-align:center">VOL I-II</th>
+                    <th class="col-md-auto" style="text-align:center">VOL I-II</th>
+                    <th class="col-md-auto" style="text-align:center">Para Status</th>
                     <th class="col-md-auto">Action</th>
                    
 
@@ -145,7 +146,7 @@
                     <div class="mt-2 col-md-12">
                         <select id="checklistDetailField" class="form-control form-select">
                             <option value="6">Settled</option>
-                            <option value="7">Un-Settled</option>
+                            <option value="8">Un-Settled</option>
                         </select>                        
                     </div>
 

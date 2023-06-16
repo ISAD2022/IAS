@@ -30,7 +30,7 @@ namespace AIS.Models
 
         public int STATUS { get; set; }
         public int C_STATUS { get; set; }
-        public int PARA_STATUS { get; set; }
+        public string PARA_STATUS { get; set; }
         public int PARASTATUSUPDATEDBY { get; set; }
 
         public string PARA_TEXT { get; set; }

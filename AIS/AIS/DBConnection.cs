@@ -7855,6 +7855,7 @@ namespace AIS.Controllers
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-Settled";
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
 
                     chk.PROCESS_DES = rdr["Process_Des"].ToString();
