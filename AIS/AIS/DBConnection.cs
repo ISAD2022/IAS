@@ -56,8 +56,10 @@ namespace AIS.Controllers
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
-               // ocsb.C
-                // connect
+                ocsb.IncrPoolSize = 10;
+                ocsb.MaxPoolSize = 500;
+                ocsb.Pooling = true;
+                ocsb.ConnectionTimeout = 120;
                 con.ConnectionString = ocsb.ConnectionString;
                 // con.Open();
                 return con;
