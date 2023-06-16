@@ -531,9 +531,9 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasForResponse();
         }
         [HttpPost]
-        public List<OldParasModel> get_legacy_settled_paras()
+        public List<OldParasModel> get_legacy_settled_paras(int ENTITY_ID=0)
         {
-            return dBConnection.GetOldSettledParasForResponse();
+            return dBConnection.GetOldSettledParasForResponse(ENTITY_ID);
         }
         [HttpPost]
         public List<OldParasModel> get_manage_legacy_para()
@@ -855,10 +855,10 @@ namespace AIS.Controllers
            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
-        public string Add_Old_Para_Change_status(string REFID, string REMARKS)
+        public string Add_Old_Para_Change_status(string REFID, int NEW_STATUS, string REMARKS)
         {
             string response = "";
-            response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, REMARKS);
+            response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, NEW_STATUS, REMARKS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

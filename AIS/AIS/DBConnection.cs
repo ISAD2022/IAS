@@ -53,11 +53,11 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
-                ocsb.IncrPoolSize = 10;
-                ocsb.MaxPoolSize = 500;
+                ocsb.IncrPoolSize = 7;
+                ocsb.MaxPoolSize = 2000;
                 ocsb.Pooling = true;
                 ocsb.ConnectionTimeout = 120;
                 con.ConnectionString = ocsb.ConnectionString;
@@ -5495,7 +5495,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<OldParasModel> GetOldParasForResponse()
+        public List<OldParasModel> GetOldParasForResponse(int ENTITY_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5508,7 +5508,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_GetOldParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5537,7 +5538,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<OldParasModel> GetOldSettledParasForResponse()
+        public List<OldParasModel> GetOldSettledParasForResponse( int ENTITY_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5550,7 +5551,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_GetOldParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -7739,7 +7741,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public string AddChangeStatusRequestForSettledPara(string REFID, string REMARKS)
+        public string AddChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS, string REMARKS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7753,7 +7755,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
-
+                cmd.Parameters.Add("NewStatus", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
 
