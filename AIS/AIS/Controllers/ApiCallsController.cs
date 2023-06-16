@@ -927,6 +927,13 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public string update_legacy_para_with_responsibilities_no_changes_AZ(AddLegacyParaModel LEGACY_PARA)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibilityNoChangesAZ(LEGACY_PARA) + "\"}";
+
+        }
+
+        [HttpPost]
         public string update_legacy_para_with_responsibilities_no_changes(AddLegacyParaModel LEGACY_PARA)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibilityNoChanges(LEGACY_PARA) + "\"}";

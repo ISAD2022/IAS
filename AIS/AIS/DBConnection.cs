@@ -56,6 +56,7 @@ namespace AIS.Controllers
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+               // ocsb.C
                 // connect
                 con.ConnectionString = ocsb.ConnectionString;
                 // con.Open();
@@ -106,7 +107,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("SessionId", OracleDbType.Varchar2).Value = sessionUser.SessionId;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             sessionHandler.DisposeUserSession();
             return true;
         }
@@ -139,7 +140,7 @@ namespace AIS.Controllers
                             isSession = true;
                     }
                 }
-                con.Close();
+                con.Dispose();
             }
 
             return isSession;
@@ -173,7 +174,7 @@ namespace AIS.Controllers
                     isSession = true;
                 }
             }
-            con.Close();
+            con.Dispose();
             sessionHandler.DisposeUserSession();
             return isSession;
         }
@@ -197,7 +198,7 @@ namespace AIS.Controllers
                     cmd.ExecuteReader();
                     isTerminate = true;
                 }
-                con.Close();
+                con.Dispose();
                 sessionHandler.DisposeUserSession();
             }
             return isTerminate;
@@ -323,7 +324,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            con.Close();
+            con.Dispose();
             return user;
         }
         #endregion
@@ -356,7 +357,7 @@ namespace AIS.Controllers
                     modelList.Add(menu);
                 }
             }
-            con.Close();
+            con.Dispose();
             return modelList;
         }
         public List<MenuPagesModel> GetTopMenuPages()
@@ -389,7 +390,7 @@ namespace AIS.Controllers
                     modelList.Add(menuPage);
                 }
             }
-            con.Close();
+            con.Dispose();
             return modelList;
         }
         public List<MenuModel> GetAllTopMenus()
@@ -413,7 +414,7 @@ namespace AIS.Controllers
                     modelList.Add(menu);
                 }
             }
-            con.Close();
+            con.Dispose();
             return modelList;
         }
         public List<MenuPagesModel> GetAllMenuPages(int menuId = 0)
@@ -441,7 +442,7 @@ namespace AIS.Controllers
                     modelList.Add(menuPage);
                 }
             }
-            con.Close();
+            con.Dispose();
             return modelList;
         }
         public List<MenuPagesModel> GetAssignedMenuPages(int groupId, int menuId)
@@ -470,7 +471,7 @@ namespace AIS.Controllers
                     modelList.Add(menuPage);
                 }
             }
-            con.Close();
+            con.Dispose();
             return modelList;
         }
         public bool UpdateMenuPagesAssignment(int menuId, int pageId)
@@ -486,7 +487,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("p_id", OracleDbType.Int32).Value = pageId;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
 
@@ -529,7 +530,7 @@ namespace AIS.Controllers
                     groupList.Add(grp);
                 }
             }
-            con.Close();
+            con.Dispose();
             return groupList;
         }
         public GroupModel AddGroup(GroupModel gm)
@@ -559,7 +560,7 @@ namespace AIS.Controllers
                     cmd.ExecuteReader();
                 }
             }
-            con.Close();
+            con.Dispose();
             return gm;
         }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
@@ -585,7 +586,7 @@ namespace AIS.Controllers
                     periodList.Add(period);
                 }
             }
-            con.Close();
+            con.Dispose();
             return periodList;
         }
         public List<AuditPeriodModel> GetInsYearsForCAU(int dept_code = 0)
@@ -608,7 +609,7 @@ namespace AIS.Controllers
                     periodList.Add(period);
                 }
             }
-            con.Close();
+            con.Dispose();
             return periodList;
         }
         public List<AuditPeriodModel> GetParaPrintingYearsForCAU(int dept_code = 0)
@@ -631,7 +632,7 @@ namespace AIS.Controllers
                     periodList.Add(period);
                 }
             }
-            con.Close();
+            con.Dispose();
             return periodList;
         }
         public bool AddAuditPeriod(AuditPeriodModel periodModel)
@@ -660,7 +661,7 @@ namespace AIS.Controllers
                 }
                 result = true;
             }
-            con.Close();
+            con.Dispose();
             return result;
         }
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
@@ -698,7 +699,7 @@ namespace AIS.Controllers
                     teamList.Add(team);
                 }
             }
-            con.Close();
+            con.Dispose();
             return teamList;
         }
         public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
@@ -724,7 +725,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
 
             }
-            con.Close();
+            con.Dispose();
             return aTeam;
         }
         public bool DeleteAuditTeam(string T_CODE)
@@ -741,7 +742,7 @@ namespace AIS.Controllers
                     cmd.ExecuteReader();
 
                 }
-                con.Close();
+                con.Dispose();
                 return true;
             }
             else
@@ -767,7 +768,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return maxTeamId;
         }
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
@@ -807,7 +808,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return !isAlreadyAdded;
         }
         public bool UpdateAuditCriteria(AddAuditCriteriaModel acm, string COMMENTS)
@@ -834,7 +835,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("CREATED_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool SetAuditCriteriaStatusReferredBack(int ID, string REMARKS)
@@ -858,7 +859,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool SetAuditCriteriaStatusApprove(int ID, string REMARKS)
@@ -881,7 +882,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             //EmailConfiguration email = new EmailConfiguration();
             // email.ConfigEmail();
             return true;
@@ -899,7 +900,7 @@ namespace AIS.Controllers
                     remarks = rdr["remarks"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return remarks;
         }
         public List<AuditCriteriaModel> GetPendingAuditCriterias()
@@ -945,7 +946,7 @@ namespace AIS.Controllers
                     criteriaList.Add(acr);
                 }
             }
-            con.Close();
+            con.Dispose();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetRefferedBackAuditCriterias()
@@ -990,7 +991,7 @@ namespace AIS.Controllers
                     criteriaList.Add(acr);
                 }
             }
-            con.Close();
+            con.Dispose();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
@@ -1030,7 +1031,7 @@ namespace AIS.Controllers
                     criteriaList.Add(acr);
                 }
             }
-            con.Close();
+            con.Dispose();
             return criteriaList;
         }
         public List<AuditCriteriaModel> GetPostChangesAuditCriterias()
@@ -1076,7 +1077,7 @@ namespace AIS.Controllers
                     criteriaList.Add(acr);
                 }
             }
-            con.Close();
+            con.Dispose();
             return criteriaList;
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOutstandingParas(int ENTITY_CODE = 0)
@@ -1106,7 +1107,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return resMsg;
         }
         public List<RoleRespModel> GetRoleResponsibilities()
@@ -1130,7 +1131,7 @@ namespace AIS.Controllers
                     groupList.Add(grp);
                 }
             }
-            con.Close();
+            con.Dispose();
             return groupList;
         }
         public List<UserModel> GetAllUsers(FindUserModel user)
@@ -1221,7 +1222,7 @@ namespace AIS.Controllers
                     userList.Add(um);
                 }
             }
-            con.Close();
+            con.Dispose();
             return userList;
 
         }
@@ -1242,7 +1243,7 @@ namespace AIS.Controllers
                     userName = rdr["EMPLOYEE_NAME"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return userName;
 
         }
@@ -1274,7 +1275,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -1311,7 +1312,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -1345,7 +1346,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -1379,7 +1380,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -1395,7 +1396,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENTITYTYPEDESC", OracleDbType.Varchar2).Value = am.ENTITYTYPEDESC;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return am;
 
         }
@@ -1421,7 +1422,7 @@ namespace AIS.Controllers
                     subEntitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return subEntitiesList;
 
         }
@@ -1452,7 +1453,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             user.PASSWORD = "";
             return user;
         }
@@ -1497,7 +1498,7 @@ namespace AIS.Controllers
                     res = true;
                 }
             }
-            con.Close();
+            con.Dispose();
             return res;
         }
         public void AddGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
@@ -1512,7 +1513,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
         }
         public void RemoveGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
         {
@@ -1526,7 +1527,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
         }
         public List<AuditZoneModel> GetAuditZones(bool sessionCheck = true)
         {
@@ -1567,7 +1568,7 @@ namespace AIS.Controllers
                     AZList.Add(z);
                 }
             }
-            con.Close();
+            con.Dispose();
             return AZList;
         }
         public List<InspectionUnitsModel> GetInspectionUnits()
@@ -1599,7 +1600,7 @@ namespace AIS.Controllers
                     ICList.Add(z);
                 }
             }
-            con.Close();
+            con.Dispose();
             return ICList;
         }
         public List<BranchModel> GetBranches(int zone_code = 0, bool sessionCheck = true)
@@ -1635,7 +1636,7 @@ namespace AIS.Controllers
                     branchList.Add(br);
                 }
             }
-            con.Close();
+            con.Dispose();
             return branchList;
         }
         public List<BranchModel> GetZoneBranches(int zone_code = 0, bool sessionCheck = true)
@@ -1658,7 +1659,7 @@ namespace AIS.Controllers
                     branchList.Add(br);
                 }
             }
-            con.Close();
+            con.Dispose();
             return branchList;
         }
         public BranchModel AddBranch(BranchModel br)
@@ -1698,7 +1699,7 @@ namespace AIS.Controllers
                     zoneList.Add(z);
                 }
             }
-            con.Close();
+            con.Dispose();
             return zoneList;
         }
         public List<BranchSizeModel> GetBranchSizes()
@@ -1721,7 +1722,7 @@ namespace AIS.Controllers
                     brSizeList.Add(bs);
                 }
             }
-            con.Close();
+            con.Dispose();
             return brSizeList;
         }
         public List<ControlViolationsModel> GetControlViolations()
@@ -1746,7 +1747,7 @@ namespace AIS.Controllers
                     controlViolationList.Add(v);
                 }
             }
-            con.Close();
+            con.Dispose();
             return controlViolationList;
         }
         public ControlViolationsModel AddControlViolation(ControlViolationsModel cv)
@@ -1777,7 +1778,7 @@ namespace AIS.Controllers
                     divList.Add(div);
                 }
             }
-            con.Close();
+            con.Dispose();
             return divList;
         }
         public DivisionModel AddDivision(DivisionModel div)
@@ -1790,7 +1791,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
             }
-            con.Close();
+            con.Dispose();
             return div;
         }
         public DivisionModel UpdateDivision(DivisionModel div)
@@ -1853,7 +1854,7 @@ namespace AIS.Controllers
                     deptList.Add(dept);
                 }
             }
-            con.Close();
+            con.Dispose();
             return deptList;
         }
         public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
@@ -1887,7 +1888,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
         }
         public SubEntitiesModel AddSubEntity(SubEntitiesModel subentity)
@@ -1905,7 +1906,7 @@ namespace AIS.Controllers
 
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return subentity;
         }
         public SubEntitiesModel UpdateSubEntity(SubEntitiesModel subentity)
@@ -1925,7 +1926,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
 
             }
-            con.Close();
+            con.Dispose();
             return subentity;
         }
         public DepartmentModel AddDepartment(DepartmentModel dept)
@@ -1941,7 +1942,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "UPDATE t_auditee_entities_maping  mp SET mp.AUDITEDBY='" + dept.AUDITED_BY_DEPID + "' WHERE mp.CODE=" + dept.CODE;
                 OracleDataReader rdr = cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return dept;
         }
         public List<RiskGroupModel> GetRiskGroup()
@@ -1965,7 +1966,7 @@ namespace AIS.Controllers
                 }
             }
 
-            con.Close();
+            con.Dispose();
             return riskgroupList;
         }
         public List<RiskSubGroupModel> GetRiskSubGroup(int group_id)
@@ -1991,7 +1992,7 @@ namespace AIS.Controllers
                     risksubgroupList.Add(rsgm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return risksubgroupList;
         }
         public List<RiskActivityModel> GetRiskActivities(int Sub_group_id)
@@ -2017,7 +2018,7 @@ namespace AIS.Controllers
                     riskActivityList.Add(ram);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskActivityList;
         }
         public List<AuditObservationTemplateModel> GetAuditObservationTemplates(int activity_id)
@@ -2054,7 +2055,7 @@ namespace AIS.Controllers
                     empList.Add(emp);
                 }
             }
-            con.Close();
+            con.Dispose();
             return empList;
         }
         public List<TentativePlanModel> GetTentativePlansForFields(bool sessionCheck = true)
@@ -2094,7 +2095,7 @@ namespace AIS.Controllers
                     tplansList.Add(tplan);
                 }
             }
-            con.Close();
+            con.Dispose();
             return tplansList;
         }
         public string GetAuditOperationalStartDate(int auditPeriodId = 0, int entityCode = 0)
@@ -2117,7 +2118,7 @@ namespace AIS.Controllers
                     result += rdr["DAY"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return result;
         }
         public List<AuditRefEngagementPlanModel> GetAuditEngagementPlans()
@@ -2150,7 +2151,7 @@ namespace AIS.Controllers
                     list.Add(eng);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditRefEngagementPlanModel> GetAuditOngoingEngagementPlans()
@@ -2183,7 +2184,7 @@ namespace AIS.Controllers
                     list.Add(eng);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditRefEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
@@ -2220,7 +2221,7 @@ namespace AIS.Controllers
                     list.Add(eng);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public AuditEngagementPlanModel AddAuditEngagementPlan(AuditEngagementPlanModel ePlan)
@@ -2280,7 +2281,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return ePlan;
 
         }
@@ -2301,7 +2302,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public string RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
@@ -2334,7 +2335,7 @@ namespace AIS.Controllers
                     resp = rdr["REMARK"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
@@ -2353,7 +2354,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
 
             return true;
         }
@@ -2386,7 +2387,7 @@ namespace AIS.Controllers
                         um.PPNumber = rdr["ppno"].ToString();
                     }
                 }
-                con.Close();
+                con.Dispose();
             }
 
             return um;
@@ -2438,7 +2439,7 @@ namespace AIS.Controllers
                     planList.Add(plan);
                 }
             }
-            con.Close();
+            con.Dispose();
             return planList;
         }
         public List<RiskProcessDefinition> GetRiskProcessDefinition()
@@ -2462,7 +2463,7 @@ namespace AIS.Controllers
                     pdetails.Add(proc);
                 }
             }
-            con.Close();
+            con.Dispose();
             return pdetails;
         }
         public List<RiskProcessDetails> GetRiskProcessDetails(int procId = 0)
@@ -2488,7 +2489,7 @@ namespace AIS.Controllers
                     riskProcList.Add(pdetail);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskProcList;
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
@@ -2528,7 +2529,7 @@ namespace AIS.Controllers
                     riskTransList.Add(pTran);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskTransList;
         }
         public List<RiskProcessTransactions> GetRiskProcessTransactionsWithStatus(int statusId)
@@ -2567,7 +2568,7 @@ namespace AIS.Controllers
                     riskTransList.Add(pTran);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskTransList;
         }
         public RiskProcessDefinition AddRiskProcess(RiskProcessDefinition proc)
@@ -2582,7 +2583,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = proc.RISK_ID;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return proc;
         }
         public RiskProcessDetails AddRiskSubProcess(RiskProcessDetails subProc)
@@ -2598,7 +2599,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Varchar2).Value = subProc.ENTITY_TYPE;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return subProc;
         }
         public RiskProcessTransactions AddRiskSubProcessTransaction(RiskProcessTransactions trans)
@@ -2622,7 +2623,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return trans;
         }
         public bool RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS)
@@ -2642,7 +2643,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool RefferedBackProcessTransactionByReviewer(int T_ID, string COMMENTS)
@@ -2662,7 +2663,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool RecommendProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
@@ -2682,7 +2683,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool RefferedBackProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
@@ -2702,7 +2703,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public List<AuditFrequencyModel> GetAuditFrequencies()
@@ -2726,7 +2727,7 @@ namespace AIS.Controllers
                     freqList.Add(freq);
                 }
             }
-            con.Close();
+            con.Dispose();
             return freqList;
         }
         public List<RiskModel> GetRisks()
@@ -2748,7 +2749,7 @@ namespace AIS.Controllers
                     riskList.Add(risk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskList;
         }
         public List<RiskModel> GetCOSORisks()
@@ -2771,7 +2772,7 @@ namespace AIS.Controllers
                     riskList.Add(risk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return riskList;
         }
         public List<AuditVoilationcatModel> GetAuditVoilationcats()
@@ -2795,7 +2796,7 @@ namespace AIS.Controllers
                     voilationList.Add(voilationcat);
                 }
             }
-            con.Close();
+            con.Dispose();
             return voilationList;
         }
         public List<AuditSubVoilationcatModel> GetVoilationSubGroup(int group_id)
@@ -2823,7 +2824,7 @@ namespace AIS.Controllers
                     voilationsubgroupList.Add(vsgm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return voilationsubgroupList;
         }
         public List<TaskListModel> GetTaskList()
@@ -2871,7 +2872,7 @@ namespace AIS.Controllers
                     tasklist.Add(tlist);
                 }
             }
-            con.Close();
+            con.Dispose();
             return tasklist;
         }
         public JoiningModel GetJoiningDetails(int engId = 0)
@@ -2915,7 +2916,7 @@ namespace AIS.Controllers
                     jm.TEAM_DETAILS = tjlist;
                 }
             }
-            con.Close();
+            con.Dispose();
             return jm;
         }
         public bool AddJoiningReport(AddJoiningModel jm)
@@ -2940,7 +2941,7 @@ namespace AIS.Controllers
                 this.SetEngIdOnHold();
                 response = true;
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public List<AuditChecklistModel> GetAuditChecklist()
@@ -2967,7 +2968,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditChecklistModel> GetAuditChecklistCAD()
@@ -2994,7 +2995,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id = 0, int eng_id = 0)
@@ -3037,7 +3038,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetails(int s_id = 0)
@@ -3076,7 +3077,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -3103,7 +3104,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
@@ -3146,7 +3147,7 @@ namespace AIS.Controllers
                     list.Add(GlHeadDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
 
         }
@@ -3189,7 +3190,7 @@ namespace AIS.Controllers
                     GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
                 }
             }
-            con.Close();
+            con.Dispose();
             return GlHeadSubDetails;
 
         }
@@ -3234,7 +3235,7 @@ namespace AIS.Controllers
                     list.Add(LoanCaseDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -3274,7 +3275,7 @@ namespace AIS.Controllers
                     list.Add(LoanCaseDetails);
                 }
             }
-           con.Close();*/
+           con.Dispose();*/
             return list;
         }
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
@@ -3317,7 +3318,7 @@ namespace AIS.Controllers
                     list.Add(GlHeadDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
 
         }
@@ -3351,7 +3352,7 @@ namespace AIS.Controllers
                     depositacclist.Add(depositaccdetails);
                 }
             }
-           con.Close();*/
+           con.Dispose();*/
             return depositacclist;
         }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname = "")
@@ -3412,7 +3413,7 @@ namespace AIS.Controllers
                     depositaccsublist.Add(depositaccsubdetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return depositaccsublist;
         }
 
@@ -3453,7 +3454,7 @@ namespace AIS.Controllers
                     list.Add(LoanCaseDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -3520,7 +3521,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool SaveAuditObservationCAU(ObservationModel ob)
@@ -3585,7 +3586,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
@@ -3655,7 +3656,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AssignedObservations> GetAssignedObservationsForBranch(int ENG_ID)
@@ -3707,7 +3708,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<object> GetObservationText(int OBS_ID, int RESP_ID)
@@ -3763,7 +3764,7 @@ namespace AIS.Controllers
                 }
                 list.Add(modellist);
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
@@ -3792,7 +3793,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public bool ResponseAuditObservation(ObservationResponseModel ob)
@@ -3852,7 +3853,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public int GetLoggedInUserEngId()
@@ -3876,7 +3877,7 @@ namespace AIS.Controllers
                     engId = Convert.ToInt32(rdr["eng_plan_id"]);
                 }
             }
-            con.Close();
+            con.Dispose();
             return engId;
         }
         public bool SetEngIdOnHold()
@@ -3896,7 +3897,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public string GetLatestAuditorResponse(int obs_id = 0)
@@ -3920,7 +3921,7 @@ namespace AIS.Controllers
                     response = rdr["Recommendation"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public string GetLatestDepartmentalHeadResponse(int obs_id = 0)
@@ -3944,7 +3945,7 @@ namespace AIS.Controllers
                     response = rdr["audit_reply"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public string GetRiskDescByID(int risk_id = 0)
@@ -3965,7 +3966,7 @@ namespace AIS.Controllers
                     response = rdr["DESCRIPTION"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public string GetLatestCommentsOnProcess(int procId = 0)
@@ -3987,7 +3988,7 @@ namespace AIS.Controllers
                     response = rdr["comments"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
 
@@ -4009,7 +4010,7 @@ namespace AIS.Controllers
                     response = rdr["remarks"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public string GetLatestAuditeeResponse(int obs_id = 0)
@@ -4029,7 +4030,7 @@ namespace AIS.Controllers
                     response = rdr["reply"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public List<ManageObservations> GetManagedObservations(int ENG_ID = 0, int OBS_ID = 0)
@@ -4075,7 +4076,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ManageObservations> GetManagedObservationText(int ENG_ID = 0, int OBS_ID = 0)
@@ -4114,7 +4115,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
@@ -4164,7 +4165,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ManageObservations> GetManagedObservationTextForBranches(int ENG_ID = 0, int OBS_ID = 0)
@@ -4199,7 +4200,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
@@ -4241,7 +4242,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4283,7 +4284,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4324,7 +4325,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4369,7 +4370,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4412,7 +4413,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4437,7 +4438,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4487,7 +4488,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
 
             return list;
         }
@@ -4521,7 +4522,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ManageObservations> GetViolationObservations(int ENTITY_ID = 0, int VIOLATION_ID = 0)
@@ -4570,7 +4571,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public string DropAuditObservation(int OBS_ID)
@@ -4680,7 +4681,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0)
@@ -4709,7 +4710,7 @@ namespace AIS.Controllers
                     resp = rdr["REMARKS"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -4759,7 +4760,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -4807,7 +4808,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
       
@@ -4836,7 +4837,7 @@ namespace AIS.Controllers
                         count = Convert.ToInt32(rdr2["NO_OF_ENTITY"]);
                 }
             }
-            con.Close();
+            con.Dispose();
             return count;
         }
         public bool DeletePendingCriteria(int CID = 0)
@@ -4850,7 +4851,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = CID;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
@@ -4901,7 +4902,7 @@ namespace AIS.Controllers
                 }*/
 
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
@@ -4939,7 +4940,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<COSORiskModel> GetCOSORiskForBranches(int PERIOD_ID = 0)
@@ -4977,7 +4978,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public CAUOMAssignmentResponseModel CAUOMAssignment(CAUOMAssignmentModel om)
@@ -5039,7 +5040,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public CAUOMAssignmentResponseModel CAUOMAssignmentAIR(CAUOMAssignmentAIRModel om)
@@ -5100,7 +5101,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public CAUOMAssignmentResponseModel CAUOMAssignmentPDP(CAUOMAssignmentPDPModel om)
@@ -5133,7 +5134,7 @@ namespace AIS.Controllers
                         resp.RESPONSE = rdr2["REF_OUT"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public CAUOMAssignmentResponseModel CAUOMAssignmentARPSE(CAUOMAssignmentARPSEModel om)
@@ -5168,7 +5169,7 @@ namespace AIS.Controllers
                         resp.RESPONSE = rdr2["REF_OUT"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -5198,7 +5199,7 @@ namespace AIS.Controllers
                     resp.CONTENTS_OF_OM = rdr["CONTENTS_OF_OM"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -5231,7 +5232,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
 
         }
@@ -5291,7 +5292,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public bool UpdateCCQ(AuditCCQModel ccq)
@@ -5316,7 +5317,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 resp = true;
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public List<AuditeeOldParasModel> GetAuditeeOldParasEntities()
@@ -5344,7 +5345,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeOldParasModel> GetAuditeeOldParas(int ENTITY_ID = 0)
@@ -5387,7 +5388,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public bool AuditeeOldParaResponse(AuditeeOldParasResponseModel ob)
@@ -5410,7 +5411,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success;
         }
         public List<OldParasModel> GetOldParas(string AUDITED_BY, string AUDIT_YEAR)
@@ -5449,7 +5450,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -5489,7 +5490,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<OldParasModel> GetOldParasForResponse()
@@ -5531,7 +5532,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<OldParasModel> GetOldSettledParasForResponse()
@@ -5573,7 +5574,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<OldParasModel> GetManageLegacyParas()
@@ -5612,7 +5613,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -5641,7 +5642,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeOldParasModel> GetLegacyParasEntitiesFAD()
@@ -5669,7 +5670,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -5726,7 +5727,7 @@ namespace AIS.Controllers
 
                 
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -5784,7 +5785,7 @@ namespace AIS.Controllers
 
 
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -5836,9 +5837,9 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                             cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = pp.PP_NO;
                             cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("AC_NO", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT; 
+                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = pp.LC_AMOUNT;
+                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = pp.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = pp.ACC_AMOUNT; 
                             cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             cmd.ExecuteReader();
@@ -5847,9 +5848,45 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
+        public string UpdateLegacyParasWithResponsibilityNoChangesAZ(AddLegacyParaModel LEGACY_PARA)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_no_update_legacy_Para_text";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ref_id", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("risk_id", OracleDbType.Int32).Value = LEGACY_PARA.RISK_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                    {
+                        resp = rdr["REMARKS"].ToString();
+                        return resp;
+                    }
+                    else
+                    {
+                        resp = rdr["REMARKS"].ToString();
+                    }
+
+                }               
+            }
+            con.Dispose();
+            return resp;
+        }
+
         public string UpdateLegacyParasWithResponsibilityNoChanges(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -5879,9 +5916,9 @@ namespace AIS.Controllers
                         resp = rdr["REMARKS"].ToString();
                     }
 
-                }               
+                }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -5934,9 +5971,9 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                             cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("AC_NO", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
+                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = pp.LC_AMOUNT;
+                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = pp.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = pp.ACC_AMOUNT;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             cmd.ExecuteReader();
                         }
@@ -5944,7 +5981,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -5975,7 +6012,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<OldParasModel> GetOutstandingParasAuditYear()
@@ -6000,7 +6037,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public bool AddOldParas(OldParasModel jm)
@@ -6040,7 +6077,7 @@ namespace AIS.Controllers
                     cmd.ExecuteReader();
                 }
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
        
@@ -6063,7 +6100,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success;
         }
         public string AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
@@ -6093,7 +6130,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
         public string AddOldParasCADCompliance(OldParaComplianceModel opc)
@@ -6123,7 +6160,7 @@ namespace AIS.Controllers
                 }
 
             }
-            con.Close();
+            con.Dispose();
             return response;
         }
 
@@ -6160,7 +6197,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<UserWiseOldParasPerformanceModel> GetUserWiseOldParasPerformance()
@@ -6191,7 +6228,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public ActiveInactiveChart GetActiveInactiveChartData()
@@ -6214,7 +6251,7 @@ namespace AIS.Controllers
                         chk.Inactive_Count = rdr["TOTAL_COUNT"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return chk;
         }
         public List<AuditeeEntitiesModel> GetObservationEntitiesForManageObservations()
@@ -6244,7 +6281,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeEntitiesModel> GetObservationEntities()
@@ -6275,7 +6312,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeEntitiesModel> GetAuditeeAssignedEntities()
@@ -6304,7 +6341,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeEntitiesModel> GetObservationEntitiesForPreConcluding()
@@ -6333,7 +6370,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<AuditeeEntitiesModel> GetCCQsEntities()
@@ -6361,7 +6398,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
@@ -6393,7 +6430,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -6422,7 +6459,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -6447,7 +6484,7 @@ namespace AIS.Controllers
                     entitiesList.Add(entity);
                 }
             }
-            con.Close();
+            con.Dispose();
             return entitiesList;
 
         }
@@ -6486,7 +6523,7 @@ namespace AIS.Controllers
                     list.Add(staffposition);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
@@ -6532,7 +6569,7 @@ namespace AIS.Controllers
                     list.Add(para);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -6555,7 +6592,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
             }
-            con.Close();
+            con.Dispose();
             return true;
         }
 
@@ -6686,7 +6723,7 @@ namespace AIS.Controllers
                     list.Add(GlHeadDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
 
         }
@@ -6726,7 +6763,7 @@ namespace AIS.Controllers
                     list.Add(depcat);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
 
         }
@@ -6792,7 +6829,7 @@ namespace AIS.Controllers
                     depositaccsublist.Add(depositaccsubdetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return depositaccsublist;
         }
 
@@ -6846,7 +6883,7 @@ namespace AIS.Controllers
                     periodList.Add(period);
                 }
             }
-            con.Close();
+            con.Dispose();
             return periodList;
         }
 
@@ -6890,7 +6927,7 @@ namespace AIS.Controllers
                     list.Add(LoanSchemeDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -6943,7 +6980,7 @@ namespace AIS.Controllers
                     list.Add(LoanSchemeDetails);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -6978,7 +7015,7 @@ namespace AIS.Controllers
                     list.Add(para);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7014,7 +7051,7 @@ namespace AIS.Controllers
                     list.Add(jc);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7047,7 +7084,7 @@ namespace AIS.Controllers
                     list.Add(jac);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7113,7 +7150,7 @@ namespace AIS.Controllers
                     list.Add(ent);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<CurrentAuditProgress> GetCurrentAuditProgress(int ENTITY_ID = 0)
@@ -7145,7 +7182,7 @@ namespace AIS.Controllers
                     list.Add(ent);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<CurrentActiveUsers> GetCurrentActiveUsers()
@@ -7178,7 +7215,7 @@ namespace AIS.Controllers
                     list.Add(ent);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
      
@@ -7209,7 +7246,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchCompliance()
@@ -7244,7 +7281,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P)
@@ -7272,7 +7309,7 @@ namespace AIS.Controllers
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return chk;
         }
 
@@ -7324,7 +7361,7 @@ namespace AIS.Controllers
                 }
             }           
 
-            con.Close();
+            con.Dispose();
             return "Para Compliance Submitted Successfully";
         }
 
@@ -7368,7 +7405,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7392,7 +7429,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
 
             }
-            con.Close();
+            con.Dispose();
             return "Reviewer Response Submitted Successfully";
         }
 
@@ -7434,7 +7471,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<GetOldParasforComplianceSettlement> GetOldParasBranchComplianceSubmission()
@@ -7475,7 +7512,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public bool AddOldParasReply(int ID, string REPLY)
@@ -7497,7 +7534,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success;
         }
        
@@ -7552,7 +7589,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7578,7 +7615,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
@@ -7603,7 +7640,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
@@ -7637,7 +7674,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7658,7 +7695,7 @@ namespace AIS.Controllers
                     resp = rdr["PARA_TEXT"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
         public List<AuditeeOldParasPpnoModel> GetOldParasForMonitoringPpno(int ppno)
@@ -7696,7 +7733,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7722,7 +7759,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-            con.Close();
+            con.Dispose();
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
@@ -7755,7 +7792,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID)
@@ -7780,7 +7817,7 @@ namespace AIS.Controllers
                 cmd.ExecuteReader();
                 success = true;
             }
-                con.Close();
+                con.Dispose();
                 return success ? "Para Status Change Authorized Successfully" : "Failed To Authorize Para Status Change";
         }
           public List<OldParasAuthorizeModel> GetOldSettledParasForResponseAuthorize()
@@ -7825,7 +7862,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7862,7 +7899,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -7893,7 +7930,7 @@ namespace AIS.Controllers
                     
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -7957,7 +7994,7 @@ namespace AIS.Controllers
                     planList.Add(plan);
                 }
             }
-            con.Close();
+            con.Dispose();
             return planList;
         }
 
@@ -8009,7 +8046,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
       
@@ -8044,7 +8081,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8077,7 +8114,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8114,7 +8151,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8160,7 +8197,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8189,7 +8226,7 @@ namespace AIS.Controllers
                     resp = rdr["REMARKS"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -8217,7 +8254,7 @@ namespace AIS.Controllers
                     resp = rdr["remarks"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
@@ -8281,7 +8318,7 @@ namespace AIS.Controllers
                     planList.Add(plan);
                 }
             }
-            con.Close();
+            con.Dispose();
             return planList;
         }
 
@@ -8315,7 +8352,7 @@ namespace AIS.Controllers
                     list.Add(nm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8349,7 +8386,7 @@ namespace AIS.Controllers
                     list.Add(nm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<FADEntitySizeModel> FADGetEntitySize()
@@ -8381,7 +8418,7 @@ namespace AIS.Controllers
                     list.Add(nm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8415,7 +8452,7 @@ namespace AIS.Controllers
                     list.Add(nm);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8448,7 +8485,7 @@ namespace AIS.Controllers
                     list.Add(rp);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<ObservationResponsiblePPNOModel> GetLegacyParaResponsiblePersonsFAD(string PARA_REF)
@@ -8480,7 +8517,7 @@ namespace AIS.Controllers
                     list.Add(rp);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8517,7 +8554,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8556,7 +8593,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8593,7 +8630,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
 
@@ -8622,7 +8659,7 @@ namespace AIS.Controllers
 
                 }
             }
-            con.Close();
+            con.Dispose();
             return emp_name;
         }
 
@@ -8659,7 +8696,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public List<LegacyUserWiseOldParasPerformanceModel> GetLegacyUserWiseOldParasPerformance(DateTime? FILTER_DATE)
@@ -8693,7 +8730,7 @@ namespace AIS.Controllers
                     list.Add(chk);
                 }
             }
-            con.Close();
+            con.Dispose();
             return list;
         }
         public string DeleteLegacyParaResponsibility(string PARA_REF, int PARA_ID, int PP_NO)
@@ -8721,7 +8758,7 @@ namespace AIS.Controllers
                         resp = rdr["REMARKS"].ToString();
                 }
             }
-            con.Close();
+            con.Dispose();
             return resp;
         }
 
