@@ -53,8 +53,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 7;
                 ocsb.MaxPoolSize = 2000;
@@ -7857,11 +7857,8 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     OldParasAuthorizeModel chk = new OldParasAuthorizeModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
-                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
-                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
@@ -7869,13 +7866,11 @@ namespace AIS.Controllers
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-Settled";
-                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-                    chk.PROCESS_DES = rdr["Process_Des"].ToString();
-                    chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-                    chk.REMARKS = rdr["REMARKS"].ToString();
-                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() ;
+                    chk.PARA_CHANGE_REQUEST_STATUS = rdr["TEMP_STATUS_FOR_CHANGE"].ToString();
 
+                    chk.REMARKS = rdr["REMARKS"].ToString();
+                  
 
                     list.Add(chk);
                 }
