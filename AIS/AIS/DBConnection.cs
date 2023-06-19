@@ -53,8 +53,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 7;
                 ocsb.MaxPoolSize = 2000;
@@ -5548,7 +5548,7 @@ namespace AIS.Controllers
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetOldParasForResponse";
+                cmd.CommandText = "pkg_hd.P_GetOldParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -7367,13 +7367,13 @@ namespace AIS.Controllers
                             cmd.CommandText = "pkg_ae.P_AddOldParasReply_evidences";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
-                            cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
-                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = Para_ID;
                             cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
                             cmd.Parameters.Add("LENGTH", OracleDbType.Int32).Value = item.LENGTH;
-                            cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
+                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = Para_ID;
+                            cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
+                            cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID; 
                             cmd.ExecuteReader();
                             this.SaveImage(item.IMAGE_DATA, fileName);
                         }
@@ -7442,6 +7442,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_AddOldParasReviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("FID", OracleDbType.Int32).Value = ID;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
                 cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Reply;
