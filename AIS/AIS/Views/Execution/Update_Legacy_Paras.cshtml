@@ -203,6 +203,7 @@
     }
 
     function submitLegacyParaUpdates(){
+        $('#PublishParaText').attr('disabled',true);
         var resP = [];
         var _error = false;
        $.each($('#listofRespPersons tbody tr'), function (i, v) {
@@ -222,27 +223,32 @@
 
         if (_error) {
             alert("Please enter either Loan Case and Loan Case Amount or Account Number against responsible");
+            $('#PublishParaText').attr('disabled', false);
             return false;
         }
 
        
         if ($('#updateMemo_process').val()==0){
             alert("Please select Process");
+            $('#PublishParaText').attr('disabled', false);
             return;
         }
         
         if ($('#updateMemo_subprocess').val() == 0) {
             alert("Please select Sub Process");
+            $('#PublishParaText').attr('disabled', false);
             return;
         }
 
         if ($('#updateMemo_violation').val() == 0) {
             alert("Please select Checklist Detail");
+            $('#PublishParaText').attr('disabled', false);
             return;
         }
 
         if ($('#auditCriteriaRiskField').val() == 0) {
             alert("Please select Risk");
+            $('#PublishParaText').attr('disabled', false);
             return;
         }
 
@@ -262,8 +268,10 @@
             data: add_leg_data,
             cache: false,
             success: function (data) {
+                $('#PublishParaText').attr('disabled', false);
                 alert(data.Message);
-              onAlertCallback(getLegacyPara);
+                getLegacyPara();
+              //onAlertCallback(getLegacyPara);
             },
 
             dataType: "json",
@@ -273,6 +281,7 @@
 
 
     function submitLegacyParaUpdatesWithNoChanges() {
+        
         var resP = [];
         
 
@@ -313,7 +322,7 @@
             cache: false,
             success: function (data) {
                 alert(data.Message);
-                onAlertCallback(getLegacyPara);
+                getLegacyPara();
             },
 
             dataType: "json",
@@ -454,13 +463,19 @@
                         </div>
                     </div>
                 </form>
+
+                <p class="text-italic text-danger">Note:<br />Save All Changes button will update everything i.e. Process, Subprocess, Checklist Details, Risk, Para Text and Responsibilities Entered</p>
+                <p class="text-italic text-primary">However, in case of No change in Para Text button, it will only update the Risk of the Para </p>
+
             </div>
 
             <div class="mt-3 modal-footer">
                 <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button" class="btn btn-danger">Save All Changes</button>
-                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaText" type="button" class="btn btn-primary">No change in Para Text</button>
+                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaTextWithNoChanges" type="button" class="btn btn-primary">No change in Para Text</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
             </div>
+           
         </div>
     </div>
 </div>

@@ -17,6 +17,7 @@ namespace AIS.Models
         public string PARA_NO { get; set; }
         public string RESPONSIBLE_PP_NO { get; set; }
         public string GIST_OF_PARAS { get; set; }
+        public string PARA_STATUS { get; set; }
         public string ENTTY_NAME { get; set; }
         public string ANNEXURE { get; set; }
         public string AMOUNT_INVOLVED { get; set; }

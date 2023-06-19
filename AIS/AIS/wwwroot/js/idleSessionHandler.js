@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const idleDurationSecs = 1200;    // X number of seconds
+    const idleDurationSecs = 3600;    // X number of seconds
     let idleTimeout; // variable to hold the timeout, do not modify
 
     const resetIdleTimeout = function () {

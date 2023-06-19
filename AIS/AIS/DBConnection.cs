@@ -5572,6 +5572,7 @@ namespace AIS.Controllers
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-settled";
                     chk.PROCESS_DES = rdr["Process_Des"].ToString();
                     chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
                     chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
@@ -5829,25 +5830,31 @@ namespace AIS.Controllers
                 }
                 if (LEGACY_PARA.RESP_PP != null)
                 {
-                    if (LEGACY_PARA.RESP_PP.Count >0)
+                    if (LEGACY_PARA.RESP_PP.Count > 0)
                     {
-                        foreach (ObservationResponsiblePPNOModel pp in LEGACY_PARA.RESP_PP)
-                        {
+                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
+                        {   
                             cmd.CommandText = "pkg_ar.p_add_para_responsibility";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("refid", OracleDbType.Int32).Value = LEGACY_PARA.ID;
-                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = respRow.PP_NO;
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = pp.PP_NO;
-                            cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = pp.ACC_AMOUNT; 
+                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = respRow.PP_NO;
+                            cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = respRow.LOAN_CASE;
+                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = respRow.LC_AMOUNT;
+                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = respRow.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = respRow.ACC_AMOUNT;
                             cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                            cmd.ExecuteReader();
+                            OracleDataReader rdr2 = cmd.ExecuteReader();
+                            while (rdr2.Read())
+                            {
+                                resp = resp + "<br/>" + rdr2["REMARKS"].ToString();
+
+                            }
                         }
+
                     }
 
                 }
@@ -5979,7 +5986,12 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = pp.ACCOUNT_NUMBER;
                             cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = pp.ACC_AMOUNT;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                            cmd.ExecuteReader();
+                            OracleDataReader rdr2 = cmd.ExecuteReader();
+                            while (rdr2.Read())
+                            {
+                                resp = resp + "<br/>"+ rdr2["REMARKS"].ToString();                                
+
+                            }
                         }
                     }
 
