@@ -868,10 +868,10 @@ namespace AIS.Controllers
             return dBConnection.GetZoneBranchParaPositionStatus(ENTITY_ID);
         }
         [HttpPost]
-        public string Add_Authorization_Old_Para_Change_status(string REFID)
+        public string Add_Authorization_Old_Para_Change_status(string REFID, int NEW_STATUS)
         {
             string response = "";
-            response = dBConnection.AddAuthorizeChangeStatusRequestForSettledPara(REFID);
+            response = dBConnection.AddAuthorizeChangeStatusRequestForSettledPara(REFID, NEW_STATUS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]

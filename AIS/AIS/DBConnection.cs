@@ -5797,6 +5797,7 @@ namespace AIS.Controllers
         public string UpdateLegacyParasWithResponsibility(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
+            string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -5833,7 +5834,8 @@ namespace AIS.Controllers
                     if (LEGACY_PARA.RESP_PP.Count > 0)
                     {
                         foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
-                        {   
+                        {
+                            responseRes = "";
                             cmd.CommandText = "pkg_ar.p_add_para_responsibility";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
@@ -5850,7 +5852,7 @@ namespace AIS.Controllers
                             OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr2.Read())
                             {
-                                resp = resp + "<br/>" + rdr2["REMARKS"].ToString();
+                                responseRes = rdr2["REMARKS"].ToString();
 
                             }
                         }
@@ -5860,7 +5862,7 @@ namespace AIS.Controllers
                 }
             }
             con.Dispose();
-            return resp;
+            return resp + "<br/>" + responseRes;
         }
         public string UpdateLegacyParasWithResponsibilityNoChangesAZ(AddLegacyParaModel LEGACY_PARA)
         {
@@ -5936,6 +5938,7 @@ namespace AIS.Controllers
         public string UpdateLegacyParasWithResponsibilityFAD(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
+            string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -5972,24 +5975,26 @@ namespace AIS.Controllers
                 {
                     if (LEGACY_PARA.RESP_PP.Count > 0)
                     {
-                        foreach (ObservationResponsiblePPNOModel pp in LEGACY_PARA.RESP_PP)
+                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
                         {
+                            responseRes = "";
                             cmd.CommandText = "pkg_fad.p_add_para_responsibility";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
-                            cmd.Parameters.Add("refid", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
-                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = pp.PP_NO;
+                            cmd.Parameters.Add("refid", OracleDbType.Int32).Value = LEGACY_PARA.ID;
+                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = respRow.PP_NO;
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                             cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                            cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = pp.ACC_AMOUNT;
+                            cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = respRow.LOAN_CASE;
+                            cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = respRow.LC_AMOUNT;
+                            cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = respRow.ACCOUNT_NUMBER;
+                            cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = respRow.ACC_AMOUNT;
+                            cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = LEGACY_PARA.REF_P;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr2.Read())
                             {
-                                resp = resp + "<br/>"+ rdr2["REMARKS"].ToString();                                
+                                responseRes = rdr2["REMARKS"].ToString();                                           
 
                             }
                         }
@@ -5998,7 +6003,7 @@ namespace AIS.Controllers
                 }
             }
             con.Dispose();
-            return resp;
+            return resp + "<br/>" + responseRes;
         }
 
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
@@ -7811,7 +7816,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID)
+        public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS)
 
         {
             sessionHandler = new SessionHandler();
@@ -7822,14 +7827,12 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_hd.p_authorizechangestatusrequestforsettledpara";
+                cmd.CommandText = "pkg_fad.p_authorizechangestatusrequestforsettledpara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
-
-                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-            
-
+                cmd.Parameters.Add("NEW_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
                 cmd.ExecuteReader();
                 success = true;
             }
@@ -7846,10 +7849,9 @@ namespace AIS.Controllers
             List<OldParasAuthorizeModel> list = new List<OldParasAuthorizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.p_getoldparasforresponseauthorize";
+                cmd.CommandText = "pkg_fad.p_getoldparasforresponseauthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Clear();                
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -7869,11 +7871,10 @@ namespace AIS.Controllers
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-Settled";
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-
                     chk.PROCESS_DES = rdr["Process_Des"].ToString();
                     chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-
                     chk.REMARKS = rdr["REMARKS"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
 
 
                     list.Add(chk);
