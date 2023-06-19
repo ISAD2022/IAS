@@ -5840,7 +5840,7 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("refid", OracleDbType.Int32).Value = LEGACY_PARA.ID;
                             cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = respRow.PP_NO;
                             cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = respRow.PP_NO;
+                            cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = respRow.LOAN_CASE;
                             cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = respRow.LC_AMOUNT;
                             cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = respRow.ACCOUNT_NUMBER;
