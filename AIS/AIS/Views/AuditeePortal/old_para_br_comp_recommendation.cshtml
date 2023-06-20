@@ -14,8 +14,7 @@
             fileUpload: false,
             videoEmbed: false,
             urls: false
-        });
-      
+        });      
     });
 
     function viewParaDetails(ref_p, memo_no, paraId) {
@@ -81,9 +80,7 @@
             dataType: "json",
         });
 
-    }
-
-   
+    }      
 
     function updateObservationStatus(id,refP, newStatus)
     {
@@ -108,7 +105,7 @@
                 'PARA_ID': g_paraId,
                 'REFID': g_paraRef,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS':14
+                'NEW_STATUS':6
             },
             cache: false,
             success: function (data) {
@@ -129,7 +126,7 @@
                 'PARA_ID': g_paraId,
                 'REFID': g_paraRef,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS': 13
+                'NEW_STATUS': 7
             },
             cache: false,
             success: function (data) {
@@ -140,7 +137,6 @@
             dataType: "json",
         });
     }
-
 
     function reloadLocation() {
         getLegacyPara();

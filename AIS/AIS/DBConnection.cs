@@ -7641,7 +7641,7 @@ namespace AIS.Controllers
             return success ? "Para Status updated successfully" : "Failed to update Para Status";
         }
 
-        public string AddOldParasheadStatusUpdate(int PARA_ID, string REMARKS, int NEW_STATUS)
+        public string AddOldParasheadStatusUpdate(int PARA_ID, string REMARKS, int NEW_STATUS,string PARA_REF)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7658,6 +7658,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PID", OracleDbType.Int32).Value = PARA_ID;
                 cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = REMARKS;
                 cmd.Parameters.Add("R_STATUS", OracleDbType.Varchar2).Value = NEW_STATUS;
+                cmd.Parameters.Add("REP_P", OracleDbType.Varchar2).Value = PARA_REF;
 
                 cmd.ExecuteReader();
                 success = true;

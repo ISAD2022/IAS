@@ -808,10 +808,10 @@ namespace AIS.Controllers
        
 
         [HttpPost]
-        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS)
+        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF)
         {
             string response = "";
-            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS);
+            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS, PARA_REF);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
