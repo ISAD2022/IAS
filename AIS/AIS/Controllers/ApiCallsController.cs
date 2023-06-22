@@ -932,7 +932,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteResponsibilityOfLegacyParas(REF_P, P_ID, PP_NO) + "\"}";
 
         }
-
+       
         [HttpPost]
         public string add_responsibility_to_legacy_para(ObservationResponsiblePPNOModel RESP_PP, string REF_P, int P_ID)
         {
@@ -940,7 +940,13 @@ namespace AIS.Controllers
 
         }
 
-        
+        [HttpPost]
+        public string add_responsibility_to_legacy_para_fad(ObservationResponsiblePPNOModel RESP_PP, string REF_P, int P_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsibilityToLegacyParasFAD(RESP_PP, REF_P, P_ID) + "\"}";
+
+        }
+
 
         [HttpPost]
         public string update_legacy_para_with_responsibilities_no_changes_AZ(AddLegacyParaModel LEGACY_PARA)

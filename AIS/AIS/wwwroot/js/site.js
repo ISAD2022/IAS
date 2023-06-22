@@ -46,6 +46,8 @@ function onConfirmationCallback() {
 
 }
 
+function confirmAlertcloseFuncCalled() { }
+
 function setCookie(name, value, daysToLive = undefined) {
     // Encode value in order to escape semicolons, commas, and whitespace
     var cookie = name + "=" + encodeURIComponent(value);
