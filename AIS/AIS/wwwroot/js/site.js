@@ -39,11 +39,9 @@ function confirmAlert(message) {
     $('#confirmAlertMessagesPopup').modal('show');
 }
 function onconfirmAlertCallback(funcToCall) {
-    confirmAlertcloseFuncCalled = funcToCall;
+    onConfirmationCallback = funcToCall;
 }
-function confirmAlertcloseFuncCalled() {
 
-}
 function onConfirmationCallback() {
 
 }

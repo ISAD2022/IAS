@@ -5705,7 +5705,6 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
-                    //chk.RISK_ID = rdr["RISK"].ToString();
                     chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -5863,6 +5862,67 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp + "<br/>" + responseRes;
+        }
+        public string AddResponsibilityToLegacyParas(ObservationResponsiblePPNOModel RESP_PP,string REF_P, int P_ID)
+        {
+            string responseRes = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_add_para_responsibility";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refid", OracleDbType.Int32).Value = P_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = RESP_PP.PP_NO;
+                cmd.Parameters.Add("AZ_Entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("user_ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("lC_no", OracleDbType.Varchar2).Value = RESP_PP.LOAN_CASE;
+                cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Varchar2).Value = RESP_PP.LC_AMOUNT;
+                cmd.Parameters.Add("AC_NO", OracleDbType.Varchar2).Value = RESP_PP.ACCOUNT_NUMBER;
+                cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Varchar2).Value = RESP_PP.ACC_AMOUNT;
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr2 = cmd.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    responseRes = rdr2["REMARKS"].ToString();
+
+                }
+             
+            }
+            con.Dispose();
+            return responseRes;
+        }
+        public string DeleteResponsibilityOfLegacyParas(string REF_P, int P_ID, int PP_NO)
+        {
+            string responseRes = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_delete_para_responsibility";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refid", OracleDbType.Int32).Value = P_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = PP_NO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr2 = cmd.ExecuteReader();
+                while (rdr2.Read())
+                {
+                    responseRes = rdr2["REMARKS"].ToString();
+
+                }
+
+            }
+            con.Dispose();
+            return responseRes;
         }
         public string UpdateLegacyParasWithResponsibilityNoChangesAZ(AddLegacyParaModel LEGACY_PARA)
         {
@@ -8491,11 +8551,11 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
-                    rp.LOAN_CASE = "";
-                    rp.EMP_NAME = rdr["EMP_NAME"].ToString(); ;
-                    rp.LC_AMOUNT = "";
-                    rp.ACCOUNT_NUMBER = "";
-                    rp.ACC_AMOUNT = "";
+                    rp.LOAN_CASE = rdr["LOANCASE"].ToString(); ;
+                    rp.EMP_NAME = rdr["EMP_NAME"].ToString(); 
+                    rp.LC_AMOUNT = rdr["LCAMOUNT"].ToString(); ;
+                    rp.ACCOUNT_NUMBER = rdr["ACCNUMBER"].ToString(); ;
+                    rp.ACC_AMOUNT = rdr["ACAMOUNT"].ToString(); ;
                     rp.PP_NO = rdr["PP_NO"].ToString();
                     list.Add(rp);
                 }

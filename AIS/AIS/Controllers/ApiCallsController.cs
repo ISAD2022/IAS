@@ -913,6 +913,7 @@ namespace AIS.Controllers
             return dBConnection.GetLegacyParasForUpdate(ENTITY_ID, PARA_REF, PARA_ID);            
         }
 
+
         [HttpPost]
         public List<OldParasModel> get_legacy_paras_for_update_FAD(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
         {
@@ -925,6 +926,21 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibility(LEGACY_PARA) + "\"}";
 
         }
+        [HttpPost]
+        public string delete_responsibility_of_legacy_para(string REF_P, int P_ID, int PP_NO)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteResponsibilityOfLegacyParas(REF_P, P_ID, PP_NO) + "\"}";
+
+        }
+
+        [HttpPost]
+        public string add_responsibility_to_legacy_para(ObservationResponsiblePPNOModel RESP_PP, string REF_P, int P_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsibilityToLegacyParas(RESP_PP, REF_P, P_ID) + "\"}";
+
+        }
+
+        
 
         [HttpPost]
         public string update_legacy_para_with_responsibilities_no_changes_AZ(AddLegacyParaModel LEGACY_PARA)
