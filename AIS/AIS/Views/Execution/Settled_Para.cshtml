@@ -6,18 +6,7 @@
     var g_paraId = 0;
     var refp = 0;
     var g_obsList = [];
-    $(document).ready(function () {
-       
-        $('#1').richText({
-            imageUpload: false,
-            fileUpload: false,
-            videoEmbed: false,
-            urls: false
-        });
-        $('#PublishParaText').on('click', function () {
-            publishResponseChanges();
-        });
-    });
+ 
     function getLegacyPara() {
        
         $('#manageObsPanel tbody').empty();
@@ -42,12 +31,8 @@
 
     }
     function parastatuschange(id) {
-        refp = id;
-       
-        $('#process_detail').modal('show');
-
-        
-     
+        refp = id;       
+        $('#process_detail').modal('show'); 
     }
 
     function Publishchange() {
@@ -68,6 +53,7 @@
             success: function (data) {
                 alert(data.Message);
                 onAlertCallback(reloadLocation);
+                $('#process_detail').modal('hide');
             },
             dataType: "json",
         });
@@ -75,7 +61,6 @@
     function reloadLocation() {
         getLegacyPara();
     }
-
 </script>
 
 <div class="row">

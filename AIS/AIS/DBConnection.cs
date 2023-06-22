@@ -53,11 +53,12 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
-                ocsb.IncrPoolSize = 7;
+                ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 2000;
+                ocsb.MinPoolSize = 10;
                 ocsb.Pooling = true;
                 ocsb.ConnectionTimeout = 120;
                 con.ConnectionString = ocsb.ConnectionString;
@@ -7856,11 +7857,11 @@ namespace AIS.Controllers
 
         public string AddChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS, string REMARKS)
         {
+            string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
-            bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -7871,13 +7872,16 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("NewStatus", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
-
-
-                cmd.ExecuteReader();
-                success = true;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remark"].ToString();
+                }
+                    
             }
             con.Dispose();
-            return success ? "Para Status updated successfully" : "Failed to update Para Status";
+            return resp;
         }
 
         public List<ZoneBranchParaStatusModel> GetZoneBranchParaPositionStatus(int Entity_ID)

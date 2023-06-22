@@ -33,7 +33,7 @@ namespace IAMS
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddDistributedMemoryCache();
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);//You can set Time   
+                options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
             });
             services.AddScoped<SessionHandler>();
             services.AddScoped<DBConnection>();
