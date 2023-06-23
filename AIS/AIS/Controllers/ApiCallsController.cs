@@ -1004,6 +1004,19 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaResponsibility(PARA_REF, PARA_ID, PP_NO) + "\"}";
         }
+        //
+
+        [HttpPost]
+        public List<AuditEntitiesModel> get_auditee_entities_by_entity_type_id(  int ENTITY_TYPE_ID)
+        {
+            return  dBConnection.GetAuditEntitiesByTypeId(ENTITY_TYPE_ID);
+        }
+
+        [HttpPost]
+        public string add_new_legacy_para(AddNewLegacyParaModel LEGACY_PARA)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddNewLegacyPara(LEGACY_PARA) + "\"}";
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -58,9 +58,9 @@ namespace AIS.Controllers
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 2000;
-                ocsb.MinPoolSize = 10;
+                ocsb.MinPoolSize = 1;
                 ocsb.Pooling = true;
-                ocsb.ConnectionTimeout = 120;
+                ocsb.ConnectionTimeout = 600;
                 con.ConnectionString = ocsb.ConnectionString;
                 // con.Open();
                 return con;
@@ -8873,5 +8873,165 @@ namespace AIS.Controllers
             return resp;
         }
 
+        public List<AuditEntitiesModel> GetAuditeeEntitiesType()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetAuditEntitiestype";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();
+                    entity.TYPE_ID = Convert.ToInt32(rdr["TYPEID"]);
+                    entity.ENTITYTYPEDESC = rdr["E_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<AuditEntitiesModel> GetAuditEntitiesByTypeId(int ENTITY_TYPE_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetAuditEntities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID; 
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();
+                    entity.TYPE_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.ENTITYTYPEDESC = rdr["E_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<AuditPeriodModel> GetAuditYearForAddLegacyPara()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditPeriodModel> entitiesList = new List<AuditPeriodModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetAuditYear";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditPeriodModel entity = new AuditPeriodModel();
+                    entity.AUDITPERIODID = Convert.ToInt32(rdr["audit_year"]);
+                    entity.DESCRIPTION = rdr["period"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<AuditNatureModel> GetAuditNatureForAddLegacyPara()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditNatureModel> entitiesList = new List<AuditNatureModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetAuditnature";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditNatureModel entity = new AuditNatureModel();
+                    entity.N_ID = Convert.ToInt32(rdr["NID"]);
+                    entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public string AddNewLegacyPara(AddNewLegacyParaModel LEGACY_PARA)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditNatureModel> entitiesList = new List<AuditNatureModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_add_legacy_Para";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("typeid", OracleDbType.Int32).Value = LEGACY_PARA.ENTITY_TYPE_ID;
+                cmd.Parameters.Add("audityear", OracleDbType.Varchar2).Value = LEGACY_PARA.AUDIT_YEAR;
+                cmd.Parameters.Add("PARANO", OracleDbType.Varchar2).Value = LEGACY_PARA.PARA_NO;
+                cmd.Parameters.Add("GIST", OracleDbType.Varchar2).Value = LEGACY_PARA.GIST_OF_PARA;
+                cmd.Parameters.Add("ANEXURE", OracleDbType.Varchar2).Value = LEGACY_PARA.ANNEXURE;
+                cmd.Parameters.Add("amount", OracleDbType.Varchar2).Value = LEGACY_PARA.AMOUNT;
+                cmd.Parameters.Add("VOL", OracleDbType.Varchar2).Value = LEGACY_PARA.VOL_I_II;
+                cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = LEGACY_PARA.ENTITY_ID;
+                cmd.Parameters.Add("USER_ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("nature", OracleDbType.Int32).Value = LEGACY_PARA.NATURE_ID;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    
+                    resp = rdr["remarks"].ToString();
+                    
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
     }
 }

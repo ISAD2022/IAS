@@ -58,8 +58,7 @@ namespace AIS
             if (json != "" && json != null && json.Length > 0)
             {
                 smodel = JsonSerializer.Deserialize<SessionModel>(json);
-            }
-          
+            }          
             return smodel;
         }
         public bool DisposeUserSession()

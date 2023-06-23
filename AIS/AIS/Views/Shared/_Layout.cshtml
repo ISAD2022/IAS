@@ -25,6 +25,16 @@
             text-align: left !important;
             padding-top: 14px;
         }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
     </style>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -48,7 +58,6 @@
 
             <div id="navBarTopMenu" class="collapse navbar-collapse" style="font-size:14px;">
 
-
                 <ul class="navbar-nav mt-2 mt-lg-0">
                     @{
                         @if (ViewData["TopMenu"] != null)
@@ -61,7 +70,7 @@
                                     </a>
                                     @if (ViewData["TopMenuPages"] != null)
                                     {
-                                        <div class="dropdown-menu" aria-labelledby="">
+                                        <ul class="dropdown-menu" aria-labelledby="">
                                             @{
                                                 foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
                                                 {
@@ -71,21 +80,47 @@
                                                         {
                                                             if (itemPage.Hide_Menu == 0)
                                                             {
-                                                                <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a>
+                                                                <li> <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a></li>
                                                             }
                                                         }
                                                     }
 
                                                 }
                                             }
-                                        </div>
+                                           
+
+                                        </ul>
                                     }
                                 </li>
 
                             }
                         }
                     }
-                    <!--
+                    <!--  <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            Tutorials
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#">HTML</a></li>
+                            <li><a tabindex="-1" href="#">CSS</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" href="#">Another dropdown <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>                   
+                 
                     <li class="nav-item active dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navRisk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
@@ -230,5 +265,15 @@
 
 
     @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dropdown-submenu a.test').on("click", function (e) {
+                $(this).next('ul').toggle();
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+    </script>
 </body>
 </html>
