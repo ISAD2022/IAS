@@ -1018,6 +1018,30 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddNewLegacyPara(LEGACY_PARA) + "\"}";
         }
 
+        [HttpPost]
+        public string refer_back_legacy_para_to_az(string PARA_REF, int PARA_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.ReferBackLegacyPara(PARA_REF, PARA_ID) + "\"}";
+        }
+        [HttpPost]
+        public List<AddNewLegacyParaModel> get_add_legacy_paras_autorize()
+        {
+            return dBConnection.GetAddedLegacyParaForAuthorize();
+        }
+
+        [HttpPost]
+        public string Authorize_Legacy_Para_addition(string PARA_REF)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeLegacyParaAddition(PARA_REF) + "\"}";
+        }
+
+        [HttpPost]
+        public string Delete_Legacy_Para_addition_request(string PARA_REF)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaAdditionRequest(PARA_REF) + "\"}";
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

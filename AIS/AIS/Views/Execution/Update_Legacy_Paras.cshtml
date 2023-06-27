@@ -8,6 +8,8 @@
     var g_procId = 0;
     var g_subprocId = 0;
     var g_procDetailId = 0;
+    var g_entType="";
+  
     var g_paraRef="";
 
     $(document).ready(function () {
@@ -169,7 +171,8 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td></tr>')
+
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td></tr>')
                 });
             },
 
@@ -177,7 +180,7 @@
         });
 
     }
-    function updateParaDetails(ref_p, memo_no, paraId) {
+    function updateParaDetails(ref_p, memo_no, paraId) {       
 
         g_paraId=paraId;
         g_paraRef=ref_p;
@@ -196,11 +199,35 @@
               
                 if (data.length > 0) {
                     var v = data[0];
+
+
                     g_procId = v.process;
                     g_subprocId = v.suB_PROCESS;
                     g_procDetailId = v.procesS_DETAIL;
-                    $('#updateMemo_process').val(v.process);
-                    getSubProcessList();
+                    g_entType = v.enT_TYPE;
+
+                    if (v.enT_TYPE != "D") {
+                        $('#updateMemo_process').val(v.process);
+                        $('#riskGroupSelectBox').parent().addClass('d-none');
+                        $('#updateMemo_process').parent().removeClass('d-none');
+                        $('#updateMemo_subprocess').parent().removeClass('d-none');
+                        $('#updateMemo_violation').parent().removeClass('d-none');
+
+                        $('#listofRespPersons').parent().parent().removeClass('d-none');
+                        
+
+                        getSubProcessList();
+                    }
+                    else{
+                        $('#riskGroupSelectBox').val(v.process);
+                        $('#updateMemo_process').parent().addClass('d-none');
+                        $('#updateMemo_subprocess').parent().addClass('d-none');
+                        $('#updateMemo_violation').parent().addClass('d-none');
+                        $('#listofRespPersons').parent().parent().addClass('d-none');
+                        $('#riskGroupSelectBox').parent().removeClass('d-none');
+                        div_risksubcategoryShowHide();
+                    }
+                    
                     $('#observation').html(v.gisT_OF_PARAS);
                     $('#auditCriteriaRiskField').val(0);
                     $('#responseAuditee').val(v.parA_TEXT).trigger('change');                   
@@ -215,7 +242,7 @@
 
 
     }
-
+  
     function getSubProcessList() {
         if ($('#updateMemo_process option:selected').val() == 0) {
             $('#updateMemo_subprocess').empty();
@@ -280,11 +307,75 @@
 
     }
 
+    function div_risksubcategoryShowHide() {
+        if ($('#riskGroupSelectBox option:selected').val() == 0) {
+            $('#div_risksubcategory').hide();
+            $('#div_activityContainer').hide();
+        }
+        else {
+            $('#div_risksubcategory').show();
+            $('#div_activityContainer').hide();
+            $('#riskSubGroupSelectBox').empty();
+            $.ajax({
+                url: "/Execution/sub_voilation",
+                type: "POST",
+                data: {
+                    'V_ID': $('#riskGroupSelectBox option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                    $.each(data, function (index, item) {
+                        var className = "";
+                        if (g_subprocId == item.id) {
+                            className = 'selected = "selected"';
+                        }
+                        $('#riskSubGroupSelectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
+                    });
+                   
+
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function div_activityContainerShowHide() {
+        if ($('#riskSubGroupSelectBox option:selected').val() == 0)
+            $('#div_activityContainer').hide();
+        else
+            $('#div_activityContainer').show();
+        $('#riskActivitiesSelectBox').empty();
+        $.ajax({
+            url: "/Execution/risk_activities",
+            type: "POST",
+            data: {
+                'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
+            },
+            cache: false,
+            success: function (data) {
+                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                $.each(data, function (index, item) {
+
+                     var className = "";
+                        if (g_procDetailId == item.id) {
+                            className = 'selected = "selected"';
+                        }
+
+                    $('#riskActivitiesSelectBox').append("<option " + className + " value=\"" + item.activitY_ID + "\"> " + item.description + "</option>");
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+
     function reloadLocation() {
         getLegacyPara();
     }
 
     function submitLegacyParaUpdates(){
+
+        if(g_entType=="B"){
 
         
         if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
@@ -298,43 +389,72 @@
             return;
         }else{
             confirm_submitLegacyParaUpdates();
-        }       
+        }
+        }else{
+            confirm_submitLegacyParaUpdates();
+        }
 
     }
     function confirm_submitLegacyParaUpdates(){
         var resP = [];
         $('#PublishParaText').attr('disabled', true);
 
-        if ($('#updateMemo_process').val() == 0) {
-            alert("Please select Process");
-            $('#PublishParaText').attr('disabled', false);
-            return;
+
+        if(g_entType!="D"){
+            if ($('#updateMemo_process').val() == 0) {
+                alert("Please select Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_subprocess').val() == 0) {
+                alert("Please select Sub Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_violation').val() == 0) {
+                alert("Please select Checklist Detail");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#auditCriteriaRiskField').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+
+        }
+        else{
+            if ($('#riskGroupSelectBox').val() == 0) {
+                alert("Please select Violation");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#riskSubGroupSelectBox').val() == 0) {
+                alert("Please select Nature");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }          
+
+            if ($('#auditCriteriaRiskField').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
         }
 
-        if ($('#updateMemo_subprocess').val() == 0) {
-            alert("Please select Sub Process");
-            $('#PublishParaText').attr('disabled', false);
-            return;
-        }
-
-        if ($('#updateMemo_violation').val() == 0) {
-            alert("Please select Checklist Detail");
-            $('#PublishParaText').attr('disabled', false);
-            return;
-        }
-
-        if ($('#auditCriteriaRiskField').val() == 0) {
-            alert("Please select Risk");
-            $('#PublishParaText').attr('disabled', false);
-            return;
-        }
-
+      
         var add_leg_data = {
             'PARA_TEXT': $('.richText-editor').html(),
             'ID': g_paraId,
-            'PROCESS_ID': $('#updateMemo_process').val(),
-            'SUB_PROCESS_ID': $('#updateMemo_subprocess').val(),
-            'CHECKLIST_DETAIL_ID': $('#updateMemo_violation').val(),
+            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#riskGroupSelectBox').val(),
+            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#riskSubGroupSelectBox').val(),
+            'CHECKLIST_DETAIL_ID': g_entType == "B" ? $('#updateMemo_violation').val():0,
             'RISK_ID': $('#auditCriteriaRiskField').val(),
             'REF_P': g_paraRef,
             'RESP_PP': resP
@@ -356,7 +476,9 @@
     }
 
     function submitLegacyParaUpdatesWithNoChanges() {
+        if(g_entType=="B"){
 
+        
 
         if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
             alert("There are pending responsibilities, please add all pending responsibilities to proceed");
@@ -370,38 +492,69 @@
         }else{
             confirm_submitLegacyParaUpdatesWithNoChanges();
         }
+        }else{
+            confirm_submitLegacyParaUpdatesWithNoChanges();
+        }
 
     }
     function confirm_submitLegacyParaUpdatesWithNoChanges() {      
 
         var resP = [];
+        
+        if (g_entType != "D") {
+            if ($('#updateMemo_process').val() == 0) {
+                alert("Please select Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_subprocess').val() == 0) {
+                alert("Please select Sub Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_violation').val() == 0) {
+                alert("Please select Checklist Detail");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#auditCriteriaRiskField').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
 
 
-        if ($('#updateMemo_process').val() == 0) {
-            alert("Please select Process");
-            return;
+        }
+        else {
+            if ($('#riskGroupSelectBox').val() == 0) {
+                alert("Please select Violation");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#riskSubGroupSelectBox').val() == 0) {
+                alert("Please select Nature");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#auditCriteriaRiskField').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
         }
 
-        if ($('#updateMemo_subprocess').val() == 0) {
-            alert("Please select Sub Process");
-            return;
-        }
-
-        if ($('#updateMemo_violation').val() == 0) {
-            alert("Please select Checklist Detail");
-            return;
-        }
-
-        if ($('#auditCriteriaRiskField').val() == 0) {
-            alert("Please select Risk");
-            return;
-        }
 
         var add_leg_data = {
             'ID': g_paraId,
-            'PROCESS_ID': $('#updateMemo_process').val(),
-            'SUB_PROCESS_ID': $('#updateMemo_subprocess').val(),
-            'CHECKLIST_DETAIL_ID': $('#updateMemo_violation').val(),
+            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#riskGroupSelectBox').val(),
+            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#riskSubGroupSelectBox').val(),
+            'CHECKLIST_DETAIL_ID': g_entType == "B" ? $('#updateMemo_violation').val() : 0,
             'RISK_ID': $('#auditCriteriaRiskField').val(),
             'REF_P': g_paraRef,
             'RESP_PP': resP
@@ -471,7 +624,7 @@
     <div class="modal-dialog  modal-xl" role="document" style="max-width:1450px !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Sub Process Entry</h5>
+                <h5 class="modal-title">Update Legacy Para</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -493,7 +646,30 @@
                                 }
                             }
                         </select>
+                      
                     </div>
+                    <div class="form-group">
+                        <label for="riskGroupSelectBox" class="font-weight-bold">Violation</label>
+                        <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
+                            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
+                            @{
+                                if (ViewData["Voilation_Cat"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
+                                    {
+                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                    }
+                                }
+                            }
+                        </select>
+
+                    </div>
+                    <div id="div_risksubcategory" style="display:none;" class="form-group">
+                        <h5>Nature/Area</h5>
+                        <select id="riskSubGroupSelectBox" onchange="div_activityContainerShowHide();" class="form-select form-control" aria-label="Default select example">
+                        </select>
+                    </div>
+                  
                     <div class="form-group">
                         <label for="updateMemo_subprocess" class="font-weight-bold">Sub Process</label>
                         <select id="updateMemo_subprocess" onchange="getSubProcessViolationList();" class="form-select form-control" aria-label="Default select example">

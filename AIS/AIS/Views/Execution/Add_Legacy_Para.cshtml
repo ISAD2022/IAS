@@ -30,6 +30,20 @@
 
     }
 
+    function resetLegacyParaFields(){
+        $('#entityTypeSelectField').val(0);
+        $('#entitySelectField').val(0);
+        $('#natureSelectField').val(0);
+        $('#yearSelectField').val(0);
+        $('#paraNoField').val('');
+        $('#paragistField').val('');
+        $('#amountField').val('');
+        $('#annexureField').val('');
+        $('#VolumeSelectField').val(0);
+        $('#instancesField').val('');
+
+    }
+
     function addLegacyParaToDB(){
         $.ajax({
             url: "/ApiCalls/add_new_legacy_para",
@@ -49,6 +63,7 @@
             cache: false,
             success: function (data) {
                 alert(data.Message);
+                resetLegacyParaFields();
             },
 
             dataType: "json",
