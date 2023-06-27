@@ -913,6 +913,12 @@ namespace AIS.Controllers
             return dBConnection.GetLegacyParasForUpdate(ENTITY_ID, PARA_REF, PARA_ID);            
         }
 
+        [HttpPost]
+        public List<OldParasModel> get_legacy_paras_for_gist_update(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
+        {
+            return dBConnection.GetLegacyParasForGistUpdate(ENTITY_ID, PARA_REF, PARA_ID);
+        }
+
 
         [HttpPost]
         public List<OldParasModel> get_legacy_paras_for_update_FAD(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
@@ -926,6 +932,14 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParasWithResponsibility(LEGACY_PARA) + "\"}";
 
         }
+
+        [HttpPost]
+        public string update_legacy_para_gist_paraNo(string PARA_REF, string PARA_NO, string GIST_OF_PARA)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateLegacyParaGistParaNo(PARA_REF, PARA_NO, GIST_OF_PARA) + "\"}";
+
+        }
+        //
         [HttpPost]
         public string delete_responsibility_of_legacy_para(string REF_P, int P_ID, int PP_NO)
         {
@@ -1029,11 +1043,24 @@ namespace AIS.Controllers
             return dBConnection.GetAddedLegacyParaForAuthorize();
         }
 
+        //
+        [HttpPost]
+        public List<AddNewLegacyParaModel> get_update_gist_paraNo_legacy_paras_autorize()
+        {
+            return dBConnection.GetUpdatedGistParaOfLegacyParaForAuthorize();
+        }
+
         [HttpPost]
         public string Authorize_Legacy_Para_addition(string PARA_REF)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeLegacyParaAddition(PARA_REF) + "\"}";
         }
+        [HttpPost]
+        public string Authorize_Legacy_Para_Gist_ParaNo(string PARA_REF, string GIST_OF_PARA, string PARA_NO)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeLegacyParaGistParaNoUpdate(PARA_REF, GIST_OF_PARA, PARA_NO) + "\"}";
+        }
+        //
 
         [HttpPost]
         public string Delete_Legacy_Para_addition_request(string PARA_REF)

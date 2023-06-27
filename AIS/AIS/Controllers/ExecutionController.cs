@@ -61,7 +61,24 @@ namespace AIS.Controllers
             }
         }
         
-              public IActionResult Authorize_Change_Settle_Para_Status()
+       public IActionResult Authorize_Change_Settle_Para_Status()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult Authorize_Update_Legacy_Para_Gist_Para()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -699,7 +716,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetLegacyParasEntitiesForGistUpdate();
+            ViewData["EntitiesList"] = dBConnection.GetLegacyParasEntities();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
