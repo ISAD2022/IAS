@@ -172,7 +172,7 @@
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="d-none"><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="d-none"><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td></tr>')
                 });
             },
 
@@ -607,8 +607,8 @@
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation Gist</th>
-                    <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I II</th>
+                    <th class="col-md-auto d-none">Amount</th>
+                    <th class="col-md-auto d-none">VOL I II</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -731,15 +731,13 @@
                     </div>
                 </form>
 
-                <p class="text-italic text-danger">Note:<br />Save All Changes button will update Process, Subprocess, Checklist Details, Risk and Para Text</p>
-                <p class="text-italic text-primary">However, in case of No change in Para Text button, it will only update the Risk of the Para </p>
-
+              
             </div>
 
             <div class="mt-3 modal-footer">
                 
                 <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button" class="btn btn-danger">Save All Changes</button>
-                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaTextWithNoChanges" type="button" class="btn btn-primary">No change in Para Text</button>
+                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaTextWithNoChanges" type="button" class="btn btn-primary d-none">No change in Para Text</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 
             </div>

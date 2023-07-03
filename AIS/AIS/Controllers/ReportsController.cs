@@ -1025,7 +1025,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
+        public IActionResult FAD_HO_User_Legacy_Para_Performance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        
         public IActionResult FAD_Legacy_Zone_Wise_Performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

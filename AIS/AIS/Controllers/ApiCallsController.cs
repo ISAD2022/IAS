@@ -912,6 +912,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetLegacyParasForUpdate(ENTITY_ID, PARA_REF, PARA_ID);            
         }
+        [HttpPost]
+        public List<OldParasModel> get_legacy_paras_for_update_ho(string ENTITY_NAME, string PARA_REF, int PARA_ID = 0)
+        {
+            return dBConnection.GetLegacyParasForUpdateHO(ENTITY_NAME, PARA_REF, PARA_ID);
+        }
 
         [HttpPost]
         public List<OldParasModel> get_legacy_paras_for_gist_update(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
@@ -1012,6 +1017,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetLegacyUserWiseOldParasPerformance(FILTER_DATE);
         }
+        [HttpPost]
+        public List<FADHOUserLegacyParaUserWiseParasPerformanceModel> get_fad_ho_user_legacy_para_user_wise_performance(DateTime? FILTER_DATE)
+        {
+            return dBConnection.GetFADHOUserLegacyParaUserWiseOldParasPerformance(FILTER_DATE);
+        }
 
         [HttpPost]
         public string delete_legacy_para_responsibility(string PARA_REF, int PARA_ID, int PP_NO)
@@ -1068,6 +1078,17 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaAdditionRequest(PARA_REF) + "\"}";
         }
 
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_legacy_report_dropdown_contents(int ENTITY_ID)
+        {
+            return  dBConnection.GetLegacyParasEntitiesReport(ENTITY_ID) ;
+        }
+
+        [HttpPost]
+        public string settle_legacy_para_HO(int NEW_STATUS, int PARA_REF)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SettleLegacyParaHO(NEW_STATUS, PARA_REF) + "\"}";
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
