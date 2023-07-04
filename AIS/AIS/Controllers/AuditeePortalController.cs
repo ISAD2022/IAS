@@ -173,10 +173,9 @@ namespace AIS.Controllers
         public IActionResult div_historic_paras()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["AuditDepartments"] = dBConnection.GetDepartments();
-            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
-            ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForDashboardPanel();
+            
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else

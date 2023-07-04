@@ -593,10 +593,22 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<UserRelationshipModel> getparentrelForDashboardPanel(int ENTITY_REALTION_ID)
+        {
+            return dBConnection.GetparentrepofficeForDashboardPanel(ENTITY_REALTION_ID);
+        }
+
+        [HttpPost]
         public List<UserRelationshipModel> getpostplace(int E_R_ID)
         {
             return dBConnection.Getchildposting(E_R_ID);
         }
+        [HttpPost]
+        public List<UserRelationshipModel> getpostplaceForDashboardPanel(int E_R_ID)
+        {
+            return dBConnection.GetchildpostingForDashboardPanel(E_R_ID);
+        }
+       
         [HttpPost]
         public List<ManageObservations> get_violation_observations(int ENTITY_ID, int VIOLATION_ID)
         {
@@ -1088,6 +1100,17 @@ namespace AIS.Controllers
         public string settle_legacy_para_HO(int NEW_STATUS, int PARA_REF)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SettleLegacyParaHO(NEW_STATUS, PARA_REF) + "\"}";
+        }
+
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_relation_observation_for_dashboard(int ENTITY_ID=0)
+        {
+            return dBConnection.GetRelationObservationForDashboard(ENTITY_ID);
+        }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

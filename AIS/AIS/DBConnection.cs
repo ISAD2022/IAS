@@ -6741,6 +6741,39 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+        public List<UserRelationshipModel> GetchildpostingForDashboardPanel(int e_r_id = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            if (e_r_id == 0)
+                e_r_id = Convert.ToInt32(loggedInUser.UserEntityID);
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Getchildposting";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("erid", OracleDbType.Int32).Value = e_r_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.C_NAME = rdr["C_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<UserRelationshipModel> Getparentrepoffice(int r_id = 0)
         {
 
@@ -6750,6 +6783,36 @@ namespace AIS.Controllers
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_Getparentrepoffice";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("rid", OracleDbType.Int32).Value = r_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.ACTIVE = rdr["ACTIVE"].ToString();
+                    entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<UserRelationshipModel> GetparentrepofficeForDashboardPanel(int r_id = 0)
+        {
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Getparentrepoffice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("rid", OracleDbType.Int32).Value = r_id;
@@ -6781,6 +6844,36 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<UserRelationshipModel> GetrealtionshiptypeForDashboardPanel()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Getrealtionshiptype";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserRoleid", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -6874,6 +6967,42 @@ namespace AIS.Controllers
                     para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
                     para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     list.Add(para);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<FADNewOldParaPerformanceModel> GetFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Functional_owner"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
                 }
             }
             con.Dispose();
@@ -8900,6 +9029,41 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<FADNewOldParaPerformanceModel> GetRelationObservationForDashboard(int USER_ENTITY_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = USER_ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Process"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
 
         public List<FADLagacyParaPerformanceModel> GetFADLagacyParaPerformance()
         {
@@ -9469,6 +9633,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("REFP", OracleDbType.Int32).Value = PARA_REF;
                 cmd.Parameters.Add("NEW_STATUS ", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {

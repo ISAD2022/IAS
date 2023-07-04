@@ -61,7 +61,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_functional_responsibility_wise_paras",
+            url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -72,9 +72,11 @@
             success: function (data) {
                 g_obsList = data;
                 $('#observation_panel tbody').empty();
+                var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#observation_panel tbody').append('<tr id="' + v.obS_ID + '"><td>' + v.entitY_NAME + '</td><td>' + v.violation + '</td><td>' + v.period + '</td><td class="text-center">' + v.memO_NO + '</td><td><a href="#" onclick="ShowMemo(' + v.obS_ID + ');">View Observation</a></td><td>' + v.obS_RISK + '</td><td><a href="#" onclick="ShowComments(' + v.obS_ID + ');">Comments</a></td></tr>');
 
+                    $('#observation_panel tbody').append('  <tr id="' + v.id + '"><td align="center"> ' + sr + '</td> <td align="left">' + v.process + '</td> <td align="right">' + v.total_Paras + '</td> <td align="right">' + v.setteled_Para + '</td> <td align="right">' + v.unsetteled_Para + '</td> <td align="right">' + v.ratio + '</td> <td align="right" style="color:red;">' + v.r1 + '</td> <td align="right" style="color:yellow;">' + v.r2 + '</td> <td align="right" style="color:green;">' + v.r3 + '</td> </tr>');
+                    sr++;
                 });
 
 
@@ -128,10 +130,13 @@
 
 </script>
 <div class="row col-md-12">
-    <div class="col-md-12 mt-3">
-        <center class="w-100"><h3>Functional Responsibilities wise Paras</h3></center>
-        <div>
-            <h5>Process</h5>
+    <div class="col-md-12 row">
+        <h3 style="color: #45c545;">Functional Responsibilities wise Paras</h3>
+    </div>
+    
+    <div class="col-md-12 mt-3">   
+        <div class="col-md-2">
+            <label class="text-bold">Relationship Type</label>
         </div>
         <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
@@ -164,13 +169,15 @@
         <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th>Name of Audit Report</th>
-                    <th>Nature of Violation</th>
-                    <th>Audit Year</th>
-                    <th>Para No. Outstanding</th>
-                    <th>Observation</th>
-                    <th>Risk Category</th>
-                    <th>Action</th>
+                    <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto">Functional Responsibility</th>
+                    <th class="col-md-auto text-center">Total Paras</th>
+                    <th class="col-md-auto text-center">Settlement through <br /> Follow-up</th>
+                    <th class="col-md-auto text-center">Un-Settled Para</th>
+                    <th class="col-md-auto text-center">Settlement Ratio</th>
+                    <th class="col-md-auto text-center">High</th>
+                    <th class="col-md-auto text-center">Medium</th>
+                    <th class="col-md-auto text-center">Low</th>
                 </tr>
             </thead>
             <tbody>
