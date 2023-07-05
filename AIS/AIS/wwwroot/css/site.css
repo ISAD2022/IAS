@@ -78,3 +78,49 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+@keyframes loading-1 {
+    0%
+
+{
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+
+100% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+}
+
+@keyframes loading-2 {
+    0%
+
+{
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+
+100% {
+    -webkit-transform: rotate(144deg);
+    transform: rotate(144deg);
+}
+
+}
+
+@keyframes loading-3 {
+    0%
+
+{
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+
+100% {
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+}
+}
+

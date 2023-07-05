@@ -169,45 +169,7 @@ namespace AIS.Controllers
                 else
                     return View();
             }
-        }
-        public IActionResult div_historic_paras()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForDashboardPanel();
-            
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult functional_resp_paras()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-           
-
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
+        }       
         public IActionResult old_para_br_comp()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
