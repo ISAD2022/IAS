@@ -6986,7 +6986,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -7008,8 +7008,40 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<FADNewOldParaPerformanceModel> GetViolationWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
-
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_v_wise";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("process_id", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["process"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public bool AddDivisionalHeadRemarksOnFunctionalLegacyPara(int CONCERNED_DEPT_ID = 0, string COMMENTS = "", int REF_PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();

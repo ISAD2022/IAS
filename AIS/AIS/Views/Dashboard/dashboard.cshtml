@@ -8,7 +8,7 @@
     .widget-chart {
         text-align: center;
         padding: 1rem;
-        height:200px !important;
+        height:250px !important;
     }
 
         .widget-chart .progress-sub-label {
@@ -248,8 +248,8 @@
   width: 120px;
   height: 120px !important;
   float: right;
-        left: -4px;
-        top: -24px;
+  left: -4px;
+  top: -24px;
   line-height: 100px;
   background: none;
   margin: 10px;
@@ -304,7 +304,7 @@
   border-right: 0;
   -webkit-transform-origin: center right;
   transform-origin: center right;
-  animation: loading-1 1.8s linear forwards;
+ 
 }
 .progress .progress-value {
             width: 90%;
@@ -320,21 +320,61 @@
             left: 8%;
 }
 .progress.blue .progress-bar {
-  border-color: #049dff;
-}
-.progress.blue .progress-left .progress-bar {
-  animation: loading-2 1.5s linear forwards 1.8s;
-}
-.progress.yellow .progress-bar {
-  border-color: #fdba04;
-}
-.progress.yellow .progress-right .progress-bar {
-  animation: loading-3 1.8s linear forwards;
-}
-.progress.yellow .progress-left .progress-bar {
-  animation: none;
+   border-color: #6c757d !important;
 }
 
+.progress.red .progress-right .progress-bar {
+    animation: loading-1 1.8s linear forwards !important;
+}
+.progress.red .progress-left .progress-bar {
+  animation: loading-2 1.8s linear forwards;
+}
+
+.progress.yellow .progress-right .progress-bar {
+    animation: loading-3 1.8s linear forwards !important;
+}
+
+.progress.yellow .progress-left .progress-bar {
+    animation: none;
+}
+
+.progress.blue .progress-right .progress-bar {
+    animation: loading-4 1.8s linear forwards !important;
+}
+
+.progress.blue .progress-left .progress-bar {
+    animation: none;
+}
+
+.progress.sky .progress-right .progress-bar {
+    animation: loading-5 1.8s linear forwards !important;
+}
+
+.progress.sky .progress-left .progress-bar {
+    animation: none;
+}
+
+.progress.green .progress-right .progress-bar {
+    animation: loading-5 1.8s linear forwards !important;
+}
+
+.progress.green .progress-left .progress-bar {
+    animation: none;
+}
+
+.progress.red .progress-bar {
+  border-color: #dc3545 !important
+}
+.progress.yellow .progress-bar {
+    border-color: #ffc107 !important;
+}
+.progress.green .progress-bar {
+    border-color: #28a745 !important;
+}
+
+.progress.sky .progress-bar {
+    border-color: #17a2b8 !important;
+}
 
 
 </style>
@@ -344,153 +384,174 @@
 </script>
 <div class="row w-100">
 
-    <div class="col-md-12 mt-3">
-        <h3 style="color: #45c545;">Performance Score Card <br/> 2023 (April – June)</h3>
+    <div class="row text-center col-md-12 mt-3">
+        <h1 class="w-100 text-center" style="color: #45c545;">Performance Score Card <br/> 2023 (April – June)</h1>
     </div>
-   <center class="w-100 container-fluid mt-3">
+   <center class="w-100 container-fluid mt-5">
         <div class="row col-md-12">
-                <div class="col-md-4 col-lg-4">
-                    <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-primary border-primary card">
-                        <div class="widget-chat-wrapper-outer w-100">
-                            <div class="widget-chart-content">
-                                <div class="widget-title opacity-5 text-uppercase">
-                                Inspections
-                                </div>
-                                <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                    <div class="row widget-chart-flex align-items-center">
-                                        <div class="col-md-6">
-                                            <span class="opacity-10 text-success pr-2">
-                                                <i class="fa fa-angle-up"></i>
+            
+            <div class="col-md-4 col-lg-4">
+                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-secondary border-secondary card">
+                    <div class="widget-chat-wrapper-outer w-100">
+                        <div class="widget-chart-content">
+                            <div class="widget-title opacity-5 text-uppercase">
+                                Field Audit
+                            </div>
+                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
+                                <div class="row widget-chart-flex align-items-center">
+                                    <div class="col-md-6" style="top:-23px !important;">
+                                        <span class="opacity-10 text-danger pr-2">
+                                            <i class="fa fa-angle-down"></i>
+                                        </span>
+                                        205/502
+                                        <small class="opacity-5 pl-1">Entities</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="progress blue">
+                                            <span class="progress-right">
+                                                <span class="progress-bar"></span>
                                             </span>
-                                            155
-                                            <small class="opacity-5 pl-1">Branches</small>
+                                            <div class="progress-value">41%</div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="progress blue">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-warning border-warning card">
+                    <div class="widget-chat-wrapper-outer w-100">
+                        <div class="widget-chart-content">
+                            <div class="widget-title opacity-5 text-uppercase">
+                                Management Audit
+                            </div>
+                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
+                                <div class="row widget-chart-flex align-items-center">
+                                    <div class="col-md-6" style="top:-23px !important;">
+                                        <span class="opacity-10 text-danger pr-2">
+                                            <i class="fa fa-angle-down"></i>
+                                        </span>
+                                        28 / 60
+                                        <small class="opacity-5 pl-1">Entities</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="progress yellow">
+                                            <span class="progress-right">
+                                                <span class="progress-bar"></span>
+                                            </span>
+                                            <div class="progress-value">47%</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+            <div class="col-md-4 col-lg-4">
+                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-info border-info card">
+                    <div class="widget-chat-wrapper-outer w-100">
+                        <div class="widget-chart-content">
+                            <div class="widget-title opacity-5 text-uppercase">
+                                I.S Audit
+                            </div>
+                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
+                                <div class="row widget-chart-flex align-items-center">
+                                    <div class="col-md-6" style="top:-23px !important;">
+                                        <span class="opacity-10 text-success pr-2">
+                                            <i class="fa fa-angle-up"></i>
+                                        </span>
+                                        6/12
+                                        <small class="opacity-5 pl-1">Entities</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="progress sky">
+                                            
+                                            <span class="progress-right">
+                                                <span class="progress-bar"></span>
+                                            </span>
+                                            <div class="progress-value">50%</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offset-md-2 col-md-4 col-lg-4 mt-5">
+                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-danger border-danger card">
+                    <div class="widget-chat-wrapper-outer w-100">
+                        <div class="widget-chart-content">
+                            <div class="widget-title opacity-5 text-uppercase">
+                                Inspections
+                            </div>
+                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
+                                <div class="row widget-chart-flex align-items-center">
+                                    <div class="col-md-6" style="top:-23px !important;">
+                                        <span class="opacity-10 text-success pr-2">
+                                            <i class="fa fa-angle-up"></i>
+                                        </span>
+                                        287/502
+                                        <small class="opacity-5 pl-1">Branches</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="progress red">
                                             <span class="progress-left">
                                                 <span class="progress-bar"></span>
                                             </span>
                                             <span class="progress-right">
                                                 <span class="progress-bar"></span>
                                             </span>
-                                            <div class="progress-value">90%</div>
+                                            <div class="progress-value">57%</div>
                                         </div>
-                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4 mt-5">
+                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-success border-success card">
+                    <div class="widget-chat-wrapper-outer w-100">
+                        <div class="widget-chart-content">
+                            <div class="widget-title opacity-5 text-uppercase">
+                                Sharia Audit
+                            </div>
+                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
+                                <div class="row widget-chart-flex align-items-center">
+                                    <div class="col-md-6" style="top:-23px !important;">
+                                        <span class="opacity-10 text-success pr-2">
+                                            <i class="fa fa-angle-up"></i>
+                                        </span>
                                         
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-lg-4">
-                    <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-danger border-danger card">
-                        <div class="widget-chat-wrapper-outer">
-                            <div class="widget-chart-content">
-                                <div class="widget-title opacity-5 text-uppercase">
-                                Management Audit
 
-                                </div>
-                                <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                    <div class="widget-chart-flex align-items-center">
-                                        <div>
-                                            <span class="opacity-10 text-danger pr-2">
-                                                <i class="fa fa-angle-down"></i>
+                                        <small class="opacity-5 pl-1"></small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="progress green">
+
+                                            <span class="progress-right">
+                                                <span class="progress-bar"></span>
                                             </span>
-                                            71
-                                            <small class="opacity-5 pl-1">%</small>
-                                        </div>
-                                        <div class="widget-title ml-auto font-size-lg font-weight-normal text-muted">
-                                            <div class="circle-progress circle-progress-danger-sm d-inline-block">
-                                                <canvas width="57" height="57" style="height: 46px; width: 46px;"></canvas>
-                                                <small><span>62<span></span></span></small>
-                                            </div>
+                                            <div class="progress-value">50%</div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-lg-4">
-                    <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-warning border-warning card">
-                        <div class="widget-chat-wrapper-outer">
-                            <div class="widget-chart-content">
-                                <div class="widget-title opacity-5 text-uppercase">
-                                Field Audit
-
-                            </div>
-                                <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                    <div class="widget-chart-flex align-items-center">
-                                        <div>
-                                            <small class="opacity-5 pr-1">$</small>
-                                            1,45M
-                                        </div>
-                                        <div class="widget-title ml-auto font-size-lg font-weight-normal text-muted">
-                                            <div class="circle-progress circle-progress-warning-sm d-inline-block">
-                                                <canvas width="57" height="57" style="height: 46px; width: 46px;"></canvas>
-                                                <small><span>72<span></span></span></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="offset-md-2 col-md-4 col-lg-4 mt-3">
-                            <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-success border-success card">
-                                <div class="widget-chat-wrapper-outer">
-                                    <div class="widget-chart-content">
-                                        <div class="widget-title opacity-5 text-uppercase">
-                                            ISAD
-
-                                        </div>
-                                        <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                            <div class="widget-chart-flex align-items-center">
-                                                <div>
-                                                    <small class="text-success pr-1">+</small>
-                                                    34
-                                                    <small class="opacity-5 pl-1">hires</small>
-                                                </div>
-                                                <div class="widget-title ml-auto font-size-lg font-weight-normal text-muted">
-                                                    <div class="circle-progress circle-progress-success-sm d-inline-block">
-                                                        <canvas width="57" height="57" style="height: 46px; width: 46px;"></canvas>
-                                                        <small><span>81<span></span></span></small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                <div class="col-md-4 col-lg-4 mt-3">
-                        <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-success border-success card">
-                            <div class="widget-chat-wrapper-outer">
-                                <div class="widget-chart-content">
-                                    <div class="widget-title opacity-5 text-uppercase">
-                                        Sharia Audit
-                                    </div>
-                                    <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                        <div class="widget-chart-flex align-items-center">
-                                            <div>
-                                                <small class="text-success pr-1">+</small>
-                                                34
-                                                <small class="opacity-5 pl-1">hires</small>
-                                            </div>
-                                            <div class="widget-title ml-auto font-size-lg font-weight-normal text-muted">
-                                                <div class="circle-progress circle-progress-success-sm d-inline-block">
-                                                    <canvas width="57" height="57" style="height: 46px; width: 46px;"></canvas>
-                                                    <small><span>81<span></span></span></small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+              
         </div>
    </center>
 </div>

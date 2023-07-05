@@ -1112,6 +1112,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_violation_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            return dBConnection.GetViolationWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
