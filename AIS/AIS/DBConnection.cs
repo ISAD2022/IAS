@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";                                                
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -9674,6 +9674,36 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+        }
+        public List<NoEntitiesRiskBasePlan> GetEntitiesRiskBasePlanForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<NoEntitiesRiskBasePlan> list = new List<NoEntitiesRiskBasePlan>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.p_get_risk_baseplan";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    NoEntitiesRiskBasePlan zb = new NoEntitiesRiskBasePlan();
+                    zb.ENTITY_NAME = rdr["name"].ToString();
+                    zb.ENTITY_DESC = rdr["entitytypedesc"].ToString();
+                    zb.ENTITY_RISK = rdr["risk"].ToString();
+                    zb.ENTITY_SIZE = rdr["entity_size"].ToString();
+                    zb.ENTITY_NO = Convert.ToInt32(rdr["no_of_enitites"].ToString());
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
         }
     }
 }

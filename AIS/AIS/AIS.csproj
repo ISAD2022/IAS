@@ -25,4 +25,11 @@
     <Folder Include="wwwroot\Audit_Reports\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Dashboard\no_entities_risk_based_planning.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

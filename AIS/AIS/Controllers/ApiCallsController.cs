@@ -1117,6 +1117,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetViolationWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
         }
+        [HttpPost]
+        public List<NoEntitiesRiskBasePlan> get_risk_base_plan_for_dashboard()
+        {
+            return dBConnection.GetEntitiesRiskBasePlanForDashboard();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
