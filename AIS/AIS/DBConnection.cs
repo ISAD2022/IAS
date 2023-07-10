@@ -4529,6 +4529,53 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<SubCheckListStatus> GetAuditeeSubChecklist(int PROCESS_ID = 0)
+        {
+            List<SubCheckListStatus> list = new List<SubCheckListStatus>();
+            var con = this.DatabaseConnection(); con.Open();           
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_GetChecklistSubByProcessId";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("processId", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    SubCheckListStatus chk = new SubCheckListStatus();
+                    if (rdr["S_ID"].ToString() != null && rdr["S_ID"].ToString() != "")
+                        chk.S_ID = Convert.ToInt32(rdr["S_ID"].ToString());
+                    chk.T_ID = Convert.ToInt32(rdr["T_ID"].ToString());
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public string UpdateAuditeeSubChecklist(int PROCESS_ID = 0, int SUB_PROCESS_ID, string HEADING)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_update_sub_process";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("sid", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("p_id", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("sub_name", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
         public List<ManageObservations> GetViolationObservations(int ENTITY_ID = 0, int VIOLATION_ID = 0)
         {
             sessionHandler = new SessionHandler();

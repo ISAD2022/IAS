@@ -1128,6 +1128,17 @@ namespace AIS.Controllers
             return dBConnection.GetAuditPerformanceForDashboard();
         }
 
+        [HttpPost]
+        public List<SubCheckListStatus> get_auditee_sub_checklist(int PROCESS_ID = 0)
+        {
+            return dBConnection.GetAuditeeSubChecklist(PROCESS_ID);
+        }
+        [HttpPost]
+        public string update_auditee_sub_checklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditeeSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

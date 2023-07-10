@@ -306,6 +306,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult manage_sub_Checklist()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ChecklistTypes"] = dBConnection.GetAuditChecklist();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpPost]
         public List<MenuPagesModel> menu_pages(int MENU_ID=0)
         {
