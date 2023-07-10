@@ -1122,6 +1122,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntitiesRiskBasePlanForDashboard();
         }
+        [HttpPost]
+        public List<FADAuditPerformanceModel> get_audit_performance_for_dashboard()
+        {
+            return dBConnection.GetAuditPerformanceForDashboard();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

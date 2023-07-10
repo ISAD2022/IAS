@@ -28,10 +28,13 @@
                 g_obsList = data;
                 $('#observation_panel tbody').empty();
                 var sr = 1;
+                var total_sum = 0;
                 $.each(data, function (i, v) {
+                    total_sum += v.entitY_NO;
                     $('#observation_panel tbody').append('  <tr><td align="center"> ' + sr + '</td> <td align="left">' + v.entitY_NAME + '</td> <td align="left">' + v.entitY_DESC + '</td> <td align="left">' + v.entitY_RISK + '</td> <td align="left">' + v.entitY_SIZE + '</td> <td align="right">' + v.entitY_NO + '</td></tr>');
                     sr++;
                 });
+                $('#observation_panel tbody').append('  <tr><td colspan="5" align="right"> Total</td> <td align="right">' + total_sum + '</td></tr>');
             },
             dataType: "json",
         });

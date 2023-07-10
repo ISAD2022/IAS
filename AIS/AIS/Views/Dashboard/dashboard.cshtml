@@ -273,9 +273,13 @@
   position: absolute;
   top: 0;
   z-index: 1;
+           
 }
+
 .progress .progress-left {
   left: 0;
+            margin-left: 1px;
+            margin-top: -0.5px;       
 }
 .progress .progress-bar {
   width: 100%;
@@ -324,19 +328,20 @@
 }
 
 .progress.red .progress-right .progress-bar {
-    animation: loading-1 1.2s linear forwards !important;
+    animation: loading-1 1.0s linear forwards !important;
 }
 .progress.red .progress-left .progress-bar {
-  animation: loading-2 2.0s linear forwards;
+  animation: loading-2 2.5s linear forwards;
 }
 
 .progress.yellow .progress-right .progress-bar {
-    animation: loading-3 1.8s linear forwards !important;
+    animation: loading-3 1.0s linear forwards !important;
 }
 
-.progress.yellow .progress-left .progress-bar {
-    animation: none;
-}
+        .progress.yellow .progress-left .progress-bar {
+            animation: loading-3b 2.5s linear forwards !important;
+        }
+
 
 .progress.blue .progress-right .progress-bar {
     animation: loading-4 1.8s linear forwards !important;
@@ -399,19 +404,20 @@
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
-                                    <div class="col-md-6" style="top:-23px !important;">
-                                        <span class="opacity-10 text-danger pr-2">
-                                            <i class="fa fa-angle-down"></i>
+                                    <div class="col-md-6" style="top:-9px !important;">
+                                        <span class="opacity-10 text-success pr-2">
+                                            <i class="fa fa-angle-up"></i>
                                         </span>
-                                        205/502
-                                        <small class="opacity-5 pl-1">Entities</small>
+                                        296/607
+                                        <small class="opacity-5 pl-1">Entities</small><br/>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1">CAU are audited quarterly</small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress blue">
                                             <span class="progress-right">
                                                 <span class="progress-bar"></span>
                                             </span>
-                                            <div class="progress-value">41%</div>
+                                            <div class="progress-value">49%</div>
                                         </div>
                                     </div>
 
@@ -431,18 +437,21 @@
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
                                     <div class="col-md-6" style="top:-23px !important;">
-                                        <span class="opacity-10 text-danger pr-2">
-                                            <i class="fa fa-angle-down"></i>
+                                        <span class="opacity-10 text-success pr-2">
+                                            <i class="fa fa-angle-up"></i>
                                         </span>
-                                        28 / 60
+                                        28 / 53
                                         <small class="opacity-5 pl-1">Entities</small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress yellow">
+                                            <span class="progress-left">
+                                                <span class="progress-bar"></span>
+                                            </span>
                                             <span class="progress-right">
                                                 <span class="progress-bar"></span>
                                             </span>
-                                            <div class="progress-value">47%</div>
+                                            <div class="progress-value">53%</div>
                                         </div>
                                     </div>
 
@@ -530,10 +539,9 @@
                                     <div class="col-md-6" style="top:-23px !important;">
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
-                                        </span>
-                                        
+                                        </span><br/>                                    
 
-                                        <small class="opacity-5 pl-1"></small>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1">Pool Management is audited quarterly</small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress green">
