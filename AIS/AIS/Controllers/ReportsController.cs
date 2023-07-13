@@ -25,7 +25,25 @@ namespace AIS.Controllers
             tm = _tpMenu;
         }
 
-      
+        public IActionResult Para_Position()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForParaPositionReport();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult FAD_New_Para_Performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

@@ -10,6 +10,7 @@
         $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
         $('#riskGroupDetailSelectBox').empty();
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
+        
         $.ajax({
                 url: "/Setup/process_details",
                 type: "POST",
@@ -21,14 +22,12 @@
                     $.each(data, function (index, item) {
                         $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.title + " </option > ");
                     });
-
                 },
                 dataType: "json",
-            });  
+            });   
     }
 
     function getProcessDetail() {
-
        
         $('#riskGroupDetailSelectBox').empty();
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
@@ -54,7 +53,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_violation_wise_paras_for_dashboard",
+            url: "/ApiCalls/get_repetative_paras_for_dashboard",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -66,35 +65,43 @@
                 g_obsList = data;
                 $('#observation_panel tbody').empty();
                 var sr = 1;
-                var t_tparas = 0;
-                var t_sparas = 0;
-                var t_uparas = 0;
-                var t_rparas = 0;
-                var t_hparas = 0;
-                var t_mparas = 0;
-                var t_lparas = 0;
+                var t_2023 = 0;
+                var t_2022 = 0;
+                var t_2021 = 0;
+                var t_2020 = 0;
+                var t_2019 = 0;
+                var t_2018 = 0;
+                var t_2017 = 0;
+                var t_2016 = 0;
+                var t_2015 = 0;
+                var t_2014 = 0;
+                var t_2013 = 0;
+                var t_2012 = 0;
+                var t_2011 = 0;
+                var t_2010 = 0;
                 $.each(data, function (i, v) {
-                    t_tparas += parseInt(v.total_Paras);
-                    t_sparas += parseInt(v.setteled_Para);
-                    t_uparas += parseInt(v.unsetteled_Para);
-                    t_rparas += parseFloat(v.ratio);
-                    t_hparas += parseInt(v.r1);
-                    t_mparas += parseInt(v.r2);
-                    t_lparas += parseInt(v.r3);
-                    t_rparas = parseFloat(t_rparas).toFixed(2);
-                    $('#observation_panel tbody').append('  <tr id="' + v.id + '"><td align="center"> ' + sr + '</td> <td align="left">' + v.process + '</td> <td align="right">' + v.total_Paras + '</td> <td align="right">' + v.setteled_Para + '</td> <td align="right">' + v.unsetteled_Para + '</td> <td align="right">' + parseFloat(v.ratio).toFixed(2) + '%</td><td align="right" style="background-color: #ff968f;">' + v.r1 + '</td> <td align="right" style="background-color:#f9e10a6b;">' + v.r2 + '</td> <td align="right" style="background-color:#82f386;">' + v.r3 + '</td> </tr>');
+                    t_2023 += parseInt(v.y2023);
+                    t_2022 += parseInt(v.y2022);
+                    t_2021 += parseInt(v.y2021);
+                    t_2020 += parseInt(v.y2020);
+                    t_2019 += parseInt(v.y2019);
+                    t_2018 += parseInt(v.y2018);
+                    t_2017 += parseInt(v.y2017);
+                    t_2016 += parseInt(v.y2016);
+                    t_2015 += parseInt(v.y2015);
+                    t_2014 += parseInt(v.y2014);
+                    t_2013 += parseInt(v.y2013);
+                    t_2012 += parseInt(v.y2012);
+                    t_2011 += parseInt(v.y2011);
+                    t_2010 += parseInt(v.y2010);
+                    $('#observation_panel tbody').append('<tr id="' + v.id + '"><td align="center"> ' + sr + '</td> <td align="left">' + v.procesS_DETAIL + '</td><td align="right">' + v.y2023 + '</td> <td align="right">' + v.y2022 + '</td><td align="right">' + v.y2021 + '</td><td align="right">' + v.y2020 + '</td><td align="right">' + v.y2019 + '</td><td align="right">' + v.y2018 + '</td><td align="right">' + v.y2017 + '</td><td align="right">' + v.y2016 + '</td><td align="right">' + v.y2015 + '</td><td align="right">' + v.y2014 + '</td><td align="right">' + v.y2013 + '</td><td align="right">' + v.y2012 + '</td><td align="right">' + v.y2011 + '</td><td align="right">' + v.y2010 + '</td></tr>');
                     sr++;
                 });
-                var finalRatio = (parseFloat(t_sparas / t_tparas) * 100).toFixed(2)
-
-                $('#observation_panel tbody').append('<tr><td colspan="2" align="right">Total</td><td align="right">' + t_tparas + '</td><td align="right">' + t_sparas + '</td><td align="right">' + t_uparas + '</td><td align="right">' + finalRatio + '%</td><td align="right">' + t_hparas + '</td><td align="right">' + t_mparas + '</td><td align="right">' + t_lparas + '</td></tr>')
-
-
+                $('#observation_panel tbody').append('<tr><td colspan="2" align="right">Total</td><td align="right">' + t_2023 + '</td><td align="right">' + t_2022 + '</td><td align="right">' + t_2021 + '</td><td align="right">' + t_2020 + '</td><td align="right">' + t_2019 + '</td><td align="right">' + t_2018 + '</td><td align="right">' + t_2017 + '</td><td align="right">' + t_2016 + '</td><td align="right">' + t_2015 + '</td><td align="right">' + t_2014 + '</td><td align="right">' + t_2013 + '</td><td align="right">' + t_2012 + '</td><td align="right">' + t_2011 + '</td><td align="right">' + t_2010 + '</td></tr>');
             },
             dataType: "json",
         });
-    } 
-   
+    }    
   
 </script>
 <div class="row col-md-12">
@@ -127,7 +134,7 @@
             <option value="0">--Select Sub Process--</option>           
         </select>
     </div>
-    <div class="col-md-12 mt-3">
+    <div class="col-md-12 d-none mt-3">
         <div class="col-md-2 row">
             <label class="text-bold"><b>Checklist Detail</b></label>
         </div>
@@ -143,16 +150,29 @@
         <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(254 102 67) !important; ">
                 <tr>
-                    <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto">Area of Violation</th>
-                    <th class="col-md-auto text-center">Total Paras</th>
-                    <th class="col-md-auto text-center">Settlement through <br /> Follow-up</th>
-                    <th class="col-md-auto text-center">Un-Settled Para</th>
-                    <th class="col-md-auto text-center">Settlement Ratio</th>
-                    <th class="col-md-auto text-center">High</th>
-                    <th class="col-md-auto text-center">Medium</th>
-                    <th class="col-md-auto text-center">Low</th>
+                    <th valign="middle" rowspan="2" class="col-md-auto">Sr. No.</th>
+                    <th valign="middle" rowspan="2" class="col-md-auto">Checklist Detail</th>
+                    <th rowspan="1" colspan="14" class="col-md-auto text-center">Year</th>
+                   
+                    
                 </tr>
+                <tr>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2023</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2022</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2021</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2020</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2019</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2018</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2017</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2016</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2015</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2014</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2013</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2012</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2011</th>
+                    <th rowspan="1" class="col-md-auto bg-success text-center">2010</th>
+                </tr>
+              
             </thead>
             <tbody>
             </tbody>

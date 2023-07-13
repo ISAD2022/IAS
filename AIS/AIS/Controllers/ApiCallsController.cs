@@ -597,6 +597,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetparentrepofficeForDashboardPanel(ENTITY_REALTION_ID);
         }
+        [HttpPost]
+        public List<UserRelationshipModel> getparentrelForParaPositionReport(int ENTITY_REALTION_ID)
+        {
+            return dBConnection.GetparentrepofficeForParaPositionReport(ENTITY_REALTION_ID);
+        }
 
         [HttpPost]
         public List<UserRelationshipModel> getpostplace(int E_R_ID)
@@ -608,7 +613,12 @@ namespace AIS.Controllers
         {
             return dBConnection.GetchildpostingForDashboardPanel(E_R_ID);
         }
-       
+        [HttpPost]
+        public List<UserRelationshipModel> getpostplaceForParaPositionReport(int E_R_ID)
+        {
+            return dBConnection.GetchildpostingForParaPositionReport(E_R_ID);
+        }
+
         [HttpPost]
         public List<ManageObservations> get_violation_observations(int ENTITY_ID, int VIOLATION_ID)
         {
@@ -1103,7 +1113,17 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<FADNewOldParaPerformanceModel> get_relation_observation_for_dashboard(int ENTITY_ID=0)
+        public List<FADNewOldParaPerformanceModel> get_relation_legacy_observation_for_dashboard(int ENTITY_ID=0)
+        {
+            return dBConnection.GetRelationLegacyObservationForDashboard(ENTITY_ID);
+        }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_relation_ais_observation_for_dashboard(int ENTITY_ID = 0)
+        {
+            return dBConnection.GetRelationAISObservationForDashboard(ENTITY_ID);
+        }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_relation_observation_for_dashboard(int ENTITY_ID = 0)
         {
             return dBConnection.GetRelationObservationForDashboard(ENTITY_ID);
         }
@@ -1129,14 +1149,37 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<SubCheckListStatus> get_auditee_sub_checklist(int PROCESS_ID = 0)
+        public List<SubCheckListStatus> get_audit_sub_checklist(int PROCESS_ID = 0)
         {
-            return dBConnection.GetAuditeeSubChecklist(PROCESS_ID);
+            return dBConnection.GetAuditSubChecklist(PROCESS_ID);
         }
         [HttpPost]
-        public string update_auditee_sub_checklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
+        public string update_audit_sub_checklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditeeSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
+        }
+        [HttpPost]
+        public List<AuditChecklistDetailsModel> get_audit_checklist_detail(int SUB_PROCESS_ID = 0)
+        {
+            return dBConnection.GetAuditChecklistDetail(SUB_PROCESS_ID);
+        }
+
+        [HttpPost]
+        public List<ParaPositionReportModel> get_para_position_report(int P_ID=0, int C_ID=0)
+        {
+            return dBConnection.GetParaPositionReport(P_ID, C_ID);
+        }
+
+        [HttpPost]
+        public List<RepetativeParaModel> get_repetative_paras_for_dashboard(int P_ID = 0, int SP_ID = 0, int PD_ID = 0)
+        {
+            return dBConnection.GetRepetativeParaForDashboard(P_ID, SP_ID, PD_ID);
+        }
+
+        [HttpPost]
+        public string update_audit_checklist_detail(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

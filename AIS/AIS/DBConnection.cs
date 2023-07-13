@@ -1138,6 +1138,31 @@ namespace AIS.Controllers
             con.Dispose();
             return groupList;
         }
+
+        public List<RoleRespModel> GetRoleResponsibleForChecklistDetail()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RoleRespModel> groupList = new List<RoleRespModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_get_role_responsible";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    RoleRespModel grp = new RoleRespModel();
+                    grp.DESIGNATIONCODE = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
+                    grp.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    groupList.Add(grp);
+                }
+            }
+            con.Dispose();
+            return groupList;
+        }
+
         public List<UserModel> GetAllUsers(FindUserModel user)
         {
             List<UserModel> userList = new List<UserModel>();
@@ -1353,6 +1378,38 @@ namespace AIS.Controllers
             con.Dispose();
             return entitiesList;
 
+        }
+
+        public List<AuditeeEntitiesModel> GetProcOwnerForChecklistDetail()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_get_process_owner";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
+                        entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+
+                    if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
+                        entity.NAME = rdr["name"].ToString();
+
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForUpdate(int ENTITY_TYPE_ID = 0, int ENTITY_ID = 0)
         {
@@ -4529,13 +4586,13 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<SubCheckListStatus> GetAuditeeSubChecklist(int PROCESS_ID = 0)
+        public List<SubCheckListStatus> GetAuditSubChecklist(int PROCESS_ID = 0)
         {
             List<SubCheckListStatus> list = new List<SubCheckListStatus>();
             var con = this.DatabaseConnection(); con.Open();           
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ar.p_GetChecklistSubByProcessId";
+                cmd.CommandText = "pkg_fad.p_GetChecklistSubByProcessId";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("processId", OracleDbType.Int32).Value = PROCESS_ID;
@@ -4554,7 +4611,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public string UpdateAuditeeSubChecklist(int PROCESS_ID = 0, int SUB_PROCESS_ID, string HEADING)
+        public string UpdateAuditSubChecklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
         {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
@@ -4576,6 +4633,64 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
+        public List<AuditChecklistDetailsModel> GetAuditChecklistDetail(int SUB_PROCESS_ID = 0)
+        {
+            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_GetChecklistDetailBySubProcessId";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("subProcessId", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
+                    if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
+                        chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.ID = Convert.ToInt32(rdr["S_ID"].ToString());
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.V_ID = Convert.ToInt32(rdr["V_ID"].ToString());
+                    chk.ROLE_RESP_ID = Convert.ToInt32(rdr["role_resp_id"].ToString());
+                    chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["process_owner_id"].ToString());
+                    chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<ControlViolationsModel> GetViolationsForChecklistDetail()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_get_violations";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ControlViolationsModel v = new ControlViolationsModel();
+                    v.ID = Convert.ToInt32(rdr["S_GR_ID"]);
+                    v.V_NAME = rdr["DESCRIPTION"].ToString();
+                    if (rdr["MAX_NUMBER"].ToString() != null && rdr["MAX_NUMBER"].ToString() != "")
+                        v.MAX_NUMBER = Convert.ToInt32(rdr["MAX_NUMBER"]);
+                    v.STATUS = "Y";
+                    controlViolationList.Add(v);
+                }
+            }
+            con.Dispose();
+            return controlViolationList;
+        }
+
+
+
+
         public List<ManageObservations> GetViolationObservations(int ENTITY_ID = 0, int VIOLATION_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -6821,6 +6936,39 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+        public List<UserRelationshipModel> GetchildpostingForParaPositionReport(int e_r_id = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            if (e_r_id == 0)
+                e_r_id = Convert.ToInt32(loggedInUser.UserEntityID);
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_Getchildposting";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("erid", OracleDbType.Int32).Value = e_r_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.C_NAME = rdr["C_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<UserRelationshipModel> Getparentrepoffice(int r_id = 0)
         {
 
@@ -6880,6 +7028,39 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+        public List<UserRelationshipModel> GetparentrepofficeForParaPositionReport(int r_id = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_Getparentrepoffice";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("rid", OracleDbType.Int32).Value = r_id;
+                cmd.Parameters.Add("user_entity_id", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.ACTIVE = rdr["ACTIVE"].ToString();
+                    entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<UserRelationshipModel> Getrealtionshiptype()
         {
 
@@ -6918,6 +7099,36 @@ namespace AIS.Controllers
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_db.P_Getrealtionshiptype";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserRoleid", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<UserRelationshipModel> GetrealtionshiptypeForParaPositionReport()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserRoleid", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -7070,6 +7281,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("process_id", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("sub_id", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -9108,7 +9321,77 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<FADNewOldParaPerformanceModel> GetRelationObservationForDashboard(int USER_ENTITY_ID=0)
+        public List<FADNewOldParaPerformanceModel> GetRelationLegacyObservationForDashboard(int USER_ENTITY_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_old";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = USER_ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Process"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<FADNewOldParaPerformanceModel> GetRelationAISObservationForDashboard(int USER_ENTITY_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_new";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = USER_ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Process"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<FADNewOldParaPerformanceModel> GetRelationObservationForDashboard(int USER_ENTITY_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -9781,6 +10064,90 @@ namespace AIS.Controllers
                     zb.R1 = rdr["R1"].ToString();
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
+        public List<ParaPositionReportModel> GetParaPositionReport(int P_ID=0, int C_ID=0)
+
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<ParaPositionReportModel> list = new List<ParaPositionReportModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_para_position";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
+                cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = P_ID;
+                cmd.Parameters.Add("C_ID", OracleDbType.Int32).Value = C_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ParaPositionReportModel zb = new ParaPositionReportModel();
+                    zb.Total_Paras = rdr["Total_Para"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Un_setteled_Para"].ToString();
+                    zb.P_NAME = rdr["P_NAME"].ToString();
+                    zb.C_NAME = rdr["C_NAME"].ToString();
+                    zb.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<RepetativeParaModel> GetRepetativeParaForDashboard(int P_ID = 0, int SP_ID = 0, int PD_ID=0)
+
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<RepetativeParaModel> list = new List<RepetativeParaModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.p_get_dash_repetitive";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = P_ID;
+                cmd.Parameters.Add("PS_ID", OracleDbType.Int32).Value = SP_ID;
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = PD_ID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RepetativeParaModel zb = new RepetativeParaModel();
+                    zb.PROCESS = rdr["PROCESS"].ToString();
+                    zb.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    zb.PROCESS_DETAIL = rdr["CHECKLIST_DETAILS"].ToString();
+                    zb.Y2023 = rdr["YEAR_2023"].ToString();
+                    zb.Y2022 = rdr["YEAR_2022"].ToString();
+                    zb.Y2021 = rdr["YEAR_2021"].ToString();
+                    zb.Y2020 = rdr["YEAR_2020"].ToString();
+                    zb.Y2019 = rdr["YEAR_2019"].ToString();
+                    zb.Y2018 = rdr["YEAR_2018"].ToString();
+                    zb.Y2017 = rdr["YEAR_2017"].ToString();
+                    zb.Y2016 = rdr["YEAR_2016"].ToString();
+                    zb.Y2015 = rdr["YEAR_2015"].ToString();
+                    zb.Y2014 = rdr["YEAR_2014"].ToString();
+                    zb.Y2013 = rdr["YEAR_2013"].ToString();
+                    zb.Y2012 = rdr["YEAR_2012"].ToString();
+                    zb.Y2011 = rdr["YEAR_2011"].ToString();
+                    zb.Y2010 = rdr["YEAR_2010"].ToString();
                     list.Add(zb);
                 }
             }
