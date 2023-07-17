@@ -348,6 +348,45 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult review_audit_checklist()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(4);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult authorize_audit_checklist()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(3);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpPost]
         public List<MenuPagesModel> menu_pages(int MENU_ID=0)
         {

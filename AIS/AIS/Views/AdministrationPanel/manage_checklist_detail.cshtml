@@ -153,10 +153,10 @@
 
     }
 </script>
-<div class="row text-center ml-4 mr-2" style="margin-top:30px;">
+<div class="row text-center mt-3">
     <h3 style=" display:block;color: #45c545;">Audit Checklist Detail </h3>
 </div>
-<div class="row mt-3 col-md-12 ml-4 mr-2">
+<div class="row mt-3 col-md-12">
     <label><b>Audit Checklist</b></label>
     <select id="checklistSelectField" onchange="getAuditSubChecklist();" class="form-select form-control">
         <option value="0" id="0" selected>--Select Checklist Type--</option>
@@ -173,7 +173,7 @@
 
     </select>
 </div>
-<div class="row mt-3 col-md-12 ml-4 mr-2">
+<div class="row mt-3 col-md-12">
     <label><b>Audit Sub Checklist</b></label>
     <select id="subchecklistSelectField" onchange="ShowSubChecklist();" class="form-select form-control">
         <option value="0">--Select Sub-Checklist--</option>
@@ -181,7 +181,7 @@
 
     </select>
 </div>
-<div class="row col-md-12 ml-4 mr-2">
+<div class="row col-md-12 mt-3">
     <table id="auditeeEntitiesList" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
         <thead>
             <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -191,13 +191,12 @@
             </tr>
         </thead>
         <tbody></tbody>
-
     </table>
 </div>
 
 
 <div id="updateEntityModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Update Auditee Entity</h5>
@@ -206,136 +205,273 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Checklist</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newChecklist" class="form-select form-control">
-                                <option value="0" id="0" selected>--Select Checklist--</option>
-                                @{
-                                    if (ViewData["ChecklistTypes"] != null)
-                                    {
-                                        foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
-                                        {
-                                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+                <div class="row col-md-12">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Checklist</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Checklist--</option>
+                                        @{
+                                            if (ViewData["ChecklistTypes"] != null)
+                                            {
+                                                foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
+                                                {
+                                                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
 
-                                        }
-                                    }
-                                }
-
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Sub-Checklist</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newSubChecklist" class="form-select form-control">
-                                <option value="0" id="0" selected>--Select Sub-Checklist--</option>
-                               
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Violation</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newViolationlist" class="form-select form-control">
-                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                @{
-                                    if (ViewData["ViolationsList"] != null)
-                                    {
-
-                                        foreach (var item in (dynamic)(ViewData["ViolationsList"]))
-                                        {
-                                            <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                }
+                                            }
                                         }
 
-                                    }
-                                }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Sub-Checklist</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newSubChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Sub-Checklist--</option>
 
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Process Owner</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newProcOwnerlist" class="form-select form-control">
-                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                @{
-                                    if (ViewData["ProcOwnerList"] != null)
-                                    {
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Violation</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ViolationsList"] != null)
+                                            {
 
-                                        foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
-                                        {
-                                            <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                foreach (var item in (dynamic)(ViewData["ViolationsList"]))
+                                                {
+                                                    <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                }
+
+                                            }
                                         }
 
-                                    }
-                                }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Process Owner</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newProcOwnerlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ProcOwnerList"] != null)
+                                            {
 
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Role Responsible</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newViolationlist" class="form-select form-control">
-                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                @{
-                                    if (ViewData["RoleRespList"] != null)
-                                    {
+                                                foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
+                                                {
+                                                    <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                }
 
-                                        foreach (var item in (dynamic)(ViewData["RoleRespList"]))
-                                        {
-                                            <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                            }
                                         }
 
-                                    }
-                                }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Role Responsible</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RoleRespList"] != null)
+                                            {
 
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Risk</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <select id="newViolationlist" class="form-select form-control">
-                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                @{
-                                    if (ViewData["RiskList"] != null)
-                                    {
+                                                foreach (var item in (dynamic)(ViewData["RoleRespList"]))
+                                                {
+                                                    <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                }
 
-                                        foreach (var item in (dynamic)(ViewData["RiskList"]))
-                                        {
-                                            <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                            }
                                         }
 
-                                    }
-                                }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Risk</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RiskList"] != null)
+                                            {
 
-                            </select>
-                        </div>
-                    </div>                   
-                    <div class="row col-md-12 mt-3">
-                        <div class="row col-md-4">
-                            <h5>Heading</h5>
-                        </div>
-                        <div class="row col-md-8">
-                            <input id="entCodeField" class="form-control" type="text" />
-                        </div>
+                                                foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                                {
+                                                    <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Heading</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <textarea id="entCodeField" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                    <div class="col-md-6">
+                        <form>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Checklist</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Checklist--</option>
+                                        @{
+                                            if (ViewData["ChecklistTypes"] != null)
+                                            {
+                                                foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
+                                                {
+                                                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
+                                                }
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Sub-Checklist</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newSubChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Sub-Checklist--</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Violation</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ViolationsList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["ViolationsList"]))
+                                                {
+                                                    <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Process Owner</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newProcOwnerlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ProcOwnerList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
+                                                {
+                                                    <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Role Responsible</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RoleRespList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["RoleRespList"]))
+                                                {
+                                                    <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Risk</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="newViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RiskList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                                {
+                                                    <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
+                                    <label>Heading</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <textarea id="entCodeField" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

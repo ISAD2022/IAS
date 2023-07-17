@@ -2613,8 +2613,8 @@ namespace AIS.Controllers
                     pTran.V_ID = Convert.ToInt32(rdr["V_ID"]);
                     if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
                         pTran.DIV_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
-                    if (rdr["DIV_NAME"].ToString() != null && rdr["DIV_NAME"].ToString() != "")
-                        pTran.DIV_NAME = rdr["DIV_NAME"].ToString();
+                    if (rdr["Role_Responsible"].ToString() != null && rdr["Role_Responsible"].ToString() != "")
+                        pTran.DIV_NAME = rdr["Role_Responsible"].ToString();
                     if (rdr["HEADING"].ToString() != null && rdr["HEADING"].ToString() != "")
                         pTran.DESCRIPTION = rdr["HEADING"].ToString();
                     if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
