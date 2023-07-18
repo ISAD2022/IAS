@@ -1301,6 +1301,7 @@ namespace AIS.Controllers
                     entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
                     entity.AUDITABLE = rdr["AUDITABLE"].ToString();
+                    entity.D_RISK = rdr["d_risk"].ToString();
                     entitiesList.Add(entity);
                 }
             }
@@ -1337,6 +1338,40 @@ namespace AIS.Controllers
                         entity.CODE = Convert.ToInt32(rdr["entity_code"]);
                     if (rdr["entity_name"].ToString() != "" && rdr["entity_name"].ToString() != null)
                         entity.NAME = rdr["entity_name"].ToString();
+
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<AuditeeEntitiesModel> GetEntitiesByParentEntityTypeId(int ENTITY_TYPE_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_pg.P_GetAuditeeEntities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
+                        entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+
+                    if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
+                        entity.NAME = rdr["name"].ToString();
 
                     entitiesList.Add(entity);
                 }

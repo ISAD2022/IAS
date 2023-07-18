@@ -1182,6 +1182,12 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
         }
 
+        [HttpPost]
+        public List<AuditeeEntitiesModel> get_entities_parent_ent_type_id(int ENTITY_TYPE_ID = 0)
+        {
+            return dBConnection.GetEntitiesByParentEntityTypeId(ENTITY_TYPE_ID);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

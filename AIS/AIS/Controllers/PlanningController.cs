@@ -28,7 +28,6 @@ namespace AIS.Controllers
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
             ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
             ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
-            ViewData["CADHUBList"] =dBConnection.GetAuditeeEntities(25);
             ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["PendingCriteriaList"] = dBConnection.GetPendingAuditCriterias();
             if (!sessionHandler.IsUserLoggedIn())

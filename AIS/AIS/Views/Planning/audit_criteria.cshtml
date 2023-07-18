@@ -266,6 +266,13 @@
     }
 
     function setSizeEnableForBranches() {
+        var risk_check="N";
+        $.each($('#auditCriteriaEntityField option'), function (e, v) 
+        {
+            if ($(v).val() == $('#auditCriteriaEntityField option:selected').val())
+                {risk_check=$(v).attr("d-risk");}
+        });
+
         if ($('#auditCriteriaEntityField option:selected').val() != 6) {
             $('#auditCriteriaSizeField').val('1');
             $('#auditCriteriaSizeField').attr('disabled', true);
@@ -274,14 +281,33 @@
             $('#auditCriteriaSizeField').attr('disabled', false);
         }
 
-        if ($('#auditCriteriaEntityField option:selected').val() != 25) {
+        if (risk_check == "Y") {
             $('#nonCADHUBPanel').removeClass('d-none');
-            $('#CADHUBPanel').addClass('d-none');
 
         } else {
             $('#nonCADHUBPanel').addClass('d-none');
-            $('#CADHUBPanel').removeClass('d-none');
         }
+        $('#auditCriteriaCADHUBField').empty();
+        $('#auditCriteriaCADHUBField').append('<option value="0">-- Select Auditable Entity--</option>');
+
+        $.ajax({
+            url: "/ApiCalls/get_entities_parent_ent_type_id",
+            type: "POST",
+            data: {
+                'ENTITY_TYPE_ID': $('#auditCriteriaEntityField').val()
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data,function(i,v){
+                    $('#auditCriteriaCADHUBField').append('<option value="'+v.entitY_ID+'">'+v.name+'</option>');
+                });
+                
+
+
+            },
+
+            dataType: "json",
+        });
 
     }
 </script>
@@ -312,7 +338,7 @@
 </div>
 <div class="mt-3 row col-md-12">
     <div class="col-md-4">
-        <h5>Select Entity</h5>
+        <h5>Entity</h5>
     </div>
     <div class="col-md-8">
         <div class="col-md-12 pl-0 pr-0">
@@ -323,7 +349,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["AuditEntities"]))
                         {
-                            <option value="@item.ENTITYCODE" id="@item.ENTITYCODE">@item.ENTITYTYPEDESC</option>
+                            <option d-risk="@item.D_RISK" value="@item.ENTITYCODE" id="@item.ENTITYCODE">@item.ENTITYTYPEDESC</option>
                         }
                     }
                 }
@@ -335,7 +361,7 @@
     </div>
 </div>
 
-<div id="nonCADHUBPanel" class="d-none">
+<div id="nonCADHUBPanel">
     <div class="row col-md-12 mt-3">
         <div class="col-md-4">
             <h5>Risk Category</h5>
@@ -400,23 +426,15 @@
     </div>
 </div>
 
-<div id="CADHUBPanel" class="d-none">
+<div id="CADHUBPanel">
     <div class="row col-md-12 mt-3 brField">
         <div class="col-md-4">
-            <h5>CAD HUB</h5>
+            <h5>Auditable Entity</h5>
         </div>
         <div class="col-md-8">
             <select id="auditCriteriaCADHUBField" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select CAD HUB--</option>
-                @{
-                    if (ViewData["CADHUBList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["CADHUBList"]))
-                        {
-                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
-                        }
-                    }
-                }
+                
+               
             </select>
         </div>
     </div>

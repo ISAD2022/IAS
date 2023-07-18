@@ -9,5 +9,6 @@ namespace AIS.Models
         public string ENTITYCODE { get; set; }
         public string ENTITYTYPEDESC { get; set; }
         public string AUDITABLE { get; set; }
+        public string D_RISK { get; set; }
     }
 }
