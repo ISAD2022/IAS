@@ -1050,7 +1050,6 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaResponsibility(PARA_REF, PARA_ID, PP_NO) + "\"}";
         }
-        //
 
         [HttpPost]
         public List<AuditEntitiesModel> get_auditee_entities_by_entity_type_id(  int ENTITY_TYPE_ID)
@@ -1092,7 +1091,6 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeLegacyParaGistParaNoUpdate(PARA_REF, GIST_OF_PARA, PARA_NO) + "\"}";
         }
-        //
 
         [HttpPost]
         public string Delete_Legacy_Para_addition_request(string PARA_REF)
@@ -1186,6 +1184,12 @@ namespace AIS.Controllers
         public List<AuditeeEntitiesModel> get_entities_parent_ent_type_id(int ENTITY_TYPE_ID = 0)
         {
             return dBConnection.GetEntitiesByParentEntityTypeId(ENTITY_TYPE_ID);
+        }
+
+        [HttpPost]
+        public List<ParaPositionDetailsModel> get_para_position_details(int ENTITY_ID = 0, int AUDIT_PERIOD=0)
+        {
+            return dBConnection.GetParaPositionParaDetails(ENTITY_ID, AUDIT_PERIOD);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

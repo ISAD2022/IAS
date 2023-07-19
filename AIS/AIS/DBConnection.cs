@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";                                                
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -8184,9 +8184,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_AddOldParasReviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("FID", OracleDbType.Int32).Value = ID;
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
+                cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;                              
                 cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Reply;
                 cmd.Parameters.Add("r_status", OracleDbType.Varchar2).Value = r_status;
 
@@ -10183,6 +10182,36 @@ namespace AIS.Controllers
                     zb.Y2012 = rdr["YEAR_2012"].ToString();
                     zb.Y2011 = rdr["YEAR_2011"].ToString();
                     zb.Y2010 = rdr["YEAR_2010"].ToString();
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<ParaPositionDetailsModel> GetParaPositionParaDetails(int ENTITY_ID = 0, int AUDIT_PERIOD=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ParaPositionDetailsModel> list = new List<ParaPositionDetailsModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_para_position_details";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("period", OracleDbType.Int32).Value = AUDIT_PERIOD;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ParaPositionDetailsModel zb = new ParaPositionDetailsModel();
+                    zb.REMARKS = rdr["remarks"].ToString();
+                    zb.PARA_STATUS = rdr["para_status"].ToString();
+                    zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(zb);
                 }
             }

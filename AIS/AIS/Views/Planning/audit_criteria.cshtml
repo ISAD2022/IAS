@@ -68,8 +68,8 @@
                 return;
             }              
         } 
-
-        if ($('#auditCriteriaEntityField option:selected').val() != 25) {
+       
+        if ($('#auditCriteriaEntityField option:selected').attr("d-risk") == "Y") {
             if (risk == '') {
                 alert('Risk Category Not Selected');
                 return;
@@ -361,6 +361,20 @@
     </div>
 </div>
 
+<div id="CADHUBPanel">
+    <div class="row col-md-12 mt-3 brField">
+        <div class="col-md-4">
+            <h5>Auditable Entity</h5>
+        </div>
+        <div class="col-md-8">
+            <select id="auditCriteriaCADHUBField" class="form-select form-control" aria-label="Default select example">
+                <option value="0">--Select Auditable Entity--</option>
+            </select>
+        </div>
+    </div>
+
+
+</div>
 <div id="nonCADHUBPanel">
     <div class="row col-md-12 mt-3">
         <div class="col-md-4">
@@ -403,6 +417,10 @@
         </div>
     </div>
 
+   
+</div>
+
+<div id="freqPanel">
     <div class="row col-md-12 mt-3">
         <div class="col-md-4">
             <h5>Frequency</h5>
@@ -426,21 +444,6 @@
     </div>
 </div>
 
-<div id="CADHUBPanel">
-    <div class="row col-md-12 mt-3 brField">
-        <div class="col-md-4">
-            <h5>Auditable Entity</h5>
-        </div>
-        <div class="col-md-8">
-            <select id="auditCriteriaCADHUBField" class="form-select form-control" aria-label="Default select example">
-                
-               
-            </select>
-        </div>
-    </div>
-
-
-</div>
 <div class="row col-md-12 mt-3">
     <div class="col-md-4">
         <h5>No. of Days</h5>
