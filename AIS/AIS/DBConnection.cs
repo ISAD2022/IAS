@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";                                                
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -1000,6 +1000,10 @@ namespace AIS.Controllers
         }
         public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1007,6 +1011,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_pg.P_GetAuditCriteriasToAuthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("USER_ENTITY_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -6924,6 +6929,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("erid", OracleDbType.Int32).Value = e_r_id;
+                cmd.Parameters.Add("USER_ENTITY_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

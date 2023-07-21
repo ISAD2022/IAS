@@ -57,12 +57,17 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>')
                 });
             },
 
             dataType: "json",
         });
+
+    }
+
+    function viewParaCompliance(id){
+        $('#viewParaComplianceModel').modal('show');
 
     }
 
@@ -126,6 +131,7 @@
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto">VOL I II</th>  
                     <th class="col-md-auto">Reviewer Reffered Back Remarks</th>
+                    <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -270,6 +276,44 @@
     </div>
 </div>
 
+
+<div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Compliance History</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    
+                    <div class="row col-md-12 mt-3">
+                        <table id="manageCompPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                <tr>
+                                    <th class="col-md-auto">Sr No.</th>
+                                    <th class="col-md-auto">Compliance Received On</th>
+                                    <th class="col-md-auto">Management Reply</th>
+                                    <th class="col-md-auto">Auditor Reply</th>
+                                    <th class="col-md-auto">Status</th>                                    
+                                    
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+
+                        </table>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
