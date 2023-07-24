@@ -46,7 +46,7 @@
         if ($('#controlingsearch option:selected').val()==0)
         return;
         $.ajax({
-            url: "/ApiCalls/getpostplaceForDashboardPanel",
+            url: "/ApiCalls/getpostplaceForParaPositionReport",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()

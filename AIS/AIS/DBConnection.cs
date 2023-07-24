@@ -876,6 +876,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
+            string REMARK = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusApprove";
@@ -884,7 +885,17 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("CAID", OracleDbType.Int32).Value = ID;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = REMARKS;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("role_id", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    REMARK = rdr["comments"].ToString();
+                    
+                }
+
+             
             }
             con.Dispose();
             //EmailConfiguration email = new EmailConfiguration();
@@ -1012,6 +1023,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("USER_ENTITY_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("Role_id", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -6910,6 +6922,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
         {
             sessionHandler = new SessionHandler();
@@ -6996,6 +7009,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("erid", OracleDbType.Int32).Value = e_r_id;
+                cmd.Parameters.Add("USER_ENTITY_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -7010,6 +7024,8 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+
+
         public List<UserRelationshipModel> Getparentrepoffice(int r_id = 0)
         {
 
@@ -7039,7 +7055,6 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
-
         public List<UserRelationshipModel> GetparentrepofficeForDashboardPanel(int r_id = 0)
         {
 
@@ -7102,6 +7117,7 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+
         public List<UserRelationshipModel> Getrealtionshiptype()
         {
 
@@ -7187,6 +7203,7 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+
         public List<StaffPositionModel> GetStaffPosition()
         {
             sessionHandler = new SessionHandler();
