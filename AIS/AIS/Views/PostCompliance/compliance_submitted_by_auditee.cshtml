@@ -73,7 +73,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">Partial Compliance</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' , 14);" class="text-hover text-danger mr-5px"><small>Settle</small></a>/<a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,13);" class="text-hover text-primary ml-5px"><small>Unsettle</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td><p  class="fw-normal mb-1"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,14);" class="text-hover text-primary ml-5px">View</a></p></td><td><p  class="fw-normal mb-1"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,14);" class="text-hover text-primary ml-5px">Partial Settle</a></p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' , 14);" class="text-hover text-success mr-5px">Settle</a></td><td><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\' ' + child.reF_P + ' \' ,13);" class="text-hover text-danger ml-5px"><small>Unsettle</small></a></td></tr>')
                 });
             },
 
@@ -84,6 +84,7 @@
 
     function updateObservationStatus(id,refP, newStatus)
     {
+        return;
         g_paraId = id;
         g_paraRef=refP;
         $("#viewMemoModel").modal('show');
@@ -157,9 +158,9 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto"></th>
                     <th class="col-md-auto text-center">Zone/Reviewer Remarks</th>
-                    <th class="col-md-auto text-center">Action</th>
+                    <th colspan="3" class="col-md-auto text-center">Compliance</th>
+                    <th colspan="3" class="col-md-auto text-center">Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
