@@ -775,16 +775,16 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P)
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY)
         {
-            return dBConnection.GetOldParasBranchComplianceText(REF_P);
+            return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY);
         }
 
         [HttpPost]
-        public string add_old_para_br_compliance_reply(string Para_ID, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        public string add_old_para_br_compliance_reply(string Para_ID, string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
             string response = "";
-            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, REPLY, EVIDENCE_LIST);
+            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, Para_Cat, REPLY, EVIDENCE_LIST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -794,10 +794,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string AddOldParasComplianceReviewer(string Para_ID, string REPLY, string r_status, int ID)
+        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, int ID)
         {
             string response = "";
-            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, REPLY, r_status, ID);
+            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

@@ -8,6 +8,8 @@ namespace AIS.Models
         public string AUDIT_PERIOD { get; set; }
         public string NAME { get; set; }
         public string PARA_NO { get; set; }
+        public string PARA_CATEGORY { get; set; }
+        public string AU_OBS_ID { get; set; }
         public string ID { get; set; }
         public string REF_P { get; set; }
         public string GIST_OF_PARAS { get; set; }
