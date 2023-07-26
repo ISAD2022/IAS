@@ -9048,6 +9048,32 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
+        public string ConcludeDraftAuditReport(int ENG_ID)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            if (ENG_ID == 0)
+                ENG_ID = this.GetLoggedInUserEngId();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_Audit_Concluding";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
 
         public string SubmitPreConcluding(int ENG_ID)
         {

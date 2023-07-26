@@ -335,6 +335,13 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
+        public object conclude_draft_audit(int ENG_ID)
+        {
+            string response = "";
+            response = dBConnection.ConcludeDraftAuditReport(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
         public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE = "")
         {
             return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE);
