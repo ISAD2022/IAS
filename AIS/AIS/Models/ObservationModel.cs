@@ -7,8 +7,9 @@ namespace AIS.Models
     public class ObservationModel
     {
         public int ID { get; set; }
-        public int? BRANCH_ID { get; set; }
+        public int? BRANCH_ID { get; set; }        
         public string OBSERVATION_TEXT { get; set; }
+        public string HEADING { get; set; }
         public string OBSERVATION_TEXT_PLAIN { get; set; }
         public int ENGPLANID { get; set; }
         public int STATUS { get; set; }

@@ -41,6 +41,14 @@
                 $('#viewMemo_checklist_detail').val(data.checklistdetail);
                 $('#viewMemo_memo').html(data.parA_TEXT);
                 $('#viewMemo_compliance').val('').trigger('change');
+                $('#listofRespPersons tbody').empty();
+                if (data[0].responsiblE_PPs.length > 0) {
+                    $.each(data[0].responsiblE_PPs, function (j, pp) {
+                        var srNo = $('#listofRespPersons tbody tr').length;
+                        srNo++;
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
+                    });
+                }
             },
 
             dataType: "json",
@@ -180,6 +188,26 @@
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
+                        <div class="col-md-12 pl-0 pr-0">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_compliance">Compliance</label>

@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";                                                
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -3599,6 +3599,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("VCATNATUREID", OracleDbType.Int32).Value = ob.V_CAT_NATURE_ID;
                 cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
                 cmd.Parameters.Add("NOINSTANCES", OracleDbType.Int32).Value = ob.NO_OF_INSTANCES;
+                cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = ob.HEADING;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3891,6 +3892,36 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
+                    usr.EMP_NAME = rdr["EMP_NAME"].ToString();
+                    usr.PP_NO = rdr["PP_NO"].ToString();
+                    usr.LOAN_CASE = rdr["LOANCASE"].ToString();
+                    usr.LC_AMOUNT = rdr["LCAMOUNT"].ToString();
+                    usr.ACCOUNT_NUMBER = rdr["ACCNUMBER"].ToString();
+                    usr.ACC_AMOUNT = rdr["ACAMOUNT"].ToString();
+                    list.Add(usr);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<ObservationResponsiblePPNOModel> GetOldParasObservationResponsiblePPNOs(string PARA_REF, string PARA_CATEGORY)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.p_get_para_responsibles";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
+                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8095,6 +8126,7 @@ namespace AIS.Controllers
                     chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                 }
             }
             con.Dispose();
@@ -8252,10 +8284,10 @@ namespace AIS.Controllers
                     chk.REPLY = rdr["reply"].ToString();
                     chk.REMARKS = rdr["remarks"].ToString();
                     chk.REVIEWER_REMARKS = rdr["REVIEWER_REMARKS"].ToString();
-
+                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
                     chk.SUBMITTED = rdr["submitted"].ToString();
                     chk.C_STATUS = rdr["c_status"].ToString();
-                    chk.VOL_I_II = rdr["c_status"].ToString();
+                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
                     list.Add(chk);
                 }
             }
@@ -8381,7 +8413,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public string AddOldParasStatusUpdate(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS)
+        public string AddOldParasStatusUpdate(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8395,11 +8427,12 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_C", OracleDbType.Int32).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("PID", OracleDbType.Int32).Value = PARA_ID;
                 cmd.Parameters.Add("REFID", OracleDbType.Varchar2).Value = REFID;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = REMARKS;
+                cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = SETTLE_INDICATOR;
                 cmd.Parameters.Add("R_STATUS", OracleDbType.Varchar2).Value = NEW_STATUS;
-
                 cmd.ExecuteReader();
                 success = true;
             }
@@ -9000,11 +9033,11 @@ namespace AIS.Controllers
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_hd.P_audit_concluding";
+                cmd.CommandText = "pkg_ar.P_CloseAudit";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
-                // cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                 cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

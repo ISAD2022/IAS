@@ -108,6 +108,7 @@
         var memo = {
             'MEMO': $('.richText-editor').html(),
             'ID': 'obs_0',
+            'HEADING': $('#viewMemo_heading').val(),
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
             'NO_OF_INSTANCES': $('#viewMemo_noinstances').val(),
@@ -182,6 +183,10 @@
             }
         </select>
 
+    </div>
+    <div id="div_headingPanel" class="col-md-12 mt-3">
+        <h5>Heading/Title</h5>
+        <input type="text" class="form-control" id="viewMemo_heading" />
     </div>
     <div class="col-md-12 mt-3">
         <div class="page-wrapper box-content">

@@ -154,6 +154,7 @@ label.heading{
         var memo = {
             'MEMO': $('.richText-editor').html(),
             'ID': 'obs_0',
+            'HEADING': $('#viewMemo_heading').val(),
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
             'RESPONSIBLE_PPNO': resP,
@@ -270,6 +271,10 @@ label.heading{
         <h5>Checklist Details</h5>
         <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
         </select>
+    </div>
+    <div id="div_headingPanel" class="col-md-12 mt-3">
+        <h5>Heading/Title</h5>
+        <input type="text" class="form-control" id="viewMemo_heading" />
     </div>
     <div class="col-md-12 mt-3">
         <div class="page-wrapper box-content">

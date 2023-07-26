@@ -178,6 +178,7 @@ namespace AIS.Controllers
             foreach (ListObservationModel m in LIST_OBS)
             {
                 ObservationModel ob = new ObservationModel();
+                ob.HEADING = m.HEADING;
                 ob.SUBCHECKLIST_ID = S_ID;
                 ob.CHECKLISTDETAIL_ID = Convert.ToInt32(m.ID.Split("obs_")[1]);
                 ob.V_CAT_ID = V_CAT_ID;
@@ -210,6 +211,7 @@ namespace AIS.Controllers
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
+                ob.HEADING = m.HEADING;
                 ob.SEVERITY = 1;
                 ob.BRANCH_ID = BRANCH_ID;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
@@ -814,10 +816,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS)
+        public string submit_old_para_br_compliance_status(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusUpdate(PARA_ID, REFID, REMARKS, NEW_STATUS);
+            response = dBConnection.AddOldParasStatusUpdate(PARA_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
       

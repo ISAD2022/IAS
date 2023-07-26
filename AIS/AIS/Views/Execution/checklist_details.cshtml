@@ -48,6 +48,7 @@
         if (value == 1) {
             $('#viewMemoModel').modal('show');
             $('.richText-editor').html('');
+            $('#viewMemo_heading').val('');
             $('#viewMemo_replydays').val(1);
             $('#viewMemo_loancase').val('');
             $('#listofRespPersons tbody').empty();
@@ -90,6 +91,7 @@
             });
         });
         var memo = {
+            'HEADING': $('#viewMemo_heading').val(),
             'MEMO': $('.richText-editor').html(),
             'ID': g_observationId,
             'DAYS': $('#viewMemo_replydays option:selected').val(),
@@ -104,6 +106,7 @@
             if (v.ID == g_observationId) {
                 isFound = true;
                 g_memoObj[i].MEMO = memo.MEMO;
+                g_memoObj[i].HEADING = memo.HEADING;
                 g_memoObj[i].ID = memo.ID;
                 g_memoObj[i].LOANCASE = memo.LOANCASE;
                 g_memoObj[i].NO_OF_INSTANCES = memo.NO_OF_INSTANCES;
@@ -124,6 +127,7 @@
         var tempobj = {
             ID: '0',
             'MEMO': '',
+            'HEADING': '',
             'DAYS': '',
             'LOANCASE': '',
             'NO_OF_INSTANCES': '1',
@@ -141,6 +145,7 @@
         if (tempobj.ID != 0) {
             $('#viewMemoModel').modal('show');
             $('.richText-editor').html(tempobj.MEMO);
+            $('#viewMemo_heading').val(tempobj.HEADING);
             $('#viewMemo_replydays').val(tempobj.DAYS);
             $('#viewMemo_loancase').val(tempobj.LOANCASE);
             $('#viewMemo_noinstances').val(tempobj.NO_OF_INSTANCES);
@@ -313,6 +318,10 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Heading/Title of Para</label>
+                        <input id="viewMemo_heading" class="form-control" />
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Memo</label>
                         <textarea id="viewMemo_memo" style="height:300px;" class="form-control"></textarea>

@@ -18,6 +18,7 @@ namespace AIS.Models
         public DateTime REPLIEDDATE { get; set; }
         public DateTime LASTUPDATEDDATE { get; set; }
         public string REMARKS { get; set; }
+        public string PARA_CATEGORY { get; set; }
         public string LASTUPDATEDBY { get; set; }
         public int? EVIDENCE_ID { get; set; }
         public string REVIEWED_BY { get; set; }
