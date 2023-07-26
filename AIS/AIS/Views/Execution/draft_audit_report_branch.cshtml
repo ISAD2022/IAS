@@ -155,6 +155,23 @@
         g_riskId = risk_id;
         $('#commentsBox').modal('show');
     }
+    function submitPreConcluding() {
+       
+        $.ajax({
+            url: "/ApiCalls/submit_pre_concluding",
+            type: "POST",
+            data: {
+                'ENG_ID': $('#entitySelectField option:selected').val()
+
+            },
+            cache: false,
+            success: function (data) {
+
+                alert(data.Message);
+            },
+            dataType: "json",
+        });
+    }
 
 
 </script>
@@ -231,7 +248,10 @@
         </table>
 
     </div>
+    <div class="row col-md-12 mt-3">
 
+        <button onclick="submitPreConcluding();" class="col-md-3 btn btn-success" style="margin-left:10px;">Submit Pre Concluding</button>
+    </div>
 </div>
 
 
