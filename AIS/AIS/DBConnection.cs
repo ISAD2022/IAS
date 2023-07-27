@@ -10297,6 +10297,7 @@ namespace AIS.Controllers
                     zb.REMARKS = rdr["remarks"].ToString();
                     zb.PARA_STATUS = rdr["para_status"].ToString();
                     zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.HEADING = rdr["gist_of_paras"].ToString();
                     zb.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(zb);
                 }

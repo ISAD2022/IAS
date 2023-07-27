@@ -122,7 +122,7 @@
                 }
                 $.each(data, function (i, v) {
                     $('#audit_period_tag').html(v.audiT_PERIOD);
-                    $('#para_details_table tbody').append('<tr><td>' + sr + '</td><td>' + v.parA_NO + '</td><td>' + v.parA_STATUS + '</td></tr>')
+                    $('#para_details_table tbody').append('<tr><td>' + sr + '</td><td>' + v.parA_NO + '</td><td>' + v.heading + '</td><td>' + v.parA_STATUS + '</td></tr>')
                     sr++;
                 });
               },
@@ -228,6 +228,7 @@
                                 <tr>
                                     <th class="col-md-auto">Sr. No.</th>
                                     <th class="col-md-auto">Para No.</th>
+                                    <th class="col-md-auto">Titile of Para</th>
                                     <th class="col-md-auto text-center">Status</th>
                                 </tr>
                             </thead>

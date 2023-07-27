@@ -11,6 +11,7 @@ namespace AIS.Models
         public string PARA_NO { get; set; }
         public string PARA_STATUS { get; set; }
         public string REMARKS { get; set; }
+        public string HEADING { get; set; }
         
     }
 }
