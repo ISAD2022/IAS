@@ -14,6 +14,7 @@ namespace AIS.Models
         public string REF_P { get; set; }
         public string ID { get; set; }
         public string REPLY{ get; set; }
+        public string REPLY_DATE{ get; set; }
       
 
 

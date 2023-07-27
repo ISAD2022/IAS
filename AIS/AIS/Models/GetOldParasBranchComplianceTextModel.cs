@@ -12,6 +12,7 @@ namespace AIS.Models
         public string PARA_TEXT { get; set; }
         public string PARA_CATEGORY { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
+        public List<AuditeeResponseEvidenceModel> EVIDENCES { get; set; }
 
     }
 }

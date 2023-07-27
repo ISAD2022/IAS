@@ -891,7 +891,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    REMARK = rdr["comments"].ToString();
+                    REMARK = rdr["remark"].ToString();
                     
                 }
 
@@ -3940,6 +3940,35 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<AuditeeResponseEvidenceModel> GetOldParasEvidences(string PARA_REF, string PARA_CATEGORY, string REPLY_DATE)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeResponseEvidenceModel> list = new List<AuditeeResponseEvidenceModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_get_AUDITEE_Post_COM_evidences";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
+                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeResponseEvidenceModel usr = new AuditeeResponseEvidenceModel();
+                    usr.IMAGE_NAME = rdr["IMAGE_NAME"].ToString();
+                    usr.IMAGE_DATA = rdr["IMAGE_DATA"].ToString();
+                    usr.IMAGE_TYPE = rdr["IMAGE_TYPE"].ToString();
+                    usr.SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"].ToString());
+                    usr.LENGTH = Convert.ToInt32(rdr["LENGTH"].ToString());
+                    list.Add(usr);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public bool ResponseAuditObservation(ObservationResponseModel ob)
         {
             int AUD_RESP_ID = 0;
@@ -6016,9 +6045,12 @@ namespace AIS.Controllers
                     if (PARA_REF !=null)
                     {
                         chk.ENT_TYPE = rdr["ENT_TYPE"].ToString();
+                        if(rdr["PROCESS"].ToString() !=null && rdr["PROCESS"].ToString()!="")
                         chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
-                        chk.SUB_PROCESS =Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
-                        chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
+                        if (rdr["SUB_PROCESS"].ToString() != null && rdr["SUB_PROCESS"].ToString() != "")
+                            chk.SUB_PROCESS =Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
+                        if (rdr["PROCESS_DETAIL"].ToString() != null && rdr["PROCESS_DETAIL"].ToString() != "")
+                            chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();                      
                     }
 
@@ -8101,7 +8133,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P, string PARA_CATEGORY)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P, string PARA_CATEGORY, string REPLY_DATE)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8127,6 +8159,7 @@ namespace AIS.Controllers
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
                     chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE);
                 }
             }
             con.Dispose();
@@ -8213,12 +8246,11 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GISTOFPARA = rdr["GISTOFPARA"].ToString();
-
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ID = rdr["ID"].ToString();
                     chk.REPLY = rdr["REPLY"].ToString();
+                    chk.REPLY_DATE = rdr["replieddate"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
 
                     list.Add(chk);

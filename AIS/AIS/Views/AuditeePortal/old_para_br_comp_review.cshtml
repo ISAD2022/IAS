@@ -5,6 +5,7 @@
 <script>
     var g_paraId = 0;
     var g_paraCAT = "";
+    var g_repliedDate = "";
     var g_ID = 0;
     var g_obsList = [];
     $(document).ready(function () {
@@ -33,7 +34,7 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td><p class="fw-normal mb-1">' + child.reply + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
+                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\', \'' + child.replY_DATE + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
                 });
                 
             },
@@ -43,10 +44,11 @@
 
     }
 
-    function getparatext(refp, id, paraCat) {
+    function getparatext(refp, id, paraCat, replyDate) {
         g_ID = id;
         g_paraCAT = paraCat;
         g_paraId = refp;
+        g_repliedDate = replyDate;
         $('#reviewer_response').modal("show");
         $('#ReviewerRemarks').empty();
 
@@ -55,7 +57,8 @@
             type: "POST",
             data: {
                 'REF_P': refp,
-                'PARA_CAT': g_paraCAT
+                'PARA_CATEGORY': g_paraCAT,
+                'REPLY_DATE': g_repliedDate
                 
             },
             cache: false,
@@ -64,6 +67,14 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
+                $('#listofRespPersons tbody').empty();
+                if (data.responsiblE_PPs.length > 0) {
+                    $.each(data.responsiblE_PPs, function (j, pp) {
+                        var srNo = $('#listofRespPersons tbody tr').length;
+                        srNo++;
+                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
+                    });
+                }
             },
 
             dataType: "json",
@@ -117,7 +128,6 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto text-center">Branch Compliance</th>
                     <th class="col-md-auto text-center">Action</th>
 
                 </tr>
@@ -167,15 +177,11 @@
 
                     </div>
                     <div class="row mt-3 col-md-12">
-                        <div id="observation" class="col-md-12"></div>
+                        <div id="para" class="col-md-12"></div>
 
-                    </div>
-                 
-                    <div class="row mt-3 col-md-12" id="para" style="border:solid">
-                     
-
-                    </div>
-                    <div class="form-group">
+                    </div>                
+                    
+                    <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
                         <div class="col-md-12 pl-0 pr-0">
                             <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
@@ -194,6 +200,17 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <hr />
+                    <h5 class="text-center"><b>Branch Compliance</b></h5>
+                    <hr />
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_compliance">Compliance</label>
+                        <textarea class="form-control" id="viewMemo_compliance"></textarea>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_evidences">Evidences</label>
+                        <textarea class="form-control" id="viewMemo_evidences"></textarea>
                     </div>
                     <div class="row mt-3 col-md-12">
                         <label class="font-weight-bold">Add Remarks</label>

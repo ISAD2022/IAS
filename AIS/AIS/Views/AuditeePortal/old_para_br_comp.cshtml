@@ -42,8 +42,8 @@
                 $('#viewMemo_memo').html(data.parA_TEXT);
                 $('#viewMemo_compliance').val('').trigger('change');
                 $('#listofRespPersons tbody').empty();
-                if (data[0].responsiblE_PPs.length > 0) {
-                    $.each(data[0].responsiblE_PPs, function (j, pp) {
+                if (data.responsiblE_PPs.length > 0) {
+                    $.each(data.responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
                         $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
@@ -68,7 +68,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>')
                 });
             },
 
@@ -141,8 +141,7 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation Gist</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I II</th>  
-                    <th class="col-md-auto">Reviewer Reffered Back Remarks</th>
+                    <th class="col-md-auto">VOL I II</th> 
                     <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
@@ -189,7 +188,7 @@
                         <label for="viewMemo_memo">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
                         <div class="col-md-12 pl-0 pr-0">
                             <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
@@ -209,7 +208,8 @@
                             </table>
                         </div>
                     </div>
-                    <div class="form-group">
+                   
+                    <div class="form-group mt-3">
                         <label for="viewMemo_compliance">Compliance</label>
                         <textarea class="form-control" id="viewMemo_compliance"></textarea>
                     </div>
