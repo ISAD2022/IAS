@@ -271,8 +271,8 @@
                 success: function (data) {
                     g_obsList = data;
                     $.each(data, function (i, v) {
-                        $('#auditPeriodNameField').val(v.period);                      
-                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.process + '</td><td>' + v.suB_PROCESS + '</td><td>' + v.checklist_Details + '</td><td>' + v.nO_OF_INSTANCES + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
+                        $('#auditPeriodNameField').val(v.period);
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.heading + '</td><td>' + v.nO_OF_INSTANCES + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
                        });
 
                     setTimeout(function () {
@@ -328,9 +328,7 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
-                    <th class="col-md-auto">Process</th>
-                    <th class="col-md-auto">Sub Process</th>
-                    <th class="col-md-auto">Checklist Detail</th>
+                    <th class="col-md-auto">Title of Observation</th>
                     <th class="col-md-auto">No. of Instances</th>
                     <th class="col-md-auto d-none">Observation</th>
                     <th class="col-md-auto d-none">Auditee Response</th>
