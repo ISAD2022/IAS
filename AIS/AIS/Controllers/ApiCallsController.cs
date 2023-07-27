@@ -788,6 +788,13 @@ namespace AIS.Controllers
         {
             return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE);
         }
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE)
+        {
+            return dBConnection.GetOldParasBranchComplianceTextForZone(REF_P, PARA_CATEGORY, REPLY_DATE);
+        }
+
+        
 
         [HttpPost]
         public string add_old_para_br_compliance_reply(string Para_ID, string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)

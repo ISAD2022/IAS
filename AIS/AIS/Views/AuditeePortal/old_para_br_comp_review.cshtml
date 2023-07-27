@@ -53,7 +53,7 @@
         $('#ReviewerRemarks').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text",
+            url: "/ApiCalls/get_old_para_zone_compliance_text",
             type: "POST",
             data: {
                 'REF_P': refp,
@@ -67,6 +67,7 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
+                $('#viewMemo_compliance').html(data.reply);
                 $('#listofRespPersons tbody').empty();
                 if (data.responsiblE_PPs.length > 0) {
                     $.each(data.responsiblE_PPs, function (j, pp) {
@@ -206,7 +207,7 @@
                     <hr />
                     <div class="form-group mt-3">
                         <label for="viewMemo_compliance">Compliance</label>
-                        <textarea class="form-control" id="viewMemo_compliance"></textarea>
+                        <div class="col-md-12" id="viewMemo_compliance"></div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>

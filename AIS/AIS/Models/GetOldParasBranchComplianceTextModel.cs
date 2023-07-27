@@ -10,6 +10,7 @@ namespace AIS.Models
         public string SUBCHECKLIST { get; set; }
         public string CHECKLISTDETAIL { get; set; }
         public string PARA_TEXT { get; set; }
+        public string REPLY { get; set; }
         public string PARA_CATEGORY { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
         public List<AuditeeResponseEvidenceModel> EVIDENCES { get; set; }
