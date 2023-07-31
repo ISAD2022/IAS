@@ -74,7 +74,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td><p  class="fw-normal mb-1"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + ',\'' + child.parA_CATEGORY + '\' );" class="text-hover text-primary ml-5px">View</a></p></td><td><p  class="fw-normal mb-1"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\' ,8,\'' + child.parA_CATEGORY + '\',\'P\');" class="text-hover text-primary ml-5px">Partial Settle</a></p></td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\' , 6,\'' + child.parA_CATEGORY + '\',\'Y\');" class="text-hover text-success mr-5px">Settle</a></td><td><a href="#" onclick="updateObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\' ,8,\'' + child.parA_CATEGORY + '\',\'N\');" class="text-hover text-danger ml-5px"><small>Unsettle</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
                 });
             },
 
@@ -83,21 +83,13 @@
 
     }      
 
-    function updateObservationStatus(id,refP, newStatus, paraCat, paraInd)
+    function viewObservationStatus(id,refP, paraCat, paraInd)
     {
         
         g_paraId = id;
         g_paraRef=refP;
         g_paraCat = paraCat;
-        $("#viewMemoModel").modal('show');
-        if (newStatus == 6) {
-            $('#submitStatusViewModel').attr('onClick', 'setParaStatusSettled()');
-        } else if (newStatus == 8 && paraInd =='N') {
-            $('#submitStatusViewModel').attr('onClick', 'setParaStatusUnsettled()');
-        } else if (newStatus == 8 && paraInd == 'P') {
-            $('#submitStatusViewModel').attr('onClick', 'setParaStatusPartiallySettle()');
-        }
-
+        $("#viewMemoModel").modal('show');      
         
     }
 
@@ -186,9 +178,7 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation</th>
                     <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto text-center">Zone/Reviewer Remarks</th>
-                    <th colspan="3" class="col-md-auto text-center">Compliance</th>
-                    <th colspan="3" class="col-md-auto text-center">Action</th>
+                    <th class="col-md-auto text-center">Compliance</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -208,19 +198,86 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+           
+            <div class="mt-3 modal-body">
                 <form>
 
+                    <div class="row col-md-12">
+
+                        <label class="font-weight-bold">Process</label>
+                        <input class="form-control" id="processField" disabled="disabled" />
+
+
+                    </div>
+                    <div class="row mt-3 col-md-12">
+
+                        <label class="font-weight-bold">Sub-Process</label>
+
+                        <input class="form-control" id="subprocessField" disabled="disabled" />
+                    </div>
+
+                    <div class="row mt-3 col-md-12">
+
+                        <label class="font-weight-bold">Checklist Details </label>
+                        <textarea class="form-control" id="checklistDetailField" disabled="disabled"></textarea>
+                    </div>
+
+                    <div class="row mt-3 col-md-12">
+                        <label class="font-weight-bold">Observation</label>
+
+                    </div>
+                    <div class="row mt-3 col-md-12">
+                        <div id="para" class="col-md-12"></div>
+
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
+                        <div class="col-md-12 pl-0 pr-0">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr />
+                    <h5 class="text-center"><b>Branch Compliance</b></h5>
+                    <hr />
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_compliance">Compliance</label>
+                        <div class="col-md-12" id="viewMemo_compliance"></div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_evidences">Evidences</label>
+                        <div class="col-md-12 row" id="viewMemo_evidences"></div>
+                    </div>
+                    <div class="row mt-3 col-md-12">
+                        <label class="font-weight-bold">Zonal Manager Remarks</label>
+                        <textarea class="form-control" disabled="disabled"></textarea>
+                    </div>
                     <div class="form-group">
-                        <label for="viewMemo_compliance">Add Comment</label>
+                        <label for="viewMemo_compliance">In-charge Implementation Remarks</label>
                         <textarea class="form-control" id="viewMemo_complianc"></textarea>
                     </div>
 
-                  
+
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="submitStatusViewModel" type="button" class="btn btn-danger">Submit</button>
+                <button id="submitPartialSettleViewModel" type="button" class="btn btn-primary">Partial Settle</button>
+                <button id="submitSettleViewModel" type="button" class="btn btn-success">Settle</button>
+                <button id="submitUnsettleViewModel" type="button" class="btn btn-danger">Unsettle</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
             </div>

@@ -3957,9 +3957,9 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditeeResponseEvidenceModel usr = new AuditeeResponseEvidenceModel();
-                    usr.IMAGE_NAME = rdr["IMAGE_NAME"].ToString();
-                    usr.IMAGE_DATA = rdr["IMAGE_DATA"].ToString();
-                    usr.IMAGE_TYPE = rdr["IMAGE_TYPE"].ToString();
+                    usr.IMAGE_NAME = rdr["FILE_NAME"].ToString();
+                    usr.IMAGE_DATA = rdr["FILE_DATA"].ToString();
+                   // usr.IMAGE_TYPE = rdr["IMAGE_TYPE"].ToString();
                     usr.SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"].ToString());
                     usr.LENGTH = Convert.ToInt32(rdr["LENGTH"].ToString());
                     list.Add(usr);
@@ -8284,7 +8284,8 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ID = rdr["ID"].ToString();
                     chk.REPLY = rdr["REPLY"].ToString();
-                    chk.REPLY_DATE = rdr["replieddate"].ToString();
+                    if(rdr["replieddate"].ToString()!=null && rdr["replieddate"].ToString()!="")
+                    chk.REPLY_DATE = rdr["replieddate"].ToString().Split(" ")[0];
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
 
                     list.Add(chk);

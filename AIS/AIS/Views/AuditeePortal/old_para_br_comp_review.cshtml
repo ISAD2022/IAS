@@ -23,7 +23,7 @@
     });
     function getbranchcompreview() {
         
-        $('#manageObsPanel tbody').empty();
+        $('#managereviewPanel tbody').empty();
         $.ajax({
             url: "/ApiCalls/get_branch_comp_review",
             type: "POST",
@@ -69,6 +69,7 @@
                 $('#checklistDetailField').val(data.checklistdetail);
                 $('#viewMemo_compliance').html(data.reply);
                 $('#listofRespPersons tbody').empty();
+                
                 if (data.responsiblE_PPs.length > 0) {
                     $.each(data.responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons tbody tr').length;
@@ -76,6 +77,14 @@
                         $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
                 }
+                $('#viewMemo_evidences').empty();
+                if (data.evidences.length > 0) {
+                    $.each(data.evidences, function (j, pp) {
+                        
+                        $('#viewMemo_evidences').append('<div class="col-md-6"><img src="/Auditee_Evidences/' + pp.imagE_NAME + '" /></div>');
+                    });
+                }
+
             },
 
             dataType: "json",
@@ -110,6 +119,7 @@
     }
   
     function reloadLocation() {
+        $('#reviewer_response').modal("hide");
         getbranchcompreview();
     }
 
@@ -211,7 +221,7 @@
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
-                        <textarea class="form-control" id="viewMemo_evidences"></textarea>
+                        <div class="col-md-12 row" id="viewMemo_evidences"></div>
                     </div>
                     <div class="row mt-3 col-md-12">
                         <label class="font-weight-bold">Add Remarks</label>
