@@ -61,13 +61,7 @@
             alert('Entity Type Not Selected');
             return;
         }
-        if (entityTypeId == 25)
-        {
-            if ($('#auditCriteriaCADHUBField option:selected').val() == 0) {
-                alert($('#auditCriteriaEntityField option:selected').text() + ' Not Selected');
-                return;
-            }              
-        } 
+       
        
         if ($('#auditCriteriaEntityField option:selected').attr("d-risk") == "Y") {
             if (risk == '') {
@@ -91,12 +85,8 @@
         }
       
         data = '-';
-        
-        if ($('#auditCriteriaEntityField option:selected').val() != 25) 
-            $('#auditCriteriaListBox tbody').append('<tr class="new"><td value="' + $('#auditCriteriaPeriodField option:selected').val() + '">' + period + '</td><td value="' + $('#auditCriteriaEntityField option:selected').val() + '"  data-value="0" >' + entityName + '</td><td value="' + $('#auditCriteriaRiskField option:selected').val() + '">' + risk + '</td><td value="' + $('#auditCriteriaFreqField option:selected').val() + '">' + freq + '</td><td value="' + $('#auditCriteriaSizeField option:selected').val() + '">' + size + '</td><td value="' + days + '">' + days + '</td><td value="' + visit + '">' + visit + '</td><td class="entCountField">' + data + '</td><td><a onclick=CountCriteriaRecordFromGrid(this,' + $('#auditCriteriaPeriodField option:selected').val() + ',' + $('#auditCriteriaEntityField option:selected').val() + ',' + $('#auditCriteriaRiskField option:selected').val() + ',' + $('#auditCriteriaSizeField option:selected').val() + ',' + $('#auditCriteriaFreqField option:selected').val() + '); class="text-hover text-primary">Entities Count</a><a onclick=DeleteCriteriaRecordFromGrid(this,' + $('#auditCriteriaPeriodField option:selected').val() + ',' + $('#auditCriteriaEntityField option:selected').val() + ',' + $('#auditCriteriaRiskField option:selected').val() + ',' + $('#auditCriteriaSizeField option:selected').val() + ',' + $('#auditCriteriaFreqField option:selected').val() + '); class="text-hover text-danger pl-3">Delete</a></td></tr>');
-        else
-            $('#auditCriteriaListBox tbody').append('<tr class="new"><td value="' + $('#auditCriteriaPeriodField option:selected').val() + '">' + period + '</td><td value="' + $('#auditCriteriaEntityField option:selected').val() + '" data-value="' + $('#auditCriteriaCADHUBField option:selected').val() + '">' + entityName + '</td><td value="1">-</td><td value="1">-</td><td value="1">-</td><td value="' + days + '">' + days + '</td><td value="' + visit + '">' + visit + '</td><td class="entCountField">1</td><td><a onclick=DeleteCriteriaRecordForCADHUBFromGrid(this,' + $('#auditCriteriaPeriodField option:selected').val() + ',' + $('#auditCriteriaEntityField option:selected').val() + ',' + $('#auditCriteriaCADHUBField option:selected').val() + '); class="text-hover text-danger pl-3">Delete</a></td></tr>');
-            
+        $('#auditCriteriaListBox tbody').append('<tr class="new"><td value="' + $('#auditCriteriaPeriodField option:selected').val() + '">' + period + '</td><td value="' + $('#auditCriteriaEntityField option:selected').val() + '"  data-value="' + $('#auditCriteriaCADHUBField option:selected').val() + '">' + entityName + '</td><td value="' + $('#auditCriteriaRiskField option:selected').val() + '">' + risk + '</td><td value="' + $('#auditCriteriaFreqField option:selected').val() + '">' + freq + '</td><td value="' + $('#auditCriteriaSizeField option:selected').val() + '">' + size + '</td><td value="' + days + '">' + days + '</td><td value="' + visit + '">' + visit + '</td><td class="entCountField">' + data + '</td><td><a onclick=CountCriteriaRecordFromGrid(this,' + $('#auditCriteriaPeriodField option:selected').val() + ',' + $('#auditCriteriaEntityField option:selected').val() + ',' + $('#auditCriteriaRiskField option:selected').val() + ',' + $('#auditCriteriaSizeField option:selected').val() + ',' + $('#auditCriteriaFreqField option:selected').val() + '); class="text-hover text-primary">Entities Count</a><a onclick=DeleteCriteriaRecordFromGrid(this,' + $('#auditCriteriaPeriodField option:selected').val() + ',' + $('#auditCriteriaEntityField option:selected').val() + ',' + $('#auditCriteriaRiskField option:selected').val() + ',' + $('#auditCriteriaSizeField option:selected').val() + ',' + $('#auditCriteriaFreqField option:selected').val() + '); class="text-hover text-danger pl-3">Delete</a></td></tr>');
+           
         submitAuditCriteria();
        /*  $.ajax({
              url: "/ApiCalls/GetAuditEntitiesCount",
@@ -504,19 +494,12 @@
                             <td value="@item.NO_OF_DAYS">@item.NO_OF_DAYS</td>
                             <td value="@item.VISIT">@item.VISIT</td>
                             <td class="entCountField" value="@item.ENTITIES_COUNT">@item.ENTITIES_COUNT</td>
-                            @if (@item.ENTITY_TYPEID != 25)
-                            {
+                            
                                 <td>
                                     <a onclick=CountCriteriaRecordFromGrid(this,@item.ID); class="text-primary">Entities Count</a>
                                     <a onclick=DeleteCriteriaRecordFromGrid(this,@item.ID); class="text-danger pl-3">Delete</a>
                                 </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    <a onclick=DeleteCriteriaRecordFromGrid(this,@item.ID); class="text-danger pl-3">Delete</a>
-                                </td>
-                            }
+                           
                         </tr>
                     }
 

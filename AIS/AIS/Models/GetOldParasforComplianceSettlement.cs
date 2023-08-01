@@ -15,7 +15,7 @@ namespace AIS.Models
         public string REPLIEDBY { get; set; }
         public string VOL_I_II { get; set; }
         public string REPLY { get; set; }
-        public DateTime REPLIEDDATE { get; set; }
+        public string REPLIEDDATE { get; set; }
         public DateTime LASTUPDATEDDATE { get; set; }
         public string REMARKS { get; set; }
         public string PARA_CATEGORY { get; set; }

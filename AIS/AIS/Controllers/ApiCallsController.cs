@@ -794,7 +794,14 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasBranchComplianceTextForZone(REF_P, PARA_CATEGORY, REPLY_DATE);
         }
 
-        
+
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE)
+        {
+            return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE);
+        }
+
+
 
         [HttpPost]
         public string add_old_para_br_compliance_reply(string Para_ID, string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
@@ -868,11 +875,10 @@ namespace AIS.Controllers
         [HttpPost]
         public string get_para_text(string ref_p)
         {
-           // string response = "";
             return dBConnection.GetParaText(ref_p);
-            //return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+         }
 
-        }
+       
 
         [HttpPost]
         public List<AuditeeOldParasPpnoModel> get_old_paras_for_monitoring_ppno(int ppno)
