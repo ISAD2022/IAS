@@ -1,66 +1,25 @@
 ﻿@{
-    ViewData["Title"] = "Compliance Submitted By Auditee";
+    ViewData["Title"] = "Post Compliance Submitted By Zonal Management / Departmental Head";
     Layout = "_Layout";
 }
 <script>
     var g_paraId = 0;
     var g_paraRef = 0;
+    var g_auOBSID = 0;
     var g_paraCat = "";
     var g_repliedDate = "";
     var g_obsList = [];
+    var g_upResArr = [];
+    var g_upRes = {};
+    var g_upResIndex = 0;
 
     $(document).ready(function () {
         getLegacyPara();
-        $('#viewMemo_compliance').richText({
-            imageUpload: false,
-            fileUpload: false,
-            videoEmbed: false,
-            urls: false
-        });      
+        
     });
 
-    function viewParaDetails(ref_p, memo_no, paraId) {
-        g_paraRef = ref_p;
-        $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text",
-            type: "POST",
-            data: {
-                'REF_P': g_paraRef
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemoModel').modal('show');
-                $('#viewMemo_memoNumber').val(memo_no);
-                $('#viewMemo_process').val(data.checklist);
-                $('#viewMemo_subprocess').val(data.subchecklist);
-                $('#viewMemo_checklist_detail').val(data.checklistdetail);
-                $('#viewMemo_memo').html(data.parA_TEXT);
-            },
-
-            dataType: "json",
-        });
-    }
-    function viewReviewerResponse(ref_p, memo_no, paraId) {
-        g_paraRef = ref_p;
-        $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text",
-            type: "POST",
-            data: {
-                'REF_P': g_paraRef
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemoModel').modal('show');
-                $('#viewMemo_memoNumber').val(memo_no);
-                $('#viewMemo_process').val(data.checklist);
-                $('#viewMemo_subprocess').val(data.subchecklist);
-                $('#viewMemo_checklist_detail').val(data.checklistdetail);
-                $('#viewMemo_memo').html(data.parA_TEXT);
-            },
-
-            dataType: "json",
-        });
-    }
+    
+   
     function getLegacyPara() {
 
         $('#manageObsPanel tbody').empty();
@@ -75,7 +34,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.heaD_REF_REMARKS + '</p></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
                 });
             },
 
@@ -84,11 +43,12 @@
 
     }      
 
-    function viewObservationStatus(id,refP, paraCat, replyDate)
+    function viewObservationStatus(id,refP, paraCat, replyDate,obsId)
     {
         g_paraId = id;
         g_paraRef = refP;
         g_paraCat = paraCat;
+        g_auOBSID = obsId;
         g_repliedDate = replyDate;
         $("#viewMemoModel").modal('show');
         $.ajax({
@@ -98,6 +58,7 @@
                 'PID':g_paraId,
                 'REF_P': g_paraRef,
                 'PARA_CATEGORY': g_paraCat,
+                'AU_OBS_ID': g_auOBSID,
                 'REPLY_DATE': g_repliedDate
 
             },
@@ -108,18 +69,19 @@
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
                 $('#viewMemo_brcompliance').html(data.brancH_REPLY);
-                $('#zmoRemarksField').html(data.zonE_REPLY);
+                $('#zmoRemarksField').val(data.zonE_REPLY);
                 $('#listofRespPersons tbody').empty();
                 $('#listofRespPersonsForUpdateDelete tbody').empty();
-
+                g_upResArr = data.responsiblE_PPs;
                 
 
                 if (data.responsiblE_PPs.length > 0) {
                     $.each(data.responsiblE_PPs, function (j, pp) {
+                        g_upResArr[j].resP_ACTIVE='Y';
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
                         $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                        $('#listofRespPersonsForUpdateDelete tbody').append('<tr id="tr_' + pp.pP_NO +(j+1)+'"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td><a href="#" onclick="updateResponsible(this);">Update</a></td></tr>');
+                        $('#listofRespPersonsForUpdateDelete tbody').append('<tr id="tr_' + pp.pP_NO + (j + 1) + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td>Y</td><td><a href="#" onclick="updateResponsible(' + pp.pP_NO + ',' + pp.loaN_CASE + ',' + srNo + ');">Update</a></td></tr>');
                     });
                 }
                 $('#viewMemo_evidences').empty();
@@ -137,12 +99,39 @@
         
     }
 
-    function updateResponsible(e){
+    function updateResponsible(PPNO, LLC, srNo) {
+        g_upResIndex=srNo;
+        $.each(g_upResArr,function(i,v){
+            if (v.pP_NO == PPNO && v.loaN_CASE == LLC) {
+                g_upRes=v;
+            }
+        })
+
         $('#ResponsiblePPModel').modal('show');
+        $('#updatePPNo').html(g_upRes.pP_NO + " " + g_upRes.emP_NAME);
+        $('#updateLoanCaseNo').val(g_upRes.loaN_CASE);
+        $('#updateLoanCaseAmount').val(g_upRes.lC_AMOUNT);
+        $('#updateAccountNo').val(g_upRes.accounT_NUMBER);
+        $('#updateAccountAmount').val(g_upRes.acC_AMOUNT);
+        $('#updateDeleteResp').val(g_upRes.resP_ACTIVE);
+
+
+    }
+
+    function updateResponsibilityToMainTable()
+    {
+        
+       targetRow= $('#listofRespPersonsForUpdateDelete tbody').find('tr').eq(g_upResIndex - 1);
+        $(targetRow).find('td').eq(3).html($('#updateLoanCaseNo').val());
+        $(targetRow).find('td').eq(4).html($('#updateLoanCaseAmount').val());
+        $(targetRow).find('td').eq(5).html($('#updateAccountNo').val());
+        $(targetRow).find('td').eq(6).html($('#updateAccountAmount').val());
+        $(targetRow).find('td').eq(7).html($('#updateDeleteResp').val());
+        $('#ResponsiblePPModel').modal('hide');
+
     }
 
     function setParaStatusSettled() {
-
         $.ajax({
             url: "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
@@ -151,8 +140,9 @@
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'Y',
                 'PARA_CAT': g_paraCat,
+                'AU_OBS_ID': g_auOBSID,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS':6
+                'NEW_STATUS':14
             },
             cache: false,
             success: function (data) {
@@ -172,9 +162,10 @@
                 'PARA_ID': g_paraId,
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'N',
+                'AU_OBS_ID': g_auOBSID,
                 'PARA_CAT': g_paraCat,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS': 8
+                'NEW_STATUS': 15
             },
             cache: false,
             success: function (data) {
@@ -186,8 +177,22 @@
         });
     }
     function setParaStatusPartiallySettle() {
+
+        var resP = [];
+        $.each($('#listofRespPersonsForUpdateDelete tbody tr'), function (i, v) {
+            resP.push({
+                'PP_NO': $(v).find('td').eq(1).html(),
+                'EMP_NAME': $(v).find('td').eq(2).html(),
+                'LOAN_CASE': $(v).find('td').eq(3).html(),
+                'LC_AMOUNT': $(v).find('td').eq(4).html(),
+                'ACCOUNT_NUMBER': $(v).find('td').eq(5).html(),
+                'ACC_AMOUNT': $(v).find('td').eq(6).html(),
+                'RESP_ACTIVE': $(v).find('td').eq(7).html()
+            });
+        });
+
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            url: "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
             type: "POST",
             data: {
                 'PARA_ID': g_paraId,
@@ -195,7 +200,8 @@
                 'SETTLE_INDICATOR':'P',
                 'PARA_CAT': g_paraCat,
                 'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS': 8
+                'NEW_STATUS': 13,
+                'RESPONSIBLES_ARR': resP
             },
             cache: false,
             success: function (data) {
@@ -213,7 +219,7 @@
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Old Audit Observations</h3>
+        <h3 style=" display:block;color: #45c545;">Post Compliance Submitted By Zonal Management / Departmental Head</h3>
      
     </div>
     <div class="row col-md-12 mt-3">
@@ -221,10 +227,12 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Auditee Name</th>
+                    <th class="col-md-auto">Reporting Office</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Observation</th>
+                    <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Amount</th>
+                    <th class="col-md-auto">Head Remarks (For Reffered Back)</th>
                     <th class="col-md-auto text-center">Compliance</th>
                 </tr>
             </thead>
@@ -270,7 +278,7 @@
                     </div>
 
                     <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Observation</label>
+                        <label class="font-weight-bold">Para</label>
 
                     </div>
                     <div class="row mt-3 col-md-12">
@@ -299,10 +307,9 @@
                         </div>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px;" class="text-center"><b>Branch Compliance</b></h5>
-                    <hr style="border: 3px solid black;" />
+                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px;" class="text-center"><b>Auditee Compliance</b></h5>
                     <div class="form-group mt-3">
-                        <div class="col-md-12" id="viewMemo_brcompliance"></div>
+                        <div  class="form-control" id="viewMemo_brcompliance"></div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
@@ -310,14 +317,12 @@
                     </div>
                     <hr style="border: 3px solid black;" />
                     <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center"><b>Zonal Manager Remarks</b></h5>
-                    <hr style="border: 3px solid black;" />
                     <div class="row mt-3 col-md-12">
-                        <div class="col-md-12" id="zmoRemarksField"></div>
+                        <textarea disabled="disabled" class="form-control" id="zmoRemarksField"></textarea>
                     </div>
                     <hr style="border: 3px solid black;" />
                     <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center">
                         <b>In-charge Implementation Section</b></h5>
-                    <hr style="border: 3px solid black;" />
                     <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Update / Delete Responsibles</label>
                         <div class="col-md-12 pl-0 pr-0">
@@ -331,6 +336,7 @@
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
                                         <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Active / In-Active</th>
                                         <th class="col-md- auto font-weight-bold">Action</th>
                                     </tr>
                                 </thead>
@@ -348,9 +354,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="submitPartialSettleViewModel" type="button" class="btn btn-primary">Partial Settle</button>
-                <button id="submitSettleViewModel" type="button" class="btn btn-success">Settle</button>
-                <button id="submitUnsettleViewModel" type="button" class="btn btn-danger">Unsettle</button>
+                <button onclick="setParaStatusPartiallySettle();" type="button" class="btn btn-primary">Partial Settle</button>
+                <button onclick="setParaStatusSettled();" type="button" class="btn btn-success">Settle</button>
+                <button onclick="setParaStatusUnsettled();" type="button" class="btn btn-danger">Unsettle</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
             </div>
@@ -400,9 +406,15 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div id="matchedPPNoPanels" style="padding:20px;">
+                        <div class="col-md-12">
+                            <label>Delete / In-active Responsibility</label>
+                            <select id="updateDeleteResp" class="form-control">
+                                <option value="Y">Active</option>
+                                <option value="N">In-Active</option>
+                            </select>
                         </div>
                     </div>
+                  
 
                 </form>
             </div>

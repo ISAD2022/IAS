@@ -6,10 +6,12 @@ namespace AIS.Models
     public class GetOldParasforComplianceSettlement
     {
         public int? ID { get; set; }
+        public string AU_OBS_ID { get; set; }
         public string REPORTINGOFFICE { get; set; }
         public string AUDITEENAME { get; set; }
         public string AUDITPERIOD { get; set; }
         public string PARANO { get; set; }
+        public string HEAD_REF_REMARKS { get; set; }
         public string GISTOFPARA { get; set; }
         public string AMOUNT { get; set; }
         public string REPLIEDBY { get; set; }

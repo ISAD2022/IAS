@@ -4,6 +4,7 @@
 }
 <script>
     var g_paraId = 0;
+    var g_parentId = 0;
     var g_paraCAT = "";
     var g_repliedDate = "";
     var g_ID = 0;
@@ -34,7 +35,7 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\', \'' + child.replY_DATE + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
+                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\', \'' + child.replY_DATE + '\', \'' + child.parenT_ID + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
                 });
                 
             },
@@ -44,11 +45,12 @@
 
     }
 
-    function getparatext(refp, id, paraCat, replyDate) {
+    function getparatext(refp, id, paraCat, replyDate, parentId) {
         g_ID = id;
         g_paraCAT = paraCat;
         g_paraId = refp;
         g_repliedDate = replyDate;
+        g_parentId = parentId;
         $('#reviewer_response').modal("show");
         $('#ReviewerRemarks').empty();
 
@@ -105,7 +107,8 @@
                 'REPLY': $('#ReviewerRemarks').val(),
                 'PARA_CAT': g_paraCAT,
                 'r_status': new_status,
-                'ID': g_ID
+                'ID': g_ID,
+                'PARENT_ID': g_parentId
             },
             cache: false,
             success: function (data) {
@@ -127,7 +130,7 @@
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Old Audit Observations Compliance Review</h3>
+        <h3 style=" display:block;color: #45c545;">Post Compliance For Reviewer / Recommender</h3>
     </div>
     <div class="row col-md-12 mt-3">
         <table id="managereviewPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
@@ -137,7 +140,7 @@
                     <th class="col-md-auto">Entity Name</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Observation</th>
+                    <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto text-center">Action</th>
 
@@ -184,7 +187,7 @@
                     </div>
 
                     <div class="row mt-3 col-md-12">
-                        <label class="font-weight-bold">Observation</label>
+                        <label class="font-weight-bold">Para</label>
 
                     </div>
                     <div class="row mt-3 col-md-12">
@@ -213,7 +216,7 @@
                         </div>
                     </div>
                     <hr />
-                    <h5 class="text-center"><b>Branch Compliance</b></h5>
+                    <h5 class="text-center"><b>Auditee Compliance</b></h5>
                     <hr />
                     <div class="form-group mt-3">
                         <label for="viewMemo_compliance">Compliance</label>

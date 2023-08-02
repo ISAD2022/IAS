@@ -13,5 +13,6 @@ namespace AIS.Models
         public string LC_AMOUNT { get; set; }
         public string ACCOUNT_NUMBER { get; set; }
         public string ACC_AMOUNT { get; set; }
+        public string RESP_ACTIVE { get; set; }
     }
 }
