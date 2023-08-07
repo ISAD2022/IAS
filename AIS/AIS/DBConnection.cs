@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";                                                
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -828,13 +828,13 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = acm.ID;
-                cmd.Parameters.Add("ENTITY_TYPEID", OracleDbType.Int32).Value = acm.ENTITY_TYPEID;
-                cmd.Parameters.Add("SIZE_ID", OracleDbType.Int32).Value = acm.SIZE_ID;
-                cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = acm.RISK_ID;
-                cmd.Parameters.Add("FREQUENCY_ID", OracleDbType.Int32).Value = acm.FREQUENCY_ID;
-                cmd.Parameters.Add("NO_OF_DAYS", OracleDbType.Int32).Value = acm.NO_OF_DAYS;
-                cmd.Parameters.Add("VISIT", OracleDbType.Varchar2).Value = acm.VISIT;
-                cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = acm.AUDITPERIODID;
+                cmd.Parameters.Add("ENTITYTYPEID", OracleDbType.Int32).Value = acm.ENTITY_TYPEID;
+                cmd.Parameters.Add("SIZEID", OracleDbType.Int32).Value = acm.SIZE_ID;
+                cmd.Parameters.Add("RISKID", OracleDbType.Int32).Value = acm.RISK_ID;
+                cmd.Parameters.Add("FREQUENCYID", OracleDbType.Int32).Value = acm.FREQUENCY_ID;
+                cmd.Parameters.Add("NOOFDAYS", OracleDbType.Int32).Value = acm.NO_OF_DAYS;
+                cmd.Parameters.Add("VISITS", OracleDbType.Varchar2).Value = acm.VISIT;
+                cmd.Parameters.Add("AUDITPERIOD_ID", OracleDbType.Int32).Value = acm.AUDITPERIODID;
                 cmd.Parameters.Add("REMARKS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.Parameters.Add("CREATED_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
@@ -1560,7 +1560,7 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = newPassword;
                 else
                     cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = newPassword;
-                cmd.Parameters.Add("ISACTIVE", OracleDbType.Varchar2).Value = user.ISACTIVE;
+                cmd.Parameters.Add("IS_ACTIVE", OracleDbType.Varchar2).Value = user.ISACTIVE;
                 cmd.Parameters.Add("ROLEID", OracleDbType.Int32).Value = user.ROLE_ID;
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = user.ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -8679,7 +8679,6 @@ namespace AIS.Controllers
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
-            bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
