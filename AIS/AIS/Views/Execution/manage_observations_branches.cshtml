@@ -153,9 +153,11 @@
 
                 $.each(g_obsList, function (i, v) {
                     if (v.obS_ID == g_obsId) {
+                        $('#updateMemo_heading').val(v.heading);
                         $('#updateMemo_process').val($('#updateMemo_process option').filter(function () { return $(this).html() == v.process; }).val())
                         $('#updateMemo_subprocess').append('<option value="0">' + v.suB_PROCESS + '</option>');
                         $('#updateMemo_violation').append('<option value="0">' + v.checklist_Details + '</option>');
+
                     }
                 });                
             },
@@ -244,6 +246,7 @@
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
+                'OBS_TITLE': $('#updateMemo_heading').val(),
                 'OBS_TEXT': $('.richText-editor').html(),
                 'PROCESS_ID': $('#updateMemo_process').val(),
                 'SUBPROCESS_ID': $('#updateMemo_subprocess').val(),
@@ -495,6 +498,10 @@
                         <label for="updateMemo_violation" class="font-weight-bold">Checklist Details</label>
                         <select id="updateMemo_violation" class="form-select form-control" aria-label="Default select example">
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateMemo_heading" class="font-weight-bold">Title / Heading</label>
+                        <input id="updateMemo_heading" class="form-control" />                      
                     </div>
                     <div class="form-group">
                         <label for="updateMemoContent" class="font-weight-bold">Memo</label>

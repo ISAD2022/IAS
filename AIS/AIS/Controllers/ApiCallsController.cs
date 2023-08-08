@@ -231,10 +231,10 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);
         }
         [HttpPost]
-        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0)
+        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE="")
         {
             string response = "";
-            response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID);
+            response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID, OBS_TITLE);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]

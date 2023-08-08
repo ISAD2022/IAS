@@ -135,8 +135,16 @@ label.heading{
             alert('Select Violation Nature');
             return;
         }
-        if ($('#auditCriteriaRiskField').val() == 0) {
-            alert('Select Risk');
+        if ($('#riskActivitiesSelectBox').val() == 0) {
+            alert('Select Sub Checklist Detail');
+            return;
+        }
+        //if ($('#auditCriteriaRiskField').val() == 0) {
+        //    alert('Select Risk');
+        //    return;
+        //}
+        if ($('#viewMemo_heading').val() == 0) {
+            alert('Please Enter Para Heading');
             return;
         }
         var resP = [];

@@ -104,6 +104,10 @@
             alert('Select Risk');
             return;
         }
+        if ($('#viewMemo_heading').val() == 0) {
+            alert('Please Enter Para Heading');
+            return;
+        }
         var g_memoObj = [];
         var memo = {
             'MEMO': $('.richText-editor').html(),

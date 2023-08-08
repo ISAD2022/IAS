@@ -79,6 +79,11 @@
         window.location.reload();
     }
     function saveMemoContent() {
+
+        if ($('#viewMemo_heading').val()==""){
+            alert("Please Enter Para Heading");
+            return false;
+        }
         var resP = [];
         $.each($('#listofRespPersons tbody tr'), function (i, v) {
             resP.push({
@@ -119,6 +124,8 @@
 
         if (!isFound)
             g_memoObj.push(memo);
+
+        $('#viewMemoModel').modal('hide');
     }
     function viewCreatedMemo(e, id) {
         g_observationId = id;
@@ -379,7 +386,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="saveMemoContent();" type="button" data-dismiss="modal" class="btn btn-danger">Save Memo</button>
+                <button onclick="saveMemoContent();" type="button" class="btn btn-danger">Save Memo</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

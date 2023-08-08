@@ -4360,7 +4360,7 @@ namespace AIS.Controllers
                     chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
-                    //chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.HEADING = rdr["HEADINGS"].ToString();
                     //chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
@@ -4995,7 +4995,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0)
+        public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE="")
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -5010,7 +5010,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("OBTEXT", OracleDbType.Clob).Value = OBS_TEXT;
+                cmd.Parameters.Add("title", OracleDbType.Clob).Value = OBS_TITLE;
+                cmd.Parameters.Add("OBTEXT", OracleDbType.Clob).Value = OBS_TEXT;                
                 cmd.Parameters.Add("SUBPROCESSID", OracleDbType.Int32).Value = SUBPROCESS_ID;
                 cmd.Parameters.Add("CHECKLISTID", OracleDbType.Int32).Value = CHECKLIST_ID;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -8160,6 +8161,7 @@ namespace AIS.Controllers
                     chk.AMOUNT = rdr["amount"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
+                    chk.STATUS_ID = rdr["C_STATUS"].ToString();
                     list.Add(chk);
                 }
             }
