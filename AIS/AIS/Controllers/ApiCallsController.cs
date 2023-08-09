@@ -782,23 +782,38 @@ namespace AIS.Controllers
         {
             return dBConnection.GetOldParasBranchCompliance();
         }
-
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE)
+        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_ref()
         {
-            return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE);
-        }
-        [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE)
-        {
-            return dBConnection.GetOldParasBranchComplianceTextForZone(REF_P, PARA_CATEGORY, REPLY_DATE);
+            return dBConnection.GetOldParasBranchComplianceRef();
         }
 
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        {
+            return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+        }
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        {
+            return dBConnection.GetOldParasBranchComplianceTextRef(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+        }
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        {
+            return dBConnection.GetOldParasBranchComplianceTextForZone(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+        }
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        {
+            return dBConnection.GetOldParasBranchComplianceTextForZoneRef(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+        }
+
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE)
+        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
         {
-            return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE);
+            return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_head_az_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE)
@@ -818,6 +833,11 @@ namespace AIS.Controllers
         public List<GetOldParasForComplianceReviewer> get_branch_comp_review()
         {
             return dBConnection.GetOldParasForReviewer();
+        }
+        [HttpPost]
+        public List<GetOldParasForComplianceReviewer> get_branch_comp_review_ref()
+        {
+            return dBConnection.GetOldParasForReviewerRef();
         }
 
         [HttpPost]

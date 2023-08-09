@@ -68,7 +68,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p style="color:red;"  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');                    
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');                    
                     
                 });
             },
@@ -138,7 +138,7 @@
         <h5>Branch Name: <span id="entityNameField"></span></h5>
     </div>
 
-    <div class="row col-md-12 mt-3">
+    <div class="col-md-12 mt-3">
         <h5 class=""> Pending Compliance</h5>
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -148,7 +148,6 @@
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto">VOL I II</th>
-                    <th class="col-md-auto d-none">Reviewer Remarks (In Case of Referred Back)</th>
                     <th class="col-md-auto d-none">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>

@@ -439,13 +439,8 @@ namespace AIS.Controllers
             apm.DESCRIPTION =auditPeriod.DESCRIPTION;
             apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
             apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);
-            if(dBConnection.AddAuditPeriod(apm))
-            {
-                return "{\"Status\":true,\"Message\":\"Audit Period Added Successfully\"}";
-            }
-            else {
-                return "{\"Status\":false,\"Message\":\"Already Audit Period Exists With in that Date Range\"}";
-            }
+            return "{\"Status\":true,\"Message\":\""+dBConnection.AddAuditPeriod(apm)+"\"}";
+           
 
         }
 

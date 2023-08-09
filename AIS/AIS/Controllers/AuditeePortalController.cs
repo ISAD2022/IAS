@@ -188,11 +188,28 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult old_para_br_comp_ref()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult old_para_br_comp_review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-           
+
 
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
@@ -207,43 +224,25 @@ namespace AIS.Controllers
             }
         }
 
-        //
-        public IActionResult old_para_br_comp_recommendation()
+
+        public IActionResult old_para_br_comp_review_ref()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
 
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult old_para_br_comp_submission()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-         
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
 
         public IActionResult Auditee_Branch_Response()
         {
@@ -285,11 +284,9 @@ namespace AIS.Controllers
                     return View();
             }
         }
+      
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-
-                  public IActionResult Zonal_Administration()
+        public IActionResult Zonal_Administration()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -309,8 +306,6 @@ namespace AIS.Controllers
         }
 
 
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public IActionResult Implementation_officer()
         {
@@ -331,9 +326,6 @@ namespace AIS.Controllers
             }
         }
 
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
      public IActionResult Audit_Zone_Action()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -354,9 +346,6 @@ namespace AIS.Controllers
         }
 
 
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

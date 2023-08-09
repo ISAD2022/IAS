@@ -147,19 +147,14 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
                 $('#updateMemoModel').modal('show');
                 $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');
-
-                $.each(g_obsList, function (i, v) {
-                    if (v.obS_ID == g_obsId) {
-                        $('#updateMemo_heading').val(v.heading);
-                        $('#updateMemo_process').val($('#updateMemo_process option').filter(function () { return $(this).html() == v.process; }).val())
-                        $('#updateMemo_subprocess').append('<option value="0">' + v.suB_PROCESS + '</option>');
-                        $('#updateMemo_violation').append('<option value="0">' + v.checklist_Details + '</option>');
-
-                    }
-                });                
+                $('#updateMemo_heading').val(data[0].heading);
+                $('#updateMemo_process').val(data[0].procesS_ID);
+                 $('#updateMemo_subprocess').empty();
+                $('#updateMemo_subprocess').append('<option value="0">' + data[0].suB_PROCESS + '</option>');
+                $('#updateMemo_violation').empty();
+                $('#updateMemo_violation').append('<option value="0">' + data[0].checklist_Details + '</option>');
             },
             dataType: "json",
         });

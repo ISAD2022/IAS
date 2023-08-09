@@ -9,8 +9,11 @@ namespace AIS.Models
         public int OBS_ID { get; set; }
         public string ENTITY_NAME { get; set; }
         public string PROCESS { get; set; }
+        public string PROCESS_ID { get; set; }
         public string SUB_PROCESS { get; set; }
+        public string SUB_PROCESS_ID { get; set; }
         public string Checklist_Details { get; set; }
+        public string Checklist_Details_Id { get; set; }
         public string VIOLATION { get; set; }
         public string NATURE { get; set; }
         public int MEMO_NO { get; set; }
