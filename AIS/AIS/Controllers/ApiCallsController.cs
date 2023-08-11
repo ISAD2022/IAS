@@ -1227,6 +1227,12 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public string update_audit_checklist(int PROCESS_ID = 0,  string HEADING = "", string ACTIVE="")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklist(PROCESS_ID, HEADING, ACTIVE) + "\"}";
+        }
+
+        [HttpPost]
         public string update_audit_checklist_detail(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "")
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";

@@ -306,48 +306,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult manage_sub_Checklist()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ChecklistTypes"] = dBConnection.GetAuditChecklist();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult manage_checklist_detail()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ChecklistTypes"] = dBConnection.GetAuditChecklist();
-            ViewData["ViolationsList"] = dBConnection.GetViolationsForChecklistDetail();
-            ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
-            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibleForChecklistDetail();
-            ViewData["RiskList"] = dBConnection.GetRisks();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+      
         public IActionResult review_audit_checklist()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

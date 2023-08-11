@@ -4601,6 +4601,7 @@ namespace AIS.Controllers
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
+                    chk.HEADING = rdr["HEADINGS"].ToString();
 
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
                     chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
@@ -4750,6 +4751,29 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public string UpdateAuditChecklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE="")
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_audit_checklist_update";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("t_id", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("p_name", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = ACTIVE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+
         public string UpdateAuditSubChecklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
         {
             string resp = "";
