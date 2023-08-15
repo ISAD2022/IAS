@@ -115,6 +115,7 @@ namespace AIS.Controllers
             ViewData["ViolationsList"] = dBConnection.GetViolationsForChecklistDetail();
             ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
             ViewData["RoleRespList"] = dBConnection.GetRoleResponsibleForChecklistDetail();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {

@@ -13,6 +13,7 @@ namespace AIS.Models
         public string V_NAME { get; set; }
         public string HEADING { get; set; }
         public int RISK_ID { get; set; }
+        public int ANNEX_ID { get; set; }
         public string RISK { get; set; }
         public int ROLE_RESP_ID { get; set; }
         public string ROLE_RESP { get; set; }

@@ -20,7 +20,8 @@
 <script type="text/javascript">
     var g_procId = 0;
     var g_subProcId = 0;
-    var g_subProcList=[];
+    var g_procDetailId = 0;
+    var g_procDetailList=[];
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
@@ -30,29 +31,47 @@
         });
     });
     
-    function openUpdateSubCheclist(id) {
-        g_subProcId=id;
+    function openUpdateSubCheclist(id, sId) {
+        g_procDetailId = id;
+        g_subProcId = sId;
         $('#updateEntityModal').modal('show');
-        $.each(g_subProcList, function (i, v) {
-            if (v.s_ID == g_subProcId) {
-                g_procId=v.ID;
-                $('#newChecklist').val($('#checklistSelectField').val());
-                getAuditSubChecklistForModal();
-                $('#entCodeField').val(v.heading);
+        $.each(g_procDetailList, function (i, v) {
+            if (v.s_ID == g_procDetailId) 
+            {
+                $('#updatedChecklist').val($('#checklistSelectField').val());
+                getSubChecklistOfProcess();           
+                $('#updatedProcDetailHeading').val(v.heading);
+                $('#updatedViolationlist').val(v.v_ID);
+                $('#updatedProcOwnerlist').val(v.procesS_OWNER_ID);
+                $('#updatedRoleResplist').val(v.rolE_RESP_ID);
+                $('#updatedRisklist').val(v.risK_ID);
+                $('#updatedAnnexlist').val(v.anneX_ID);
 
+                $('#oldProcessLabel').html($('#updatedChecklist option:selected').text());
+                $('#oldSubProcessLabel').html($('#updatedSubChecklist option:selected').text());
+                $('#oldViolationLabel').html($('#updatedViolationlist option:selected').text());
+                $('#oldProcessOwnerLabel').html($('#updatedProcOwnerlist option:selected').text());
+                $('#oldRoleRespLabel').html($('#updatedRoleResplist option:selected').text());
+                $('#oldRiskLabel').html($('#updatedRisklist option:selected').text());
+                $('#oldProcessDetailLabel').html(v.heading);
             }
         });
         
     }
-
     function updateSubProcess() {
         $.ajax({
-            url: "/ApiCalls/update_auditee_sub_checklist",
+            url: "/ApiCalls/update_audit_checklist_detail",
             type: "POST",
             data: {
-                'PROCESS_ID': $('#newChecklist').val(),
-                'SUB_PROCESS_ID': g_subProcId,
-                'HEADING': $('#entCodeField').val(),
+                'PROCESS_ID': $('#updatedChecklist').val(),
+                'SUB_PROCESS_ID': $('#updatedSubChecklist').val(),
+                'PROCESS_DETAIL_ID': g_procDetailId,
+                'HEADING': $('#updatedProcDetailHeading').val(),
+                'V_ID': $('#updatedViolationlist').val(),
+                'CONTROL_ID': $('#updatedProcOwnerlist').val(),
+                'ROLE_ID': $('#updatedRoleResplist').val(),
+                'RISK_ID': $('#updatedRisklist').val(),
+                'ANNEX_CODE': $('#updatedAnnexlist').val()
             },
             cache: false,
             success: function (data) {
@@ -67,6 +86,7 @@
     function getAuditSubChecklist() {
         var processId = $('#checklistSelectField').val();
         if (processId != 0) {
+            $('#subchecklistSelectField').empty();
             $.ajax({
                 url: "/ApiCalls/get_audit_sub_checklist",
                 type: "POST",
@@ -75,7 +95,6 @@
                 },
                 cache: false,
                 success: function (data) {
-                    g_subProcList = data;
                     var sr = 0;
                     $('#subchecklistSelectField').append('<option value="0">--Select Audit Sub-Checklist--</option>');
                     $.each(data, function (i, v) {
@@ -96,6 +115,7 @@
     function getAuditSubChecklistForModal() {
         var processId = $('#newChecklist').val();
         if (processId != 0) {
+            $('#newSubChecklist').empty();
             $.ajax({
                 url: "/ApiCalls/get_audit_sub_checklist",
                 type: "POST",
@@ -104,7 +124,6 @@
                 },
                 cache: false,
                 success: function (data) {
-                    g_subProcList = data;
                     $('#newSubChecklist').append('<option value="0">--Select Audit Sub-Checklist--</option>');
                     $.each(data, function (i, v) {
                         var className="";
@@ -136,11 +155,11 @@
                 },
                 cache: false,
                 success: function (data) {
-                    g_subProcList = data;
+                    g_procDetailList = data;
                     var sr = 0;
                     $.each(data, function (i, v) {
                         sr++;
-                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.heading + '</td><td style="cursor:pointer;"><a class="text-danger" onclick="openUpdateSubCheclist(' + v.s_ID + ')">Update</a></td></tr>');
+                        $('#auditeeEntitiesList tbody').append('<tr id="tr_'+v.s_ID+'"><td>' + sr + '</td><td>' + v.heading + '</td><td style="cursor:pointer;"><a class="text-danger" onclick="openUpdateSubCheclist(' + v.s_ID + ', '+v.id+')">Update</a></td></tr>');
 
                     });
                 },
@@ -152,9 +171,93 @@
         }
 
     }
+    function getSubChecklistForNewEntry() {
+        var processId = $('#newChecklist').val();
+        if (processId != 0) {
+             $('#newSubChecklist').empty();
+            $.ajax({
+                url: "/ApiCalls/get_audit_sub_checklist",
+                type: "POST",
+                data: {
+                    'PROCESS_ID': processId
+                },
+                cache: false,
+                success: function (data) {
+                    $('#newSubChecklist').append('<option value="0">--Select Sub-Checklist--</option>');
+                    $.each(data, function (i, v) {
+                        $('#newSubChecklist').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
+                    });
+                },
+                dataType: "json",
+            });
+        } 
+
+    }
+    function getSubChecklistOfProcess() {
+        $('#updatedSubChecklist').empty();
+        $.ajax({
+            url: "/ApiCalls/get_audit_sub_checklist",
+            type: "POST",
+            data: {
+                'PROCESS_ID': $('#checklistSelectField').val()
+            },
+            cache: false,
+            success: function (data) {
+                $('#updatedSubChecklist').append('<option value="0">--Select Sub-Checklist--</option>');
+                $.each(data, function (i, v) {
+                    $('#updatedSubChecklist').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
+                });
+                $('#updatedSubChecklist').val(g_subProcId);
+            },
+            dataType: "json",
+        });
+
+    }
+    function addNewCheckListDetail(){
+        g_subProcId = 0;
+        g_procDetailId = 0;
+        $('#addEntityModal').modal('show');
+        $('#newChecklist').val(0);
+        $('#newSubChecklist').val(0);
+        $('#newViolationlist').val(0);
+        $('#newProcOwnerlist').val(0);
+        $('#newRoleResplist').val(0);
+        $('#newAnnexlist').val(0);
+        $('#newRisklist').val(0);
+        $('#newProcDetailHeading').val('');
+     
+    }
+    function addProcessDetail(){
+        $.ajax({
+            url: "/ApiCalls/add_audit_checklist_detail",
+            type: "POST",
+            data: {
+                'PROCESS_ID': $('#newChecklist').val(),
+                'SUB_PROCESS_ID': $('#newSubChecklist').val(),
+                'HEADING': $('#newProcDetailHeading').val(),
+                'V_ID': $('#newViolationlist').val(),
+                'CONTROL_ID': $('#newProcOwnerlist').val(),
+                'ROLE_ID': $('#newRoleResplist').val(),
+                'RISK_ID': $('#newRisklist').val(),
+                'ANNEX_CODE': $('#newAnnexlist').val(),
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                ShowSubChecklist();
+              
+            },
+            dataType: "json",
+        });
+    }
 </script>
 <div class="row text-center mt-3">
-    <h3 style=" display:block;color: #45c545;">Audit Checklist Detail </h3>
+    <div class="col-md-6 text-left">
+        <h3 style=" display:block;color: #45c545;">Audit Checklist Detail </h3>
+    </div>
+    <div class="col-md-6 text-right" style="padding-right:45px;">
+        <button onclick="addNewCheckListDetail(0);" class="btn btn-danger">Add New Sub Checklist</button>
+    </div>    
 </div>
 <div class="row mt-3 col-md-12">
     <label><b>Audit Checklist</b></label>
@@ -195,6 +298,179 @@
 </div>
 
 
+<div id="addEntityModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Auditee Entity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-md-12">
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Checklist</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select onclick="getSubChecklistForNewEntry();" id="newChecklist" class="form-select form-control">
+                                <option value="0" id="0" selected>--Select Checklist--</option>
+                                @{
+                                    if (ViewData["ChecklistTypes"] != null)
+                                    {
+                                        foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
+                                        {
+                                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
+                                        }
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Sub-Checklist</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newSubChecklist" class="form-select form-control">
+                                <option value="0" id="0" selected>--Select Sub-Checklist--</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Violation</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newViolationlist" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                @{
+                                    if (ViewData["ViolationsList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["ViolationsList"]))
+                                        {
+                                            <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Process Owner</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newProcOwnerlist" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                @{
+                                    if (ViewData["ProcOwnerList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
+                                        {
+                                            <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Role Responsible</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newRoleResplist" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                @{
+                                    if (ViewData["RoleRespList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["RoleRespList"]))
+                                        {
+                                            <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Risk</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newRisklist" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                @{
+                                    if (ViewData["RiskList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                        {
+                                            <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Annexure</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newAnnexlist" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Annexure--</option>
+                                @{
+                                    if (ViewData["AnnexList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                                        {
+                                            <option id="@item.ID" value="@item.ID">@item.HEADING</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Heading</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <textarea id="newProcDetailHeading" class="form-control"></textarea>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="addProcessDetail();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="updateEntityModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -213,20 +489,7 @@
                                     <label>Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newChecklist" class="form-select form-control">
-                                        <option value="0" id="0" selected>--Select Checklist--</option>
-                                        @{
-                                            if (ViewData["ChecklistTypes"] != null)
-                                            {
-                                                foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
-                                                {
-                                                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
-
-                                                }
-                                            }
-                                        }
-
-                                    </select>
+                                    <label id="oldProcessLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -234,10 +497,7 @@
                                     <label>Sub-Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newSubChecklist" class="form-select form-control">
-                                        <option value="0" id="0" selected>--Select Sub-Checklist--</option>
-
-                                    </select>
+                                    <label id="oldSubProcessLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -245,21 +505,7 @@
                                     <label>Violation</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
-                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                        @{
-                                            if (ViewData["ViolationsList"] != null)
-                                            {
-
-                                                foreach (var item in (dynamic)(ViewData["ViolationsList"]))
-                                                {
-                                                    <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
-                                                }
-
-                                            }
-                                        }
-
-                                    </select>
+                                    <label id="oldViolationLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -267,21 +513,8 @@
                                     <label>Process Owner</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newProcOwnerlist" class="form-select form-control">
-                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                        @{
-                                            if (ViewData["ProcOwnerList"] != null)
-                                            {
-
-                                                foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
-                                                {
-                                                    <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
-                                                }
-
-                                            }
-                                        }
-
-                                    </select>
+                                    <label id="oldProcessOwnerLabel"></label>
+                                    
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -289,21 +522,7 @@
                                     <label>Role Responsible</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
-                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                        @{
-                                            if (ViewData["RoleRespList"] != null)
-                                            {
-
-                                                foreach (var item in (dynamic)(ViewData["RoleRespList"]))
-                                                {
-                                                    <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
-                                                }
-
-                                            }
-                                        }
-
-                                    </select>
+                                    <label id="oldRoleRespLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -311,21 +530,7 @@
                                     <label>Risk</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
-                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
-                                        @{
-                                            if (ViewData["RiskList"] != null)
-                                            {
-
-                                                foreach (var item in (dynamic)(ViewData["RiskList"]))
-                                                {
-                                                    <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
-                                                }
-
-                                            }
-                                        }
-
-                                    </select>
+                                    <label id="oldRiskLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -333,7 +538,7 @@
                                     <label>Heading</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <textarea id="entCodeField" class="form-control"></textarea>
+                                    <label id="oldProcessDetailLabel"></label>
                                 </div>
                             </div>
                         </form>
@@ -345,7 +550,7 @@
                                     <label>Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newChecklist" class="form-select form-control">
+                                    <select disabled="disabled" id="updatedChecklist" class="form-select form-control">
                                         <option value="0" id="0" selected>--Select Checklist--</option>
                                         @{
                                             if (ViewData["ChecklistTypes"] != null)
@@ -366,7 +571,7 @@
                                     <label>Sub-Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newSubChecklist" class="form-select form-control">
+                                    <select id="updatedSubChecklist" class="form-select form-control">
                                         <option value="0" id="0" selected>--Select Sub-Checklist--</option>
 
                                     </select>
@@ -377,7 +582,7 @@
                                     <label>Violation</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
+                                    <select id="updatedViolationlist" class="form-select form-control">
                                         <option selected="selected" value="0" id="0">--Select Control Violation--</option>
                                         @{
                                             if (ViewData["ViolationsList"] != null)
@@ -399,7 +604,7 @@
                                     <label>Process Owner</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newProcOwnerlist" class="form-select form-control">
+                                    <select id="updatedProcOwnerlist" class="form-select form-control">
                                         <option selected="selected" value="0" id="0">--Select Control Violation--</option>
                                         @{
                                             if (ViewData["ProcOwnerList"] != null)
@@ -421,7 +626,7 @@
                                     <label>Role Responsible</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
+                                    <select id="updatedRoleResplist" class="form-select form-control">
                                         <option selected="selected" value="0" id="0">--Select Control Violation--</option>
                                         @{
                                             if (ViewData["RoleRespList"] != null)
@@ -443,7 +648,7 @@
                                     <label>Risk</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <select id="newViolationlist" class="form-select form-control">
+                                    <select id="updatedRisklist" class="form-select form-control">
                                         <option selected="selected" value="0" id="0">--Select Control Violation--</option>
                                         @{
                                             if (ViewData["RiskList"] != null)
@@ -462,13 +667,36 @@
                             </div>
                             <div class="row col-md-12 mt-3">
                                 <div class="row col-md-4">
+                                    <label>Annexure</label>
+                                </div>
+                                <div class="row col-md-8">
+                                    <select id="updatedAnnexlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Annexure--</option>
+                                        @{
+                                            if (ViewData["AnnexList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                                                {
+                                                    <option id="@item.ID" value="@item.ID">@item.HEADING</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 mt-3">
+                                <div class="row col-md-4">
                                     <label>Heading</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <textarea id="entCodeField" class="form-control"></textarea>
+                                    <textarea id="updatedProcDetailHeading" class="form-control"></textarea>
                                 </div>
                             </div>
                         </form>
+                      
                     </div>
                 </div>
                 

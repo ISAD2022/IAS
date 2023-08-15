@@ -1204,14 +1204,30 @@ namespace AIS.Controllers
             return dBConnection.GetAuditSubChecklist(PROCESS_ID);
         }
         [HttpPost]
-        public string update_audit_sub_checklist(int PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="")
+        public string add_audit_sub_checklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditSubChecklist(PROCESS_ID, ENTITY_TYPE_ID, HEADING) + "\"}";
+        }
+        [HttpPost]
+        public string update_audit_sub_checklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID=0, string HEADING="", int ENTITY_TYPE_ID = 0)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, OLD_PROCESS_ID, SUB_PROCESS_ID, HEADING, ENTITY_TYPE_ID) + "\"}";
         }
         [HttpPost]
         public List<AuditChecklistDetailsModel> get_audit_checklist_detail(int SUB_PROCESS_ID = 0)
         {
             return dBConnection.GetAuditChecklistDetail(SUB_PROCESS_ID);
+        }
+
+        [HttpPost]
+        public string add_audit_checklist_detail(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID=0, int CONTROL_ID=0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE="")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditChecklistDetail(PROCESS_ID, SUB_PROCESS_ID, HEADING,  V_ID, CONTROL_ID, ROLE_ID ,RISK_ID, ANNEX_CODE ) + "\"}";
+        }
+        [HttpPost]
+        public string update_audit_checklist_detail(int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklistDetail(PROCESS_DETAIL_ID,PROCESS_ID, SUB_PROCESS_ID, HEADING, V_ID, CONTROL_ID, ROLE_ID, RISK_ID, ANNEX_CODE) + "\"}";
         }
 
         [HttpPost]
@@ -1227,16 +1243,16 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string update_audit_checklist(int PROCESS_ID = 0,  string HEADING = "", string ACTIVE="")
+        public string add_audit_checklist(string HEADING = "", int ENTITY_TYPE_ID =0)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklist(PROCESS_ID, HEADING, ACTIVE) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditChecklist(HEADING, ENTITY_TYPE_ID) + "\"}";
         }
 
         [HttpPost]
-        public string update_audit_checklist_detail(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "")
+        public string update_audit_checklist(int PROCESS_ID = 0,  string HEADING = "", string ACTIVE="")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, SUB_PROCESS_ID, HEADING) + "\"}";
-        }
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklist(PROCESS_ID, HEADING, ACTIVE) + "\"}";
+        }        
 
         [HttpPost]
         public List<AuditeeEntitiesModel> get_entities_parent_ent_type_id(int ENTITY_TYPE_ID = 0)

@@ -38,28 +38,65 @@
         $('#entCodeField').val(text);
         
     }
-
+    function reloadLocation(){
+        window.location.reload();
+    }
 
     function updateSubProcess() {
-        $.ajax({
-            url: "/ApiCalls/update_audit_checklist",
-            type: "POST",
-            data: {
-                'PROCESS_ID': g_subProcId,
-                'HEADING': $('#entCodeField').val(),
-                'ACTIVE': $('#entActiveField').val(),
-            },
-            cache: false,
-            success: function (data) {
-               alert(data.Message);
-                ShowSubChecklist();
-            },
-            dataType: "json",
-        });
-    }   
+        if ($('#entCodeField').val()==""){
+            alert("Please enter Checklist Title");
+            return;
+        }
+        if (g_subProcId !=0){
+            $.ajax({
+                url: "/ApiCalls/update_audit_checklist",
+                type: "POST",
+                data: {
+                    'PROCESS_ID': g_subProcId,
+                    'HEADING': $('#entCodeField').val(),
+                    'ACTIVE': $('#entActiveField').val() 
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }else{
+            $.ajax({
+                url: "/ApiCalls/add_audit_checklist",
+                type: "POST",
+                data: {
+                    'HEADING': $('#entCodeField').val(),
+                    'ENTITY_TYPE_ID': 6, //Hardcoded 6 for Branch
+                    'ACTIVE': $('#entActiveField').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }
+      
+    }
+
+    function addNewCheckList(id) {
+        g_subProcId = id;
+        $('#updateEntityModal').modal('show');
+        $('#entCodeField').val('');
+    }
 </script>
-<div class="row text-center mt-3">
-    <h3 style=" display:block;color: #45c545;">Audit Sub Checklist </h3>
+<div class="row mt-3">
+    <div class="col-md-6 text-left">
+        <h3 style=" display:block;color: #45c545;">Audit Checklist </h3>
+    </div>
+    <div class="col-md-6 text-right" style="padding-right:45px;">
+        <button onclick="addNewCheckList(0);"  class="btn btn-danger">Add New Checklist</button>
+    </div>
+    
 </div>
 <div class="row col-md-12 mt-3">
     <table id="auditeeEntitiesList" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
@@ -137,7 +174,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="updateSubProcess();" type="button" data-dismiss="modal" class="btn btn-success">Update Sub Process</button>
+                <button onclick="updateSubProcess();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
 
             </div>
         </div>
