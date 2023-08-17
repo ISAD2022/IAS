@@ -32,27 +32,32 @@
         g_trId = id;
         $('#recommendReferProcTransactionModal').modal('show');
         $.ajax({
-            url: "/Setup/process_transactions",
+            url: "/ApiCalls/get_checklist_detail_comparison_by_Id",
             type: "POST",
             data: {
-                'transactionId': id
+                'CHECKLIST_DETAIL_ID': id
             },
             cache: false,
             success: function (data) {
                 var tr = data[0];
-                $('#viewerMainProcNameModalField').val(tr.procesS_NAME);
-                $('#viewerNameModalField').val(tr.suB_PROCESS_NAME);
-                $('#viewerDescModalField').val(tr.description);
-                $('#viewerControlModalField').val(tr.controL_OWNER);
-                $('#viewerDivModalField').val(tr.diV_NAME);
-                $('#viewerActionModalField').val(tr.action);
-                if (tr.risK_WEIGHTAGE == 3)
-                    $('#viewerRiskModalField').val('High');
-                if (tr.risK_WEIGHTAGE == 3)
-                    $('#viewerRiskModalField').val('Medium');
-                else
-                    $('#viewerRiskModalField').val('Low');
-                $('#viewerRiskMaxModalField').val(tr.risK_MAX_NUMBER);
+                $('#viewerMainProcNameModalField').val(tr.process);
+                $('#viewerNameModalField').val(tr.neW_SUB_PROCESS);
+                $('#viewerDescModalField').val(tr.neW_PROCESS_DETAIL);
+                $('#viewerViolationNameModalField').val(tr.neW_VIOLATION);
+                $('#viewerControlModalField').val(tr.neW_FUNCTIONAL_RESP);
+                $('#viewerDivModalField').val(tr.neW_ROLE_RESP);
+                $('#viewerRiskModalField').val(tr.neW_RISK);
+                $('#viewerAnnexModalField').val(tr.neW_ANNEXURE);
+
+                $('#oldProcessLabel').val(tr.process);
+                $('#oldViolationLabel').val(tr.violation);
+                $('#oldProcessOwnerLabel').val(tr.functionaL_RESP);
+                $('#oldRoleRespLabel').val(tr.rolE_RESP);
+                $('#oldRiskLabel').val(tr.risk);
+                $('#oldAnnexureLabel').val(tr.annexure);
+                $('#oldProcessDetailLabel').val(tr.procesS_DETAIL);
+                $('#oldSubProcessLabel').val(tr.suB_PROCESS);
+
             },
             dataType: "json",
         });
@@ -79,7 +84,6 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
                 window.location = window.location.pathname;
             },
             dataType: "json",
@@ -156,10 +160,10 @@
                                 <p class="fw-normal mb-1">@item.RISK</p>
                             </td>
                             <td>
-                                <p class="fw-normal mb-1">@item.PROCESS_COMMENTS</p>
+                                <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
                             </td>
                             <td>
-                                <button type="button" class="action btn btn-link text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
+                                <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
                                     Details
                                 </button>
                             </td>
@@ -170,8 +174,9 @@
     </table>
 </div>
 
+
 <div id="recommendReferProcTransactionModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Transaction Details</h5>
@@ -180,44 +185,93 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="viewerMainProcNameModalField">Process Name</label>
-                        <input type="text" disabled class="form-control" id="viewerMainProcNameModalField" aria-describedby="Process Name" placeholder="Process Name">
+                <div class="row col-md-12">
+                    <div class="col-md-6">
+                        <form>
+                            <h6 class="text-center"><b>Existing Details</b></h6>
+                            <div class="form-group">
+                                <label>Process</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldProcessLabel" />
+                            </div>
+                            <div class="form-group">
+                                <label>Sub Process</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldSubProcessLabel" />
+                            </div>
+                            <div class="form-group">
+                                <label>Process Detail</label>
+                                <textarea disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldProcessDetailLabel"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Violation</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldViolationLabel" />
 
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerNameModalField">Sub Process Name</label>
-                        <input type="text" disabled class="form-control" id="viewerNameModalField" aria-describedby="Process Name" placeholder="Process Name">
+                            </div>
+                            <div class="form-group">
+                                <label>Process Owner</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldProcessOwnerLabel" />
 
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerDescModalField">Description</label>
-                        <textarea class="form-control" disabled id="viewerDescModalField" aria-describedby="Enter Description here..." placeholder="Enter Description here..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Role Responsible</label>
 
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerControlModalField">Control Owner</label>
-                        <input type="text" disabled class="form-control" id="viewerControlModalField" aria-describedby="Control Owner" placeholder="Control Owner">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerDivModalField">Division</label>
-                        <input type="text" disabled class="form-control" id="viewerDivModalField" aria-describedby="Control Owner" placeholder="Control Owner">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerActionModalField">Action</label>
-                        <input type="text" disabled class="form-control" id="viewerActionModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerRiskModalField">Risk Weightage</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskModalField" aria-describedby="Action" placeholder="Action">
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerRiskMaxModalField">Risk Max Number</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskMaxModalField" aria-describedby="Control Owner">
-                    </div>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldRoleRespLabel" />
 
-                </form>
+                            </div>
+                            <div class="form-group">
+                                <label>Risk</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldRiskLabel" />
+
+                            </div>
+                            <div class="form-group">
+                                <label>Annexure</label>
+                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldAnnexureLabel" />
+
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form>
+                            <h6 class="text-center"><b>Proposed Changes</b></h6>
+                            <div class="form-group">
+                                <label for="viewerMainProcNameModalField">Process</label>
+                                <input type="text" disabled class="form-control" id="viewerMainProcNameModalField" />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerNameModalField">Sub Process</label>
+                                <input type="text" disabled class="form-control" id="viewerNameModalField" />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerDescModalField">Process Detail</label>
+                                <textarea class="form-control" disabled id="viewerDescModalField"></textarea>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerViolationNameModalField">Violation</label>
+                                <input class="form-control" disabled id="viewerViolationNameModalField" />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerControlModalField">Process Owner</label>
+                                <input type="text" disabled class="form-control" id="viewerControlModalField" />
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerDivModalField">Role Responsible</label>
+                                <input type="text" disabled class="form-control" id="viewerDivModalField" />
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerRiskModalField">Risk</label>
+                                <input type="text" disabled class="form-control" id="viewerRiskModalField" />
+                            </div>
+                            <div class="form-group">
+                                <label for="viewerRiskModalField">Annexure</label>
+                                <input type="text" disabled class="form-control" id="viewerAnnexModalField" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

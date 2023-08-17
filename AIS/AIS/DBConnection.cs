@@ -2625,6 +2625,55 @@ namespace AIS.Controllers
             con.Dispose();
             return riskProcList;
         }
+
+        public List<ChecklistDetailComparisonModel> GetChecklistComparisonDetailById(int CHECKLIST_DETAIL_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<ChecklistDetailComparisonModel> riskTransList = new List<ChecklistDetailComparisonModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_checklist_update_byid";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = CHECKLIST_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ChecklistDetailComparisonModel pTran = new ChecklistDetailComparisonModel();
+                    pTran.ID = Convert.ToInt32(rdr["ID"]);
+
+                    pTran.PROCESS = rdr["PROCESS"].ToString();
+
+                    pTran.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    pTran.NEW_SUB_PROCESS = rdr["NEW_SUB_PROCESS"].ToString();
+
+                    pTran.PROCESS_DETAIL = rdr["Check_list"].ToString();
+                    pTran.NEW_PROCESS_DETAIL = rdr["NEW_Check_list"].ToString();
+
+                    pTran.VIOLATION = rdr["voilation"].ToString();
+                    pTran.NEW_VIOLATION = rdr["NEW_voilation"].ToString();
+
+                    pTran.FUNCTIONAL_RESP = rdr["funtional_responible"].ToString();
+                    pTran.NEW_FUNCTIONAL_RESP = rdr["NEW_funtional_responible"].ToString();
+
+                    pTran.ROLE_RESP = rdr["Role_responsible"].ToString();
+                    pTran.NEW_ROLE_RESP = rdr["NEW_Role_responsible"].ToString();
+
+                    pTran.RISK = rdr["RISK"].ToString();
+                    pTran.NEW_RISK = rdr["NEW_RISK"].ToString();
+
+                    pTran.ANNEXURE = rdr["annexure"].ToString();
+                    pTran.NEW_ANNEXURE = rdr["NEW_annexure"].ToString();
+                    pTran.STATUS = rdr["STATUS"].ToString();
+
+                    riskTransList.Add(pTran);
+                }
+            }
+            con.Dispose();
+            return riskTransList;
+        }
+
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -2692,7 +2741,7 @@ namespace AIS.Controllers
                     if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
                         pTran.CONTROL_OWNER = rdr["CONTROL_OWNER"].ToString();
                     pTran.RISK_WEIGHTAGE = Convert.ToInt32(rdr["RISK_ID"]);
-                    pTran.RISK = this.GetRiskDescByID(pTran.RISK_WEIGHTAGE);
+                    pTran.RISK = rdr["RISK_DESC"].ToString();
                     pTran.SUB_PROCESS_NAME = rdr["TITLE"].ToString();
                     pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
                     pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
@@ -4888,6 +4937,38 @@ namespace AIS.Controllers
                     chk.ID = Convert.ToInt32(rdr["S_ID"].ToString());
                     chk.HEADING = rdr["HEADING"].ToString();
                     chk.V_ID = Convert.ToInt32(rdr["V_ID"].ToString());
+                    chk.ROLE_RESP_ID = Convert.ToInt32(rdr["role_resp_id"].ToString());
+                    chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["owner_entity_id"].ToString());
+                    chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                    chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
+        public List<AuditChecklistDetailsModel> GetReferredBackAuditChecklistDetail()
+        {
+            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_GetChecklistDetail_ref";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
+                    if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
+                        chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.ID = Convert.ToInt32(rdr["S_ID"].ToString());
+                    chk.P_ID = Convert.ToInt32(rdr["P_ID"].ToString());
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.V_ID = Convert.ToInt32(rdr["V_ID"].ToString());
+                    chk.COMMENTS = rdr["COMMENTS"].ToString();
                     chk.ROLE_RESP_ID = Convert.ToInt32(rdr["role_resp_id"].ToString());
                     chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["owner_entity_id"].ToString());
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());

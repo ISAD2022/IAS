@@ -126,6 +126,11 @@ namespace AIS.Controllers
             return dBConnection.GetRiskProcessTransactions(ProcessDetailId, transactionId);
         }
         [HttpPost]
+        public List<ChecklistDetailComparisonModel> get_checklist_detail_comparison_by_Id(int CHECKLIST_DETAIL_ID = 0)
+        {
+            return dBConnection.GetChecklistComparisonDetailById(CHECKLIST_DETAIL_ID);
+        }
+        [HttpPost]
         public RiskProcessDefinition process_add(RiskProcessDefinition proc)
         {
             return dBConnection.AddRiskProcess(proc);
@@ -1217,6 +1222,11 @@ namespace AIS.Controllers
         public List<AuditChecklistDetailsModel> get_audit_checklist_detail(int SUB_PROCESS_ID = 0)
         {
             return dBConnection.GetAuditChecklistDetail(SUB_PROCESS_ID);
+        }
+        [HttpPost]
+        public List<AuditChecklistDetailsModel> get_ref_audit_checklist_detail()
+        {
+            return dBConnection.GetReferredBackAuditChecklistDetail();
         }
 
         [HttpPost]

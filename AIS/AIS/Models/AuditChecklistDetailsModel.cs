@@ -8,9 +8,11 @@ namespace AIS.Models
     {
         public int ID { get; set; }        
         public int S_ID { get; set; }
+        public int P_ID { get; set; }
         public string S_NAME { get; set; }
         public int V_ID { get; set; }
         public string V_NAME { get; set; }
+        public string COMMENTS { get; set; }
         public string HEADING { get; set; }
         public int RISK_ID { get; set; }
         public int ANNEX_ID { get; set; }
