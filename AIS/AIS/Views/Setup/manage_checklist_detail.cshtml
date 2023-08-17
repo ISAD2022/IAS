@@ -48,7 +48,6 @@
                 $('#updatedAnnexlist').val(v.anneX_ID);
 
                 $('#oldProcessLabel').html($('#updatedChecklist option:selected').text());
-                $('#oldSubProcessLabel').html($('#updatedSubChecklist option:selected').text());
                 $('#oldViolationLabel').html($('#updatedViolationlist option:selected').text());
                 $('#oldProcessOwnerLabel').html($('#updatedProcOwnerlist option:selected').text());
                 $('#oldRoleRespLabel').html($('#updatedRoleResplist option:selected').text());
@@ -208,6 +207,8 @@
                     $('#updatedSubChecklist').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
                 });
                 $('#updatedSubChecklist').val(g_subProcId);
+                $('#oldSubProcessLabel').html($('#updatedSubChecklist option:selected').text());
+
             },
             dataType: "json",
         });
@@ -489,7 +490,7 @@
                                     <label>Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldProcessLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldProcessLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -497,7 +498,7 @@
                                     <label>Sub-Checklist</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldSubProcessLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldSubProcessLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -505,7 +506,7 @@
                                     <label>Violation</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldViolationLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldViolationLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -513,7 +514,7 @@
                                     <label>Process Owner</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldProcessOwnerLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldProcessOwnerLabel"></label>
                                     
                                 </div>
                             </div>
@@ -522,7 +523,7 @@
                                     <label>Role Responsible</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldRoleRespLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldRoleRespLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -530,7 +531,7 @@
                                     <label>Risk</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldRiskLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldRiskLabel"></label>
                                 </div>
                             </div>
                             <div class="row col-md-12 mt-3">
@@ -538,7 +539,7 @@
                                     <label>Heading</label>
                                 </div>
                                 <div class="row col-md-8">
-                                    <label id="oldProcessDetailLabel"></label>
+                                    <label class="form-label" style="font-weight:normal !important" id="oldProcessDetailLabel"></label>
                                 </div>
                             </div>
                         </form>
@@ -678,7 +679,7 @@
 
                                                 foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                                 {
-                                                    <option id="@item.ID" value="@item.ID">@item.HEADING</option>
+                                                    <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                                 }
 
                                             }

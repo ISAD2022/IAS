@@ -4758,7 +4758,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();           
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_fad.p_GetChecklistSubByProcessId";
+                cmd.CommandText = "pkg_ad.p_GetChecklistSubByProcessId";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("processId", OracleDbType.Int32).Value = PROCESS_ID;
@@ -4889,7 +4889,7 @@ namespace AIS.Controllers
                     chk.HEADING = rdr["HEADING"].ToString();
                     chk.V_ID = Convert.ToInt32(rdr["V_ID"].ToString());
                     chk.ROLE_RESP_ID = Convert.ToInt32(rdr["role_resp_id"].ToString());
-                    chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["process_owner_id"].ToString());
+                    chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["owner_entity_id"].ToString());
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
                     list.Add(chk);
