@@ -131,6 +131,11 @@ namespace AIS.Controllers
             return dBConnection.GetChecklistComparisonDetailById(CHECKLIST_DETAIL_ID);
         }
         [HttpPost]
+        public List<ChecklistDetailComparisonModel> get_checklist_detail_comparison_by_Id_for_referredBack(int CHECKLIST_DETAIL_ID = 0)
+        {
+            return dBConnection.GetChecklistComparisonDetailByIdForRefferedBack(CHECKLIST_DETAIL_ID);
+        }
+        [HttpPost]
         public RiskProcessDefinition process_add(RiskProcessDefinition proc)
         {
             return dBConnection.AddRiskProcess(proc);
@@ -155,9 +160,9 @@ namespace AIS.Controllers
             return dBConnection.RefferedBackProcessTransactionByReviewer(T_ID, COMMENTS);
         }
         [HttpPost]
-        public bool recommend_process_transaction_by_authorizer(int T_ID, string COMMENTS)
+        public bool authorize_process_transaction_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RecommendProcessTransactionByAuthorizer(T_ID, COMMENTS);
+            return dBConnection.AuthorizeProcessTransactionByAuthorizer(T_ID, COMMENTS);
         }
         [HttpPost]
         public bool reffered_back_process_transaction_by_authorizer(int T_ID, string COMMENTS)
@@ -1222,6 +1227,12 @@ namespace AIS.Controllers
         public List<AuditChecklistDetailsModel> get_audit_checklist_detail(int SUB_PROCESS_ID = 0)
         {
             return dBConnection.GetAuditChecklistDetail(SUB_PROCESS_ID);
+        }
+
+        [HttpPost]
+        public List<AuditChecklistDetailsModel> get_checklist_details_for_sub_process(int SUB_PROCESS_ID = 0)
+        {
+            return dBConnection.GetChecklistDetailForSubProcess(SUB_PROCESS_ID);
         }
         [HttpPost]
         public List<AuditChecklistDetailsModel> get_ref_audit_checklist_detail()

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Authorize Processes";
+    ViewData["Title"] = "Authorize Checklist Detail";
     Layout = "_Layout";
 }
 <style type="text/css">
@@ -75,7 +75,7 @@
     function finalRecommendProcessTransaction() {
 
         $.ajax({
-            url: "/Setup/recommend_process_transaction_by_authorizer",
+            url: "/Setup/authorize_process_transaction_by_authorizer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
@@ -109,7 +109,7 @@
 </script>
 
 <div class="col-md-12" style="margin-top:20px;">
-    <h3 style=" display:block;color: #45c545;">List of Process Transactions to Authorize </h3>
+    <h3 style=" display:block;color: #45c545;">List of Checklist Details to Authorize </h3>
     <div class="row">
         <div class="col-md-12">
             <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
@@ -119,13 +119,9 @@
     <table id="listOfProcTransactions" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th width="100">Process Name</th>
-                <th width="100">Sub Process Name</th>
-                <th width="100">Description</th>
-                <th width="100">Violation</th>
-                <th width="150">Function Responsible</th>
-                <th width="100">Role Responsible</th>
-                <th width="100">Risk</th>
+                <th width="100">Process</th>
+                <th width="100">Sub Process</th>
+                <th width="100">Checklist Detail</th>              
                 <th width="100">Status</th>
                 <th width="100">Action</th>
             </tr>
@@ -146,19 +142,8 @@
                             </td>
                             <td>
                                 <p class="fw-normal mb-1">@item.DESCRIPTION</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.VIOLATION_NAME</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.CONTROL_OWNER</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.DIV_NAME</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.RISK</p>
-                            </td>
+                            </td>   
+                          
                             <td>
                                 <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
                             </td>
@@ -276,7 +261,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button onclick="refferedBackProcTransaction();" type="button" class="btn btn-danger">Refer Back</button>
-                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Recommend</button>
+                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Authorize</button>
 
             </div>
         </div>

@@ -2674,6 +2674,55 @@ namespace AIS.Controllers
             return riskTransList;
         }
 
+        public List<ChecklistDetailComparisonModel> GetChecklistComparisonDetailByIdForRefferedBack(int CHECKLIST_DETAIL_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<ChecklistDetailComparisonModel> riskTransList = new List<ChecklistDetailComparisonModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_checklist_update_byid_ref";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = CHECKLIST_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ChecklistDetailComparisonModel pTran = new ChecklistDetailComparisonModel();
+                    pTran.ID = Convert.ToInt32(rdr["ID"]);
+
+                    pTran.PROCESS = rdr["PROCESS"].ToString();
+                    pTran.PROCESS_ID = rdr["PROCESS_ID"].ToString();
+
+                    pTran.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                    pTran.NEW_SUB_PROCESS = rdr["NEW_SUB_PROCESS"].ToString();
+
+                    pTran.PROCESS_DETAIL = rdr["Check_list"].ToString();
+                    pTran.NEW_PROCESS_DETAIL = rdr["NEW_Check_list"].ToString();
+
+                    pTran.VIOLATION = rdr["voilation"].ToString();
+                    pTran.NEW_VIOLATION = rdr["NEW_voilation"].ToString();
+
+                    pTran.FUNCTIONAL_RESP = rdr["funtional_responible"].ToString();
+                    pTran.NEW_FUNCTIONAL_RESP = rdr["NEW_funtional_responible"].ToString();
+
+                    pTran.ROLE_RESP = rdr["Role_responsible"].ToString();
+                    pTran.NEW_ROLE_RESP = rdr["NEW_Role_responsible"].ToString();
+
+                    pTran.RISK = rdr["RISK"].ToString();
+                    pTran.NEW_RISK = rdr["NEW_RISK"].ToString();
+
+                    pTran.ANNEXURE = rdr["annexure"].ToString();
+                    pTran.NEW_ANNEXURE = rdr["NEW_annexure"].ToString();
+                    pTran.STATUS = rdr["STATUS"].ToString();
+
+                    riskTransList.Add(pTran);
+                }
+            }
+            con.Dispose();
+            return riskTransList;
+        }
+
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -2707,20 +2756,52 @@ namespace AIS.Controllers
                     pTran.PROCESS_NAME = rdr["P_NAME"].ToString();
                     pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
                     pTran.PROCESS_STATUS = rdr["STATUS"].ToString();
-                    pTran.PROCESS_COMMENTS = this.GetLatestCommentsOnProcess(pTran.ID);
                     riskTransList.Add(pTran);
                 }
             }
             con.Dispose();
             return riskTransList;
         }
-        public List<RiskProcessTransactions> GetRiskProcessTransactionsWithStatus(int statusId)
+
+        public List<SubProcessUpdateModelForReviewAndAuthorizeModel> GetUpdatedSubChecklistForReviewAndAuthorize(int statusId)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<SubProcessUpdateModelForReviewAndAuthorizeModel> pmList = new List<SubProcessUpdateModelForReviewAndAuthorizeModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_Get_updated_Sub_Checklist_for_review";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("statusId", OracleDbType.Int32).Value = statusId;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    SubProcessUpdateModelForReviewAndAuthorizeModel pm = new SubProcessUpdateModelForReviewAndAuthorizeModel();
+                    pm.PROCESS_NAME = rdr["Process"].ToString();
+                    pm.SUB_PROCESS_NAME= rdr["sub_porcess"].ToString();
+                    pm.NEW_PROCESS_NAME= rdr["New_Process"].ToString();
+                    pm.COMMENTS= rdr["Comments"].ToString();
+                    pm.NEW_SUB_PROCESS_NAME= rdr["New_sub_porcess"].ToString();
+                    pm.P_ID= Convert.ToInt32(rdr["t_id"].ToString());
+                    pm.NEW_P_ID= Convert.ToInt32(rdr["n_t_id"].ToString());
+                    pm.SP_ID= Convert.ToInt32(rdr["s_id"].ToString());
+                    pm.NEW_SP_ID= Convert.ToInt32(rdr["n_s_id"].ToString());
+                    pmList.Add(pm);
+
+                }
+            }
+            con.Dispose();
+            return pmList;
+        }
+
+        public List<RiskProcessTransactions> GetUpdatedChecklistDetailsForReviewAndAuthorize(int statusId)
         {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_GetRiskProcessTransactionsWithStatus";
+                cmd.CommandText = "pkg_ad.p_Get_updated_Checklist_for_review";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("statusId", OracleDbType.Int32).Value = statusId;
@@ -2848,7 +2929,7 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-        public bool RecommendProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
+        public bool AuthorizeProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4902,8 +4983,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
-                cmd.Parameters.Add("S_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("TID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("OLD_S_ID", OracleDbType.Int32).Value = OLD_PROCESS_ID;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Varchar2).Value = ENTITY_TYPE_ID;
@@ -4942,6 +5023,28 @@ namespace AIS.Controllers
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
                     list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<AuditChecklistDetailsModel> GetChecklistDetailForSubProcess(int SUB_PROCESS_ID = 0)
+        {
+            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_checklistdetail_for_subchecklist";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("subProcessId", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
+                   chk.HEADING = rdr["details"].ToString();
+                     list.Add(chk);
                 }
             }
             con.Dispose();

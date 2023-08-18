@@ -36,11 +36,13 @@
         $('#updateEntityModal').modal('show');
         $('#newChecklist').val(0);
         $('#entCodeField').val("");
+        $('#checklistDetailsList').empty();
     }
     
     function openUpdateSubCheclist(id) {
         g_subProcId=id;
         $('#updateEntityModal').modal('show');
+        $('#checklistDetailsList').empty();
         $.each(g_subProcList, function (i, v) {
             if (v.s_ID == g_subProcId) {
                 g_procId=v.t_ID;
@@ -48,6 +50,25 @@
                 $('#entCodeField').val(v.heading);
             }
         });
+
+        $.ajax({
+            url: "/ApiCalls/get_checklist_details_for_sub_process",
+            type: "POST",
+            data: {
+                'SUB_PROCESS_ID': g_subProcId
+            },
+            cache: false,
+            success: function (data) {
+                g_procDetailList = data;
+                var sr = 0;
+                $.each(data, function (i, v) {
+                    $('#checklistDetailsList').append('<li>' + v.heading + '</li>');
+                });
+            },
+            dataType: "json",
+        });
+
+
         
     }
    
@@ -215,6 +236,18 @@
                         </div>
                         <div class="row col-md-8">
                             <input id="entCodeField" class="form-control" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Checklist Details</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <ul id="checklistDetailsList">
+
+                            </ul>
+                            
                         </div>
                     </div>
                  

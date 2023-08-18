@@ -177,6 +177,137 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult processes()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["AuditableEntityTypes"] = dBConnection.GetAuditEntities();
+            ViewData["ControlViolationsList"] = dBConnection.GetControlViolations();
+            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibilities();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult sub_process_review()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(4);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult sub_process_authorize()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(3);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult sub_proc_auth()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(3);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult process_detail_review()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedChecklistDetailsForReviewAndAuthorize(4);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult process_detail_authorize()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedChecklistDetailsForReviewAndAuthorize(3);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult sub_entities()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["SubEntitiesList"] = dBConnection.GetSubEntities();
+            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
+            ViewData["DepartmentList"] = dBConnection.GetDepartments(0, false);
+            return View();
+        }
         [HttpPost]
         public BranchModel branch_add(BranchModel br)
         {
@@ -324,78 +455,7 @@ namespace AIS.Controllers
         {
             return dBConnection.AddControlViolation(cv);
         }
-        public IActionResult processes()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            ViewData["AuditableEntityTypes"] = dBConnection.GetAuditEntities();
-            ViewData["ControlViolationsList"] = dBConnection.GetControlViolations();
-            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibilities();
-            ViewData["RiskList"] = dBConnection.GetRisks();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult process_review()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
-            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(4);            
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult process_authorize()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["TransactionsList"] = dBConnection.GetRiskProcessTransactionsWithStatus(3);
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-        public IActionResult sub_entities()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["SubEntitiesList"] = dBConnection.GetSubEntities();
-            ViewData["DivisionList"] = dBConnection.GetDivisions(false);
-            ViewData["DepartmentList"] = dBConnection.GetDepartments(0,false);
-            return View();
-        }
+       
         [HttpPost]
         public List<DepartmentModel> get_departments(int div_id)
         {
@@ -453,9 +513,9 @@ namespace AIS.Controllers
             return dBConnection.RefferedBackProcessTransactionByReviewer(T_ID, COMMENTS);
         }
         [HttpPost]
-        public bool recommend_process_transaction_by_authorizer(int T_ID, string COMMENTS)
+        public bool authorize_process_transaction_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RecommendProcessTransactionByAuthorizer(T_ID, COMMENTS);
+            return dBConnection.AuthorizeProcessTransactionByAuthorizer(T_ID, COMMENTS);
         }
         public bool reffered_back_process_transaction_by_authorizer(int T_ID, string COMMENTS)
         {

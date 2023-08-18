@@ -31,54 +31,88 @@
         g_procDetailId = id;
         g_subProcId = sId;
         $('#updateEntityModal').modal('show');
-        $.each(g_procDetailList, function (i, v) {
-            if (v.s_ID == g_procDetailId) 
-            {
-                $('#updatedChecklist').val(v.p_ID);
-                g_procId=v.p_ID;
-                getSubChecklistOfProcess();           
-                $('#updatedProcDetailHeading').val(v.heading);
-                $('#updatedViolationlist').val(v.v_ID);
-                $('#updatedProcOwnerlist').val(v.procesS_OWNER_ID);
-                $('#updatedRoleResplist').val(v.rolE_RESP_ID);
-                $('#updatedRisklist').val(v.risK_ID);
-                $('#updatedAnnexlist').val(v.anneX_ID);
+        //$.each(g_procDetailList, function (i, v) {
+        //    if (v.s_ID == g_procDetailId) 
+        //    {
+        //        $('#updatedChecklist').val(v.p_ID);
+        //        g_procId=v.p_ID;
+        //        getSubChecklistOfProcess();           
+        //        $('#updatedProcDetailHeading').val(v.heading);
+        //        $('#updatedViolationlist').val(v.v_ID);
+        //        $('#updatedProcOwnerlist').val(v.procesS_OWNER_ID);
+        //        $('#updatedRoleResplist').val(v.rolE_RESP_ID);
+        //        $('#updatedRisklist').val(v.risK_ID);
+        //        $('#updatedAnnexlist').val(v.anneX_ID);
 
-                if ($('#updatedChecklist').val()!= 0)
-                $('#oldProcessLabel').val($('#updatedChecklist option:selected').text());
-                else
-                    $('#oldProcessLabel').val('');
+        //        if ($('#updatedChecklist').val()!= 0)
+        //        $('#oldProcessLabel').val($('#updatedChecklist option:selected').text());
+        //        else
+        //            $('#oldProcessLabel').val('');
 
-                if ($('#updatedViolationlist').val() != 0)
-                    $('#oldViolationLabel').val($('#updatedViolationlist option:selected').text());
-                    else 
-                    $('#oldViolationLabel').val('');
+        //        if ($('#updatedViolationlist').val() != 0)
+        //            $('#oldViolationLabel').val($('#updatedViolationlist option:selected').text());
+        //            else 
+        //            $('#oldViolationLabel').val('');
 
-                if ($('#updatedProcOwnerlist').val() != 0)
-                   $('#oldProcessOwnerLabel').val($('#updatedProcOwnerlist option:selected').text());
-                   else
-                    $('#oldProcessOwnerLabel').val('');
-
-
-
-                if ($('#updatedRoleResplist').val() != 0)
-                    $('#oldRoleRespLabel').val($('#updatedRoleResplist option:selected').text());
-                    else 
-                    $('#oldRoleRespLabel').val('');
+        //        if ($('#updatedProcOwnerlist').val() != 0)
+        //           $('#oldProcessOwnerLabel').val($('#updatedProcOwnerlist option:selected').text());
+        //           else
+        //            $('#oldProcessOwnerLabel').val('');
 
 
-                if ($('#updatedRisklist').val() != 0)
-                    $('#oldRiskLabel').val($('#updatedRisklist option:selected').text());
-                    else 
-                    $('#oldRiskLabel').val("");
 
-                if ($('#updatedAnnexlist').val() != 0)
-                    $('#oldAnnexureLabel').val($('#updatedAnnexlist option:selected').text());
-                    else 
-                    $('#oldAnnexureLabel').val("");
+        //        if ($('#updatedRoleResplist').val() != 0)
+        //            $('#oldRoleRespLabel').val($('#updatedRoleResplist option:selected').text());
+        //            else 
+        //            $('#oldRoleRespLabel').val('');
+
+
+        //        if ($('#updatedRisklist').val() != 0)
+        //            $('#oldRiskLabel').val($('#updatedRisklist option:selected').text());
+        //            else 
+        //            $('#oldRiskLabel').val("");
+
+        //        if ($('#updatedAnnexlist').val() != 0)
+        //            $('#oldAnnexureLabel').val($('#updatedAnnexlist option:selected').text());
+        //            else 
+        //            $('#oldAnnexureLabel').val("");
                 
-                    $('#oldProcessDetailLabel').val(v.heading);
-            }
+        //            $('#oldProcessDetailLabel').val(v.heading);
+        //    }
+        //});
+
+
+        $.ajax({
+            url: "/ApiCalls/get_checklist_detail_comparison_by_Id_for_referredBack",
+            type: "POST",
+            data: {
+                'CHECKLIST_DETAIL_ID': id
+            },
+            cache: false,
+            success: function (data) {
+                var tr = data[0];
+                g_procId=tr.procesS_ID;
+                $('#updatedChecklist').val(tr.procesS_ID);
+                getSubChecklistOfProcess();
+                $('#updatedSubChecklist').val(tr.neW_SUB_PROCESS);
+                $('#updatedProcDetailHeading').val(tr.neW_PROCESS_DETAIL);
+                $('#updatedViolationlist').val(tr.neW_VIOLATION);
+                $('#updatedProcOwnerlist').val(tr.neW_FUNCTIONAL_RESP);
+                $('#updatedRoleResplist').val(tr.neW_ROLE_RESP);
+                $('#updatedRisklist').val(tr.neW_RISK);
+                $('#updatedAnnexlist').val(tr.neW_ANNEXURE);
+
+                $('#oldProcessLabel').val(tr.process);
+                $('#oldViolationLabel').val(tr.violation);
+                $('#oldProcessOwnerLabel').val(tr.functionaL_RESP);
+                $('#oldRoleRespLabel').val(tr.rolE_RESP);
+                $('#oldRiskLabel').val(tr.risk);
+                $('#oldAnnexureLabel').val(tr.annexure);
+                $('#oldProcessDetailLabel').val(tr.procesS_DETAIL);
+                $('#oldSubProcessLabel').val(tr.suB_PROCESS);
+
+            },
+            dataType: "json",
         });
         
     }
@@ -226,10 +260,7 @@
                 $.each(data, function (i, v) {
                     $('#updatedSubChecklist').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
                 });
-                $('#updatedSubChecklist').val(g_subProcId);
-                $('#oldSubProcessLabel').val($('#updatedSubChecklist option:selected').text());
-
-            },
+                $('#updatedSubChecklist').val(g_subProcId); },
             dataType: "json",
         });
 
