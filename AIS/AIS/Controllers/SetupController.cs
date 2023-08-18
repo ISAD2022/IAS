@@ -111,6 +111,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+
             ViewData["ChecklistTypes"] = dBConnection.GetAuditChecklist();
             ViewData["ViolationsList"] = dBConnection.GetViolationsForChecklistDetail();
             ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
@@ -241,25 +243,7 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult sub_proc_auth()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(3);
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+      
         public IActionResult process_detail_review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -280,25 +264,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult process_detail_authorize()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["TransactionsList"] = dBConnection.GetUpdatedChecklistDetailsForReviewAndAuthorize(3);
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+       
         public IActionResult sub_entities()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

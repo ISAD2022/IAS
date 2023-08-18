@@ -2625,6 +2625,36 @@ namespace AIS.Controllers
             con.Dispose();
             return riskProcList;
         }
+        public List<SubProcessUpdateModelForReviewAndAuthorizeModel> GetSubChecklistComparisonDetailById(int SUB_PROCESS_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<SubProcessUpdateModelForReviewAndAuthorizeModel> riskTransList = new List<SubProcessUpdateModelForReviewAndAuthorizeModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_sub_checklist_update_byid";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    SubProcessUpdateModelForReviewAndAuthorizeModel pm = new SubProcessUpdateModelForReviewAndAuthorizeModel();
+                    pm.PROCESS_NAME = rdr["Process"].ToString();
+                    pm.SUB_PROCESS_NAME = rdr["sub_porcess"].ToString();
+                    pm.NEW_PROCESS_NAME = rdr["New_Process"].ToString();
+                    pm.COMMENTS = rdr["Comments"].ToString();
+                    pm.NEW_SUB_PROCESS_NAME = rdr["new_sub_process"].ToString();
+                    pm.P_ID = rdr["t_id"].ToString();
+                    pm.NEW_P_ID = rdr["n_t_id"].ToString();
+                    pm.SP_ID = rdr["s_id"].ToString();
+                    pm.NEW_SP_ID = rdr["n_s_id"].ToString();
+                    riskTransList.Add(pm);
+                }
+            }
+            con.Dispose();
+            return riskTransList;
+        }
 
         public List<ChecklistDetailComparisonModel> GetChecklistComparisonDetailById(int CHECKLIST_DETAIL_ID = 0)
         {
@@ -2782,11 +2812,11 @@ namespace AIS.Controllers
                     pm.SUB_PROCESS_NAME= rdr["sub_porcess"].ToString();
                     pm.NEW_PROCESS_NAME= rdr["New_Process"].ToString();
                     pm.COMMENTS= rdr["Comments"].ToString();
-                    pm.NEW_SUB_PROCESS_NAME= rdr["New_sub_porcess"].ToString();
-                    pm.P_ID= Convert.ToInt32(rdr["t_id"].ToString());
-                    pm.NEW_P_ID= Convert.ToInt32(rdr["n_t_id"].ToString());
-                    pm.SP_ID= Convert.ToInt32(rdr["s_id"].ToString());
-                    pm.NEW_SP_ID= Convert.ToInt32(rdr["n_s_id"].ToString());
+                    pm.NEW_SUB_PROCESS_NAME= rdr["new_sub_process"].ToString();
+                    pm.P_ID= rdr["t_id"].ToString();
+                    pm.NEW_P_ID= rdr["n_t_id"].ToString();
+                    pm.SP_ID= rdr["s_id"].ToString();
+                    pm.NEW_SP_ID= rdr["n_s_id"].ToString();
                     pmList.Add(pm);
 
                 }
@@ -2889,6 +2919,48 @@ namespace AIS.Controllers
             con.Dispose();
             return trans;
         }
+
+        public bool AuthorizeSubProcessByReviewer(int T_ID, string COMMENTS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_Approved_Sub_Process_By_Authorizer";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
+                cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+            }
+            con.Dispose();
+            return true;
+        }
+        public bool RefferedBackSubProcessByReviewer(int T_ID, string COMMENTS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_RefferedBack_Sub_Process_By_Authorizer";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
+                cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+            }
+            con.Dispose();
+            return true;
+        }
+
         public bool RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
@@ -4983,9 +5055,9 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("TID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
-                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = PROCESS_ID;
-                cmd.Parameters.Add("OLD_S_ID", OracleDbType.Int32).Value = OLD_PROCESS_ID;
+                cmd.Parameters.Add("TID", OracleDbType.Int32).Value = OLD_PROCESS_ID;
+                cmd.Parameters.Add("N_TID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;                
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Varchar2).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;

@@ -150,6 +150,18 @@ namespace AIS.Controllers
         {
             return dBConnection.AddRiskSubProcessTransaction(tran);
         }
+
+        [HttpPost]
+        public bool authorize_sub_process_by_reviewer(int T_ID, string COMMENTS)
+        {
+            return dBConnection.AuthorizeSubProcessByReviewer(T_ID, COMMENTS);
+        }
+        [HttpPost]
+        public bool reffered_back_sub_process_by_reviewer(int T_ID, string COMMENTS)
+        {
+            return dBConnection.RefferedBackSubProcessByReviewer(T_ID, COMMENTS);
+        }
+
         [HttpPost]
         public bool recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
@@ -1223,6 +1235,13 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, OLD_PROCESS_ID, SUB_PROCESS_ID, HEADING, ENTITY_TYPE_ID) + "\"}";
         }
+
+        [HttpPost]
+        public List<SubProcessUpdateModelForReviewAndAuthorizeModel> get_sub_checklist_comparison_by_Id(int SUB_PROCESS_ID = 0)
+        {
+            return dBConnection.GetSubChecklistComparisonDetailById(SUB_PROCESS_ID);
+        }
+
         [HttpPost]
         public List<AuditChecklistDetailsModel> get_audit_checklist_detail(int SUB_PROCESS_ID = 0)
         {

@@ -32,32 +32,20 @@
         g_trId = id;
         $('#recommendReferProcTransactionModal').modal('show');
         $.ajax({
-            url: "/ApiCalls/get_checklist_detail_comparison_by_Id",
+            url: "/ApiCalls/get_sub_checklist_comparison_by_Id",
             type: "POST",
             data: {
-                'CHECKLIST_DETAIL_ID': id
+                'SUB_PROCESS_ID': id
             },
             cache: false,
             success: function (data) {
-                var tr = data[0];
-                $('#viewerMainProcNameModalField').val(tr.process);
-                $('#viewerNameModalField').val(tr.neW_SUB_PROCESS);
-                $('#viewerDescModalField').val(tr.neW_PROCESS_DETAIL);
-                $('#viewerViolationNameModalField').val(tr.neW_VIOLATION);
-                $('#viewerControlModalField').val(tr.neW_FUNCTIONAL_RESP);
-                $('#viewerDivModalField').val(tr.neW_ROLE_RESP);
-                $('#viewerRiskModalField').val(tr.neW_RISK);
-                $('#viewerAnnexModalField').val(tr.neW_ANNEXURE);
 
-                $('#oldProcessLabel').val(tr.process);
-                $('#oldViolationLabel').val(tr.violation);
-                $('#oldProcessOwnerLabel').val(tr.functionaL_RESP);
-                $('#oldRoleRespLabel').val(tr.rolE_RESP);
-                $('#oldRiskLabel').val(tr.risk);
-                $('#oldAnnexureLabel').val(tr.annexure);
-                $('#oldProcessDetailLabel').val(tr.procesS_DETAIL);
-                $('#oldSubProcessLabel').val(tr.suB_PROCESS);
-                
+                var v = data[0];
+                $('#oldProcessLabel').val(v.procesS_NAME);
+                $('#oldSubProcessLabel').val(v.suB_PROCESS_NAME);
+
+                $('#viewerMainProcNameModalField').val(v.neW_SUB_PROCESS_NAME);
+                $('#viewerNameModalField').val(v.neW_PROCESS_NAME);
             },
             dataType: "json",
         });
@@ -75,7 +63,7 @@
     function finalRecommendProcessTransaction() {
        
         $.ajax({
-            url: "/Setup/recommend_process_transaction_by_reviewer",
+            url: "/Setup/recommend_sub_process_by_reviewer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
@@ -133,7 +121,7 @@
             foreach (var item in (dynamic)(ViewData["TransactionsList"]))
             {
 
-                        <tr id="div_@item.ID">
+                        <tr id="div_@item.SP_ID">
                             <td>
                                 <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
                             </td>
@@ -145,7 +133,7 @@
                                 <p class="fw-normal mb-1">@item.COMMENTS</p>
                             </td>
                             <td>
-                                <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
+                                <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.SP_ID');">
                                     Details
                                 </button>
                             </td>
@@ -177,37 +165,7 @@
                             <div class="form-group">
                                 <label>Sub Process</label>
                                 <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldSubProcessLabel" />
-                            </div>
-                            <div class="form-group">
-                                <label>Process Detail</label>
-                                <textarea disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldProcessDetailLabel" ></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Violation</label>
-                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldViolationLabel" />
-
-                            </div>
-                            <div class="form-group">
-                                <label>Process Owner</label>
-                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldProcessOwnerLabel" />
-
-                            </div>
-                            <div class="form-group">
-                                <label>Role Responsible</label>
-
-                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldRoleRespLabel" />
-
-                            </div>
-                            <div class="form-group">
-                                <label>Risk</label>
-                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldRiskLabel" />
-
-                            </div>
-                            <div class="form-group">
-                                <label>Annexure</label>
-                                <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldAnnexureLabel" />
-
-                            </div>
+                            </div>  
                            
                         </form>
                     </div>
@@ -224,32 +182,8 @@
                         <input type="text" disabled class="form-control" id="viewerNameModalField" />
 
                     </div>
-                    <div class="form-group">
-                        <label for="viewerDescModalField">Process Detail</label>
-                        <textarea class="form-control" disabled id="viewerDescModalField"></textarea>
-
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerViolationNameModalField">Violation</label>
-                        <input class="form-control" disabled id="viewerViolationNameModalField" />
-
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerControlModalField">Process Owner</label>
-                        <input type="text" disabled class="form-control" id="viewerControlModalField" />
-                    </div>
-                    <div class="form-group">
-                        <label for="viewerDivModalField">Role Responsible</label>
-                        <input type="text" disabled class="form-control" id="viewerDivModalField"  />
-                    </div>                   
-                    <div class="form-group">
-                        <label for="viewerRiskModalField">Risk</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskModalField" />
-                    </div>
-                            <div class="form-group">
-                                <label for="viewerRiskModalField">Annexure</label>
-                                <input type="text" disabled class="form-control" id="viewerAnnexModalField" />
-                            </div>
+                    
+                   
                         </form>
                     </div>
                 </div>
