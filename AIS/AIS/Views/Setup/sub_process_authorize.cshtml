@@ -63,7 +63,7 @@
     function finalRecommendProcessTransaction() {
        
         $.ajax({
-            url: "/Setup/recommend_sub_process_by_reviewer",
+            url: "/ApiCalls/authorize_sub_process_by_reviewer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
@@ -191,7 +191,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button onclick="refferedBackProcTransaction();" type="button" class="btn btn-danger">Refer Back</button>
-                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Recommend</button>
+                <button onclick="recommendProcTransaction();" type="button" class="btn btn-success">Approve</button>
 
             </div>
         </div>

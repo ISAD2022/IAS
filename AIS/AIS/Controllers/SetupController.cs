@@ -242,8 +242,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-      
+             
         public IActionResult process_detail_review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -264,7 +263,28 @@ namespace AIS.Controllers
                     return View();
             }
         }
-       
+
+        public IActionResult process_detail_authorize()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedChecklistDetailsForReviewAndAuthorize(3);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult sub_entities()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

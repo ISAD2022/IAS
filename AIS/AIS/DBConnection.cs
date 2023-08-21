@@ -2970,7 +2970,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_Recommend_Process_Transaction_By_Reviewer";
+                cmd.CommandText = "pkg_ad.p_Recommend_Checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -2990,7 +2990,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_RefferedBack_Process_Transaction_By_Reviewer";
+                cmd.CommandText = "pkg_ad.p_RefferedBack_checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -3010,7 +3010,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_Recommend_Process_Transaction_By_Authorizer";
+                cmd.CommandText = "pkg_ad.p_approve_checklist_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
@@ -3030,7 +3030,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_RefferedBack_Process_Transaction_By_Authorizer";
+                cmd.CommandText = "pkg_ad.p_RefferedBack_checklist_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
