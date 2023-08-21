@@ -2809,7 +2809,7 @@ namespace AIS.Controllers
                 {
                     SubProcessUpdateModelForReviewAndAuthorizeModel pm = new SubProcessUpdateModelForReviewAndAuthorizeModel();
                     pm.PROCESS_NAME = rdr["Process"].ToString();
-                    pm.SUB_PROCESS_NAME= rdr["sub_porcess"].ToString();
+                    pm.SUB_PROCESS_NAME= rdr["sub_process"].ToString();
                     pm.NEW_PROCESS_NAME= rdr["New_Process"].ToString();
                     pm.COMMENTS= rdr["Comments"].ToString();
                     pm.NEW_SUB_PROCESS_NAME= rdr["new_sub_process"].ToString();
@@ -4963,6 +4963,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.p_GET_SUB_CHECKLIST_MAKER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("processid", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8677,7 +8678,12 @@ namespace AIS.Controllers
                     chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
+                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
+                    chk.ZONE_REPLY = rdr["Zone_reply_old"].ToString();
+                    chk.ZONE_REPLY_NEW = rdr["Zone_reply_new"].ToString();
+                    chk.IMP_REPLY = rdr["imp_remarks"].ToString();
                     chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE);
                 }
             }
             con.Dispose();

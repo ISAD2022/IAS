@@ -80,7 +80,7 @@
                 if (data.evidences.length > 0) {
                     $.each(data.evidences, function (j, pp) {
 
-                        $('#viewMemo_evidences').append('<div class="col-md-6"><img src="/Auditee_Evidences/' + pp.imagE_NAME + '" /></div>');
+                        $('#viewMemo_evidences').append('<div class="col-md-12 row mt-3"><img style="max-height:500px;" src="data:image/png;base64,' + pp.imagE_DATA + '" /></div>');
                     });
                 }
 
