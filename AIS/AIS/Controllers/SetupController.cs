@@ -203,31 +203,12 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult sub_process_review()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
-            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(4);
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+     
         public IActionResult sub_process_authorize()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(3);
+            ViewData["TransactionsList"] = dBConnection.GetUpdatedSubChecklistForReviewAndAuthorize(4);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

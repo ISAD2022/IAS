@@ -152,14 +152,14 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public bool authorize_sub_process_by_reviewer(int T_ID, string COMMENTS)
+        public bool authorize_sub_process_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.AuthorizeSubProcessByReviewer(T_ID, COMMENTS);
+            return dBConnection.AuthorizeSubProcessByAuthorizer(T_ID, COMMENTS);
         }
         [HttpPost]
-        public bool reffered_back_sub_process_by_reviewer(int T_ID, string COMMENTS)
+        public bool reffered_back_sub_process_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RefferedBackSubProcessByReviewer(T_ID, COMMENTS);
+            return dBConnection.RefferedBackSubProcessByAuthorizer(T_ID, COMMENTS);
         }
 
         [HttpPost]

@@ -2634,7 +2634,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_get_sub_checklist_update_byid";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("SId", OracleDbType.Int32).Value = SUB_PROCESS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -2920,7 +2920,7 @@ namespace AIS.Controllers
             return trans;
         }
 
-        public bool AuthorizeSubProcessByReviewer(int T_ID, string COMMENTS)
+        public bool AuthorizeSubProcessByAuthorizer(int T_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2932,7 +2932,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.p_Approved_Sub_Process_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = T_ID;
                 cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
@@ -2940,7 +2940,7 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-        public bool RefferedBackSubProcessByReviewer(int T_ID, string COMMENTS)
+        public bool RefferedBackSubProcessByAuthorizer(int T_ID, string COMMENTS)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2949,10 +2949,10 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_RefferedBack_Sub_Process_By_Authorizer";
+                cmd.CommandText = "pkg_ad.p_RefferedBack_Sub_checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = T_ID;
                 cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
@@ -4960,10 +4960,9 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();           
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.p_GetChecklistSubByProcessId";
+                cmd.CommandText = "pkg_ad.p_GET_SUB_CHECKLIST_MAKER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("processId", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -4972,7 +4971,9 @@ namespace AIS.Controllers
                     if (rdr["S_ID"].ToString() != null && rdr["S_ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["S_ID"].ToString());
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"].ToString());
-                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.PROCESS = rdr["PROCESS"].ToString();
+                    chk.HEADING = rdr["SUB_PROCESS"].ToString();
+                    chk.COMMENTS = rdr["COMMENTS"].ToString();
                     list.Add(chk);
                 }
             }
