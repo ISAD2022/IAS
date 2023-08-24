@@ -1305,7 +1305,18 @@ namespace AIS.Controllers
         {
             return dBConnection.GetParaPositionParaDetails(ENTITY_ID, AUDIT_PERIOD);
         }
+        [HttpPost]
+        public List<ObservationReversalModel> get_engagements_details_for_status_reversal(int ENTITY_ID=0)
+        {
+            return dBConnection.GetEngagementDetailsForStatusReversal(ENTITY_ID);
 
+        }
+        [HttpPost]
+        public List<EngagementObservationsForStatusReversalModel> get_observation_details_for_status_reversal(int ENG_ID = 0)
+        {
+            return dBConnection.GetObservationDetailsForStatusReversal(ENG_ID);
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
