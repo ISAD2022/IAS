@@ -11195,5 +11195,55 @@ namespace AIS.Controllers
             return stList;
 
         }
+
+        public string GetComplianceHistoryCount(int REF_P =0, int OBS_ID =0)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_v_auditee_paras_compliance_history_num";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REF_P", OracleDbType.Int32).Value = REF_P;
+                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["no_of_records"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<ObservationStatusReversalModel> GetComplianceHistory()
+        {
+
+            List<ObservationStatusReversalModel> stList = new List<ObservationStatusReversalModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_audit_observtion_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationStatusReversalModel st = new ObservationStatusReversalModel();
+                    st.STATUS_NAME = rdr["statusname"].ToString();
+                    st.STATUS_ID = Convert.ToInt32(rdr["statusid"].ToString());
+                    stList.Add(st);
+                }
+            }
+            con.Dispose();
+            return stList;
+
+        }
     }
 }

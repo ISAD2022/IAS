@@ -1317,6 +1317,12 @@ namespace AIS.Controllers
             return dBConnection.GetObservationDetailsForStatusReversal(ENG_ID);
 
         }
+        [HttpPost]
+        public string get_compliance_history_count(int REF_P = 0, int OBS_ID=0)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
