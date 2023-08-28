@@ -8621,7 +8621,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8635,7 +8635,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();

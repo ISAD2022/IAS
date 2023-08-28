@@ -32,7 +32,8 @@
             type: "POST",
             data: {
                 'REF_P': ref_p,
-                'PARA_CATEGORY':paraCat
+                'PARA_CATEGORY':paraCat,
+                'OBS_ID': g_auObsId
             },
             cache: false,
             success: function (data) {
@@ -136,6 +137,7 @@
             type: "POST",
             data: {
                 'Para_ID': g_paraId,
+                'AU_OBS_ID': g_auObsId,
                 'Para_Cat': g_paraCat,
                 'REPLY': $('.richText-editor').html(),
                 'EVIDENCE_LIST': productImagesArr

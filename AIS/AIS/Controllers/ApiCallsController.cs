@@ -811,7 +811,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
