@@ -833,7 +833,7 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID=0)
         {
             return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
@@ -845,10 +845,10 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public string add_old_para_br_compliance_reply(string Para_ID, string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        public string add_old_para_br_compliance_reply(string Para_ID, int AU_OBS_ID , string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
             string response = "";
-            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, Para_Cat, REPLY, EVIDENCE_LIST);
+            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, AU_OBS_ID, Para_Cat, REPLY, EVIDENCE_LIST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -863,10 +863,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, int ID, int PARENT_ID)
+        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, int OBS_ID, int PARENT_ID)
         {
             string response = "";
-            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, ID, PARENT_ID);
+            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, OBS_ID, PARENT_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
@@ -1318,9 +1318,15 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public string get_compliance_history_count(int REF_P = 0, int OBS_ID=0)
+        public string get_compliance_history_count(string REF_P, int OBS_ID=0)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
+
+        }
+        [HttpPost]
+        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, int OBS_ID = 0)
+        {
+            return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
 
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

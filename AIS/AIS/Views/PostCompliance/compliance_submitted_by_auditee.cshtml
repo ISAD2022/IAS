@@ -12,6 +12,7 @@
     var g_upResArr = [];
     var g_upRes = {};
     var g_upResIndex = 0;
+    var g_compCount = 0;
 
     $(document).ready(function () {
         getLegacyPara();
@@ -34,14 +35,59 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
                 });
             },
 
             dataType: "json",
         });
 
-    }      
+    }
+
+    function viewParaCompliance(paraREF, obsID) {
+        $('#viewParaComplianceModel').modal('show');
+        $('#manageComplianceHistPanel tbody').empty();
+
+        $.ajax({
+            url: "/ApiCalls/get_compliance_history_count",
+            type: "POST",
+            data: {
+                'REF_P': paraREF,
+                'OBS_ID': obsID
+            },
+            cache: false,
+            success: function (data) {
+                g_compCount = data.Message;
+                if (g_compCount > 0) {
+
+                    $.ajax({
+                        url: "/ApiCalls/get_compliance_history",
+                        type: "POST",
+                        data: {
+                            'REF_P': paraREF,
+                            'OBS_ID': obsID
+                        },
+                        cache: false,
+                        success: function (data) {
+                            $.each(data, function (i, v) {
+                                i = i + 1;
+                                $('#manageComplianceHistPanel tbody').append('<tr><td>' + i + '</td><td><div>' + v.reply + '</div></td><td>' + v.replieD_DATE + '</td><td><div>' + v.revieweR_REMARKS + '</div></td><td>' + v.revieweD_ON + '</td><td><div>' + v.imP_REMARKS + '</div></td><td>' + v.imP_REMARKS_ON + '</td><td><div>' + v.remarks + '</div></td><td>' + v.remarkS_ON + '</td><td>' + v.statuS_NAME + '</td></tr>');
+                            });
+
+                        },
+
+                        dataType: "json",
+                    });
+
+
+                }
+            },
+
+            dataType: "json",
+        });
+
+
+    }
 
     function viewObservationStatus(id,refP, paraCat, replyDate,obsId)
     {
@@ -130,6 +176,42 @@
         $('#ResponsiblePPModel').modal('hide');
 
     }
+    function setParaStatusPartiallySettle() {
+
+        var resP = [];
+        $.each($('#listofRespPersonsForUpdateDelete tbody tr'), function (i, v) {
+            resP.push({
+                'PP_NO': $(v).find('td').eq(1).html(),
+                'EMP_NAME': $(v).find('td').eq(2).html(),
+                'LOAN_CASE': $(v).find('td').eq(3).html(),
+                'LC_AMOUNT': $(v).find('td').eq(4).html(),
+                'ACCOUNT_NUMBER': $(v).find('td').eq(5).html(),
+                'ACC_AMOUNT': $(v).find('td').eq(6).html(),
+                'RESP_ACTIVE': $(v).find('td').eq(7).html()
+            });
+        });
+
+        $.ajax({
+            url: "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
+            type: "POST",
+            data: {
+                'PARA_ID': g_paraId,
+                'REFID': g_paraRef,
+                'SETTLE_INDICATOR': 'P',
+                'PARA_CAT': g_paraCat,
+                'REMARKS': $('#viewMemo_complianc').val(),
+                'NEW_STATUS': 13,
+                'RESPONSIBLES_ARR': resP
+            },
+            cache: false,
+            success: function (data) {
+                $("#viewMemoModel").modal('hide');
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+    }
 
     function setParaStatusSettled() {
         $.ajax({
@@ -176,42 +258,7 @@
             dataType: "json",
         });
     }
-    function setParaStatusPartiallySettle() {
-
-        var resP = [];
-        $.each($('#listofRespPersonsForUpdateDelete tbody tr'), function (i, v) {
-            resP.push({
-                'PP_NO': $(v).find('td').eq(1).html(),
-                'EMP_NAME': $(v).find('td').eq(2).html(),
-                'LOAN_CASE': $(v).find('td').eq(3).html(),
-                'LC_AMOUNT': $(v).find('td').eq(4).html(),
-                'ACCOUNT_NUMBER': $(v).find('td').eq(5).html(),
-                'ACC_AMOUNT': $(v).find('td').eq(6).html(),
-                'RESP_ACTIVE': $(v).find('td').eq(7).html()
-            });
-        });
-
-        $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
-            type: "POST",
-            data: {
-                'PARA_ID': g_paraId,
-                'REFID': g_paraRef,
-                'SETTLE_INDICATOR':'P',
-                'PARA_CAT': g_paraCat,
-                'REMARKS': $('#viewMemo_complianc').val(),
-                'NEW_STATUS': 13,
-                'RESPONSIBLES_ARR': resP
-            },
-            cache: false,
-            success: function (data) {
-                $("#viewMemoModel").modal('hide');
-                alert(data.Message);
-                onAlertCallback(reloadLocation);
-            },
-            dataType: "json",
-        });
-    }
+   
     function reloadLocation() {
         getLegacyPara();
     }
@@ -232,6 +279,7 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Amount</th>
+                    <th class="col-md-auto text-center">Compliance History</th>
                     <th class="col-md-auto text-center">Compliance</th>
                 </tr>
             </thead>
@@ -425,6 +473,50 @@
     </div>
 </div>
 
+
+
+
+<div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:95% !important;">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Compliance History</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="row col-md-12 mt-3">
+                        <table id="manageComplianceHistPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                <tr>
+                                    <th class="col-md-auto">Sr No.</th>
+                                    <th class="col-md-auto">Reply</th>
+                                    <th class="col-md-auto">Replied On</th>
+                                    <th class="col-md-auto">Zonal Office Remarks</th>
+                                    <th class="col-md-auto">Zonal Office Remarks On</th>
+                                    <th class="col-md-auto">Incharge Imp Remarks</th>
+                                    <th class="col-md-auto">Incharge Imp Remarks On</th>
+                                    <th class="col-md-auto">Head AZ Remarks</th>
+                                    <th class="col-md-auto">Head AZ Remarks On</th>
+                                    <th class="col-md-auto text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+
+                        </table>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

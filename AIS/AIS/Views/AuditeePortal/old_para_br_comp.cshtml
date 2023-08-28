@@ -4,6 +4,7 @@
 }
 <script>
     var g_paraId = 0;
+    var g_auObsId = 0;
     var g_paraCat = "";
     var g_obsList = [];
 
@@ -22,7 +23,8 @@
         });
     });
 
-    function viewParaDetails(ref_p, memo_no, paraId, paraCat) {
+    function viewParaDetails(ref_p, memo_no, paraId, paraCat, obsId) {
+        g_auObsId = obsId;
         g_paraId = ref_p;
         g_paraCat = paraCat;
         $.ajax({
@@ -30,6 +32,7 @@
             type: "POST",
             data: {
                 'REF_P': ref_p,
+                'OBS_ID': g_auObsId,
                 'PARA_CATEGORY':paraCat
             },
             cache: false,
@@ -68,8 +71,8 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');                    
-                    
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+
                 });
             },
 
@@ -78,8 +81,48 @@
 
     }
 
-    function viewParaCompliance(id){
-        $('#viewParaComplianceModel').modal('show');
+    function getParaComplianceCount() {
+
+        $('#manageObsPanel tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/get_compliance_history_count",
+            type: "POST",
+            data: {
+
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                $('#entityNameField').html(data.length > 0 ? data[0].name : '');
+                $.each(data, function (index, child) {
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+
+                });
+            },
+
+            dataType: "json",
+        });
+
+    }
+
+    function viewParaCompliance(paraREF, obsID){
+       $('#viewParaComplianceModel').modal('show');
+
+        $.ajax({
+            url: "/ApiCalls/get_compliance_history_count",
+            type: "POST",
+            data: {
+                'REF_P':paraREF,
+                'OBS_ID':obsID
+            },
+            cache: false,
+            success: function (data) {
+              
+            },
+
+            dataType: "json",
+        });
+
 
     }
 
@@ -112,6 +155,7 @@
             data: {
                 'Para_ID': g_paraId,
                 'Para_Cat': g_paraCat,
+                'AU_OBS_ID': g_auObsId,
                 'REPLY': $('.richText-editor').html(),
                 'EVIDENCE_LIST': productImagesArr
             },
