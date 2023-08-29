@@ -838,9 +838,9 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_head_az_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE)
+        public GetOldParasBranchComplianceTextModel get_old_para_head_az_text(int PID,  string REF_P, string OBS_ID, string PARA_CATEGORY, string REPLY_DATE)
         {
-            return dBConnection.GetOldParasBranchComplianceTextForHeadAZ(PID, REF_P, PARA_CATEGORY, REPLY_DATE);
+            return dBConnection.GetOldParasBranchComplianceTextForHeadAZ(PID, REF_P, OBS_ID, PARA_CATEGORY, REPLY_DATE);
         }
 
 
@@ -879,22 +879,27 @@ namespace AIS.Controllers
         [HttpPost]
         public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_recommendation()
         {
-            return dBConnection.GetOldParasBranchComplianceRecommendation();
+            return dBConnection.GetComplianceForImpZone();
+        }
+        [HttpPost]
+        public List<GetOldParasforComplianceSettlement> get_old_para_br_compliance_recommendation_ref()
+        {
+            return dBConnection.GetReferredBackParasComplianceForImpZone();
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, int AU_OBS_ID)
+        public string submit_old_para_br_compliance_status(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusUpdate(PARA_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, AU_OBS_ID);
+            response = dBConnection.AddOldParasStatusUpdate(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status_partially_settle(int PARA_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, int AU_OBS_ID, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR)
+        public string submit_old_para_br_compliance_status_partially_settle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusPartiallySettle(PARA_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, AU_OBS_ID, RESPONSIBLES_ARR);
+            response = dBConnection.AddOldParasStatusPartiallySettle(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, RESPONSIBLES_ARR);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

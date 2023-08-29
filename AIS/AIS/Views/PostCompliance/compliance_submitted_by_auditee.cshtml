@@ -35,7 +35,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.risk + '</p></td><td><p  class="fw-normal mb-1">' + child.remarks + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
                 });
             },
 
@@ -195,7 +195,7 @@
             url: "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
             type: "POST",
             data: {
-                'PARA_ID': g_paraId,
+                'OBS_ID': g_auOBSID,
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'P',
                 'PARA_CAT': g_paraCat,
@@ -218,11 +218,10 @@
             url: "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
             data: {
-                'PARA_ID': g_paraId,
+                'OBS_ID': g_auOBSID,
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'Y',
                 'PARA_CAT': g_paraCat,
-                'AU_OBS_ID': g_auOBSID,
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS':14
             },
@@ -241,10 +240,9 @@
             url: "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
             data: {
-                'PARA_ID': g_paraId,
+                'OBS_ID': g_auOBSID,
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'N',
-                'AU_OBS_ID': g_auOBSID,
                 'PARA_CAT': g_paraCat,
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS': 15
@@ -278,7 +276,8 @@
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Amount</th>
+                    <th class="col-md-auto">Risk</th>
+                    <th class="col-md-auto">Comments / Recommendations</th>
                     <th class="col-md-auto text-center">Compliance History</th>
                     <th class="col-md-auto text-center">Compliance</th>
                 </tr>
@@ -403,8 +402,7 @@
             <div class="modal-footer">
                 <button onclick="setParaStatusPartiallySettle();" type="button" class="btn btn-primary">Partial Settle</button>
                 <button onclick="setParaStatusSettled();" type="button" class="btn btn-success">Settle</button>
-                <button onclick="setParaStatusUnsettled();" type="button" class="btn btn-danger">Unsettle</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="setParaStatusUnsettled();" type="button" class="btn btn-danger">Unsettle</button>                
 
             </div>
         </div>

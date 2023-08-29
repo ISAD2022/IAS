@@ -27,7 +27,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View Details</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.risk + '</p></td><td><p  class="fw-normal mb-1">' + child.imP_REMARKS+ '</p></td><td class="text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View Details</small></a></td></tr>')
                 });
             },
 
@@ -50,7 +50,7 @@
                 'PID': g_paraId,
                 'REF_P': g_paraRef,
                 'PARA_CATEGORY': g_paraCat,
-                'AU_OBS_ID': g_auOBSID,
+                'OBS_ID': g_auOBSID,
                 'REPLY_DATE': g_repliedDate
 
             },
@@ -159,7 +159,8 @@
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Amount</th>
+                    <th class="col-md-auto">Risk</th>
+                    <th class="col-md-auto">Comments / Recommendations</th>
                     <th class="col-md-auto text-center">Action</th>
                 </tr>
             </thead>

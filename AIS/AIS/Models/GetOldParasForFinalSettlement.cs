@@ -11,6 +11,7 @@ namespace AIS.Models
         public string AUDITEENAME { get; set; }
         public string AUDIT_PERIOD { get; set; }
         public string PARA_NO { get; set; }
+        public string RISK { get; set; }
         public string AU_OBS_ID { get; set; }
         public string PARA_CATEGORY { get; set; }
         public string GISTOFPARA { get; set; }
