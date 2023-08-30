@@ -8764,7 +8764,7 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForImpIncharge(int PID,string Ref_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForImpIncharge(int PID,string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8779,7 +8779,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("pid", OracleDbType.Int32).Value = PID;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("refP", OracleDbType.Varchar2).Value = Ref_P;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -8794,6 +8794,45 @@ namespace AIS.Controllers
                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
                     chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
                     chk.ZONE_REPLY = rdr["Reviewer_remarks"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE);
+                }
+            }
+            con.Dispose();
+            return chk;
+        }
+         public GetOldParasBranchComplianceTextModel GetOldParasReferredBackBranchComplianceTextForImpIncharge(int PID,string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetOldParasforsettlementext_referedack";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("pid", OracleDbType.Int32).Value = PID;                
+                cmd.Parameters.Add("refP", OracleDbType.Varchar2).Value = Ref_P;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    chk.CHECKLIST = rdr["checklist"].ToString();
+                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
+                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
+                    chk.PARA_TEXT = rdr["para_text"].ToString();
+                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
+                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
+                    chk.ZONE_REPLY = rdr["Reviewer_remarks"].ToString();
+                    chk.IMP_REPLY = rdr["AZ_remarks"].ToString();
+                    chk.HEAD_REPLY = rdr["remarks"].ToString();
                     chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE);
                 }
@@ -9089,6 +9128,7 @@ namespace AIS.Controllers
                     chk.REPLIEDDATE = rdr["replieddate"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
                     chk.RISK = rdr["risk"].ToString();
+                    chk.HEAD_REF_REMARKS = rdr["remarks"].ToString();
 
                     list.Add(chk);
                 }

@@ -45,6 +45,23 @@ namespace AIS.Controllers
                     return View();
             }
         }
+         public IActionResult compliance_submitted_by_auditee_ref()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
 
         public IActionResult compliance_for_settlement()
         {

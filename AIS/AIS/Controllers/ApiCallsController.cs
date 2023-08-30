@@ -833,9 +833,15 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID=0)
+        public GetOldParasBranchComplianceTextModel get_old_para_imp_text(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceTextForImpIncharge(PID,REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+        }
+
+        [HttpPost]
+        public GetOldParasBranchComplianceTextModel get_old_para_imp_text_ref(int PID, string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
+        {
+            return dBConnection.GetOldParasReferredBackBranchComplianceTextForImpIncharge(PID, REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_head_az_text(int PID,  string REF_P, string OBS_ID, string PARA_CATEGORY, string REPLY_DATE)

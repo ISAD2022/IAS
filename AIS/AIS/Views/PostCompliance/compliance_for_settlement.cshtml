@@ -60,7 +60,7 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
-                $('#viewMemo_brcompliance').html(data.brancH_REPLY);
+                $('#viewMemo_brcompliance').val(data.brancH_REPLY);
                 $('#zmoRemarksField').val(data.zonE_REPLY);
                 $('#viewMemo_complianc').val(data.imP_REPLY);
                 $('#listofRespPersons tbody').empty();
@@ -238,7 +238,7 @@
                     <hr style="border: 3px solid black;" />
                     <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px;" class="text-center"><b>Auditee Compliance</b></h5>
                     <div class="form-group mt-3">
-                        <div  class="form-control" id="viewMemo_brcompliance"></div>
+                        <textarea disabled="disabled" class="form-control" id="viewMemo_brcompliance"> </textarea>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>

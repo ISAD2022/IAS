@@ -114,7 +114,7 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
-                $('#viewMemo_brcompliance').html(data.brancH_REPLY);
+                $('#viewMemo_brcompliance').html(extractPlainText(data.brancH_REPLY));
                 $('#zmoRemarksField').val(data.zonE_REPLY);
                 $('#listofRespPersons tbody').empty();
                 $('#listofRespPersonsForUpdateDelete tbody').empty();

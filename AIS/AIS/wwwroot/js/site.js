@@ -25,6 +25,16 @@ function alert(message) {
     $('#content_alertMessagesPopup').html(message);
     $('#alertMessagesPopup').modal('show');
 }
+
+function extractPlainText(clobContent) {
+    // Implement your logic here to extract plain text from CLOB content
+    // This might involve removing HTML tags or any other formatting
+
+    // For example, a basic approach might involve removing HTML tags using a regular expression
+    var plainText = clobContent.replace(/<[^>]+>/g, '');
+
+    return plainText;
+}
 function onAlertCallback(funcToCall) {
     closeFuncCalled = funcToCall;
 }
