@@ -6397,8 +6397,8 @@ namespace AIS.Controllers
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_para"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.AMOUNT_INVOLVED = rdr["remarks"].ToString();
-                    chk.AMOUNT_INVOLVED = rdr["reviewer_comments"].ToString();
+                    chk.MAKER_REMARKS = rdr["remarks"].ToString();
+                    chk.REVIEWER_REMARKS = rdr["reviewer_comments"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
                     list.Add(chk);
                 }
