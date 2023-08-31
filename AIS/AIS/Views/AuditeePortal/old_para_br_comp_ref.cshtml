@@ -1,7 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Old Paras Branch Compliance";
+    ViewData["Title"] = "Old Paras Auditee Compliance";
     Layout = "_Layout";
 }
+
 <script>
     var g_paraId = 0;
     var g_auObsId = 0;
@@ -93,9 +94,9 @@
             success: function (data) {
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
-                $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p style="color:red;"  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-
+                $.each(data, function (index, child) 
+                {
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p style="color:red;"  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
                 });
             },
 
@@ -104,9 +105,51 @@
 
     }
 
-    function viewParaCompliance(id){
-        $('#viewParaComplianceModel').modal('show');
+    function getComplianceReply(id){
 
+    }
+     function viewParaCompliance(paraREF, obsID) 
+     {
+        $('#viewParaComplianceModel').modal('show');
+        $('#manageComplianceHistPanel tbody').empty();
+
+        $.ajax({
+            url: "/ApiCalls/get_compliance_history_count_auditee",
+            type: "POST",
+            data: {
+                'REF_P': paraREF,
+                'OBS_ID': obsID
+            },
+            cache: false,
+            success: function (data) {
+                g_compCount = data.Message;
+                if (g_compCount > 0) {
+
+                    $.ajax({
+                        url: "/ApiCalls/get_compliance_history_auditee",
+                        type: "POST",
+                        data: {
+                            'REF_P': paraREF,
+                            'OBS_ID': obsID
+                        },
+                        cache: false,
+                        success: function (data) {
+                            $.each(data, function (i, v) {
+                                i = i + 1;
+                                $('#manageComplianceHistPanel tbody').append('<tr><td>' + i + '</td><td><a href="#" onclick="getComplianceReply('+v.id+');">View Compliance</a></td><td>' + v.replieD_DATE + '</td><td><div>' + v.revieweR_REMARKS + '</div></td><td>' + v.revieweD_ON + '</td><td><div>' + v.imP_REMARKS + '</div></td><td>' + v.imP_REMARKS_ON + '</td><td>' + v.statuS_NAME + '</td></tr>');
+                            });
+
+                        },
+
+                        dataType: "json",
+                    });
+
+
+                }
+            },
+
+            dataType: "json",
+        });
     }
 
     function PublishCompliance() {
@@ -158,6 +201,8 @@
    
 </script>
 
+
+
 <div class="row">
     <div class="col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Post Compliance Of Outstanding Paras</h3>
@@ -175,7 +220,7 @@
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto">VOL I II</th>
                     <th class="col-md-auto">Reviewer Remarks</th>
-                    <th class="col-md-auto d-none">Compliance History</th>
+                    <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -243,33 +288,36 @@
                             </table>
                         </div>
                     </div>
-                    <hr />
-                    <h5><b>Branch Last Compliance</b></h5>
-                    <hr />
-                    <div class="col-md-12 row" id="viewMemo_prev_branch_reply"></div>
+                    <hr style="border: 3px solid black;" />
+                    <h5 class="bg-primary header-section"><b>Branch Last Compliance</b></h5>
+                    <hr style="border: 3px solid black;" />
+                    <div class="row mt-3 col-md-12">
+                        <div id="viewMemo_prev_branch_reply" style="background-color: #e9ecef;" class="col-md-12"></div>
+
+                    </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
                         <div class="col-md-12 row" id="viewMemo_evidences"></div>
                     </div>
-                    <hr />
+                    <hr style="border: 3px solid black;" />
 
-                    <h5><b>Zonal Office Previous Recommendation</b></h5>
+                    <h5 class="bg-success header-section"><b>Zonal Office Previous Recommendation</b></h5>
 
-                    <hr />
+                    <hr style="border: 3px solid black;" />
 
                     <div class="col-md-12 row" id="viewMemo_prev_zone_reply"></div>
 
-                    <hr />
-                    <h5><b>Audit Zone Remarks</b></h5>
-                    <hr />
+                    <hr style="border: 3px solid black;" />
+                    <h5 class="bg-danger header-section"><b>Audit Zone Remarks</b></h5>
+                    <hr style="border: 3px solid black;" />
 
                     <div class="col-md-12 row" id="viewMemo_prev_imp_reply"></div>
-                    <hr />
-                    <h5><b>Zonal Office New Response</b></h5>
-                    <hr />
+                    <hr style="border: 3px solid black;" />
+                    <h5 class="bg-warning header-section"><b>Zonal Office New Response</b></h5>
+                    <hr style="border: 3px solid black;" />
                     <div class="col-md-12 row" id="viewMemo_new_zone_reply"></div>
-                    <hr/>
-                    <h5><b>Branch Compliance</b></h5>
+                    <hr style="border: 3px solid black;" />
+                    <h5 class="bg-info header-section"><b>Auditee Compliance</b></h5>
 
                     <div class="form-group mt-3">
                         <label for="viewMemo_compliance">Compliance</label>
@@ -371,8 +419,9 @@
 </div>
 
 
+
 <div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Compliance History</h5>
@@ -382,17 +431,19 @@
             </div>
             <div class="modal-body">
                 <form>
-                    
+
                     <div class="row col-md-12 mt-3">
-                        <table id="manageCompPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                        <table id="manageComplianceHistPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
                             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                 <tr>
                                     <th class="col-md-auto">Sr No.</th>
-                                    <th class="col-md-auto">Compliance Received On</th>
-                                    <th class="col-md-auto">Management Reply</th>
-                                    <th class="col-md-auto">Auditor Reply</th>
-                                    <th class="col-md-auto">Status</th>                                    
-                                    
+                                    <th class="col-md-auto">Auditee Compliance</th>
+                                    <th class="col-md-auto">Auditee Compliance On</th>
+                                    <th class="col-md-auto">Reviewer Remarks</th>
+                                    <th class="col-md-auto">Reviewer Remarks On</th>
+                                    <th class="col-md-auto">Inchare Imp Remarks</th>
+                                    <th class="col-md-auto">Incharge Imp Remarks On</th>
+                                    <th class="col-md-auto text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -408,4 +459,7 @@
         </div>
     </div>
 </div>
+
+
+
 

@@ -114,7 +114,7 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
-                $('#viewMemo_brcompliance').html(extractPlainText(data.brancH_REPLY));
+                $('#viewMemo_brcompliance').html(data.brancH_REPLY);
                 $('#zmoRemarksField').val(data.zonE_REPLY);
                 $('#listofRespPersons tbody').empty();
                 $('#listofRespPersonsForUpdateDelete tbody').empty();
@@ -353,22 +353,24 @@
                         </div>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px;" class="text-center"><b>Auditee Compliance</b></h5>
+                    <h5 class="bg-primary header-section"><b>Auditee Compliance</b></h5>
                     <div class="form-group mt-3">
-                        <div  class="form-control" id="viewMemo_brcompliance"></div>
+                        <div class="row mt-3 col-md-12">
+                            <div id="viewMemo_brcompliance" style="background-color: #e9ecef;" class="col-md-12"></div>
+
+                        </div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
                         <div class="col-md-12 row" id="viewMemo_evidences"></div>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center"><b>Zonal Manager Remarks</b></h5>
+                    <h5 class="bg-success header-section"><b>Reviewer Remarks</b></h5>
                     <div class="row mt-3 col-md-12">
                         <textarea disabled="disabled" class="form-control" id="zmoRemarksField"></textarea>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center">
-                        <b>In-charge Implementation Section</b></h5>
+                    <h5 clasa="bg-success header-section"><b>In-charge Implementation Section</b></h5>
                     <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Update / Delete Responsibles</label>
                         <div class="col-md-12 pl-0 pr-0">
@@ -491,11 +493,11 @@
                             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                 <tr>
                                     <th class="col-md-auto">Sr No.</th>
-                                    <th class="col-md-auto">Reply</th>
-                                    <th class="col-md-auto">Replied On</th>
-                                    <th class="col-md-auto">Zonal Office Remarks</th>
-                                    <th class="col-md-auto">Zonal Office Remarks On</th>
-                                    <th class="col-md-auto">Incharge Imp Remarks</th>
+                                    <th class="col-md-auto">Auditee Compliance</th>
+                                    <th class="col-md-auto">Auditee Compliance On</th>
+                                    <th class="col-md-auto">Reviewer Remarks</th>
+                                    <th class="col-md-auto">Reviewer Remarks On</th>
+                                    <th class="col-md-auto">Inchare Imp Remarks</th>
                                     <th class="col-md-auto">Incharge Imp Remarks On</th>
                                     <th class="col-md-auto">Head AZ Remarks</th>
                                     <th class="col-md-auto">Head AZ Remarks On</th>

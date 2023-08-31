@@ -8654,7 +8654,7 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8668,7 +8668,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -8692,7 +8692,7 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZone(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZone(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8706,7 +8706,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -8727,7 +8727,7 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZoneRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZoneRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8741,7 +8741,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -8899,7 +8899,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = AU_OBS_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = AU_OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = Para_Cat;
                 cmd.Parameters.Add("REPLY", OracleDbType.Clob).Value = Reply;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -9023,7 +9023,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT,  string Reply, string r_status, int OBS_ID, int PARENT_ID)
+        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT,  string Reply, string r_status, string OBS_ID, int PARENT_ID)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -9039,7 +9039,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;                              
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;                              
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;                              
                 cmd.Parameters.Add("Remark", OracleDbType.Varchar2).Value = Reply;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CAT;
                 cmd.Parameters.Add("PARENTID", OracleDbType.Int32).Value = PARENT_ID;
@@ -11285,18 +11285,20 @@ namespace AIS.Controllers
 
         }
 
-        public string GetComplianceHistoryCount(string REF_P, int OBS_ID =0)
+      
+
+        public string GetComplianceHistoryCountAuditee(string REF_P, string OBS_ID)
         {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history_num";
+                cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_num_auditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
-                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -11309,7 +11311,69 @@ namespace AIS.Controllers
 
         }
 
-        public List<ComplianceHistoryModel> GetComplianceHistory(string REF_P, int OBS_ID = 0)
+        public List<ComplianceHistoryModel> GetComplianceHistoryAuditee(string REF_P, string OBS_ID)
+        {
+
+            List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_auditee";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceHistoryModel st = new ComplianceHistoryModel();
+                    st.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    st.OBS_ID = Convert.ToInt32(rdr["AU_OBS_ID"].ToString());
+                    st.REF_P = rdr["refp"].ToString();
+                    st.REPLY = "";
+                    st.REPLIED_DATE = rdr["replieddate"].ToString();
+                    st.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
+                    st.REVIEWED_ON = rdr["reviewed_on"].ToString();
+                    st.IMP_REMARKS = rdr["imp_remarks"].ToString();
+                    st.IMP_REMARKS_ON = rdr["imp_remarks_on"].ToString();
+                  
+                    st.STATUS_NAME = rdr["statusname"].ToString();
+                    st.PARA_CATEGORY = rdr["para_category"].ToString();
+                    stList.Add(st);
+                }
+            }
+            con.Dispose();
+            return stList;
+
+        }
+
+        public string GetComplianceHistoryCount(string REF_P, string OBS_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history_num";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["no_of_records"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<ComplianceHistoryModel> GetComplianceHistory(string REF_P, string OBS_ID)
         {
 
             List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
@@ -11321,7 +11385,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
-                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -11331,14 +11395,14 @@ namespace AIS.Controllers
                     st.OBS_ID = Convert.ToInt32(rdr["AU_OBS_ID"].ToString());
                     st.REF_P = rdr["refp"].ToString();
                     st.REPLY = rdr["REPLY"].ToString();
-                    st.REPLIED_DATE=rdr["replieddate"].ToString(); 
-                    st.REVIEWER_REMARKS= rdr["reviewer_remarks"].ToString();                    
+                    st.REPLIED_DATE = rdr["replieddate"].ToString();
+                    st.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
                     st.REVIEWED_ON = rdr["reviewed_on"].ToString();
                     st.IMP_REMARKS = rdr["imp_remarks"].ToString();
                     st.IMP_REMARKS_ON = rdr["imp_remarks_on"].ToString();
                     st.REMARKS = rdr["remarks"].ToString();
                     st.REMARKS_ON = rdr["remarks_on"].ToString();
-                    st.STATUS_NAME= rdr["statusname"].ToString();
+                    st.STATUS_NAME = rdr["statusname"].ToString();
                     st.PARA_CATEGORY = rdr["para_category"].ToString();
                     stList.Add(st);
                 }

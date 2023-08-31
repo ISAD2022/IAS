@@ -816,17 +816,17 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceTextRef(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceTextForZone(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, int OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_zone_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceTextForZoneRef(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
         }
@@ -869,7 +869,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, int OBS_ID, int PARENT_ID)
+        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, string OBS_ID, int PARENT_ID)
         {
             string response = "";
             response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, OBS_ID, PARENT_ID);
@@ -1329,13 +1329,31 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public string get_compliance_history_count(string REF_P, int OBS_ID=0)
+        public string get_compliance_text_auditee(string REF_P, string OBS_ID)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
 
         }
         [HttpPost]
-        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, int OBS_ID = 0)
+        public string get_compliance_history_count_auditee(string REF_P, string OBS_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCountAuditee(REF_P, OBS_ID) + "\"}";
+
+        }
+        [HttpPost]
+        public List<ComplianceHistoryModel> get_compliance_history_auditee(string REF_P, string OBS_ID)
+        {
+            return dBConnection.GetComplianceHistoryAuditee(REF_P, OBS_ID);
+
+        }
+        [HttpPost]
+        public string get_compliance_history_count(string REF_P, string OBS_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
+
+        }
+        [HttpPost]
+        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, string OBS_ID)
         {
             return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
 

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Old Paras Branch Compliance Review";
+    ViewData["Title"] = "Old Paras Auditee Compliance Review";
     Layout = "_Layout";
 }
 <script>
@@ -36,7 +36,7 @@
             success: function (data) {
                 g_obsList = data;
                 $.each(data, function (index, child) {
-                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\', \'' + child.replY_DATE + '\', \'' + child.parenT_ID + '\', \'' + child.obS_ID + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
+                    $('#managereviewPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="text-center"><a href="#" onclick="getparatext(\'' + child.reF_P + '\', ' + child.id + ', \'' + child.parA_CATEGORY + '\', \'' + child.replY_DATE + '\', \'' + child.parenT_ID + '\', \'' + child.aU_OBS_ID + '\');" class="text-hover text-danger mr-5px"><small>Add Reviewer Response</small></a></td></tr>')
                 });
 
             },
@@ -219,32 +219,34 @@
                             </table>
                         </div>
                     </div>
-                    <hr />
-                    <h5 class="text-center"><b>Auditee Compliance</b></h5>
-                    <hr />
-                    <div class="form-group mt-3">
-                        <label for="viewMemo_compliance">Compliance</label>
-                        <div class="col-md-12" id="viewMemo_compliance"></div>
+                     <hr style="border: 3px solid black;" />
+                    <h5 class="bg-primary header-section"><b>Auditee Compliance</b></h5>
+                     <hr style="border: 3px solid black;" />
+
+                    <div class="row mt-3 col-md-12">
+                        <div id="viewMemo_compliance" style="background-color: #e9ecef;" class="col-md-12"></div>
+
                     </div>
+                 
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
                         <div class="col-md-12 row" id="viewMemo_evidences"></div>
                     </div>
-                    <hr />
-                    <h5 class="text-center"><b>Zonal Office Previous Recommendation</b></h5>
+                     <hr style="border: 3px solid black;" />
+                    <h5 class="bg-success header-section"><b>Zonal Office Previous Recommendation</b></h5>
                     
-                    <hr />
+                     <hr style="border: 3px solid black;" />
                     
                     <div class="col-md-12 row" id="viewMemo_prev_zone_remarks"></div>
 
-                    <hr />
-                    <h5 class="text-center"><b>Auditor Response</b></h5>
-                    <hr />
+                     <hr style="border: 3px solid black;" />
+                    <h5 class="bg-danger header-section"><b>Audit Zone Remarks</b></h5>
+                     <hr style="border: 3px solid black;" />
                     
                     <div class="col-md-12 row" id="viewMemo_imp_remarks"></div>
-                    <hr />
-                    <h5 class="text-center"><b>Zonal Office New Response</b></h5>
-                    <hr />
+                     <hr style="border: 3px solid black;" />
+                    <h5 class="bg-warning header-section"><b>Zonal Office New Response</b></h5>
+                     <hr style="border: 3px solid black;" />
                     <div class="row mt-3 col-md-12">
                         <label class="font-weight-bold">Add Remarks</label>
 

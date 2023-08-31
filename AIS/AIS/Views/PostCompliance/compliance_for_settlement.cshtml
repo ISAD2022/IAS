@@ -60,7 +60,7 @@
                 $('#processField').val(data.checklist);
                 $('#subprocessField').val(data.subchecklist);
                 $('#checklistDetailField').val(data.checklistdetail);
-                $('#viewMemo_brcompliance').val(data.brancH_REPLY);
+                $('#viewMemo_brcompliance').html(data.brancH_REPLY);
                 $('#zmoRemarksField').val(data.zonE_REPLY);
                 $('#viewMemo_complianc').val(data.imP_REPLY);
                 $('#listofRespPersons tbody').empty();
@@ -236,21 +236,24 @@
                         </div>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px;" class="text-center"><b>Auditee Compliance</b></h5>
+                    <h5 class="bg-primary header-section"><b>Auditee Compliance</b></h5>
                     <div class="form-group mt-3">
-                        <textarea disabled="disabled" class="form-control" id="viewMemo_brcompliance"> </textarea>
+                        <div class="row mt-3 col-md-12">
+                            <div id="viewMemo_brcompliance" style="background-color: #e9ecef;" class="col-md-12"></div>
+                             
+                        </div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_evidences">Evidences</label>
                         <div class="col-md-12 row" id="viewMemo_evidences"></div>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center"><b>Zonal Manager Remarks</b></h5>
+                    <h5 class="bg-success header-section"><b>Reviewer Remarks</b></h5>
                     <div class="row mt-3 col-md-12">
                         <textarea disabled="disabled" class="form-control" id="zmoRemarksField"></textarea>
                     </div>
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center">
+                    <h5 class="bg-danger header-section">
                         <b>In-charge Implementation Section</b>
                     </h5>
                     <div class="form-group mt-3">
@@ -281,7 +284,7 @@
 
 
                     <hr style="border: 3px solid black;" />
-                    <h5 style="background-color: rgb(181 229 117 / 93%) !important; height:50px; padding-top:12px; " class="text-center">
+                    <h5 class="bg-warning header-section">
                         <b>Head Audit Zone Section</b>
                     </h5>
                     <div class="form-group">
