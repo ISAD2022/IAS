@@ -6288,20 +6288,118 @@ namespace AIS.Controllers
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
-                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
-                    chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-settled";
-                    chk.PROCESS_DES = rdr["Process_Des"].ToString();
-                    chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-                    chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        } 
+        public List<OldParasModel> GetCurrentParasForStatusChangeRequest( int ENTITY_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetnewParasForResponse";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_para"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString()=="6"?"Settled":"Un-settled";
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<OldParasModel> GetCurrentParasForStatusChangeRequestReview()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetnewParasForResponse_reviewer";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_para"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.MAKER_REMARKS = rdr["remarks"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<OldParasModel> GetCurrentParasForStatusChangeRequestAuthorize()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<OldParasModel> list = new List<OldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.p_GetnewParasForResponseAuthorize";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    OldParasModel chk = new OldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_para"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["remarks"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["reviewer_comments"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
                     list.Add(chk);
                 }
             }
@@ -6368,6 +6466,34 @@ namespace AIS.Controllers
                 {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);                    
+                    chk.ENTITY_NAME = rdr["NAME"].ToString();
+
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<AuditeeOldParasModel> GetCurrentParasEntitiesForStatusChange()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetEntitiesForNewPara";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
@@ -8922,7 +9048,7 @@ namespace AIS.Controllers
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
                             cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = Para_Cat;
-                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = Para_ID;
+                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = AU_OBS_ID;
                             cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
                             cmd.Parameters.Add("LENGTH", OracleDbType.Int32).Value = item.LENGTH;
                             cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
@@ -9470,6 +9596,88 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
+                cmd.Parameters.Add("NewStatus", OracleDbType.Int32).Value = NEW_STATUS;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remark"].ToString();
+                }
+                    
+            }
+            con.Dispose();
+            return resp;
+        }
+        public string ReviewerAddChangeStatusRequestForSettledPara(string REFID,  string REMARKS)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_ChangeStatusRequestForSettledPara_new_reviewer";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obs_id", OracleDbType.Varchar2).Value = REFID;
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = REMARKS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remark"].ToString();
+                }
+
+            }
+            con.Dispose();
+            return resp;
+        }
+        public string AuthorizerAddChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS, string REMARKS)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_AuthorizeChangeStatusRequestForSettledPara_new";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obs_id", OracleDbType.Varchar2).Value = REFID;
+                cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;   
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remark"].ToString();
+                }
+
+            }
+            con.Dispose();
+            return resp;
+        }
+        public string AddChangeStatusRequestForCurrentPara(string REFID, int NEW_STATUS, string REMARKS)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_ChangeStatusRequestForSettledPara_new";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obs_id", OracleDbType.Varchar2).Value = REFID;
                 cmd.Parameters.Add("NewStatus", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
@@ -11285,8 +11493,29 @@ namespace AIS.Controllers
 
         }
 
-      
 
+        public string GetComplianceTextAuditee(int COMPLIANCE_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_auditee_text";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("para_id", OracleDbType.Int32).Value = COMPLIANCE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["reply"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
         public string GetComplianceHistoryCountAuditee(string REF_P, string OBS_ID)
         {
             string resp = "";

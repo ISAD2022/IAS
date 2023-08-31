@@ -10,6 +10,7 @@ namespace AIS.Models
         public string REF_P { get; set; }
         public string ENTITY_CODE { get; set; }
         public string ENTITY_ID { get; set; }
+        public string AU_OBS_ID { get; set; }
         public string TYPE_ID { get; set; }
         public string RISK_ID { get; set; }
         public string AUDIT_PERIOD { get; set; }
@@ -36,6 +37,8 @@ namespace AIS.Models
         public int STATUS { get; set; }
         public string PARA_TEXT { get; set; }
         public string ENTERED_BY { get; set; }
+        public string MAKER_REMARKS { get; set; }
+        public string REVIEWER_REMARKS { get; set; }
 
         public List<ObservationResponsiblePPNOModel> PARA_RESP { get; set; }
 

@@ -567,6 +567,21 @@ namespace AIS.Controllers
             return dBConnection.GetOldSettledParasForResponse(ENTITY_ID);
         }
         [HttpPost]
+        public List<OldParasModel> get_current_paras_for_status_change_request(int ENTITY_ID = 0)
+        {
+            return dBConnection.GetCurrentParasForStatusChangeRequest(ENTITY_ID);
+        }
+        [HttpPost]
+        public List<OldParasModel> get_current_paras_for_status_change_request_review()
+        {
+            return dBConnection.GetCurrentParasForStatusChangeRequestReview();
+        }
+        [HttpPost]
+        public List<OldParasModel> get_current_paras_for_status_change_request_authorize()
+        {
+            return dBConnection.GetCurrentParasForStatusChangeRequestAuthorize();
+        }
+        [HttpPost]
         public List<OldParasModel> get_manage_legacy_para()
         {
             return dBConnection.GetManageLegacyParas();
@@ -968,6 +983,29 @@ namespace AIS.Controllers
             response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, NEW_STATUS, REMARKS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
+        [HttpPost]
+        public string Add_Old_Para_Change_status_Review(string REFID, string REMARKS)
+        {
+            string response = "";
+            response = dBConnection.ReviewerAddChangeStatusRequestForSettledPara(REFID, REMARKS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+        [HttpPost]
+        public string Add_Old_Para_Change_status_Authorize(string REFID, int NEW_STATUS, string REMARKS)
+        {
+            string response = "";
+            response = dBConnection.AuthorizerAddChangeStatusRequestForSettledPara(REFID, NEW_STATUS, REMARKS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+        [HttpPost]
+        public string Add_New_Para_Change_status_Request(string REFID, int NEW_STATUS, string REMARKS)
+        {
+            string response = "";
+            response = dBConnection.AddChangeStatusRequestForCurrentPara(REFID, NEW_STATUS, REMARKS);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
 
         [HttpPost]
         public List<ZoneBranchParaStatusModel> get_zone_brach_para_position(int ENTITY_ID)
@@ -1329,9 +1367,9 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public string get_compliance_text_auditee(string REF_P, string OBS_ID)
+        public string get_compliance_text_auditee(int COMPLIANCE_ID)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceTextAuditee(COMPLIANCE_ID) + "\"}";
 
         }
         [HttpPost]
