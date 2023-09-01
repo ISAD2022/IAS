@@ -29,8 +29,9 @@ namespace AIS.Models
         public string REVIEWER_RECOMMENDATION { get; set; }
         public string SUBMITTED { get; set; }
         public string REF_P { get; set; }
-        public string AUDITEDBY { get; set; }
+        public string AUDITED_BY { get; set; }
         public string C_STATUS { get; set; }
+        public string SEQUENCE { get; set; }
 
     }
 }

@@ -17,5 +17,6 @@ namespace AIS.Models
         public string REVIEWER_REMARKS { get; set; }
         public string VOL_I_II { get; set; }
         public string STATUS_ID { get; set; }
+        public string AUDITED_BY { get; set; }
     }
 }

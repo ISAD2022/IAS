@@ -16,6 +16,8 @@ namespace AIS.Models
         public string AU_OBS_ID { get; set; }
         public string ID { get; set; }
         public string REPLY{ get; set; }
+        public string SEQUENCE{ get; set; }
+        public string AUDITED_BY{ get; set; }
         public string REPLY_DATE{ get; set; }
       
 

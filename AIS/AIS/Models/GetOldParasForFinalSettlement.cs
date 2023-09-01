@@ -22,10 +22,11 @@ namespace AIS.Models
         public string LASTUPDATEDBY { get; set; }
         public string LASTUPDATEDDATE { get; set; }
         public string REMARKS { get; set; }
+        public string SEQUENCE { get; set; }
         
         public string IMP_REMARKS { get; set; }
         public string SUBMITTED { get; set; }
-        public string AUDITEDBY { get; set; }
+        public string AUDITED_BY { get; set; }
         public int? ENTITY_ID { get; set; }
         public string C_STATUS { get; set; }
         public int? EVIDENCE_ID { get; set; }

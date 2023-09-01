@@ -904,60 +904,7 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult change_status_new_Para()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetCurrentParasEntitiesForStatusChange();
-
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
-        public IActionResult change_status_new_Para_reviewer()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
-
-        public IActionResult change_status_new_Para_authorize()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+     
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

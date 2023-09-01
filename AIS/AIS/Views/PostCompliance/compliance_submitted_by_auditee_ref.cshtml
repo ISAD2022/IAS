@@ -12,6 +12,8 @@
     var g_upResArr = [];
     var g_upRes = {};
     var g_upResIndex = 0;
+    var g_sequence = "";
+    var g_auditedBy = "";
 
     $(document).ready(function () {
         getLegacyPara();
@@ -34,7 +36,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.risk + '</p></td><td><p  class="fw-normal mb-1">' + child.heaD_REF_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-primary text-center">View</a></p></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.auditeename + '</p></td><td><p class="fw-normal mb-1">' + child.reportingoffice + '</p></td><td><p class="fw-normal mb-1">' + child.auditperiod + '</p></td><td><p class="fw-normal mb-1">' + child.parano + '</p></td><td><p  class="fw-normal mb-1">' + child.gistofpara + '</p></td><td><p  class="fw-normal mb-1">' + child.risk + '</p></td><td><p  class="fw-normal mb-1">' + child.heaD_REF_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td aling="center"><p  class="fw-normal mb-1 text-center"><a href="#" onclick="viewObservationStatus(' + child.id + ' ,\'' + child.reF_P + '\',\'' + child.parA_CATEGORY + '\',\'' + child.replieddate.split(' ')[0] + '\',\'' + child.aU_OBS_ID + '\' , \'' + child.sequence + '\' , \'' + child.auditeD_BY + '\');" class="text-hover text-primary text-center">View</a></p></td></tr>');
                 });
             },
 
@@ -88,12 +90,14 @@
 
     }
 
-    function viewObservationStatus(id,refP, paraCat, replyDate,obsId)
+    function viewObservationStatus(id,refP, paraCat, replyDate,obsId, seq, audBy)
     {
         g_paraId = id;
         g_paraRef = refP;
         g_paraCat = paraCat;
         g_auOBSID = obsId;
+        g_sequence = seq;
+        g_auditedBy = audBy;
         g_repliedDate = replyDate;
         $("#viewMemoModel").modal('show');
         $.ajax({
@@ -188,6 +192,8 @@
                 'SETTLE_INDICATOR': 'Y',
                 'PARA_CAT': g_paraCat,
                 'AU_OBS_ID': g_auOBSID,
+                'SEQUENCE': g_sequence,
+                'AUDITED_BY': g_auditedBy,
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS':14
             },
@@ -211,6 +217,8 @@
                 'SETTLE_INDICATOR': 'N',
                 'AU_OBS_ID': g_auOBSID,
                 'PARA_CAT': g_paraCat,
+                'SEQUENCE': g_sequence,
+                'AUDITED_BY': g_auditedBy,
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS': 15
             },
@@ -248,6 +256,8 @@
                 'PARA_CAT': g_paraCat,
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS': 13,
+                'SEQUENCE': g_sequence,
+                'AUDITED_BY': g_auditedBy,
                 'RESPONSIBLES_ARR': resP
             },
             cache: false,

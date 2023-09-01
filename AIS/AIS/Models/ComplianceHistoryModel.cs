@@ -8,7 +8,7 @@ namespace AIS.Models
     {
         public int ID { get; set; }
         public string REF_P { get; set; }
-        public int OBS_ID { get; set; }
+        public string OBS_ID { get; set; }
         public string REPLY { get; set; }
         public string REPLIED_DATE { get; set; }
         public string REVIEWER_REMARKS { get; set; }

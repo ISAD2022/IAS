@@ -866,10 +866,10 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public string add_old_para_br_compliance_reply(string Para_ID, int AU_OBS_ID , string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        public string add_old_para_br_compliance_reply(string Para_ID, int AU_OBS_ID , string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST, string AUDITED_BY)
         {
             string response = "";
-            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, AU_OBS_ID, Para_Cat, REPLY, EVIDENCE_LIST);
+            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, AU_OBS_ID, Para_Cat, REPLY, EVIDENCE_LIST,AUDITED_BY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -884,10 +884,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, string OBS_ID, int PARENT_ID)
+        public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string REPLY, string r_status, string OBS_ID, int PARENT_ID, string SEQUENCE, string AUDITED_BY)
         {
             string response = "";
-            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, OBS_ID, PARENT_ID);
+            response = dBConnection.AddOldParasComplianceReviewer(Para_ID, PARA_CAT, REPLY, r_status, OBS_ID, PARENT_ID, SEQUENCE, AUDITED_BY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
@@ -909,18 +909,18 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR)
+        public string submit_old_para_br_compliance_status(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, string SEQUENCE, string AUDITED_BY)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusUpdate(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR);
+            response = dBConnection.AddOldParasStatusUpdate(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, SEQUENCE, AUDITED_BY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status_partially_settle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR)
+        public string submit_old_para_br_compliance_status_partially_settle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE,string AUDITED_BY)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusPartiallySettle(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, RESPONSIBLES_ARR);
+            response = dBConnection.AddOldParasStatusPartiallySettle(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, RESPONSIBLES_ARR, SEQUENCE, AUDITED_BY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
@@ -931,10 +931,10 @@ namespace AIS.Controllers
         }       
 
         [HttpPost]
-        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID)
+        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID, string SEQUENCE, string AUDITED_BY)
         {
             string response = "";
-            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS, PARA_REF, PARA_INDICATOR, PARA_CATEGORY, AU_OBS_ID);
+            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS, PARA_REF, PARA_INDICATOR, PARA_CATEGORY, AU_OBS_ID, SEQUENCE, AUDITED_BY);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

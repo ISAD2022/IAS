@@ -7,6 +7,7 @@
     var g_paraId = 0;
     var g_auObsId = 0;
     var g_paraCat = "";
+    var g_auditedBy = "";
     var g_obsList = [];
 
     $(document).ready(function () {
@@ -24,10 +25,11 @@
         });
     });
 
-    function viewParaDetails(ref_p, memo_no, paraId, paraCat, obsId) {
+    function viewParaDetails(ref_p, memo_no, paraId, paraCat, obsId, audBy) {
         g_paraId = ref_p;
         g_auObsId = obsId;
         g_paraCat = paraCat;
+        g_auditedBy = audBy;
         $.ajax({
             url: "/ApiCalls/get_old_para_br_compliance_text_ref",
             type: "POST",
@@ -96,7 +98,7 @@
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) 
                 {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p style="color:red;"  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td><p style="color:red;"  class="fw-normal mb-1">' + child.revieweR_REMARKS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\',\'' + child.auditeD_BY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
                 });
             },
 
@@ -195,6 +197,7 @@
                 'Para_ID': g_paraId,
                 'AU_OBS_ID': g_auObsId,
                 'Para_Cat': g_paraCat,
+                'AUDITED_BY': g_auditedBy,
                 'REPLY': $('.richText-editor').html(),
                 'EVIDENCE_LIST': productImagesArr
             },
