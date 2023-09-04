@@ -216,10 +216,10 @@
         $('#process_detail').modal('show');
         $('#listofRespPersons tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_update",
+            url: "/ApiCalls/get_legacy_paras_for_update_ho",
             type: "POST",
             data: {
-                'ENTITY_ID': $('#entitySelectField').val(),
+                'ENTITY_NAME': $('#entitySelectField option:selected').text(),
                 'PARA_REF': ref_p,
                 'PARA_ID': paraId
             },

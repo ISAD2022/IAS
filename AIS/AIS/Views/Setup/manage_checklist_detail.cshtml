@@ -86,6 +86,49 @@
         
     }
     function updateSubProcess() {
+
+        if ($('#updatedChecklist').val()==0){
+            alert("please select Process to proceed");
+            return;
+        }
+        if ($('#updatedSubChecklist').val() == 0) {
+            alert("please select Sub Process to Proceed");
+            return;
+        }
+        if ($('#updatedProcDetailHeading').val() == "") {
+            alert("please provide Process Detail Heading to Proceed");
+            return;
+        }
+
+        if ($('#updatedViolationlist').val() == 0) {
+            alert("please select Vilation to Proceed");
+            return;
+        }
+
+        if ($('#updatedProcOwnerlist').val() == 0) {
+            alert("please select Process Owner to Proceed");
+            return;
+        }
+
+
+        if ($('#updatedRoleResplist').val() == 0) {
+            alert("please select Role Responsible to Proceed");
+            return;
+        }
+
+
+        if ($('#updatedRisklist').val() == 0) {
+            alert("please select Risk to Proceed");
+            return;
+        }
+
+
+        if ($('#updatedAnnexlist').val() == 0) {
+            alert("please select Annexure to Proceed");
+            return;
+        }
+
+
         $.ajax({
             url: "/ApiCalls/update_audit_checklist_detail",
             type: "POST",
@@ -258,6 +301,49 @@
      
     }
     function addProcessDetail(){
+
+        if ($('#newChecklist').val() == 0) {
+            alert("please select Process to proceed");
+            return;
+        }
+        if ($('#newSubChecklist').val() == 0) {
+            alert("please select Sub Process to Proceed");
+            return;
+        }
+        if ($('#newProcDetailHeading').val() == "") {
+            alert("please provide Process Detail Heading to Proceed");
+            return;
+        }
+
+        if ($('#newViolationlist').val() == 0) {
+            alert("please select Vilation to Proceed");
+            return;
+        }
+
+        if ($('#newProcOwnerlist').val() == 0) {
+            alert("please select Process Owner to Proceed");
+            return;
+        }
+
+
+        if ($('#newRoleResplist').val() == 0) {
+            alert("please select Role Responsible to Proceed");
+            return;
+        }
+
+
+        if ($('#newRisklist').val() == 0) {
+            alert("please select Risk to Proceed");
+            return;
+        }
+
+
+        if ($('#newAnnexlist').val() == 0) {
+            alert("please select Annexure to Proceed");
+            return;
+        }
+
+
         $.ajax({
             url: "/ApiCalls/add_audit_checklist_detail",
             type: "POST",
@@ -286,7 +372,7 @@
         <h3 style=" display:block;color: #45c545;">Audit Checklist Detail </h3>
     </div>
     <div class="col-md-6 text-right" style="padding-right:45px;">
-        <button onclick="addNewCheckListDetail(0);" class="btn btn-danger">Add New Sub Checklist</button>
+        <button onclick="addNewCheckListDetail(0);" class="btn btn-danger">Add New Checklist</button>
     </div>    
 </div>
 <div class="row mt-3 col-md-12">
@@ -552,8 +638,7 @@
                                 <label>Annexure</label>
                                 <input disabled="disabled" class="form-control" style="font-weight:normal !important" id="oldAnnexureLabel" />
 
-                            </div>
-                           
+                            </div>                           
                         </form>
                     </div>
                     <div class="col-md-6">
@@ -710,7 +795,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="updateSubProcess();" type="button" data-dismiss="modal" class="btn btn-success">Update Sub Process</button>
+                <button onclick="updateSubProcess();" type="button" data-dismiss="modal" class="btn btn-success">Submit Changes</button>
 
             </div>
         </div>

@@ -21,12 +21,31 @@
                 g_obsList = data;
        
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.parA_STATUS + '</p></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="parastatuschange(\'' + child.id + '\');">Change Status</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.entitY_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.amounT_INVOLVED + '</p></td><td class="col-md-1" style="text-align:center"><p  class="fw-normal mb-1" >' + child.parA_STATUS + '</p></td><td class="text-center"><a class="text-center text-primary" style="cursor:pointer;" onclick="paraText(\'' + child.id + '\');">View Para Text</a></td><td class="text-center"><a class="text-center text-danger" style="cursor:pointer;" onclick="parastatuschange(\'' + child.id + '\');">Change Status</a></td></tr>')
                 });
 
             },
 
             dataType: "json",
+        });
+
+    }
+
+    function paraText(id) {
+        $('#paraTextDisplayModel').modal('show');
+        $('#paraTextModelPanel').empty();
+       
+        $.ajax({
+            url: "/ApiCalls/get_new_para_text",
+            type: "POST",
+            data: {
+                'OBS_ID': id                
+            },
+            cache: false,
+            success: function (data) {
+                
+                $('#paraTextModelPanel').html(data);
+            }
         });
 
     }
@@ -80,7 +99,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                            <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
+                                <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
                         }
                     }
                 }
@@ -99,6 +118,7 @@
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto" style="text-align:center">VOL I-II</th>
                     <th class="col-md-auto" style="text-align:center">Para Status</th>
+                    <th class="col-md-auto">Para Text</th>
                     <th class="col-md-auto">Action</th>
                    
 
@@ -151,6 +171,38 @@
 
             <div class="mt-3 modal-footer">
                 <button id="Publishchange" type="button" class="btn btn-danger" onclick="Publishchange();">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="paraTextDisplayModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Para Text</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="mt-3 modal-body">
+                <form>
+
+                  
+                    <div class="mt-2 col-md-12">
+                        <div id="paraTextModelPanel"></div>
+
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="mt-3 modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

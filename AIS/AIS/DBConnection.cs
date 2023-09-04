@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";                                                
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -6686,9 +6686,11 @@ namespace AIS.Controllers
                         chk.SUB_PROCESS = Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
                         chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
+
                     }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
@@ -9675,13 +9677,13 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("obs_id", OracleDbType.Varchar2).Value = REFID;
-                cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;   
+                cmd.Parameters.Add("remark", OracleDbType.Varchar2).Value = REMARKS;   
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["Remark"].ToString();
+                    resp = rdr["Remarks"].ToString();
                 }
 
             }
@@ -11664,5 +11666,28 @@ namespace AIS.Controllers
             return stList;
 
         }
+
+        public string GetNewParaText(string OBS_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_GetnewParastext";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["text"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+
     }
 }

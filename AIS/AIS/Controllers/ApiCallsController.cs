@@ -1396,6 +1396,15 @@ namespace AIS.Controllers
             return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
 
         }
+
+        [HttpPost]
+        public string get_new_para_text(string OBS_ID)
+        {
+            return dBConnection.GetNewParaText(OBS_ID);
+
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
