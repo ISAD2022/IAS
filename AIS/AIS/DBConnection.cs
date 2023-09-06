@@ -2647,6 +2647,10 @@ namespace AIS.Controllers
 
         public List<RiskProcessDefinition> GetHOFunctionalListForDashboard()
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2654,7 +2658,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                //cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = CHECKLIST_DETAIL_ID;
+                cmd.Parameters.Add("AUDITEDBY", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8124,7 +8128,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = FUNCTIONAL_ENTITY_ID;
                 cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("SUB_PROCESSID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
-                cmd.Parameters.Add("AUDITED_BY", OracleDbType.Int32).Value = DEPT_ID;
+                cmd.Parameters.Add("AUDITEDBY", OracleDbType.Int32).Value = DEPT_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();

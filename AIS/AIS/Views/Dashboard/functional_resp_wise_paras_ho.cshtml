@@ -77,13 +77,14 @@
     }
 
     function getEntityObservation() {
+      
 
         $.ajax({
             url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard_ho",
             type: "POST",
             data: {
                 'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
-                'PROCESS_ID': $('#processSelectBox option:selected').val()
+                'PROCESS_ID': $('#processSelectBox option:selected').val(),
                 'DEPT_ID': $('#deptSelectBox option:selected').val()
             },
             cache: false,
@@ -148,7 +149,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["FunctionalList"]))
                     {
-                        <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                            <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
                     }
                 }
             }
