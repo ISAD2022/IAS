@@ -11873,15 +11873,18 @@ namespace AIS.Controllers
 
         public List<FADNewOldParaPerformanceModel> GetTotalParasDetailsHO(int ENTITY_ID = 0, int PROCESS_ID = 0)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<FADNewOldParaPerformanceModel> pdetails = new List<FADNewOldParaPerformanceModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_HO";
+                cmd.CommandText = "pkg_rpt.P_GET_Dash_table_functionwise_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
-                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
