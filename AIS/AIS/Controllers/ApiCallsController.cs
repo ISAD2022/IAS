@@ -1422,6 +1422,12 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<RiskProcessDefinition> get_functional_owner_area_for_functional_responsibility_wise_paras_ho(int ENTITY_ID = 0)
+        {
+            return dBConnection.GetHOFunctionalListForDashboard(ENTITY_ID);
+
+        }
+        [HttpPost]
         public List<RiskProcessDefinition> get_violation_area_for_functional_responsibility_wise_paras_ho(int FUNCTIONAL_ENTITY_ID = 0)
         {
             return dBConnection.GetHOViolationListForDashboard(FUNCTIONAL_ENTITY_ID);

@@ -66,7 +66,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["FunctionalList"] = dBConnection.GetHOFunctionalListForDashboard();
+            //ViewData["FunctionalList"] = dBConnection.GetHOFunctionalListForDashboard();
 
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");

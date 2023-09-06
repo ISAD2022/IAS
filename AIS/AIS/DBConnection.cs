@@ -2645,7 +2645,7 @@ namespace AIS.Controllers
             return pdetails;
         }
 
-        public List<RiskProcessDefinition> GetHOFunctionalListForDashboard()
+        public List<RiskProcessDefinition> GetHOFunctionalListForDashboard(int ENTITY_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2658,7 +2658,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("AUDITEDBY", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("AUDITEDBY", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
