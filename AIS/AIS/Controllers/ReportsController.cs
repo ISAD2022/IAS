@@ -1081,6 +1081,25 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult ho_total_paras_details()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+          
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

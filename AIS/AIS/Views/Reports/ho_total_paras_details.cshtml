@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Dashboard ~ Functional Responsibility Wise Analysis For HO";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        getEntityObservation();
+    });
+
+
+    function getEntityObservation() {
+
+        $.ajax({
+            url: "/ApiCalls/get_total_para_details_ho",
+            type: "POST",
+            data: {
+                
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                $('#observation_panel tbody').empty();
+                var sr = 1;
+                var t_tparas = 0;
+                var t_sparas = 0;
+                var t_uparas = 0;
+                var t_rparas = 0;
+                var t_hparas = 0;
+                var t_mparas = 0;
+                var t_lparas = 0;
+                $.each(data, function (i, v) {
+                    t_tparas += parseInt(v.total_Paras);
+                    t_sparas += parseInt(v.setteled_Para);
+                    t_uparas += parseInt(v.unsetteled_Para);
+                    t_rparas += parseFloat(v.ratio);
+                    t_hparas += parseInt(v.r1);
+                    t_mparas += parseInt(v.r2);
+                    t_lparas += parseInt(v.r3);
+                    t_rparas = parseFloat(t_rparas).toFixed(2);
+                    $('#observation_panel tbody').append('  <tr id="' + v.id + '"><td align="center"> ' + sr + '</td> <td align="left">' + v.process + '</td> <td align="right">' + v.total_Paras + '</td> <td align="right">' + v.setteled_Para + '</td> <td align="right">' + v.unsetteled_Para + '</td> <td align="right">' + parseFloat(v.ratio).toFixed(2) + '%</td><td align="right" style="background-color: #ff968f;">' + v.r1 + '</td> <td align="right" style="background-color:#f9e10a6b;">' + v.r2 + '</td> <td align="right" style="background-color:#82f386;">' + v.r3 + '</td> </tr>');
+                    sr++;
+                });
+                var finalRatio = (parseFloat(t_sparas / t_tparas) * 100).toFixed(2);
+
+                $('#observation_panel tbody').append('<tr><td colspan="2" align="right">Total</td><td align="right">' + t_tparas + '</td><td align="right">' + t_sparas + '</td><td align="right">' + t_uparas + '</td><td align="right">' + finalRatio + '%</td><td align="right">' + t_hparas + '</td><td align="right">' + t_mparas + '</td><td align="right">' + t_lparas + '</td></tr>');
+
+            },
+            dataType: "json",
+        });
+    }
+  
+   
+  
+</script>
+<div class="row col-md-12">
+    <div class="col-md-12">
+        <h3 style="color: #45c545;">Total Paras Details</h3>
+    </div>
+  
+
+    <div class="mt-3 col-md-12">
+        <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(0 148 219) !important;">
+                <tr>
+                    <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto">Entity</th>
+                    <th class="col-md-auto text-center">Total Paras</th>                    
+                    <th class="col-md-auto text-center">Un-Settled Para</th>
+                    <th class="col-md-auto text-center">Settlement Ratio</th>
+                    <th class="col-md-auto text-center">Ratio</th>
+                    <th class="col-md-auto text-center">High</th>
+                    <th class="col-md-auto text-center">Medium</th>
+                    <th class="col-md-auto text-center">Low</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+</div>

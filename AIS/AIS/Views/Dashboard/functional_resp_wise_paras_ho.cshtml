@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard ~ Functional Responsibility Wise Analysis";
+    ViewData["Title"] = "Dashboard ~ Functional Responsibility Wise Analysis For HO";
     Layout = "_Layout";
 }
 
@@ -20,7 +20,7 @@
 
 
             $.ajax({
-                url: "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras",
+                url: "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras_ho",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val()
@@ -52,7 +52,7 @@
             $('#subprocessSelectBox').empty();
             $('#subprocessSelectBox').append('<option value=0>--Select Sub Violation Area---</option>');
             $.ajax({
-                url: "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras",
+                url: "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras_ho",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
@@ -79,12 +79,13 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard",
+            url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard_ho",
             type: "POST",
             data: {
                 'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
                 'PROCESS_ID': $('#processSelectBox option:selected').val(),
-                'SUB_PROCESS_ID': $('#subprocessSelectBox option:selected').val()
+                'SUB_PROCESS_ID': $('#subprocessSelectBox option:selected').val(),
+                'DEPT_ID': $('#deptSelectBox option:selected').val()
             },
             cache: false,
             success: function (data) {
@@ -125,8 +126,18 @@
 <div class="row col-md-12">
     <div class="col-md-12">
         <h3 style="color: #45c545;">Functional Responsibilities Wise Analysis</h3>
-        <h6 style="color: #45c545;">(On the Basis of observations raised at Branches)</h6>
+        <h6 style="color: #45c545;">(On the Basis of observations raised at Head Office)</h6>
     </div>
+     <div class="col-md-12 mt-3">   
+        <div class="col-md-2 row">
+            <label class="text-bold"><b>Department</b></label>
+        </div>
+        <select id="deptSelectBox" onchange="" class="form-select form-control" aria-label="Default select example">
+            <option value="112243">Corporate Audit Department</option>
+            <option value="112248">Information Systems Department</option>
+        </select>
+    </div>
+
     <div class="col-md-12 mt-3">
         <div class="col-md-2 row">
             <label class="text-bold"><b>Functional Area</b></label>
@@ -138,7 +149,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["FunctionalList"]))
                     {
-                                        <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                        <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
                     }
                 }
             }

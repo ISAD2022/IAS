@@ -48,8 +48,25 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-           
+            ViewData["FunctionalList"] = dBConnection.GetFunctionalListForDashboard();          
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult functional_resp_wise_paras_ho()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["FunctionalList"] = dBConnection.GetHOFunctionalListForDashboard();
 
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");

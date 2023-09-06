@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Reports\ho_total_paras_details.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\Setup\manage_sub_checklist.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

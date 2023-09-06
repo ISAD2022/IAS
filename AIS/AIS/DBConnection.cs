@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";                                                
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -2575,6 +2575,147 @@ namespace AIS.Controllers
             con.Dispose();
             return planList;
         }
+        public List<RiskProcessDefinition> GetFunctionalListForDashboard()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["entity_id"]);
+                    proc.P_NAME = rdr["Functional_owner"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<RiskProcessDefinition> GetViolationListForDashboard(int ENTITY_ID=0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["t_id"]);
+                    proc.P_NAME = rdr["heading"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<RiskProcessDefinition> GetSubViolationListForDashboard(int ENTITY_ID = 0, int PROCESS_ID=0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_sub";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["S_ID"]);
+                    proc.P_NAME = rdr["HEADING"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<RiskProcessDefinition> GetHOFunctionalListForDashboard()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_ho";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                //cmd.Parameters.Add("CD_Id", OracleDbType.Int32).Value = CHECKLIST_DETAIL_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["entity_id"]);
+                    proc.P_NAME = rdr["Functional_owner"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<RiskProcessDefinition> GetHOViolationListForDashboard(int ENTITY_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_ho";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["t_id"]);
+                    proc.P_NAME = rdr["heading"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<RiskProcessDefinition> GetHOSubViolationListForDashboard(int ENTITY_ID = 0, int PROCESS_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_sub_ho";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskProcessDefinition proc = new RiskProcessDefinition();
+                    proc.P_ID = Convert.ToInt32(rdr["S_ID"]);
+                    proc.P_NAME = rdr["HEADING"].ToString();
+                    pdetails.Add(proc);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
         public List<RiskProcessDefinition> GetRiskProcessDefinition()
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -6679,6 +6820,7 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     if (PARA_REF != null)
                     {
                         chk.ENT_TYPE = rdr["ENT_TYPE"].ToString();
@@ -6752,7 +6894,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
+      
         public List<OldParasModel> GetLegacyParasForUpdateFAD(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -7929,13 +8071,12 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<FADNewOldParaPerformanceModel> GetFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        public List<FADNewOldParaPerformanceModel> GetFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7943,10 +8084,50 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = FUNCTIONAL_ENTITY_ID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SUB_PROCESSID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
                 OracleDataReader rdr = cmd.ExecuteReader();
 
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Functional_owner"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<FADNewOldParaPerformanceModel> GetHOFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0, int DEPT_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_ho";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = FUNCTIONAL_ENTITY_ID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SUB_PROCESSID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("AUDITED_BY", OracleDbType.Int32).Value = DEPT_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
@@ -11230,7 +11411,7 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public string SettleLegacyParaHO(int NEW_STATUS, int PARA_REF)
+        public string SettleLegacyParaHO(int NEW_STATUS, string PARA_REF, string SETTLEMENT_NOTES)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -11246,6 +11427,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("REFP", OracleDbType.Int32).Value = PARA_REF;
                 cmd.Parameters.Add("NEW_STATUS ", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = SETTLEMENT_NOTES;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -11687,6 +11869,37 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+        }
+
+        public List<FADNewOldParaPerformanceModel> GetTotalParasDetailsHO(int ENTITY_ID = 0, int PROCESS_ID = 0)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<FADNewOldParaPerformanceModel> pdetails = new List<FADNewOldParaPerformanceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_HO";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
+                    zb.Process = rdr["Functional_owner"].ToString();
+                    zb.Total_Paras = rdr["Total_Paras"].ToString();
+                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
+                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
+                    zb.Ratio = rdr["Ratio"].ToString();
+                    zb.R1 = rdr["R1"].ToString();
+                    zb.R2 = rdr["R2"].ToString();
+                    zb.R3 = rdr["R3"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
         }
 
     }

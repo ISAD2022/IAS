@@ -8,8 +8,7 @@
     var g_procId = 0;
     var g_subprocId = 0;
     var g_procDetailId = 0;
-    var g_entType="";
-  
+    var g_entType="";  
     var g_paraRef="";
 
     $(document).ready(function () {
@@ -199,9 +198,11 @@
             success: function (data) {
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
+               
                 $.each(data, function (index, child) {
+                    child.parA_STATUS = child.parA_STATUS == 9 ? 'Settle' : 'Un-Settle';
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="d-none"><p  class="fw-normal mb-1">' + child.amounT_INVOLVED + '</p></td><td class="d-none"><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Settle Observation</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Settle Observation</small></a></td></tr>')
                 });
             },
 
@@ -272,26 +273,30 @@
 
     }
     function updateParaStatusToSettle(ref_p, memo_no, paraId) {
+        g_paraRef = ref_p;
+        $('#settleRemarksModel').modal('show');
+        $('#Reason_settlement').val('');
+    }
 
-        
-        $('#listofRespPersons tbody').empty();
+    function submitSettlementofLegacyPara(){
         $.ajax({
             url: "/ApiCalls/settle_legacy_para_HO",
             type: "POST",
             data: {
-                'NEW_STATUS': 9,
-                'PARA_REF': ref_p
+                'NEW_STATUS': $('#settleUnSettleDropdown').val(),
+                'PARA_REF': g_paraRef,
+                'SETTLEMENT_NOTES': $('#Reason_settlement').val()
             },
             cache: false,
             success: function (data) {
 
-                alert(data.Message);
+                alert(data.Message);  
+                $('#settleRemarksModel').modal('hide');
                 getLegacyPara();
             },
 
             dataType: "json",
         });
-
 
     }
   
@@ -644,7 +649,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                            <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
+                                    <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
                         }
                     }
                 }
@@ -669,8 +674,7 @@
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation Gist</th>
-                    <th class="col-md-auto d-none">Amount</th>
-                    <th class="col-md-auto d-none">VOL I II</th>
+                    <th class="col-md-auto">Para Status</th>
                     <th class="col-md-auto">Action</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
@@ -704,7 +708,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                     {
-                                        <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                                                <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
                                     }
                                 }
                             }
@@ -720,7 +724,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
                                     {
-                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                     }
                                 }
                             }
@@ -756,7 +760,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                                <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -808,4 +812,49 @@
         </div>
     </div>
 </div>
+
+
+<div id="settleRemarksModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document" style="max-width:1450px !important;">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Settlement Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="mt-3 modal-body">
+                <form>
+
+                    <div class="mt-2 col-md-12">
+                        <select id="settleUnSettleDropdown" class="form-control form-select">
+                            <option value="6">Settled</option>
+                            <option value="8">Un-Settled</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-3 col-md-12">
+                        <label class="font-weight-bold">Please provide reference letter number through which complaince is received and on what date</label>
+
+                    </div>
+                    <div class="mt-2 col-md-12">
+                        <textarea class="form-control" id="Reason_settlement"></textarea>
+
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="mt-3 modal-footer">
+
+                <button onclick="submitSettlementofLegacyPara();" id="PublishParaText" type="button" class="btn btn-danger">Submit</button>
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
 

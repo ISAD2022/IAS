@@ -1228,9 +1228,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string settle_legacy_para_HO(int NEW_STATUS, int PARA_REF)
+        public string settle_legacy_para_HO(int NEW_STATUS, string PARA_REF, string SETTLEMENT_NOTES )
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.SettleLegacyParaHO(NEW_STATUS, PARA_REF) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SettleLegacyParaHO(NEW_STATUS, PARA_REF, SETTLEMENT_NOTES) + "\"}";
         }
 
         [HttpPost]
@@ -1249,9 +1249,14 @@ namespace AIS.Controllers
             return dBConnection.GetRelationObservationForDashboard(ENTITY_ID);
         }
         [HttpPost]
-        public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
+        public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID=0)
         {
-            return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID);
+            return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID, FUNCTIONAL_ENTITY_ID);
+        }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard_ho(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0, int DEPT_ID=0)
+        {
+            return dBConnection.GetHOFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID, FUNCTIONAL_ENTITY_ID, DEPT_ID);
         }
         [HttpPost]
         public List<FADNewOldParaPerformanceModel> get_violation_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
@@ -1403,8 +1408,37 @@ namespace AIS.Controllers
             return dBConnection.GetNewParaText(OBS_ID);
 
         }
+        [HttpPost]
+        public List<RiskProcessDefinition> get_violation_area_for_functional_responsibility_wise_paras(int FUNCTIONAL_ENTITY_ID=0)
+        {
+            return dBConnection.GetViolationListForDashboard(FUNCTIONAL_ENTITY_ID);
 
+        }
+        [HttpPost]
+        public List<RiskProcessDefinition> get_sub_violation_area_for_functional_responsibility_wise_paras(int FUNCTIONAL_ENTITY_ID = 0, int PROCESS_ID=0)
+        {
+            return dBConnection.GetSubViolationListForDashboard(FUNCTIONAL_ENTITY_ID, PROCESS_ID);
 
+        }
+
+        [HttpPost]
+        public List<RiskProcessDefinition> get_violation_area_for_functional_responsibility_wise_paras_ho(int FUNCTIONAL_ENTITY_ID = 0)
+        {
+            return dBConnection.GetHOViolationListForDashboard(FUNCTIONAL_ENTITY_ID);
+
+        }
+        [HttpPost]
+        public List<RiskProcessDefinition> get_sub_violation_area_for_functional_responsibility_wise_paras_ho(int FUNCTIONAL_ENTITY_ID = 0, int PROCESS_ID = 0)
+        {
+            return dBConnection.GetHOSubViolationListForDashboard(FUNCTIONAL_ENTITY_ID, PROCESS_ID);
+
+        }
+        [HttpPost]
+        public List<FADNewOldParaPerformanceModel> get_total_para_details_ho()
+        {
+            return dBConnection.GetTotalParasDetailsHO();
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
