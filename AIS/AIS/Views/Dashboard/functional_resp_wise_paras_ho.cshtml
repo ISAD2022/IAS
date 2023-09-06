@@ -83,8 +83,7 @@
             type: "POST",
             data: {
                 'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
-                'PROCESS_ID': $('#processSelectBox option:selected').val(),
-                'SUB_PROCESS_ID': $('#subprocessSelectBox option:selected').val(),
+                'PROCESS_ID': $('#processSelectBox option:selected').val()
                 'DEPT_ID': $('#deptSelectBox option:selected').val()
             },
             cache: false,
@@ -159,16 +158,10 @@
         <div class="col-md-2 row">
             <label class="text-bold"><b>Violation Area</b></label>
         </div>
-        <select id="processSelectBox" onchange="setupSubViolationPanel();" class="form-select form-control" aria-label="Default select example">
+        <select id="processSelectBox"  class="form-select form-control" aria-label="Default select example">
         </select>
     </div>
-    <div id="subviolationListPanel" class="col-md-12 mt-3">
-        <div class="col-md-2 row">
-            <label class="text-bold"><b>Sub Violation Area</b></label>
-        </div>
-        <select id="subprocessSelectBox" class="form-select form-control" aria-label="Default select example">
-        </select>
-    </div>
+  
     <div class="col-md-12 mt-3">
         <button onclick="getEntityObservation();" class="btn btn-primary">Search Para</button>
     </div>
