@@ -21,7 +21,7 @@
     var g_entId = 0;
     var g_entList = [];
     $(document).ready(function () {
-       
+
         $('#sidebar_policy').hide();
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
@@ -49,12 +49,14 @@
                 $('#entParentField').val('');
                 $('#entChildField').val('');
             }
-         });      
+        });
 
         $('#updateEntityModal').modal('show');
     }
 
     function ShowEntities() {
+        g_entList = [];
+        $('#auditeeEntitiesList tbody').empty();
 
         var typeId = $('#entityTypeSelectField').val();
         if (typeId != 0) {
@@ -76,9 +78,6 @@
                 },
                 dataType: "json",
             });
-        } else {
-            g_entList = [];
-            $('#auditeeEntitiesList tbody').empty();
         }
 
     }
@@ -95,7 +94,7 @@
             {
                 foreach (var item in (dynamic)(ViewData["EntitiesTypes"]))
                 {
-            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                    <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
 
                 }
             }
@@ -161,13 +160,13 @@
                             <h5>Child Office </h5>
                         </div>
                         <div class="row col-md-8">
-                            <select id="entChildField" class="form-control" >
+                            <select id="entChildField" class="form-control">
                                 <option value="0">--Select Child Office--</option>
                             </select>
                         </div>
                     </div>
 
-                   
+
 
                 </form>
             </div>

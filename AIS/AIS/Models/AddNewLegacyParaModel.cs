@@ -16,6 +16,7 @@ namespace AIS.Models
         public string PARA_NO { get; set; }
         public string NO_OF_INSTANCES { get; set; }
         public string GIST_OF_PARA { get; set; }
+        public string OLD_GIST_OF_PARA { get; set; }
         public string AMOUNT { get; set; }
         public string ANNEXURE { get; set; }
         public string VOL_I_II { get; set; }

@@ -27,7 +27,7 @@
                 g_obsList = data;
                 $.each(data, function (index, child) {
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.parA_REF + '"><td><p class="fw-normal mb-1">' + child.e_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_YEAR + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARA + '</p></td><td><p class="fw-normal mb-1">' + child.amount + '</p></td><td><p class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a class="text-center text-success" style="cursor:pointer;" onclick="parastatuschange(\'' + child.parA_REF + '\',\'' + child.gisT_OF_PARA + '\',\'' + child.parA_NO + '\');">Authorize</a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.parA_REF + '"><td><p class="fw-normal mb-1">' + child.e_NAME + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_YEAR + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.nature + '</p></td><td><p class="fw-normal mb-1">' + child.olD_GIST_OF_PARA + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARA + '</p></td><td class="text-center"><a class="text-center text-success" style="cursor:pointer;" onclick="parastatuschange(\'' + child.parA_REF + '\',\'' + child.gisT_OF_PARA + '\',\'' + child.olD_GIST_OF_PARA + '\',\'' + child.parA_NO + '\');">Authorize</a></td></tr>')
                 });
 
             },
@@ -36,11 +36,12 @@
         });
 
     }
-    function parastatuschange(id, gist, parano) {
+    function parastatuschange(id, gist, oldgist, parano) {
         g_paraId = id;
         g_paraGist = gist;
         g_paraNo = parano;
         $('#process_detail').modal('show');
+        $('#oldgistofParaTextArea').val(oldgist);
         $('#gistofParaTextArea').val(g_paraGist);
     }
 
@@ -59,6 +60,7 @@
             success: function (data) {
                 alert(data.Message);
                 onAlertCallback(reloadLocation);
+                $('#process_detail').modal('hide');
             },
             dataType: "json",
         });
@@ -80,9 +82,9 @@
                     <th class="col-md-auto">Entity</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Gist</th>
-                    <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I-II</th>
+                    <th class="col-md-auto">Nature of Para</th>
+                    <th class="col-md-auto">Old Gist</th>                    
+                    <th class="col-md-auto">Gist</th>                    
                     <th class="col-md-auto text-center">Action</th>
 
 
@@ -100,7 +102,7 @@
     <div class="modal-dialog  modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Authorize Change Para Status</h5>
+                <h5 class="modal-title">Authorize Update of Legacy Para Gist</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -109,8 +111,12 @@
                 <form>
 
                     <div class="mt-2 col-md-12">
+                        <label class="font-weight-bold">Previous Gist of Para</label>
+                        <textarea class="form-control" disabled="disabled" id="oldgistofParaTextArea" ></textarea>
+                    </div>
+                    <div class="mt-2 col-md-12">
                         <label class="font-weight-bold">Gist of Para</label>
-                        <textarea class="form-control" id="gistofParaTextArea" ></textarea>
+                        <textarea class="form-control" id="gistofParaTextArea"></textarea>
                     </div>
                 </form>
             </div>

@@ -1440,9 +1440,9 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public List<FADNewOldParaPerformanceModel> get_total_para_details_ho()
+        public List<FADNewOldParaPerformanceModel> get_total_para_details_ho(int ENTITY_ID=0)
         {
-            return dBConnection.GetTotalParasDetailsHO();
+            return dBConnection.GetTotalParasDetailsHO(ENTITY_ID);
 
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

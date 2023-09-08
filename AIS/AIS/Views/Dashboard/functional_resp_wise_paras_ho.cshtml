@@ -10,11 +10,11 @@
         $('#subviolationListPanel').hide();
     });
 
-    function getFunctionalOwenerList(){
+    function getFunctionalOwenerList() {
         if ($('#deptSelectBox').val() != 0) {
             $('#functionalOwnerPanel').show();
             $('#functionalGroupSelectBox').empty();
-            $('#functionalGroupSelectBox').append('<option value=0>--Select Functional Owner---</option>');          
+            $('#functionalGroupSelectBox').append('<option value=0>--Select Functional Owner---</option>');
 
             $.ajax({
                 url: "/ApiCalls/get_functional_owner_area_for_functional_responsibility_wise_paras_ho",
@@ -33,9 +33,10 @@
                 dataType: "json",
             });
 
-    }
-    else{
-            $('#functionalOwnerPanel').hide(); 
+        }
+        else {
+            $('#functionalOwnerPanel').hide();
+        }
     }
 
     function setupViolationPanel() {
@@ -56,10 +57,10 @@
                 },
                 cache: false,
                 success: function (data) {
-                   
+
                     $.each(data, function (i, v) {
                         $('#processSelectBox').append('<option value="' + v.p_ID + '">' + v.p_NAME + '</option>');
-                      
+
                     });
                 },
                 dataType: "json",
@@ -106,7 +107,7 @@
     }
 
     function getEntityObservation() {
-      
+
 
         $.ajax({
             url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard_ho",
@@ -148,23 +149,23 @@
             dataType: "json",
         });
     }
-  
-   
-  
+
+
+
 </script>
 <div class="row col-md-12">
     <div class="col-md-12">
         <h3 style="color: #45c545;">Management Audit / Function Wise Analysis</h3>
         <h6 style="color: #45c545;">(On the Basis of observations raised at Head Office)</h6>
     </div>
-     <div class="col-md-12 mt-3">   
+    <div class="col-md-12 mt-3">
         <div class="col-md-2 row">
             <label class="text-bold"><b>Audited by Department</b></label>
         </div>
         <select id="deptSelectBox" onchange="getFunctionalOwenerList();" class="form-select form-control" aria-label="Default select example">
             <option value="0">--Select Audited By Department--</option>
             <option value="112242">Corporate Audit Department</option>
-            <option value="112248">Information Systems Department</option>
+            <option value="112248">Information Systems Audit Department</option>
         </select>
     </div>
 
@@ -172,19 +173,19 @@
         <div class="col-md-2 row">
             <label class="text-bold"><b>Functional Area</b></label>
         </div>
-        <select id="functionalGroupSelectBox" onchange="setupViolationPanel();" class="form-select form-control" aria-label="Default select example">
+        <select id="functionalGroupSelectBox"  class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected="selected">--Select Functional Category--</option>
-           
+
         </select>
     </div>
-    <div id="violationListPanel" class="col-md-12 mt-3">   
+    <div id="violationListPanel" class="col-md-12 mt-3">
         <div class="col-md-2 row">
             <label class="text-bold"><b>Violation Area</b></label>
         </div>
-        <select id="processSelectBox"  class="form-select form-control" aria-label="Default select example">
+        <select id="processSelectBox" class="form-select form-control" aria-label="Default select example">
         </select>
     </div>
-  
+
     <div class="col-md-12 mt-3">
         <button onclick="getEntityObservation();" class="btn btn-primary">Search Para</button>
     </div>

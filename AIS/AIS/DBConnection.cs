@@ -1035,7 +1035,7 @@ namespace AIS.Controllers
                     acr.APPROVAL_STATUS = Convert.ToInt32(rdr["APPROVAL_STATUS"]);
                     acr.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
                     acr.PERIOD = rdr["PERIOD"].ToString();
-                    acr.ENTITY = rdr["ENTITY"].ToString();
+                    //acr.ENTITY = rdr["ENTITY"].ToString();
                     acr.FREQUENCY = rdr["FREQUENCY"].ToString();
                     acr.SIZE = rdr["BRSIZE"].ToString();
                     acr.RISK = rdr["RISK"].ToString();
@@ -1419,6 +1419,9 @@ namespace AIS.Controllers
         }
         public List<AuditeeEntitiesModel> GetAuditeeEntities(int ENTITY_TYPE_ID = 0)
         {
+            string TYPE_ID = "";
+            if (ENTITY_TYPE_ID != 0)
+                TYPE_ID = Convert.ToString(ENTITY_TYPE_ID);
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -1427,11 +1430,10 @@ namespace AIS.Controllers
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_GetAuditeeEntities";
+                cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -1441,8 +1443,8 @@ namespace AIS.Controllers
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
 
-                    if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
-                        entity.NAME = rdr["name"].ToString();
+                    if (rdr["E_NAME"].ToString() != "" && rdr["E_NAME"].ToString() != null)
+                        entity.NAME = rdr["E_NAME"].ToString();
 
                     entitiesList.Add(entity);
                 }
@@ -1496,8 +1498,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
-                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("E_id", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -1507,8 +1508,8 @@ namespace AIS.Controllers
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
 
-                    if (rdr["name"].ToString() != "" && rdr["name"].ToString() != null)
-                        entity.NAME = rdr["name"].ToString();
+                    if (rdr["c_name"].ToString() != "" && rdr["c_name"].ToString() != null)
+                        entity.NAME = rdr["c_name"].ToString();
 
                     entitiesList.Add(entity);
                 }
@@ -11312,15 +11313,14 @@ namespace AIS.Controllers
                 {
                     AddNewLegacyParaModel lpara = new AddNewLegacyParaModel();
                     lpara.PARA_REF = rdr["REF_P"].ToString();
-                    lpara.ANNEXURE = rdr["ANNEXURE"].ToString();
-                    lpara.VOL_I_II = rdr["VOL_I_II"].ToString();
+                    lpara.ANNEXURE = rdr["ANNEXURE"].ToString();                   
                     lpara.PARA_NO = rdr["PARA_NO"].ToString();
                     lpara.GIST_OF_PARA = rdr["GIST_OF_PARAS"].ToString();
+                    lpara.OLD_GIST_OF_PARA = rdr["OLD_GIST_OF_PARAS"].ToString();
                     lpara.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
                     lpara.E_CODE = rdr["E_CODE"].ToString();
                     lpara.NATURE = rdr["NATURE"].ToString();
                     lpara.E_NAME = rdr["E_NAME"].ToString();
-                    lpara.AMOUNT = rdr["AMOUNT_INVOLVED"].ToString();
                     list.Add(lpara);
                 }
             }
@@ -11345,6 +11345,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = PARA_REF;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                //cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -11888,7 +11890,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_rpt.P_GET_Dash_table_functionwise_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
