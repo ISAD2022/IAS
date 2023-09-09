@@ -412,6 +412,21 @@ namespace AIS.Controllers
             return dBConnection.GetAuditeeEntitiesForUpdate(ENTITY_TYPE_ID);
         }
         [HttpPost]
+        public List<AuditeeEntitiesModel> GetCBASEntities(string E_CODE, string E_NAME)
+        {
+            return dBConnection.GetCBASEntities(E_CODE,E_NAME);
+        }
+        [HttpPost]
+        public List<AuditeeEntitiesModel> GetERPEntities(string E_CODE, string E_NAME)
+        {
+            return dBConnection.GetERPEntities(E_CODE,E_NAME);
+        }
+        [HttpPost]
+        public List<AuditeeEntitiesModel> GetHREntities(string E_CODE, string E_NAME)
+        {
+            return dBConnection.GetHREntities(E_CODE,E_NAME);
+        }
+        [HttpPost]
         public bool submit_audit_criterias(int PERIOD_ID)
         {
             return dBConnection.SubmitAuditCriteriaForApproval(PERIOD_ID);

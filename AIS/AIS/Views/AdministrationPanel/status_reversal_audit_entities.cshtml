@@ -5,73 +5,6 @@
 }
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('.menu_page_selectAll').on('click', function () {
-
-            if ($('.menu_page_selectAll').is(':checked'))
-                $('.menu_page_tick').attr('checked', true);
-            else
-                $('.menu_page_tick').attr('checked', false);
-
-        });
-
-
-    });
-    function showPagesBlock() {
-
-        if ($('#menuSelectionBox option:selected').val() == 0) {
-            $('.pagesBlock').addClass('d-none');
-
-        }
-        else {
-            $('.menu_page_tick').attr('checked', false);
-            $('.pagesBlock').addClass('d-none');
-            $.ajax({
-                url: "/AdministrationPanel/menu_pages",
-                type: "POST",
-                data: {
-                    'MENU_ID': $('#menuSelectionBox option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    $('.menu_page_tick').attr('checked', false);
-                    $.each(data, function (index, page) {
-                        $('#pagemenuitem_' + page.id).attr('checked', true);
-                    });
-                    $('.pagesBlock').removeClass('d-none');
-                },
-                dataType: "json",
-            });
-
-        }
-    }
-
-    function publishSaveChanges() {
-        var pageIds = [];
-        $.each($('.menu_page_tick:checked'), function (i, v) {
-            pageIds.push($(v).attr('id').split('_')[1]);
-        });
-
-        if (pageIds.length > 0) {
-            alert('Please check atleast one page to proceed');
-            return false;
-        }
-        
-        $.ajax({
-            url: "/ApiCalls/menu_pages_updation",
-            type: "POST",
-            data: {
-                'MENU_ID': $('#menuSelectionBox option:selected').val(),
-                'PAGE_IDS': pageIds
-            },
-            cache: false,
-            success: function (data) {
-                alert("Menu Pages assignment Succesfully completed");
-                
-            },
-            dataType: "json",
-        });
-    }
 
     function getrelation(parentEntityId = 0, userEntityId = 0) {
 
@@ -139,6 +72,85 @@
         //  getrelation();
 
     }
+
+    function getEntities() {
+        getCBASEntities();
+        getERPEntities();
+        getHREntities();
+    
+    }
+    function getCBASEntities() {
+        $('#auditeeEntitiesList tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/getCBASEntities",
+            type: "POST",
+            data: {
+                'E_ID': $('#childposting').val(),
+                'E_CODE': $('#childposting option:selected').text()
+            },
+
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    sr++;
+                    $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
+
+                });
+              
+            },
+            dataType: "json",
+        });
+        //  getrelation();
+
+    }
+    function getERPEntities() {
+        $('#auditeeEntitiesList_erp tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/getERPEntities",
+            type: "POST",
+            data: {
+                'E_ID': $('#childposting').val(),
+                'E_CODE': $('#childposting option:selected').text()
+            },
+
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    sr++;
+                    $('#auditeeEntitiesList_erp tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
+
+                });
+
+            },
+            dataType: "json",
+        });
+        //  getrelation();
+
+    }
+    function getHREntities() {
+        $('#auditeeEntitiesList_hr tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/getHREntities",
+            type: "POST",
+            data: {
+                'E_ID': $('#childposting').val(),
+                'E_CODE': $('#childposting option:selected').text()
+            },
+
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    sr++;
+                    $('#auditeeEntitiesList_hr tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
+
+                });
+
+            },
+            dataType: "json",
+        });
+        //  getrelation();
+
+    }
 </script>
 
 <div class="col-md-12" style="margin-top:20px;">
@@ -158,7 +170,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                         {
-                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                         }
                     }
                 }
@@ -184,65 +196,58 @@
             <label>Place of Posting</label>
         </div>
         <div class="col-md-4">
-            <select id="childposting" class="form-control form-select">
+            <select id="childposting" onchange="getEntities();" class="form-control form-select">
                 <option id="0" value="0" selected="selected">--Select Place of Posting--</option>
 
             </select>
         </div>
     </div>
 
+</div>
+<div class="row col-md-12">
+    <h3>CBAS Entities</h3>
+    <table id="auditeeEntitiesList" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">ID</th>
+                <th class="col-md-auto">Entity Name</th>
+                <th class="col-md-auto">Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
 
-    <div class="row col-md-12">
-        <div class="col-md-2 mt-2">
-            <label class="font-weight-normal">Audit Period</label>
-        </div>
-        <div class="col-md-10 mt-2">
-            <select id="menuSelectionBox" onchange="showPagesBlock();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" selected>--Select Audit Period--</option>
-                @{
-                    if (ViewData["PeriodList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["PeriodList"]))
-                        {
-                            <option value="@item.Menu_Id" id="@item.Menu_Id">@item.Menu_Name</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-    </div>
-    <div class="row col-md-12 pagesBlock d-none">
-        <div class="col-md-2 mt-2">
-            <label class="font-weight-normal">Pages</label>
-        </div>
-        <div class="col-md-10 mt-2">
-            <div class="row col-md-12">
-                <div style="margin-left:auto;">
-                    <input class="menu_page_selectAll" type="checkbox" /> <label class="font-weight-normal ml-2">Select All</label>
-                </div>
-            </div>
-            <div id="menuPagesArea" class="row col-md-12">
-                @{
-                    if (ViewData["MenuPagesList"] != null)
-                    {
+    </table>
+</div>
 
-                        foreach (var item in (dynamic)(ViewData["MenuPagesList"]))
-                        {
+<div class="row col-md-12">
+    <h3>ERP Entities</h3>
+    <table id="auditeeEntitiesList_erp" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">ID</th>
+                <th class="col-md-auto">Entity Name</th>
+                <th class="col-md-auto">Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
 
-                            <div class="col-md-6">
-                                <input id="pagemenuitem_@item.Id" class="menu_page_tick" type="checkbox" /> <label class="font-weight-normal ml-2">@item.Page_Name</label>
-                            </div>
-                        }
-                    }
-                }
-            </div>
-        </div>
-    </div>
-    <div class="row col-md-12 mt-4">
-        <div style="margin-left:auto;">
-            <button class="btn btn-secondary">Cancel</button>
-            <button onclick="publishSaveChanges();" class="btn btn-danger ml-2">Save Changes</button>
-        </div>
-    </div>
+    </table>
+</div>
 
+<div class="row col-md-12">
+    <h3>HR Entities</h3>
+    <table id="auditeeEntitiesList_hr" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">ID</th>
+                <th class="col-md-auto">Entity Name</th>
+                <th class="col-md-auto">Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
 </div>
