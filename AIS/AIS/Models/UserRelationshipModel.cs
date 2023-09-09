@@ -23,6 +23,7 @@ namespace AIS.Models
 
         public string CHILD_NAME { get; set; }
         public string C_NAME { get; set; }
+        public string C_TYPE_ID { get; set; }
 
 
         public string ACTIVE { get; set; }

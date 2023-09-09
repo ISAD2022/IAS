@@ -153,7 +153,7 @@ namespace AIS.Controllers
         }
         
 
-        public IActionResult setup_observation_reversal()
+        public IActionResult setup_engagement_reversal()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -173,6 +173,27 @@ namespace AIS.Controllers
                 else
                     return View();
             }             
+        }
+        public IActionResult setup_observation_reversal()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+            ViewData["statusList"] = dBConnection.GetObservationReversalStatus();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
         }
         public IActionResult entity_relationship()
         {
@@ -335,7 +356,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesTypes"] = dBConnection.GetAuditeeEntities();
+            //ViewData["EntitiesTypes"] = dBConnection.GetAuditeeEntities();
+            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

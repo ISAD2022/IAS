@@ -1232,6 +1232,11 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SettleLegacyParaHO(NEW_STATUS, PARA_REF, SETTLEMENT_NOTES) + "\"}";
         }
+        [HttpPost]
+        public string delete_legacy_para_HO( string PARA_REF)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteLegacyParaHO( PARA_REF) + "\"}";
+        }
 
         [HttpPost]
         public List<FADNewOldParaPerformanceModel> get_relation_legacy_observation_for_dashboard(int ENTITY_ID=0)

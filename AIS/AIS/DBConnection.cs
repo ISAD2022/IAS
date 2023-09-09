@@ -1495,10 +1495,11 @@ namespace AIS.Controllers
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_GetDepartments";
+                cmd.CommandText = "pkg_ad.P_GetEntitees_for_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_id", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -6641,6 +6642,7 @@ namespace AIS.Controllers
                 {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    chk.ENG_ID = rdr["ENG_ID"].ToString();
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
@@ -7738,6 +7740,7 @@ namespace AIS.Controllers
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
+                    entity.C_TYPE_ID = rdr["TYPEID"].ToString();
                     entitiesList.Add(entity);
                 }
             }
@@ -11434,6 +11437,31 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("NEW_STATUS ", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = SETTLEMENT_NOTES;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+        public string DeleteLegacyParaHO(string PARA_REF)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_Delete_Legacy_Para_HO";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REFP", OracleDbType.Int32).Value = PARA_REF;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

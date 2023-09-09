@@ -202,7 +202,7 @@
                 $.each(data, function (index, child) {
                     child.parA_STATUS = child.parA_STATUS == 9 ? 'Settle' : 'Un-Settle';
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-danger mr-5px"><small>Settle Observation</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
                 });
             },
 
@@ -278,7 +278,8 @@
         $('#Reason_settlement').val('');
     }
 
-    function submitSettlementofLegacyPara(){
+    function submitSettlementofLegacyPara()
+    {
         $.ajax({
             url: "/ApiCalls/settle_legacy_para_HO",
             type: "POST",
@@ -292,6 +293,37 @@
 
                 alert(data.Message);  
                 $('#settleRemarksModel').modal('hide');
+                getLegacyPara();
+            },
+
+            dataType: "json",
+        });
+
+    }
+
+    function submitDeletionofLegacyPara(paraRef) {
+        g_paraRef = paraRef;
+        confirmAlert("Do you confirm to delete this Legacy Para");
+        onconfirmAlertCallback(confirmDeletionofLegacyPara);
+    }
+
+    function confirmDeletionofLegacyPara() {
+
+        confirmAlert("Your PP Number will be recorded for this action, Do you confirm to delete this Legacy Para");
+        onconfirmAlertCallback(confirm_submitLegacyParaUpdates);
+
+
+        $.ajax({
+            url: "/ApiCalls/delete_legacy_para_HO",
+            type: "POST",
+            data: {
+                'PARA_REF': g_paraRef
+            },
+            cache: false,
+            success: function (data) {
+
+                alert(data.Message);
+                $('#confirmModel').modal('hide');
                 getLegacyPara();
             },
 
@@ -675,8 +707,9 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Observation Gist</th>
                     <th class="col-md-auto">Para Status</th>
-                    <th class="col-md-auto">Action</th>
-                    <th class="col-md-auto">Action</th>
+                    <th class="col-md-auto">Update Text</th>
+                    <th class="col-md-auto">Update Status</th>
+                    <th class="col-md-auto">Delete Duplicate Para</th>
                 </tr>
             </thead>
             <tbody></tbody>

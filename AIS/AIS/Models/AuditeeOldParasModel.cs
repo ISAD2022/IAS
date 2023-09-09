@@ -6,6 +6,7 @@ namespace AIS.Models
     public class AuditeeOldParasModel
     {        
         public int? ID { get; set; }
+        public string ENG_ID { get; set; }
         public string REF_P { get; set; }
         public int? ENTITY_CODE { get; set; }
         public int? TYPE_ID { get; set; }
