@@ -30,7 +30,7 @@
             url: "/ApiCalls/get_legacy_paras_for_gist_update",
             type: "POST",
             data: {
-                'ENTITY_ID': $('#entitySelectField').val()
+                'ENTITY_ID': $('#entityReportSelectField').val()
             },
             cache: false,
             success: function (data) {
@@ -116,6 +116,35 @@
         });
     }
 
+    function getReportDropdownContents() {
+        if ($('#entitySelectField').val() == 0) {
+            $('#dropdownReportPanel').addClass('d-none');
+        } else {
+            $('#dropdownReportPanel').removeClass('d-none');
+            $('#entityReportSelectField').empty();
+            $('#entityReportSelectField').append('<option value="0">--Select Entity for Report</option>');
+
+            $.ajax({
+                url: "/ApiCalls/get_legacy_report_dropdown_contents",
+                type: "POST",
+                data: {
+                    'ENTITY_ID': $('#entitySelectField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    g_obsList = data;
+                    $('#entityNameField').html(data.length > 0 ? data[0].name : '');
+                    $.each(data, function (index, v) {
+                        $('#entityReportSelectField').append('<option value="' + v.id + '"> ' + v.entitY_NAME + '</option>');
+                    });
+                },
+
+                dataType: "json",
+            });
+        }
+
+    }
+
   
 </script>
 
@@ -128,7 +157,7 @@
             <label><b>Entity:</b></label>
         </div>
         <div class="col-md-10">
-            <select id="entitySelectField" onchange="getLegacyPara();" class="form-control form-select">
+            <select id="entitySelectField" onchange="getReportDropdownContents();" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
                     if (ViewData["EntitiesList"] != null)
@@ -140,6 +169,15 @@
                     }
                 }
 
+            </select>
+        </div>
+    </div>
+    <div id="dropdownReportPanel" class="row col-md-12 mt-3 d-none">
+        <div class="col-md-2">
+            <label><b>Report:</b></label>
+        </div>
+        <div class="col-md-10">
+            <select id="entityReportSelectField" onchange="getLegacyPara();" class="form-control form-select">
             </select>
         </div>
     </div>

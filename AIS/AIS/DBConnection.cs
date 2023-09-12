@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";                                                
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -1520,6 +1520,53 @@ namespace AIS.Controllers
 
         }
 
+        public List<AuditeeEntitiesModel> GetAISEntities(string ENTITY_ID, string TYPE_ID)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_auditee_entities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_ID", OracleDbType.Varchar2).Value = TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
+                        entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+
+                    entity.NAME = rdr["NAME"].ToString();
+                    if (rdr["CODE"].ToString() != "" && rdr["CODE"].ToString() != null)
+                        entity.CODE = Convert.ToInt32(rdr["CODE"]);
+                       
+                    if (rdr["TYPE_ID"].ToString() != "" && rdr["TYPE_ID"].ToString() != null)
+                        entity.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
+                    if (rdr["AUDITBY_ID"].ToString() != "" && rdr["AUDITBY_ID"].ToString() != null)
+                        entity.AUDITBY_ID = Convert.ToInt32(rdr["AUDITBY_ID"]);
+
+                    entity.AUDITBY_NAME = rdr["auditby_name"].ToString();
+                    entity.TYPE_NAME = rdr["TYPE_NAME"].ToString();
+                    entity.AUDITABLE = rdr["auditable"].ToString();
+                    entity.COST_CENTER = rdr["cost_center"].ToString();
+                    entity.STATUS = rdr["active"].ToString();
+
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        
         public List<AuditeeEntitiesModel> GetCBASEntities(string E_CODE, string E_NAME )
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -6942,6 +6989,7 @@ namespace AIS.Controllers
                         chk.SUB_PROCESS = Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
                         chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
+                        chk.RISK_ID = rdr["riskid"].ToString();
 
                     }
 
@@ -8008,6 +8056,36 @@ namespace AIS.Controllers
                     entity.ACTIVE = rdr["ACTIVE"].ToString();
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<AuditeeEntitiesModel> GetEntityTypeList()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
                     entitiesList.Add(entity);
                 }
             }
@@ -11909,15 +11987,17 @@ namespace AIS.Controllers
                     ComplianceHistoryModel st = new ComplianceHistoryModel();
                     st.ID = Convert.ToInt32(rdr["ID"].ToString());
                     st.OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    st.REF_P = rdr["refp"].ToString();
-                    st.REPLY = "";
-                    st.REPLIED_DATE = rdr["replieddate"].ToString();
-                    st.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                    st.REVIEWED_ON = rdr["reviewed_on"].ToString();
-                    st.IMP_REMARKS = rdr["imp_remarks"].ToString();
-                    st.IMP_REMARKS_ON = rdr["imp_remarks_on"].ToString();
-                  
-                    st.STATUS_NAME = rdr["statusname"].ToString();
+                    st.REF_P = rdr["ref_p"].ToString();
+                    st.REMARKS = rdr["remarks"].ToString();
+                    st.ATTENDED_ON = rdr["attended_on,"].ToString();
+                    st.ATTENDED_BY = rdr["attended_by"].ToString();
+                    st.ROLE_ID = rdr["roleid"].ToString();
+                    st.STAGE = rdr["STAGE"].ToString();
+                    st.SEQ = rdr["seq"].ToString();
+                    st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
+                    st.ENTITY_ID = rdr["entity_id"].ToString();
+                    st.AUDITED_BY = rdr["auditedby"].ToString();
+                    st.C_STATUS = rdr["c_status"].ToString();
                     st.PARA_CATEGORY = rdr["para_category"].ToString();
                     stList.Add(st);
                 }
@@ -11971,16 +12051,17 @@ namespace AIS.Controllers
                     ComplianceHistoryModel st = new ComplianceHistoryModel();
                     st.ID = Convert.ToInt32(rdr["ID"].ToString());
                     st.OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    st.REF_P = rdr["refp"].ToString();
-                    st.REPLY = rdr["REPLY"].ToString();
-                    st.REPLIED_DATE = rdr["replieddate"].ToString();
-                    st.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                    st.REVIEWED_ON = rdr["reviewed_on"].ToString();
-                    st.IMP_REMARKS = rdr["imp_remarks"].ToString();
-                    st.IMP_REMARKS_ON = rdr["imp_remarks_on"].ToString();
+                    st.REF_P = rdr["ref_p"].ToString();
                     st.REMARKS = rdr["remarks"].ToString();
-                    st.REMARKS_ON = rdr["remarks_on"].ToString();
-                    st.STATUS_NAME = rdr["statusname"].ToString();
+                    st.ATTENDED_ON = rdr["attended_on,"].ToString();
+                    st.ATTENDED_BY = rdr["attended_by"].ToString();
+                    st.ROLE_ID = rdr["roleid"].ToString();
+                    st.STAGE = rdr["STAGE"].ToString();
+                    st.SEQ = rdr["seq"].ToString();
+                    st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
+                    st.ENTITY_ID = rdr["entity_id"].ToString();
+                    st.AUDITED_BY = rdr["auditedby"].ToString();
+                    st.C_STATUS = rdr["c_status"].ToString();
                     st.PARA_CATEGORY = rdr["para_category"].ToString();
                     stList.Add(st);
                 }

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 
 namespace AIS.Controllers
@@ -410,6 +411,11 @@ namespace AIS.Controllers
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesByTypeId(int ENTITY_TYPE_ID = 0)
         {
             return dBConnection.GetAuditeeEntitiesForUpdate(ENTITY_TYPE_ID);
+        }
+        [HttpPost]
+        public List<AuditeeEntitiesModel> GetAISEntities(string ENTITY_ID, string TYPE_ID)
+        {
+            return dBConnection.GetAISEntities( ENTITY_ID,  TYPE_ID);
         }
         [HttpPost]
         public List<AuditeeEntitiesModel> GetCBASEntities(string E_CODE, string E_NAME)
