@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";                                                
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";                                                
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -11837,6 +11837,30 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<ObservationReversalModel> GetAuditeeEngagements(int ENTITY_ID = 0, int PERIOD=0)
+        {
+            List<ObservationReversalModel> resp = new List<ObservationReversalModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_auditee_engagement";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ent_id", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("period", OracleDbType.Int32).Value = PERIOD;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationReversalModel os = new ObservationReversalModel();
+                    os.ENG_ID = rdr["ENG_ID"].ToString();
+                    os.STATUS = rdr["Eng_name"].ToString();
+                    resp.Add(os);
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
         public List<ObservationReversalModel> GetEngagementDetailsForStatusReversal(int ENTITY_ID = 0)
         {
             List<ObservationReversalModel> resp = new List<ObservationReversalModel>();
@@ -12120,6 +12144,65 @@ namespace AIS.Controllers
                     zb.R1 = rdr["R1"].ToString();
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<AuditeeRiskModel> GetAuditeeRisk(int ENG_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeRiskModel> pdetails = new List<AuditeeRiskModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetAuditeeRisk";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeRiskModel zb = new AuditeeRiskModel();
+                    zb.MAX_NUMBER = rdr["max_number"].ToString();
+                    zb.RISK_AREAS = rdr["risk_areas"].ToString();
+                    zb.MARKS = rdr["Marks"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<AuditeeRiskModel> GetAuditeeRiskDetails(int ENG_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeRiskModel> pdetails = new List<AuditeeRiskModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetAuditeeRisk";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeRiskModel zb = new AuditeeRiskModel();
+                    zb.MAX_NUMBER = rdr["max_number"].ToString();
+                    zb.RISK_AREAS = rdr["risk_areas"].ToString();
+                    zb.MARKS = rdr["risk_based_marks"].ToString();
+                    zb.NO_OBS = rdr["number_of_observations"].ToString();
+                    zb.AVG_WEIGHT = rdr["weighted_average_marks"].ToString();
                     pdetails.Add(zb);
                 }
             }

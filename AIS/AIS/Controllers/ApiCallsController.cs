@@ -1471,6 +1471,25 @@ namespace AIS.Controllers
             return dBConnection.GetTotalParasDetailsHO(ENTITY_ID);
 
         }
+        [HttpPost]
+        public List<ObservationReversalModel> get_auditee_engagement_plan(int ENTITY_ID, int PERIOD)
+        {
+            return dBConnection.GetAuditeeEngagements(ENTITY_ID, PERIOD);
+
+        }
+        [HttpPost]
+        public List<AuditeeRiskModel> get_auditee_risk(int ENG_ID)
+        {
+            return dBConnection.GetAuditeeRisk(ENG_ID);
+
+        }
+
+        [HttpPost]
+        public List<AuditeeRiskModel> get_auditee_risk_details(int ENG_ID)
+        {
+            return dBConnection.GetAuditeeRiskDetails(ENG_ID);
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
