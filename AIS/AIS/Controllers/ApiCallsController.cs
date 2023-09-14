@@ -1485,7 +1485,14 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditeeRiskModel> get_auditee_risk_details(int ENG_ID)
+        public List<RiskAssessmentEntTypeModel> get_auditee_risk_for_entity_types(int ENT_TYPE_ID = 0, int PERIOD = 0)
+        {
+            return dBConnection.GetAuditeeRiskForEntTypes(ENT_TYPE_ID,PERIOD);
+
+        }
+
+        [HttpPost]
+        public List<AuditeeRiskModeldetails> get_auditee_risk_details(int ENG_ID)
         {
             return dBConnection.GetAuditeeRiskDetails(ENG_ID);
 

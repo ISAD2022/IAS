@@ -12179,17 +12179,50 @@ namespace AIS.Controllers
             return pdetails;
         }
 
-        public List<AuditeeRiskModel> GetAuditeeRiskDetails(int ENG_ID = 0)
+        public List<RiskAssessmentEntTypeModel> GetAuditeeRiskForEntTypes(int ENT_TYPE_ID = 0, int PERIOD=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
-            List<AuditeeRiskModel> pdetails = new List<AuditeeRiskModel>();
+            List<RiskAssessmentEntTypeModel> pdetails = new List<RiskAssessmentEntTypeModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_GetAuditeeRisk";
+                cmd.CommandText = "pkg_ad.P_Get_Entity_Risk";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_TYP", OracleDbType.Int32).Value = ENT_TYPE_ID;
+                cmd.Parameters.Add("Period", OracleDbType.Int32).Value = PERIOD;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskAssessmentEntTypeModel zb = new RiskAssessmentEntTypeModel();
+                    zb.RISK_CATEGORY = rdr["risk_category"].ToString();
+                    zb.RISK_RATING = rdr["risk_rating"].ToString();
+                    zb.NAME = rdr["name"].ToString();
+                    zb.PARENT_OFFICE = rdr["parent_office"].ToString();
+                    zb.BRANCH_CODE = rdr["branch_code"].ToString();
+                    
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<AuditeeRiskModeldetails> GetAuditeeRiskDetails(int ENG_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeRiskModeldetails> pdetails = new List<AuditeeRiskModeldetails>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetAuditeeRisk_details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENG_ID;
@@ -12197,12 +12230,14 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    AuditeeRiskModel zb = new AuditeeRiskModel();
+                    AuditeeRiskModeldetails zb = new AuditeeRiskModeldetails();
                     zb.MAX_NUMBER = rdr["max_number"].ToString();
                     zb.RISK_AREAS = rdr["risk_areas"].ToString();
-                    zb.MARKS = rdr["risk_based_marks"].ToString();
+                    zb.RISK_MARKS = rdr["risk_based_marks"].ToString();
                     zb.NO_OBS = rdr["number_of_observations"].ToString();
-                    zb.AVG_WEIGHT = rdr["weighted_average_marks"].ToString();
+                    zb.AVG_MARKS = rdr["weighted_average_marks"].ToString();
+                    zb.W_AVG = rdr["weightage_average"].ToString();
+                    zb.G_RISK = rdr["gravity_risk"].ToString();
                     pdetails.Add(zb);
                 }
             }

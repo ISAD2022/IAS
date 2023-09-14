@@ -42,11 +42,32 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult risk_assessment_table()
+        public IActionResult risk_assessment_entities()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+            ViewData["PeriodList"] = dBConnection.GetAuditPeriods();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult risk_assessment_ent_types()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntTypeList"] = dBConnection.GetEntityTypeList();
             ViewData["PeriodList"] = dBConnection.GetAuditPeriods();
             if (!sessionHandler.IsUserLoggedIn())
             {
