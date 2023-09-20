@@ -6378,6 +6378,8 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+
+      
         public List<AuditeeOldParasModel> GetAuditeeOldParas(int ENTITY_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -6397,15 +6399,27 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
+
+
                     chk.ID = Convert.ToInt32(rdr["ID"]);
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    //chk.REF_P = rdr["ref_p"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    //chk.AMOUNT = rdr["amount"].ToString();
+                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
+                    chk.REPORT_NAME = rdr["PARA_CATEGORY"].ToString();
+                    //chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
+                    //chk.VOL_I_II = rdr["vol_i_ii"].ToString();
+                    chk.AUDITEDBY = rdr["AUDITED_BY"].ToString();
+
+
+
+                   
                     chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
-                    chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
-                    chk.PARA_NO = Convert.ToInt32(rdr["PARA_NO"]);
-                    chk.AUDITEDBY = Convert.ToInt32(rdr["AUDITED_BY"]);
-                    if (rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString() != null && rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"].ToString() != "")
-                        chk.DATE_OF_LAST_COMPLIANCE_RECEIVED = Convert.ToDateTime(rdr["DATE_OF_LAST_COMPLIANCE_RECEIVED"]);
-
+                  
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.AUDITEE_RESPONSE = rdr["AUDITEE_RESPONSE"].ToString();
@@ -9159,6 +9173,33 @@ namespace AIS.Controllers
             return chk;
         }
 
+        public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string Ref_P, string OBS_ID, string COM_SEQ)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history_auditee_text";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("c_seq", OracleDbType.Varchar2).Value = COM_SEQ;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    chk.PARA_TEXT = rdr["reply"].ToString();
+                }
+            }
+            con.Dispose();
+            return chk;
+        }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
@@ -9911,7 +9952,7 @@ namespace AIS.Controllers
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"]);
-                    chk.AUDIT_PERIOD = Convert.ToInt32(rdr["AUDIT_PERIOD"]);
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.MEMO_NO = rdr["PARA_NO"].ToString();                   
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();   
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -12077,10 +12118,11 @@ namespace AIS.Controllers
                     st.OBS_ID = rdr["AU_OBS_ID"].ToString();
                     st.REF_P = rdr["ref_p"].ToString();
                     st.REMARKS = rdr["remarks"].ToString();
-                    st.ATTENDED_ON = rdr["attended_on,"].ToString();
+                    //st.ATTENDED_ON = rdr["attended_on,"].ToString();
                     st.ATTENDED_BY = rdr["attended_by"].ToString();
                     st.ROLE_ID = rdr["roleid"].ToString();
                     st.STAGE = rdr["STAGE"].ToString();
+                    st.NAME = rdr["NAME"].ToString();
                     st.SEQ = rdr["seq"].ToString();
                     st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
                     st.ENTITY_ID = rdr["entity_id"].ToString();
