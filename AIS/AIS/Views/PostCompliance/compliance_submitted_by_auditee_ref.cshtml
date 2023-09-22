@@ -199,7 +199,7 @@
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'Y',
                 'PARA_CAT': g_paraCat,
-                'AU_OBS_ID': g_auOBSID,
+                'OBS_ID': g_auOBSID,
                 'SEQUENCE': g_sequence,
                 'AUDITED_BY': g_auditedBy,
                 'REMARKS': $('#viewMemo_complianc').val(),
@@ -223,7 +223,7 @@
                 'PARA_ID': g_paraId,
                 'REFID': g_paraRef,
                 'SETTLE_INDICATOR': 'N',
-                'AU_OBS_ID': g_auOBSID,
+                'OBS_ID': g_auOBSID,
                 'PARA_CAT': g_paraCat,
                 'SEQUENCE': g_sequence,
                 'AUDITED_BY': g_auditedBy,
@@ -260,6 +260,7 @@
             data: {
                 'PARA_ID': g_paraId,
                 'REFID': g_paraRef,
+                'OBS_ID': g_auOBSID,
                 'SETTLE_INDICATOR':'P',
                 'PARA_CAT': g_paraCat,
                 'REMARKS': $('#viewMemo_complianc').val(),
@@ -547,8 +548,8 @@
                                 <tr>
                                     <th class="col-md-auto">Compliance Cycle</th>
                                     <th class="col-md-auto">PP Number</th>
-                                    <th class="col-md-auto">Name</th>
                                     <th class="col-md-auto">Designation</th>
+                                    <th class="col-md-auto">Name</th>
                                     <th class="col-md-auto">Remarks</th>
                                     <th class="col-md-auto">View Compliance</th>
                                 </tr>

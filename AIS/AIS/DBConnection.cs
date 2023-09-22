@@ -9442,7 +9442,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_AddOldParasReply";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = AU_OBS_ID;
@@ -9590,7 +9590,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_AddOldParasReviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
                 cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = Para_ID;                              
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;                              
@@ -9815,7 +9815,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_hd.P_AddOldParasImpRemarks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
@@ -9907,7 +9907,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_hd.P_AddFinalsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("PID", OracleDbType.Int32).Value = PARA_ID;
                 cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = PARA_REF;
@@ -12122,7 +12122,7 @@ namespace AIS.Controllers
                     st.ATTENDED_BY = rdr["attended_by"].ToString();
                     st.ROLE_ID = rdr["roleid"].ToString();
                     st.STAGE = rdr["STAGE"].ToString();
-                    st.NAME = rdr["NAME"].ToString();
+                    st.NAME = rdr["DESIGNATION"].ToString();
                     st.SEQ = rdr["seq"].ToString();
                     st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
                     st.ENTITY_ID = rdr["entity_id"].ToString();

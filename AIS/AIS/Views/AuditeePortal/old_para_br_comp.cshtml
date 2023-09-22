@@ -73,7 +73,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\' ,\'' + child.auditeD_BY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\' ,\'' + child.auditeD_BY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
             },
@@ -82,52 +82,6 @@
         });
 
     }
-
-    function getParaComplianceCount() {
-
-        $('#manageObsPanel tbody').empty();
-        $.ajax({
-            url: "/ApiCalls/get_compliance_history_count",
-            type: "POST",
-            data: {
-
-            },
-            cache: false,
-            success: function (data) {
-                g_obsList = data;
-                $('#entityNameField').html(data.length > 0 ? data[0].name : '');
-                $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center d-none"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-
-                });
-            },
-
-            dataType: "json",
-        });
-
-    }
-
-    function viewParaCompliance(paraREF, obsID){
-       $('#viewParaComplianceModel').modal('show');
-
-        $.ajax({
-            url: "/ApiCalls/get_compliance_history_count",
-            type: "POST",
-            data: {
-                'REF_P':paraREF,
-                'OBS_ID':obsID
-            },
-            cache: false,
-            success: function (data) {
-              
-            },
-
-            dataType: "json",
-        });
-
-
-    }
-
     function PublishCompliance() {
 
         if ($('.richText-editor').html() == "") {
@@ -174,9 +128,80 @@
         $('#viewMemoModel').modal('hide');
         getLegacyPara();
     }
+    function viewParaCompliance(paraREF, obsID) {
+        g_paraRef = paraREF;
+        g_auOBSID = obsID;
+        $('#viewParaComplianceModel').modal('show');
+        $('#manageComplianceHistPanel tbody').empty();
 
-  
+        $.ajax({
+            url: "/ApiCalls/get_compliance_history_count",
+            type: "POST",
+            data: {
+                'REF_P': paraREF,
+                'OBS_ID': obsID
+            },
+            cache: false,
+            success: function (data) {
+                g_compCount = data.Message;
+                if (g_compCount > 0) {
 
+                    $.ajax({
+                        url: "/ApiCalls/get_compliance_history",
+                        type: "POST",
+                        data: {
+                            'REF_P': paraREF,
+                            'OBS_ID': obsID
+                        },
+                        cache: false,
+                        success: function (data) {
+                            var cycle_count = 0;
+                            $.each(data, function (i, v) {
+                                if (v.coM_SEQ_NO > cycle_count) {
+                                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                                    cycle_count++;
+                                }
+                                else
+                                    $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
+
+                            });
+
+                        },
+
+                        dataType: "json",
+                    });
+
+
+                }
+            },
+
+            dataType: "json",
+        });
+
+
+    }
+    function getComplianceText(comSeq) {
+        $('#viewParaComplianceTextModel').modal('show');
+        $.ajax({
+            url: "/ApiCalls/get_old_para_compliance_cycle_text",
+            type: "POST",
+            data: {
+                'REF_P': g_paraRef,
+                'OBS_ID': g_auOBSID,
+                'COM_SEQ': comSeq
+
+            },
+            cache: false,
+            success: function (data) {
+                $('#complianceCycleTextPanel').html(data.parA_TEXT);
+            },
+
+            dataType: "json",
+        });
+
+
+
+    }
 </script>
 
 <div class="row">
@@ -195,7 +220,7 @@
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Amount</th>
                     <th class="col-md-auto">VOL I II</th>
-                    <th class="col-md-auto d-none">Compliance History</th>
+                    <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
@@ -207,7 +232,6 @@
 
    
 </div>
-
 
 <div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
@@ -363,9 +387,8 @@
     </div>
 </div>
 
-
 <div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Compliance History</h5>
@@ -375,17 +398,17 @@
             </div>
             <div class="modal-body">
                 <form>
-                    
+
                     <div class="row col-md-12 mt-3">
-                        <table id="manageCompPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                        <table id="manageComplianceHistPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
                             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                 <tr>
-                                    <th class="col-md-auto">Sr No.</th>
-                                    <th class="col-md-auto">Compliance Received On</th>
-                                    <th class="col-md-auto">Management Reply</th>
-                                    <th class="col-md-auto">Auditor Reply</th>
-                                    <th class="col-md-auto">Status</th>                                    
-                                    
+                                    <th class="col-md-auto">Compliance Cycle</th>
+                                    <th class="col-md-auto">PP Number</th>                                    
+                                    <th class="col-md-auto">Designation</th>
+                                    <th class="col-md-auto">Name</th>
+                                    <th class="col-md-auto">Remarks</th>
+                                    <th class="col-md-auto">View Compliance</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -402,5 +425,28 @@
     </div>
 </div>
 
+<div id="viewParaComplianceTextModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:85% !important;">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Compliance Text</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
 
+                    <div class="row col-md-12 mt-3">
+                        <div id="complianceCycleTextPanel" class="col-md-12"></div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
