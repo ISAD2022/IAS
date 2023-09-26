@@ -943,10 +943,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string submit_old_para_br_compliance_status_partially_settle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE,string AUDITED_BY)
+        public string submit_old_para_br_compliance_status_partially_settle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CAT, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE,string AUDITED_BY, string PARA_TEXT)
         {
             string response = "";
-            response = dBConnection.AddOldParasStatusPartiallySettle(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, RESPONSIBLES_ARR, SEQUENCE, AUDITED_BY);
+            response = dBConnection.AddOldParasStatusPartiallySettle(OBS_ID, REFID, REMARKS, NEW_STATUS, PARA_CAT, SETTLE_INDICATOR, RESPONSIBLES_ARR, SEQUENCE, AUDITED_BY, PARA_TEXT);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

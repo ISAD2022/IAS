@@ -17,6 +17,12 @@
 
     $(document).ready(function () {
         getLegacyPara();
+        $('#viewMemo_revisedParaText').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
         
     });
 
@@ -263,6 +269,7 @@
                 'OBS_ID': g_auOBSID,
                 'SETTLE_INDICATOR':'P',
                 'PARA_CAT': g_paraCat,
+                'PARA_TEXT': $('#viewMemo_revisedParaText').val(),
                 'REMARKS': $('#viewMemo_complianc').val(),
                 'NEW_STATUS': 13,
                 'SEQUENCE': g_sequence,
@@ -426,6 +433,10 @@
                     <hr style="border: 3px solid black;" />
                     <h5 class="bg-info header-section">
                         <b>In-charge Implementation Section</b></h5>
+                    <div class="form-group">
+                        <label for="viewMemo_revisedParaText">Revised Para Text</label>
+                        <textarea class="form-control" id="viewMemo_revisedParaText"></textarea>
+                    </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Update / Delete Responsibles</label>
                         <div class="col-md-12 pl-0 pr-0">

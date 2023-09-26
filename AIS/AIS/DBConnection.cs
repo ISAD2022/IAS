@@ -9836,7 +9836,7 @@ namespace AIS.Controllers
             return resp;
         }
 
-        public string AddOldParasStatusPartiallySettle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE, string AUDITED_BY)
+        public string AddOldParasStatusPartiallySettle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE, string AUDITED_BY, string PARA_TEXT)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -9850,13 +9850,13 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("REFID", OracleDbType.Varchar2).Value = REFID;
                 cmd.Parameters.Add("REPLYDATA", OracleDbType.Varchar2).Value = REMARKS;
-                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
-                cmd.Parameters.Add("R_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
+                cmd.Parameters.Add("PARA_T", OracleDbType.Varchar2).Value = PARA_TEXT;
+                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;               
                 cmd.Parameters.Add("SEQ_ID", OracleDbType.Varchar2).Value = SEQUENCE;
-                cmd.Parameters.Add("AUDIT_ID", OracleDbType.Varchar2).Value = AUDITED_BY;
+                cmd.Parameters.Add("R_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.ExecuteReader();
                 resp = "Compliance submitted for Parital Compliance";
 
@@ -11142,11 +11142,10 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = " pkg_lg.p_get_emp_name";
+                cmd.CommandText = " pkg_ar.P_get_employees_information";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = PP_NO;
-
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = PP_NO;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
