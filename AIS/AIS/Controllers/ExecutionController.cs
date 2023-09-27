@@ -60,8 +60,27 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        
-       public IActionResult Authorize_Change_Settle_Para_Status()
+
+        public IActionResult search_checklistdetails()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.SearchChecklistDetails();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult Authorize_Change_Settle_Para_Status()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();

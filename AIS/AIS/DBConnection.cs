@@ -6787,7 +6787,33 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
+        public List<SearchChecklistDetailsModel> SearchChecklistDetails()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<SearchChecklistDetailsModel> list = new List<SearchChecklistDetailsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_GetAuditChecklistDetails_search";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    SearchChecklistDetailsModel cm = new SearchChecklistDetailsModel();
+                    cm.PROCESS = rdr["P_NAME"].ToString();
+                    cm.SUB_PROCESS = rdr["P_NAME"].ToString();
+                    cm.PROCESS_DETAIL = rdr["P_NAME"].ToString();
+                    cm.RISK = rdr["RISK"].ToString();
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public List<AuditeeOldParasModel> GetLegacyParasEntities()
         {
             sessionHandler = new SessionHandler();
