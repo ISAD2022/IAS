@@ -183,6 +183,7 @@
         $('#userrecordrow_' + userId + ' .editmode').addClass('d-none');
         $('#userrecordrow_' + userId + ' .cancelmode').removeClass('d-none');
         $('#saveChangesButton').removeClass('d-none');
+        $('#addNewUserChangesButton').removeClass('d-none');
         $('#findButton').addClass('d-none');
         $('#searchFieldsContainer').addClass('d-none');
         $('#saveChangesFieldsContainer').removeClass('d-none');
@@ -272,6 +273,7 @@
         $('#userrecordrow_' + userId + ' .editmode').removeClass('d-none');
         $('#userrecordrow_' + userId + ' .cancelmode').addClass('d-none');
         $('#saveChangesButton').addClass('d-none');
+        $('#addNewUserChangesButton').addClass('d-none');
         $('#findButton').removeClass('d-none');
         $('#saveChangesFieldsContainer').addClass('d-none');
         $('#searchFieldsContainer').removeClass('d-none');
@@ -323,16 +325,38 @@
         }        
     }
 
+    function addNewUserButtonClickHandler() {
+
+        if ($('#passSaveField').val() == $('#conPassSaveField').val()) {
+           
+            $.ajax({
+                url: "/ApiCalls/add_new_user",
+                type: "POST",
+                data: {
+                    'USER_ID': 0,
+                    'PPNO': $('#ppnoSaveField').val(),
+                    'ROLE_ID': $('#roleSaveField option:selected').val(),
+                    'ENTITY_ID': $('#childposting option:selected').val(),
+                    'PASSWORD': $('#passSaveField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                },
+                dataType: "json",
+            });
+
+        }
+        else {
+            alert('Password and Confirm Password should be Same');
+            return;
+        }
+    }
 </script>
 
 <div class="row col-md-12 mt-3">
     <h3 style=" display:block;color: #45c545;">Manage Users</h3>
 </div>
-
-
-
-
-
 
 <div class="row col-md-12 mt-1">
     <div class="col-md-2">
@@ -449,61 +473,7 @@
             <input id="loginSaveField" autocomplete="false" class="form-control" type="text" />
         </div>
     </div>
-    <div class="row col-md-12 mt-1">
-        <div class="col-md-2">
-            <label>Division</label>
-        </div>
-        <div class="col-md-4">
-            <select id="divSaveField" onchange="ShowSelectedDivisionDepartments();" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Division--</option>
-                @{
-                    if (ViewData["DivisionList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["DivisionList"]))
-                        {
-                            <option value="@item.DIVISIONID" id="@item.DIVISIONID">@item.NAME</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label>Department</label>
-        </div>
-        <div class="col-md-4">
-            <select id="deptSaveField" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Department--</option>
-            </select>
-        </div>
-    </div>
-    <div class="row col-md-12 mt-1">
-        <div class="col-md-2">
-            <label>Zone</label>
-        </div>
-        <div class="col-md-4">
-            <select id="zoneSaveField" onchange="ShowSelectedZonesBranches();" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Zone--</option>
-                @{
-                    if (ViewData["ZoneList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["ZoneList"]))
-                        {
-                            <option value="@item.ZONECODE" id="@item.ZONECODE">@item.ZONENAME</option>
-                        }
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label>Branches</label>
-        </div>
-        <div class="col-md-4">
-            <select id="brSaveField" class="form-control form-select">
-                <option id="0" value="0" selected="selected">--Select Branch--</option>
-            </select>
-        </div>
-    </div>
-
+   
     <div class="row col-md-12 mt-1">
         <div class="col-md-2">
             <label>Password</label>
@@ -558,6 +528,7 @@
 <div class="row col-md-12 mt-1">
     <button id="findButton" onclick="findButtonClickHandler();" class="btn btn-danger col-md-2" style="margin-left:auto;">Find</button>
     <button id="saveChangesButton" onclick="saveButtonClickHandler();" class="btn btn-success col-md-2 d-none" style="margin-left:auto;">Save Changes</button>
+    <button id="addNewUserChangesButton" onclick="addNewUserButtonClickHandler();" class="btn btn-success col-md-2 d-none" style="margin-left:auto;">Add New User</button>
 
 </div>
 <div class="mt-1">
@@ -579,6 +550,10 @@
         </tbody>
     </table>
 </div>
+
+
+
+
 
 
 

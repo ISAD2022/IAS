@@ -1292,6 +1292,32 @@ namespace AIS.Controllers
             return userList;
 
         }
+
+        public string AddNewUser(FindUserModel user)
+        {
+            string resp = "";
+            var enc_pass = getMd5Hash(user.PASSWORD);
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_new_user";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENC_PASS", OracleDbType.Varchar2).Value = enc_pass;
+                cmd.Parameters.Add("ROLE_ID", OracleDbType.Int32).Value = user.GROUPID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = user.PPNUMBER;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = user.ENTITYID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
         public string GetUserName(string PPNUMBER)
         {
             string userName = "";
@@ -9849,16 +9875,23 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_hd.P_AddOldParasImpRemarks_partial_comp";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("PID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber                    ;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("O_B", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("REFID", OracleDbType.Varchar2).Value = REFID;
-                cmd.Parameters.Add("REPLYDATA", OracleDbType.Varchar2).Value = REMARKS;
-                cmd.Parameters.Add("PARA_T", OracleDbType.Varchar2).Value = PARA_TEXT;
-                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;               
-                cmd.Parameters.Add("SEQ_ID", OracleDbType.Varchar2).Value = SEQUENCE;
+                cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = REMARKS;
+                cmd.Parameters.Add("PARA_T", OracleDbType.Clob).Value = PARA_TEXT;
+                cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = "P";
                 cmd.Parameters.Add("R_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
-                cmd.ExecuteReader();
-                resp = "Compliance submitted for Parital Compliance";
+                cmd.Parameters.Add("SEQ_ID", OracleDbType.Varchar2).Value = SEQUENCE;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
 
                 if (RESPONSIBLES_ARR != null)
                 {
@@ -9880,10 +9913,10 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                             cmd.Parameters.Add("A_C", OracleDbType.Varchar2).Value = pp.RESP_ACTIVE;
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                            OracleDataReader rdr = cmd.ExecuteReader();
+                            OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr.Read())
                             {
-                                resp = resp+"<br/>"+rdr["remarks"].ToString();
+                                resp = resp+"<br/>"+rdr2["remarks"].ToString();
                             }
                         }
                     }
@@ -9909,15 +9942,13 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("PID", OracleDbType.Int32).Value = PARA_ID;
-                cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = PARA_REF;
-                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = AU_OBS_ID;
                 cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = AU_OBS_ID;
+                cmd.Parameters.Add("REFID", OracleDbType.Varchar2).Value = PARA_REF;  
                 cmd.Parameters.Add("REMARK", OracleDbType.Varchar2).Value = REMARKS;
                 cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = PARA_INDICATOR;
                 cmd.Parameters.Add("R_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("SEQ_ID", OracleDbType.Varchar2).Value = SEQUENCE;
-                cmd.Parameters.Add("AUDIT_ID", OracleDbType.Varchar2).Value = AUDITED_BY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

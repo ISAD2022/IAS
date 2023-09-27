@@ -146,7 +146,7 @@
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
                         $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                        $('#listofRespPersonsForUpdateDelete tbody').append('<tr id="tr_' + pp.pP_NO + (j + 1) + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td>Y</td><td><a href="#" onclick="updateResponsible(' + pp.pP_NO + ',' + pp.loaN_CASE + ',' + srNo + ');">Update</a></td></tr>');
+                        $('#listofRespPersonsForUpdateDelete tbody').append('<tr id="tr_' + pp.pP_NO + (j + 1) + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td>Y</td><td><a href="#" onclick="updateResponsible(\'' + pp.pP_NO + '\',\'' + pp.loaN_CASE + '\',\'' + srNo + '\');">Update</a></td></tr>');
                     });
                 }
                 $('#viewMemo_evidences').empty();

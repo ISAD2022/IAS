@@ -1502,6 +1502,11 @@ namespace AIS.Controllers
             return dBConnection.GetAuditeeRiskDetails(ENG_ID);
 
         }
+        public string add_new_user(FindUserModel user)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddNewUser(user) + "\"}";
+
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

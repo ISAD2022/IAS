@@ -50,13 +50,6 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["GroupList"] = dBConnection.GetGroups();
             ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
-       
-            bool sessionCheck = true;
-            var loggedInUser = sessionHandler.GetSessionUser();
-            if (loggedInUser.UserRoleID == 1)
-                sessionCheck = false;
-            ViewData["DivisionList"] = dBConnection.GetDivisions(sessionCheck);
-            ViewData["ZoneList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
