@@ -1502,9 +1502,23 @@ namespace AIS.Controllers
             return dBConnection.GetAuditeeRiskDetails(ENG_ID);
 
         }
+        [HttpPost]
         public string add_new_user(FindUserModel user)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddNewUser(user) + "\"}";
+
+        }
+
+        [HttpPost]
+        public List<RoleActivityLogModel> get_role_activity_log(int ROLE_ID, int DEPT_ID, int AZ_ID)
+        {
+            return dBConnection.GetRoleActivityLog(ROLE_ID,DEPT_ID,AZ_ID);
+
+        }
+        [HttpPost]
+        public List<RoleActivityLogModel> get_user_activity_log(int PP_NO)
+        {
+            return dBConnection.GetUserActivityLog(PP_NO);
 
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -12343,5 +12343,71 @@ namespace AIS.Controllers
             return pdetails;
         }
 
+        public List<RoleActivityLogModel> GetRoleActivityLog(int ROLE_ID, int DEPT_ID, int AZ_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_ACTIVITY_LOG";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ROLE", OracleDbType.Int32).Value = ROLE_ID;
+                cmd.Parameters.Add("A_DATE", OracleDbType.Date).Value = System.DateTime.Now;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RoleActivityLogModel zb = new RoleActivityLogModel();
+                    zb.USER_NAME = rdr["E_NAME"].ToString();
+                    zb.USER_PP_NUMBER = rdr["ppnum"].ToString();
+                    zb.DURATION = rdr["duration"].ToString();
+                    zb.ACTIONS = rdr["action"].ToString();
+                    zb.ACTIVITY = rdr["GROUP_ROLE"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<RoleActivityLogModel> GetUserActivityLog(int PP_NO)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_ACTIVITY_LOG";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = PP_NO;
+                cmd.Parameters.Add("ROLE", OracleDbType.Int32).Value = 0;
+                cmd.Parameters.Add("A_DATE", OracleDbType.Date).Value = System.DateTime.Now;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RoleActivityLogModel zb = new RoleActivityLogModel();
+                    zb.USER_NAME = rdr["E_NAME"].ToString();
+                    zb.USER_PP_NUMBER = rdr["ppnum"].ToString();
+                    zb.DURATION = rdr["duration"].ToString();
+                    zb.ACTIONS = rdr["action"].ToString();
+                    zb.ACTIVITY = rdr["GROUP_ROLE"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
     }
 }
