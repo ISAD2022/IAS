@@ -8,7 +8,7 @@
     function getActivityLog() {
 
         $.ajax({
-            url: "/ApiCalls/get_user_actuserivity_log",
+            url: "/ApiCalls/get_user_activity_log",
             type: "POST",
             data: {
                 'PP_NO': $('#ppNumField').val()
@@ -18,7 +18,7 @@
                 $('#userWiseActivityLog tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#userWiseActivityLog tbody').append('<tr><td>' + sr + '</td><td>' + v.useR_PP_NUMBER + '</td><td>' + v.useR_NAME + '</td><td>' + v.acT_DATE + '</td><td>' + v.activity + '</td><td>' + v.actions + '</td><td>' + v.duration + '</td></tr>');
+                    $('#userWiseActivityLog tbody').append('<tr><td>' + sr + '</td><td>' + v.useR_PP_NUMBER + '</td><td>' + v.useR_NAME + '</td><td>' + v.starT_DATE + '</td><td>' + v.enD_DATE + '</td><td>' + v.activity + '</td><td>' + v.actions + '</td><td>' + v.duration + '</td></tr>');
                     sr++;
                 });
 
@@ -51,13 +51,14 @@
         <table id="userWiseActivityLog" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-2">Sr. No</th>                    
-                    <th class="col-md-4">P.P. Number</th>
-                    <th class="col-md-4">User Name</th>
-                    <th class="col-md-4">Date Time</th>
-                    <th class="col-md-4">Activity</th>
-                    <th class="col-md-4">Actions</th>
-                    <th class="col-md-4">Duration</th>
+                    <th class="col-md-1">Sr. No</th>
+                    <th class="col-md-2">P.P</dr>Number</th>
+                    <th class="col-md-2">Name</th>
+                    <th class="col-md-auto">Start Date &</dr> Time</th>
+                    <th class="col-md-auto">End Date &</dr> Time</th>
+                    <th class="col-md-5">Activity</th>
+                    <th class="col-md-5">Actions</th>
+                    <th class="col-md-auto">Duration</th>
                 </tr>
             </thead>
             <tbody>

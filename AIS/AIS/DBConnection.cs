@@ -12400,6 +12400,8 @@ namespace AIS.Controllers
                     zb.USER_NAME = rdr["E_NAME"].ToString();
                     zb.USER_PP_NUMBER = rdr["ppnum"].ToString();
                     zb.DURATION = rdr["duration"].ToString();
+                    zb.START_DATE = rdr["start_time"].ToString();
+                    zb.END_DATE = rdr["end_time"].ToString();
                     zb.ACTIONS = rdr["action"].ToString();
                     zb.ACTIVITY = rdr["GROUP_ROLE"].ToString();
                     pdetails.Add(zb);
