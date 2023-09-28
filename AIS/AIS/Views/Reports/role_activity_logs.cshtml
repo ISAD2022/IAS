@@ -48,7 +48,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["roleGroupList"]))
                         {
-                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                         }
                     }
                 }
@@ -72,7 +72,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["deptList"]))
                         {
-                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                         }
                     }
                 }
@@ -81,12 +81,10 @@
 
             </select>
         </div>
-    </div>
-    <div class="row col-md-12 mt-3">
         <div class="col-md-2">
             <label class="text-bold">Audit Zones</label>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-4">
             <select id="azField" class="form-control form-select">
                 <option id="0" value="0" selected="selected">--Select Relationship Type--</option>
 
@@ -96,7 +94,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["azList"]))
                         {
-                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                         }
                     }
                 }
@@ -110,13 +108,13 @@
         <div class="col-md-12">
             <button class="offset-md-8 col-md-4 btn btn-primary" onclick="getActivityLog();">Search</button>
         </div>
-       
+
     </div>
     <div class="row col-md-12 mt-3">
         <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-2">Sr. No</th>                    
+                    <th class="col-md-2">Sr. No</th>
                     <th class="col-md-4">P.P. Number</th>
                     <th class="col-md-4">User Name</th>
                     <th class="col-md-4">Date Time</th>
@@ -126,7 +124,6 @@
                 </tr>
             </thead>
             <tbody>
-              
             </tbody>
 
         </table>
