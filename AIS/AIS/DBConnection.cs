@@ -61,7 +61,7 @@ namespace AIS.Controllers
                 ocsb.MaxPoolSize = 1000;
                 ocsb.MinPoolSize = 1;
                 ocsb.Pooling = true;
-                ocsb.ConnectionTimeout = 180;
+                ocsb.ConnectionTimeout = 3540;
                 con.ConnectionString = ocsb.ConnectionString;
                 // con.Open();
                 return con;
