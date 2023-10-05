@@ -320,9 +320,9 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";            
         }
         [HttpPost]
-        public List<ManageObservations> get_observation_text_branches(int ENG_ID = 0, int OBS_ID = 0)
+        public List<ManageObservations> get_observation_text_branches(int OBS_ID = 0)
         {
-            return dBConnection.GetManagedObservationTextForBranches(ENG_ID, OBS_ID);
+            return dBConnection.GetManagedObservationTextForBranches( OBS_ID);
         }
 
         [HttpPost]
@@ -685,13 +685,6 @@ namespace AIS.Controllers
         {
             return dBConnection.GetchildpostingForParaPositionReport(E_R_ID);
         }
-
-        [HttpPost]
-        public List<ManageObservations> get_violation_observations(int ENTITY_ID, int VIOLATION_ID)
-        {
-            return dBConnection.GetViolationObservations(ENTITY_ID, VIOLATION_ID);
-        }
-
         [HttpPost]
         public bool approve_engagement_plan(int ENG_ID)
         {

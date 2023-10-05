@@ -262,27 +262,7 @@ namespace AIS.Controllers
             }
         }
 
-        public IActionResult audit_observation()
-        {
-            ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
-            ViewData["ZonesList"] = dBConnection.GetZones(false);
-            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-            if (!sessionHandler.IsUserLoggedIn())
-            {
-                return RedirectToAction("Index", "Login");
-            }
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                    return View();
-            }
-        }
+     
         public IActionResult cau_observation()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -364,7 +344,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
-      
+        public IActionResult checklist_summary(int engId = 0)
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult manage_draft_report_paras_branch(int engId = 0)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -443,12 +441,7 @@ namespace AIS.Controllers
             return dBConnection.GetVoilationSubGroup(vsg.V_ID);
         }
 
-        [HttpPost]
-        public List<AuditObservationTemplateModel> audit_observation_template(RiskActivityModel ra)
-        {
-            return dBConnection.GetAuditObservationTemplates(ra.ACTIVITY_ID);
-        }
-
+        
         public IActionResult checklist()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

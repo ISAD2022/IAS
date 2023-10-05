@@ -257,7 +257,7 @@
 
     function ObservationViewerPanel(obs_id) {
         $.ajax({
-            url: "/ApiCalls/get_observation_branches",
+            url: "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id

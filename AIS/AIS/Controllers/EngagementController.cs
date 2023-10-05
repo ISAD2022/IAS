@@ -240,9 +240,10 @@ namespace AIS.Controllers
           return dBConnection.GetJoiningDetails(engId);
         }
         [HttpPost]
-        public bool add_joining_report(AddJoiningModel jm)
+        public string add_joining_report(AddJoiningModel jm)
         {
-            return dBConnection.AddJoiningReport(jm);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddJoiningReport(jm) + "\"}";
+
         }
         public IActionResult acceptance()
         {

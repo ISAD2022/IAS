@@ -68,28 +68,7 @@
             dataType: "json",
         });
     }
-    function getAuditObservationTemplate() {
-        if ($('#riskActivitiesSelectBox option:selected').val() == 0)
-            $('#template_box').val('').trigger('change');
-        else {
-            $('#template_box').val('').trigger('change');
-            $.ajax({
-                url: "/Execution/audit_observation_template",
-                type: "POST",
-                data: {
-                    'ACTIVITY_ID': $('#riskActivitiesSelectBox option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, item) {
-                        $('#template_box').val(item.obS_TEMPLATE).trigger('change');
-                    });
-
-                },
-                dataType: "json",
-            });
-        }
-    }
+   
 
     function saveChecklistObservations() {
         if ($('#riskGroupSelectBox').val() == 0) {
@@ -170,8 +149,7 @@
     </div>
     <div id="div_activityContainer" style="display:none;" class="col-md-12 mt-3">
         <h5>Risk</h5>
-        <!--  <select id="riskActivitiesSelectBox" onchange="getAuditObservationTemplate();" class="form-select form-control" aria-label="Default select example">
-    </select>-->
+       
         <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
             <option value="0" id="0" selected>--Select Risk Category--</option>
             @{
