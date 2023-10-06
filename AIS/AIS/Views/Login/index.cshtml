@@ -64,10 +64,16 @@
                     $('#inputPPNoField').attr('disabled', true);
                     $('#inputPassword').attr('disabled', true);
 
-                } else {
+                } 
+                else 
+                {
                     if (g_retUrl != null && g_retUrl != "") {
                         window.location.href = g_retUrl;
-                    } else {
+                    }else if(true) {
+                        window.location.href = "bac/dashboard";
+                    }
+                    
+                    else {
                         window.location.href = "/home";
                     }
                     

@@ -1514,6 +1514,15 @@ namespace AIS.Controllers
             return dBConnection.GetUserActivityLog(PP_NO);
 
         }
+
+        #region BAC API CALLS
+        [HttpPost]
+        public List<BACAgendaModel> get_bac_agenda(int MEETING_NO)
+        {
+            return dBConnection.GetBACAgenda(MEETING_NO);
+
+        }
+        #endregion
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
