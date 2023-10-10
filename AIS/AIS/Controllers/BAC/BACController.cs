@@ -41,7 +41,7 @@ namespace AIS.Controllers
 
 
         [HttpGet("BAC/agenda")]
-        public IActionResult agenda_list()
+        public IActionResult agenda()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -51,7 +51,83 @@ namespace AIS.Controllers
             }
             else
             {
-                return View("../BAC/agenda_list");
+                return View("../BAC/agenda");
+            }
+        }
+
+
+        [HttpGet("BAC/agenda_approval")]
+        public IActionResult agenda_approval()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/agenda_approval");
+            }
+        }
+
+        [HttpGet("BAC/assignment")]
+        public IActionResult assignment()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/assignment");
+            }
+        }
+
+        [HttpGet("BAC/bac_assignment_response")]
+        public IActionResult bac_assignment_response()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/bac_assignment_response");
+            }
+        }
+
+        [HttpGet("BAC/mom")]
+        public IActionResult mom()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/mom");
+            }
+        }
+
+        [HttpGet("BAC/notice")]
+        public IActionResult notice()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/notice");
             }
         }
 

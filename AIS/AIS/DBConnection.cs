@@ -12625,9 +12625,6 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_bac.P_BAC_AGENDA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                //cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                //cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                //cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("Meeting", OracleDbType.Int32).Value = MEETING_NO;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -12636,9 +12633,78 @@ namespace AIS.Controllers
                     BACAgendaModel zb = new BACAgendaModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.MEETING_NO = rdr["meeting_no"].ToString();
-                    zb.MEETING_NO = rdr["memo_no"].ToString();
+                    zb.MEMO_NO = rdr["memo_no"].ToString();
                     zb.SUBJECT = rdr["subject"].ToString();
                     zb.REMARKS = rdr["remarks"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<BACAgendaModel> GetBACAMeetingSummary(int MEETING_NO)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<BACAgendaModel> pdetails = new List<BACAgendaModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_Bac_get_actionable_sum";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("User_entityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACAgendaModel zb = new BACAgendaModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.MEETING_NO = rdr["meeting_no"].ToString();
+                    zb.MEMO_NO = rdr["memo_no"].ToString();
+                    zb.SUBJECT = rdr["subject"].ToString();
+                    zb.REMARKS = rdr["remarks"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<BACAgendaActionablesModel> GetBACAgendaActionables(string STATUS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<BACAgendaActionablesModel> pdetails = new List<BACAgendaActionablesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_Bac_get_actionable";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = STATUS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACAgendaActionablesModel zb = new BACAgendaActionablesModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.MEETING_NO = rdr["meeting_number"].ToString();
+                    zb.ITEM_HEADING = rdr["item_heading"].ToString();
+                    zb.BAC_DIRECTION = rdr["bac_direction"].ToString();
+                    zb.ASSIGN_TO = rdr["assign_to"].ToString();
+                    zb.TIMELINE = rdr["time_line"].ToString();
+                    zb.OPEN_TIMELINE = rdr["open_time_line"].ToString();
+                    zb.DUE_DATE = rdr["due_date"].ToString();
+                    zb.REPORT_FREQUENCY = rdr["rpt_frequency"].ToString();
+                    zb.ENTERED_BY = rdr["entered_by"].ToString();
+                    zb.ENTERED_ON = rdr["entered_on"].ToString();
+                    zb.DELAY = rdr["delay"].ToString();
+                    zb.STATUS = rdr["status"].ToString();
                     pdetails.Add(zb);
                 }
             }

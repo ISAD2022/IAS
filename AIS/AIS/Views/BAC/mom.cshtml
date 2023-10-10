@@ -6,102 +6,144 @@
 <script>
 
     $(document).ready(function () {
+        getBACActionables("");      
+    }); 
 
-        $('#bacresponse').richText({
-            imageUpload: false,
-            fileUpload: false,
-            videoEmbed: false,
-            urls: false
-          
-        });
-    });
+    function getBACActionables(status) {
+        $('#manageBACAgendaPanels tbody').empty();
+        if ( $('#completedActionablesCheck').is(':checked') && $('#completedActionablesCheck').is(':checked') ) 
+        {
+            status = '';
+        }else {
+            if ($('#completedActionablesCheck').is(':checked')) {
+                status = 'Completed';
+            }
+                else if ($('#completedActionablesCheck').is(':checked'))
+            {
+                status = 'Inprocess';
+            }
+            else {
 
-    function bacassignmentresponse() {
-       
-
-        $('#bacassignmentresponse').modal('show');
+                return false;
+            }
+        } 
         
+
+        $.ajax({
+            url: "/ApiCalls/get_bac_agenda_actionables",
+            type: "POST",
+            data: {
+               STATUS:status
+            },
+            cache: false,
+            success: function (data) {
+                var sr = 1;
+                $.each(data, function (index, v) {
+                    $('#manageBACAgendaPanels tbody').append("<tr><td>" + sr + "</td><td>" + v.meetinG_NO + "</td><td>" + v.iteM_HEADING + "</td><td>" + v.baC_DIRECTION + "</td><td>" + v.assigN_TO + "</td><td>" + v.timeline + "</td><td>" + v.duE_DATE + "</td><td>" + v.delay + "</td><td>" + v.status + "</td><td class=\"text-center\"><a class=\"text-center\" href=\"#\" onclick=\"getActionableMeeting();\">View</a></td><td class=\"text-center\"><a class=\"text-center\" href=\"#\" onclick=\"getActionableSummary();\">View</a></td></tr>");
+                    sr++;
+                });
+
+            },
+            dataType: "json",
+        });
     }
 
-
+    function getActionableSummary() {
+        $('#bac_summary').modal('show');
+    }
+    function getActionableMeeting() {
+        $('#bac_meeting').modal('show');
+    }
 </script>
 <div class="row mt-2 col-md-12">
-    <h3 style="color: #45c545;">BAC Minutes Of Meeting</h3>
+    <h3 style="color: #45c545;">BAC Actionables</h3>
 </div>
 
 
+<div class="col-md-12 row">
 
+    <div class="form-check">
+        <input style="margin-top:7px;" onclick="getBACActionables();" class="form-check-input" type="checkbox" value="" id="completedActionablesCheck" checked>
+        <label class="form-check-label" for="completedActionablesCheck">
+           Completed 
+        </label>
+    </div>
+</div>
+<div class="col-md-12 row mt-3">
+
+    <div class="form-check">
+        <input style="margin-top:7px;" onclick="getBACActionables();" class="form-check-input" type="checkbox" value="" id="inprocessActionablesCheck" checked>
+        <label class="form-check-label" for="inprocessActionablesCheck">
+            Inprocess
+        </label>
+    </div>
+</div>
 <div class="row col-md-12 mt-3">
-    <table id="checklistDetailsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+   
+    <table id="manageBACAgendaPanels" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th class="col-md-1 font-weight-bold">Sr. No</th>
-                <th class="col-md-2 font-weight-bold">Meeting No.</th>
-                <th class="col-md-3 font-weight-bold">MOM</th>
-
-
-                <th class="col-md-3 font-weight-bold">Decision</th>
-
-                <th class="col-md-3 font-weight-bold">Meeting Date</th>
-
-
-
+                <th class="col-md-auto font-weight-bold">Sr. No</th>
+                <th class="col-md-auto font-weight-bold">Meeting No.</th>
+                <th class="col-md-auto font-weight-bold">Actionable</th>
+                <th class="col-md-auto font-weight-bold">BAC Directions</th>
+                <th class="col-md-auto font-weight-bold">Assigned To</th>
+                <th class="col-md-auto font-weight-bold">Assigned On</th>
+                <th class="col-md-auto font-weight-bold">Due Date</th>
+                <th class="col-md-auto font-weight-bold">Delay</th>
+                <th class="col-md-auto font-weight-bold">Status</th>
+                <th class="col-md-auto font-weight-bold">Meeting</th>
+                <th class="col-md-auto font-weight-bold">Summary</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-               
-            </tr>
+           
         </tbody>
     </table>
 </div>
 
-<div id="bacassignmentresponse" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog  modal-lg" role="document">
+
+
+<div id="bac_meeting" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">BAC Assignment Response</h5>
+                <h5 class="modal-title">BAC Actionables Minutes of the Meeting</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="row mt-3 modal-body">
+            <div class="mt-3 modal-body">
                 <form>
-                    <div class="col-md-12">
-                        <label class="font-weight-bold">Reply</label>
-
-                    </div>
-                    <div class="col-md-12">
-                        <textarea id="bacresponse" style="max-height:150px; height:auto;" class="form-control"></textarea>
-
-                    </div>
-
-
-                    <div class="row mt-3 col-md-12">
-                        <div class="col-md-2">
-                            <label class="font-weight-bold">Attachment:</label>
-
-                        </div>
-                        <div class="col-md-10">
-                            <input id="bacresponseattachment" style="max-height:150px; height:auto;" class="form-control" type="file" />
-                        </div>
-                    </div>
-
-
-
                 </form>
             </div>
 
             <div class="mt-3 modal-footer">
-                <button onclick="publishresponseChanges();" type="button" class="btn btn-danger">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+<div id="bac_summary" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">BAC Actionables Summary</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="mt-3 modal-body">
+                <form>
+                </form>
+            </div>
+
+            <div class="mt-3 modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
