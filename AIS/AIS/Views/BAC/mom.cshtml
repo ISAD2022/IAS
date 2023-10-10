@@ -3,32 +3,154 @@
     Layout = "_Layout";
 }
 
+<style type="text/css">
+    .chk_danger{
+        background-color: #dc35459c !important;
+    }
+
+    .chk_warning {
+        background-color: #ffc107a1 !important;
+    }
+
+    .chk_success {
+        background-color: #28a745e0 !important;
+    }
+
+    .form-check-custom-primary{
+        accent-color: #445ec3;
+    }
+
+    .form-check-custom-danger {
+        accent-color: #dc35459c;
+    }
+
+    .form-check-custom-success {
+        accent-color: #28a745;
+    }
+
+    .shrinkTable thead th {
+        vertical-align: middle !important;
+    }
+
+    .genTable thead th {
+        vertical-align: middle !important;
+    }
+
+    .shrinkTable th {
+        padding:4px !important;
+        font-size:13px !important;
+    }
+
+    .shrinkTable td {
+        padding: 4px !important;
+        font-size: 13px !important;
+    }
+
+
+    .genTable th {
+        padding-left:5px !important;
+        padding-right:5px !important;
+    }
+
+    .genTable td {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+
+</style>
+
 <script>
 
     $(document).ready(function () {
-        getBACActionables("");      
-    }); 
+        $('#manageBACAgendaPanels').hide();
+        getBACActionablesConsolidatedSummary();
+        getBACActionablesSummary();
+    });
 
+    function getBACActionablesConsolidatedSummary() {
+      
+        $.ajax({
+            url: "/ApiCalls/get_bac_agenda_actionables_consolidate_summary",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+                var data = data[0];
+                $('#manageBACAgendaConsolidatedPanels #allCountSummary').html(data.total);
+                $('#manageBACAgendaConsolidatedPanels #compCountSummary').html(data.completed);
+                $('#manageBACAgendaConsolidatedPanels #inprocCountSummary').html(data.uN_COMPLETED);
+                var percentage = ((parseFloat(data.completed) / parseFloat(data.total)) * 100).toFixed(2);
+                var style_bg = "";
+                if (percentage < 50)
+                    style_bg = "chk_danger";
+                if (percentage > 49 && percentage < 70)
+                    style_bg = "chk_warning";
+                if (percentage > 69)
+                    style_bg = "chk_success";
+                $('#manageBACAgendaConsolidatedPanels #percentageSummary').html(percentage + "%");
+                $('#manageBACAgendaConsolidatedPanels #percentageSummary').addClass(style_bg);
+            },
+            dataType: "json",
+        });
+    }
+    function getBACActionablesSummary() {
+        $('#manageBACAgendaSummaryPanels tbody').empty();
+       
+
+        $.ajax({
+            url: "/ApiCalls/get_bac_agenda_actionables_summary",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+                var sr = 1;
+                var rowsCount = 1;
+                var compSum = 0;
+                var incompSum = 0;
+                var allcompSum = 0;
+                $.each(data, function (index, v) {
+                    var percentage = ((parseFloat(v.completed) / parseFloat(v.total)) * 100).toFixed(2);
+                    var style_bg = "";
+                    if (percentage < 50) 
+                        style_bg = "chk_danger";
+                    if (percentage > 49 && percentage < 70)
+                        style_bg = "chk_warning";
+                    if (percentage > 69)
+                        style_bg = "chk_success";
+                    
+                    $('#manageBACAgendaSummaryPanels tbody').append("<tr><td class=\"text-center\">" + sr + "</td><td class=\"text-center\">" + v.meetinG_NO + "</td><td class=\"text-right\">" + v.total + "</td><td class=\"text-right\">" + v.completed + "</td><td class=\"text-right\">" + v.uN_COMPLETED + "</td><td class=\" text-center " + style_bg + "\" >" + percentage + " %</td><td class=\" text-left\" >" + v.reference + "</td><td class=\" text-left\" >" + v.responsibles + "</td><td class=\" text-left\" >" + v.managemenT_RESPONSE + "</td><td class=\" text-left\" >" + v.ciA_REMARKS + "</td><td class=\"text-center\"><label class= \"form-check-custom-primary\" ><input onclick=\"getBACActionables('all');\" type=\"radio\" name = \"radio-23\" ><span></span></label></td><td class=\"text-center\"><label class=\"form-check-custom-success\"><input type=\"radio\" onclick=\"getBACActionables('Completed');\" name =\"radio-23\"><span></span></label></td><td class=\"text-center\"><label class=\"form-check-custom-danger\"><input type=\"radio\" name =\"radio-23\" onclick=\"getBACActionables('Uncompleted');\"><span></span></label></td></tr> ");
+                    rowsCount++;
+                    compSum += parseInt(v.completed);
+                    incompSum += parseInt(v.uN_COMPLETED);
+                    allcompSum += parseInt(v.total);
+                    sr++;
+                });
+
+                var percentageAll = ((parseFloat(compSum) / parseFloat(allcompSum)) * 100).toFixed(2);
+                var style_bg = "";
+                if (percentageAll < 50)
+                    style_bg = "chk_danger";
+                if (percentageAll > 49 && percentageAll < 70)
+                    style_bg = "chk_warning";
+                if (percentageAll > 69)
+                    style_bg = "chk_success";
+
+                $('#manageBACAgendaSummaryPanels tbody').append("<tr><td colspan=\"2\" class=\"text-center\">Total</td><td class=\"text-right\">" + allcompSum + "</td><td class=\"text-right\">" + compSum + "</td><td class=\"text-right\">" + incompSum + "</td><td class=\" text-center " + style_bg + " \" >" + percentageAll + " %</td><td colspan=\"4\"></td><td class=\"text-center\"><label class= \"form-check-custom-primary\" ><input onclick=\"getBACActionables('all');\" type=\"radio\" name = \"radio-23\" ><span></span></label></td><td class=\"text-center\"><label class=\"form-check-custom-success\"><input type=\"radio\" onclick=\"getBACActionables('Completed');\" name =\"radio-23\"><span></span></label></td><td class=\"text-center\"><label class=\"form-check-custom-danger\"><input type=\"radio\" name =\"radio-23\" onclick=\"getBACActionables('Uncompleted');\"><span></span></label></td></tr> ");
+
+            },
+            dataType: "json",
+        });
+    }
     function getBACActionables(status) {
+        $('#manageBACAgendaPanels').show();
         $('#manageBACAgendaPanels tbody').empty();
-        if ( $('#completedActionablesCheck').is(':checked') && $('#completedActionablesCheck').is(':checked') ) 
-        {
-            status = '';
-        }else {
-            if ($('#completedActionablesCheck').is(':checked')) {
-                status = 'Completed';
-            }
-                else if ($('#completedActionablesCheck').is(':checked'))
-            {
-                status = 'Inprocess';
-            }
-            else {
-
-                return false;
-            }
-        } 
-        
-
+        setTimeout(function () {
+            var rowpos = $('#manageBACAgendaSummaryPanels tr:last').position();
+            $('html').animate({ scrollTop: rowpos.top + 200 });
+            
+        }, 200);
         $.ajax({
             url: "/ApiCalls/get_bac_agenda_actionables",
             type: "POST",
@@ -56,28 +178,85 @@
     }
 </script>
 <div class="row mt-2 col-md-12">
-    <h3 style="color: #45c545;">BAC Actionables</h3>
+    <h3 class="mb-0" style="color: #45c545;">BAC Actionables</h3>
 </div>
 
 
-<div class="col-md-12 row">
-
-    <div class="form-check">
-        <input style="margin-top:7px;" onclick="getBACActionables();" class="form-check-input" type="checkbox" value="" id="completedActionablesCheck" checked>
-        <label class="form-check-label" for="completedActionablesCheck">
-           Completed 
-        </label>
+<div class="row col-md-12">
+    <div class="offset-md-4 col-md-4">
+        <table id="manageBACAgendaConsolidatedPanels" class="shrinkTable table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-2 font-weight-bold text-center">Sr. No</th>
+                    <th class="col-md-6 font-weight-bold text-left">Description</th>                   
+                    <th class="col-md-4 font-weight-bold text-center">Progress</th>                   
+                </tr>
+              
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">1</td>
+                    <td class="text-left">All</td>
+                    <td id="allCountSummary" class="text-center"></td>
+                  
+                </tr>
+                <tr>
+                    <td class="text-center">2</td>
+                    <td class="text-left">Completed</td>
+                    <td id="compCountSummary" class="text-center"></td>
+                  
+                </tr>
+                <tr>
+                    <td class="text-center">3</td>
+                    <td class="text-left">In Progress</td>
+                    <td id="inprocCountSummary" class="text-center"></td>
+                   
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">Percentage</td>                    
+                    <td id="percentageSummary" class="text-right chk_danger">0.00%</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</div>
-<div class="col-md-12 row mt-3">
 
-    <div class="form-check">
-        <input style="margin-top:7px;" onclick="getBACActionables();" class="form-check-input" type="checkbox" value="" id="inprocessActionablesCheck" checked>
-        <label class="form-check-label" for="inprocessActionablesCheck">
-            Inprocess
-        </label>
-    </div>
+
 </div>
+
+<div class="row col-md-12">
+    <table id="manageBACAgendaSummaryPanels" class="genTable table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-1 font-weight-bold text-center">S N</th>
+                    <th class="col-md-1 font-weight-bold text-center">Meeting No.</th>
+                    <th class="col-md-1 font-weight-bold text-center">All</th>
+                    <th class="col-md-1 font-weight-bold text-center">Completed</th>
+                    <th class="col-md-1 font-weight-bold text-center">In<br />Progress</th>
+                    <th class="col-md-1 font-weight-bold text-center">%age</th>
+                    
+                    <th class="col-md-3 font-weight-bold text-center">BAC Directives</th>
+                    <th class="col-md-3 font-weight-bold text-center">Responsibles</th>
+                    <th class="col-md-3 font-weight-bold text-center">Response</th>
+                    <th class="col-md-3 font-weight-bold text-center">CIA Remarks</th>
+
+                    <th class="col-md-1 font-weight-bold text-center">All</th>
+                    <th class="col-md-1 font-weight-bold text-center">Completed</th>
+                    <th class="col-md-1 font-weight-bold text-center">In<br/>Progress</th>
+                </tr>
+                <tr>
+
+                    
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+   
+
+    
+</div>
+
+
 <div class="row col-md-12 mt-3">
    
     <table id="manageBACAgendaPanels" class="table table-hover table-bordered table-hover mt-3 table-striped">

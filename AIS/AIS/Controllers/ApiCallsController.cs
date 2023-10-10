@@ -1516,7 +1516,8 @@ namespace AIS.Controllers
         }
 
         #region BAC API CALLS
-        [HttpPost]
+       
+        [HttpPost]        
         public List<BACAgendaModel> get_bac_agenda(int MEETING_NO)
         {
             return dBConnection.GetBACAgenda(MEETING_NO);
@@ -1528,6 +1529,18 @@ namespace AIS.Controllers
             return dBConnection.GetBACAMeetingSummary(MEETING_NO);
 
         }
+
+        [HttpPost]
+        public List<BACAgendaActionablesSummaryModel> get_bac_agenda_actionables_consolidate_summary()
+        {
+            return dBConnection.GetBACAgendaActionablesConsolidatedSummary();
+        }
+        [HttpPost]
+        public List<BACAgendaActionablesSummaryModel> get_bac_agenda_actionables_summary()
+        {
+            return dBConnection.GetBACAgendaActionablesSummary();
+        }
+
         [HttpPost]
         public List<BACAgendaActionablesModel> get_bac_agenda_actionables(string STATUS)
         {

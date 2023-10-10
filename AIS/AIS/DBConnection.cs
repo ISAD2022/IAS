@@ -12673,6 +12673,66 @@ namespace AIS.Controllers
             con.Dispose();
             return pdetails;
         }
+        public List<BACAgendaActionablesSummaryModel> GetBACAgendaActionablesConsolidatedSummary()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_Bac_get_actionable_snap";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACAgendaActionablesSummaryModel zb = new BACAgendaActionablesSummaryModel();
+                    zb.TOTAL = Convert.ToInt32(rdr["total"].ToString());
+                    zb.COMPLETED = rdr["completed"].ToString();
+                    zb.UN_COMPLETED = rdr["un_completed"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<BACAgendaActionablesSummaryModel> GetBACAgendaActionablesSummary()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_Bac_get_actionable_sum";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("User_entityid", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACAgendaActionablesSummaryModel zb = new BACAgendaActionablesSummaryModel();
+                    zb.TOTAL = Convert.ToInt32(rdr["total"].ToString());
+                    zb.MEETING_NO = rdr["meeting_number"].ToString();
+                    zb.COMPLETED = rdr["completed"].ToString();
+                    zb.UN_COMPLETED = rdr["un_completed"].ToString();
+                    zb.RESPONSIBLES = rdr["RESPONSIBLE"].ToString();
+                    zb.MANAGEMENT_RESPONSE = rdr["RESPONSE"].ToString();
+                    zb.REFERENCE = rdr["BAC_DIRECTIVES"].ToString();
+                    zb.CIA_REMARKS = rdr["CIA_REMARKS"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
         public List<BACAgendaActionablesModel> GetBACAgendaActionables(string STATUS)
         {
             sessionHandler = new SessionHandler();
