@@ -1547,6 +1547,12 @@ namespace AIS.Controllers
             return dBConnection.GetBACAgendaActionables(STATUS);
 
         }
+        [HttpPost]
+        public List<BACAgendaActionablesModel> get_bac_agenda_actionables_meeting_no(string STATUS, string MEETING_NO)
+        {
+            return dBConnection.GetBACAgendaActionablesWithMeetingNo(STATUS,MEETING_NO);
+
+        }
         #endregion
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
