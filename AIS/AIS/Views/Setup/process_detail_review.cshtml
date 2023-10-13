@@ -216,44 +216,190 @@
                     </div>
                     <div class="col-md-6">
                         <form>
+                                <h6 class="text-center"><b>Proposed Changes</b></h6>
+                                <div class="form-group">
+
+                                    <label>Process</label>
+
+                                    <select disabled="disabled" id="updatedChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Checklist--</option>
+                                        @{
+                                            if (ViewData["ChecklistTypes"] != null)
+                                            {
+                                                foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
+                                                {
+                                                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
+                                                }
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Sub Process</label>
+
+                                    <select id="updatedSubChecklist" class="form-select form-control">
+                                        <option value="0" id="0" selected>--Select Sub-Checklist--</option>
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Process Detail</label>
+
+                                    <textarea id="updatedProcDetailHeading" class="form-control"></textarea>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Violation</label>
+
+                                    <select id="updatedViolationlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ViolationsList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["ViolationsList"]))
+                                                {
+                                                    <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Process Owner</label>
+
+                                    <select id="updatedProcOwnerlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["ProcOwnerList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
+                                                {
+                                                    <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Role Responsible</label>
+
+                                    <select id="updatedRoleResplist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RoleRespList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["RoleRespList"]))
+                                                {
+                                                    <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Risk</label>
+
+                                    <select id="updatedRisklist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Control Violation--</option>
+                                        @{
+                                            if (ViewData["RiskList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                                {
+                                                    <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Annexure</label>
+
+                                    <select id="updatedAnnexlist" class="form-select form-control">
+                                        <option selected="selected" value="0" id="0">--Select Annexure--</option>
+                                        @{
+                                            if (ViewData["AnnexList"] != null)
+                                            {
+
+                                                foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                                                {
+                                                    <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                                }
+
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+
+                            </form>
+                     @*    <form>
                             <h6 class="text-center"><b>Proposed Changes</b></h6>
                     <div class="form-group">
                         <label for="viewerMainProcNameModalField">Process</label>
-                        <input type="text" disabled class="form-control" id="viewerMainProcNameModalField" />
+                        <input type="text"  class="form-control" id="viewerMainProcNameModalField" />
 
                     </div>
                     <div class="form-group">
                         <label for="viewerNameModalField">Sub Process</label>
-                        <input type="text" disabled class="form-control" id="viewerNameModalField" />
+                        <input type="text"  class="form-control" id="viewerNameModalField" />
 
                     </div>
                     <div class="form-group">
                         <label for="viewerDescModalField">Process Detail</label>
-                        <textarea class="form-control" disabled id="viewerDescModalField"></textarea>
+                        <textarea class="form-control"  id="viewerDescModalField"></textarea>
 
                     </div>
                     <div class="form-group">
                         <label for="viewerViolationNameModalField">Violation</label>
-                        <input class="form-control" disabled id="viewerViolationNameModalField" />
+                        <input class="form-control"  id="viewerViolationNameModalField" />
 
                     </div>
                     <div class="form-group">
                         <label for="viewerControlModalField">Process Owner</label>
-                        <input type="text" disabled class="form-control" id="viewerControlModalField" />
+                        <input type="text"  class="form-control" id="viewerControlModalField" />
                     </div>
                     <div class="form-group">
                         <label for="viewerDivModalField">Role Responsible</label>
-                        <input type="text" disabled class="form-control" id="viewerDivModalField"  />
+                        <input type="text"  class="form-control" id="viewerDivModalField"  />
                     </div>                   
                     <div class="form-group">
                         <label for="viewerRiskModalField">Risk</label>
-                        <input type="text" disabled class="form-control" id="viewerRiskModalField" />
+                        <input type="text"  class="form-control" id="viewerRiskModalField" />
                     </div>
                             <div class="form-group">
                                 <label for="viewerRiskModalField">Annexure</label>
-                                <input type="text" disabled class="form-control" id="viewerAnnexModalField" />
+                                <input type="text"  class="form-control" id="viewerAnnexModalField" />
                             </div>
-                        </form>
+                        </form> *@
                     </div>
                 </div>
             </div>

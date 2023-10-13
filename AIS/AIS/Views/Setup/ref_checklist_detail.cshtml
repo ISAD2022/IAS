@@ -30,57 +30,7 @@
     function openUpdateSubCheclist(id, sId) {
         g_procDetailId = id;
         g_subProcId = sId;
-        $('#updateEntityModal').modal('show');
-        //$.each(g_procDetailList, function (i, v) {
-        //    if (v.s_ID == g_procDetailId) 
-        //    {
-        //        $('#updatedChecklist').val(v.p_ID);
-        //        g_procId=v.p_ID;
-        //        getSubChecklistOfProcess();           
-        //        $('#updatedProcDetailHeading').val(v.heading);
-        //        $('#updatedViolationlist').val(v.v_ID);
-        //        $('#updatedProcOwnerlist').val(v.procesS_OWNER_ID);
-        //        $('#updatedRoleResplist').val(v.rolE_RESP_ID);
-        //        $('#updatedRisklist').val(v.risK_ID);
-        //        $('#updatedAnnexlist').val(v.anneX_ID);
-
-        //        if ($('#updatedChecklist').val()!= 0)
-        //        $('#oldProcessLabel').val($('#updatedChecklist option:selected').text());
-        //        else
-        //            $('#oldProcessLabel').val('');
-
-        //        if ($('#updatedViolationlist').val() != 0)
-        //            $('#oldViolationLabel').val($('#updatedViolationlist option:selected').text());
-        //            else 
-        //            $('#oldViolationLabel').val('');
-
-        //        if ($('#updatedProcOwnerlist').val() != 0)
-        //           $('#oldProcessOwnerLabel').val($('#updatedProcOwnerlist option:selected').text());
-        //           else
-        //            $('#oldProcessOwnerLabel').val('');
-
-
-
-        //        if ($('#updatedRoleResplist').val() != 0)
-        //            $('#oldRoleRespLabel').val($('#updatedRoleResplist option:selected').text());
-        //            else 
-        //            $('#oldRoleRespLabel').val('');
-
-
-        //        if ($('#updatedRisklist').val() != 0)
-        //            $('#oldRiskLabel').val($('#updatedRisklist option:selected').text());
-        //            else 
-        //            $('#oldRiskLabel').val("");
-
-        //        if ($('#updatedAnnexlist').val() != 0)
-        //            $('#oldAnnexureLabel').val($('#updatedAnnexlist option:selected').text());
-        //            else 
-        //            $('#oldAnnexureLabel').val("");
-                
-        //            $('#oldProcessDetailLabel').val(v.heading);
-        //    }
-        //});
-
+        $('#updateEntityModal').modal('show');      
 
         $.ajax({
             url: "/ApiCalls/get_checklist_detail_comparison_by_Id_for_referredBack",

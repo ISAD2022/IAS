@@ -88,7 +88,7 @@ namespace AIS.Controllers
         public IActionResult FAD_Process_Function_Wise_Analysis()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();           
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["NEWPARAPERFORMANCE"] = dBConnection.GetFADNewOldParaPerformance(0);
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -146,9 +146,9 @@ namespace AIS.Controllers
             }
         }
 
-        
 
- public IActionResult FAD_Aging_of_Audit_Paras_Monthly()
+
+        public IActionResult FAD_Aging_of_Audit_Paras_Monthly()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -186,8 +186,8 @@ namespace AIS.Controllers
             }
         }
 
-     
-      public IActionResult FAD_DSA_Position_Fortnightly()
+
+        public IActionResult FAD_DSA_Position_Fortnightly()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -208,9 +208,9 @@ namespace AIS.Controllers
 
 
 
-        
 
- public IActionResult FAD_Compliance_Pos_Fortnightly_FAD_Level()
+
+        public IActionResult FAD_Compliance_Pos_Fortnightly_FAD_Level()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -229,7 +229,7 @@ namespace AIS.Controllers
             }
         }
 
-  
+
 
         public IActionResult FAD_Compliance_Pos_Fortnightly_Zone_Level()
         {
@@ -271,10 +271,10 @@ namespace AIS.Controllers
             }
         }
 
-        
 
 
-             public IActionResult FAD_Branch_Audit_Status()
+
+        public IActionResult FAD_Branch_Audit_Status()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -399,7 +399,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
-          
+
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else
@@ -438,7 +438,7 @@ namespace AIS.Controllers
         public IActionResult user_activity_graph()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages(); 
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -583,7 +583,7 @@ namespace AIS.Controllers
         }
 
 
-  public IActionResult Audit_Plan_Engagement()
+        public IActionResult Audit_Plan_Engagement()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -620,7 +620,7 @@ namespace AIS.Controllers
                 else
                     return View();
             }
-        }      
+        }
 
         public IActionResult management_au_report_zonewise()
         {
@@ -983,7 +983,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-     
+
         public IActionResult user_wise_performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -1003,7 +1003,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-      
+
         public IActionResult zone_wise_performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -1061,7 +1061,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        
+
         public IActionResult FAD_Legacy_Zone_Wise_Performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -1085,7 +1085,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-          
+
 
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
@@ -1125,6 +1125,25 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354);
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult loan_transfer_report()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
