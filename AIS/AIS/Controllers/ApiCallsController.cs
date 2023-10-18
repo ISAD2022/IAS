@@ -1146,9 +1146,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string get_employee_name_from_pp(int PP_NO)
+        public UserModel get_employee_name_from_pp(int PP_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetEmployeeNameFromPPNO(PP_NO) + "\"}";
+            return  dBConnection.GetEmployeeNameFromPPNO(PP_NO);
 
         }
 

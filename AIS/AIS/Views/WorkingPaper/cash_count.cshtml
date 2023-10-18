@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Voucher Checking";
+    Layout = "_Layout";
+}
+
+
+
+<script>
+    var g_paraId = 0;
+    $(document).ready(function () {
+
+    });
+
+    function openVoucherCheckingFile() {
+        $('#newVoucherCheckingDialog').modal('show');
+    }
+
+
+</script>
+
+<div class="row">
+    <div class="col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">Working Paper for Cash Count</h3>
+    </div>
+
+    <div class="row col-md-12 mt-3">
+        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-auto" colspan="1"></th>
+                    <th class="col-md-auto text-center" colspan="3">Cash Found in Vault</th>
+                    <th class="col-md-auto text-center" colspan="3">Cash as per Night save Register</th>
+                    <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openVoucherCheckingFile();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                </tr>
+                <tr>
+                    <th class="col-md-auto">Sr. No</th>
+                    <th class="col-md-auto">Denomination</th>
+                    <th class="col-md-auto">No of Currency Notes</th>
+                    <th class="col-md-auto">Total Amount</th>
+                    <th class="col-md-auto">Denomination</th>
+                    <th class="col-md-auto">No of Currency Notes</th>
+                    <th class="col-md-auto">Total Amount</th>
+                    <th class="col-md-auto">Difference</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+
+        </table>
+    </div>
+
+</div>
+
+
+
+
+<div id="newVoucherCheckingDialog" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-xl modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">New Loan Case File</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <hr />
+                    <h5 class="text-center">Cash Found in Vault</h5>
+                    <hr />
+                    <div class="row col-md-12">
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">5000 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">1000 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">500 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">100 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">50 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">20 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">10 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">5 Coins</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">2 Coins</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">1 Coin</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+
+                    </div>
+                    <hr />
+                    <h5 class="text-center"> Cash as per Night Save Vault</h5>
+                    <hr />
+                    <div class="row col-md-12">
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">5000 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">1000 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">500 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">100 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">50 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">20 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">10 Notes</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">5 Coins</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">2 Coins</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="commentAreaInCommentsBox">1 Coin</label>
+                            <input type="text" class="form-control" id="accountnumber_txtField" />
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="finalCommentsButtonSave" type="button" class="btn btn-danger">Add New</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

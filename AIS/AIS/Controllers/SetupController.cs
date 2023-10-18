@@ -228,6 +228,13 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ChecklistTypes"] = dBConnection.GetAuditChecklist();
+            ViewData["ViolationsList"] = dBConnection.GetViolationsForChecklistDetail();
+            ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
+            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibleForChecklistDetail();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+
             // status ids required 1, 4 but 4 pass to procedure will bring 1 & 4 both processes
             ViewData["TransactionsList"] = dBConnection.GetUpdatedChecklistDetailsForReviewAndAuthorize(4);
             if (!sessionHandler.IsUserLoggedIn())

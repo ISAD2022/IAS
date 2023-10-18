@@ -47,7 +47,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
+            ViewData["ZonesList"] = dBConnection.GetZonesoldparamointoring();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -63,10 +63,7 @@ namespace AIS.Controllers
             }
         }
 
-
-        
-
-             public IActionResult old_paras_monitoring_ppno()
+        public IActionResult old_paras_monitoring_ppno()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
