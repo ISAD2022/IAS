@@ -1293,6 +1293,11 @@ namespace AIS.Controllers
             return dBConnection.GetEntitiesRiskBasePlanForDashboard();
         }
         [HttpPost]
+        public List<AuditPerformanceChartDashboardModel> get_audit_performance_chart_for_dashboard()
+        {
+            return dBConnection.GetAuditPerformanceChartForDashboard();
+        }
+        [HttpPost]
         public List<FADAuditPerformanceModel> get_audit_performance_for_dashboard()
         {
             return dBConnection.GetAuditPerformanceForDashboard();

@@ -110,8 +110,8 @@ body {
 }
 
 100% {
-    -webkit-transform: rotate(50deg);
-    transform: rotate(50deg);
+    -webkit-transform: rotate(30deg);
+    transform: rotate(30deg);
 }
 
 }
@@ -136,8 +136,8 @@ body {
     }
 
     100% {
-        -webkit-transform: rotate(20deg);
-        transform: rotate(20deg);
+        -webkit-transform: rotate(170deg);
+        transform: rotate(170deg);
     }
 }
 
@@ -148,8 +148,20 @@ body {
     }
 
     100% {
-        -webkit-transform: rotate(175deg);
-        transform: rotate(175deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes loading-4b {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
     }
 }
 

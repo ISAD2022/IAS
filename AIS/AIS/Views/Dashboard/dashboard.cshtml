@@ -8,7 +8,7 @@
     .widget-chart {
         text-align: center;
         padding: 1rem;
-        height:170px !important;
+        height: 170px !important;
     }
 
         .widget-chart .progress-sub-label {
@@ -234,83 +234,89 @@
         align-content: center;
     }
 
-    .widget-title{
+    .widget-title {
         font-size: 25px !important;
         font-weight: 400;
     }
 
- 
 
-.mt-100{
-  margin-top: 200px;
-}
-.progress {
-  width: 90px;
-  height: 90px !important;
-  float: right;
-  left: -4px;
-  top: -24px;
-  line-height: 80px;
-  background: none;
-  margin: 10px;
-  box-shadow: none;
-  position: relative;
-}
-.progress:after {
-  content: "";
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 12px solid #fff;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.progress>span {
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  z-index: 1;
-           
-}
 
-.progress .progress-left {
-  left: 0;
+    .mt-100 {
+        margin-top: 200px;
+    }
+
+    .progress {
+        width: 90px;
+        height: 90px !important;
+        float: right;
+        left: -4px;
+        top: -24px;
+        line-height: 80px;
+        background: none;
+        margin: 10px;
+        box-shadow: none;
+        position: relative;
+    }
+
+        .progress:after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 12px solid #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress > span {
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 1;
+        }
+
+        .progress .progress-left {
+            left: 0;
             margin-left: 1px;
-            margin-top: -0.5px;       
-}
-.progress .progress-bar {
-  width: 100%;
-  height: 100%;
-  background: none;
-  border-width: 12px;
-  border-style: solid;
-  position: absolute;
-  top: 0;
-}
-.progress .progress-left .progress-bar {
-  left: 100%;
-  border-top-right-radius: 80px;
-  border-bottom-right-radius: 80px;
-  border-left: 0;
-  -webkit-transform-origin: center left;
-  transform-origin: center left;
-}
-.progress .progress-right {
-  right: 0;
-}
-.progress .progress-right .progress-bar {
-  left: -100%;
-  border-top-left-radius: 80px;
-  border-bottom-left-radius: 80px;
-  border-right: 0;
-  -webkit-transform-origin: center right;
-  transform-origin: center right;
- 
-}
-.progress .progress-value {
+            margin-top: 0.3px !important;
+        }
+
+        .progress .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: none;
+            border-width: 12px;
+            border-style: solid;
+            position: absolute;
+            top: 0;
+        }
+
+        .progress .progress-left .progress-bar {
+            left: 100%;
+            border-top-right-radius: 80px;
+            border-bottom-right-radius: 80px;
+            border-left: 0;
+            -webkit-transform-origin: center left;
+            transform-origin: center left;
+        }
+
+        .progress .progress-right {
+            right: 0;
+        }
+
+            .progress .progress-right .progress-bar {
+                left: -100%;
+                border-top-left-radius: 80px;
+                border-bottom-left-radius: 80px;
+                border-right: 0;
+                -webkit-transform-origin: center right;
+                transform-origin: center right;
+            }
+
+        .progress .progress-value {
             width: 90%;
             height: 90%;
             border-radius: 50%;
@@ -322,85 +328,121 @@
             position: absolute;
             top: -4%;
             left: 2%;
-}
-.progress.blue .progress-bar {
-   border-color: #6c757d !important;
-}
+        }
 
-.progress.red .progress-right .progress-bar {
-    animation: loading-1 1.0s linear forwards !important;
-}
-.progress.red .progress-left .progress-bar {
-  animation: loading-2 2.5s linear forwards;
-}
+        .progress.blue .progress-bar {
+            border-color: #6c757d !important;
+        }
 
-.progress.yellow .progress-right .progress-bar {
-    animation: loading-3 1.0s linear forwards !important;
-}
+        .progress.red .progress-right .progress-bar {
+            animation: loading-1 1.0s linear forwards !important;
+        }
+
+        .progress.red .progress-left .progress-bar {
+            animation: loading-2 2.5s linear forwards;
+        }
+
+        .progress.yellow .progress-right .progress-bar {
+            animation: loading-3 1.0s linear forwards !important;
+        }
 
         .progress.yellow .progress-left .progress-bar {
             animation: loading-3b 2.5s linear forwards !important;
         }
 
+        .progress.blue .progress-right .progress-bar {
+            animation: loading-4 1.8s linear forwards !important;
+        }
 
-.progress.blue .progress-right .progress-bar {
-    animation: loading-4 1.8s linear forwards !important;
-}
+        .progress.blue .progress-left .progress-bar {
+            animation: loading-4b 1.8s linear forwards !important;
+        }
 
-.progress.blue .progress-left .progress-bar {
-    animation: none;
-}
+        .progress.sky .progress-right .progress-bar {
+            animation: loading-5 1.8s linear forwards !important;
+        }
 
-.progress.sky .progress-right .progress-bar {
-    animation: loading-5 1.8s linear forwards !important;
-}
+        .progress.sky .progress-left .progress-bar {
+            animation: none;
+        }
 
-.progress.sky .progress-left .progress-bar {
-    animation: none;
-}
+        .progress.green .progress-right .progress-bar {
+            animation: loading-5 1.8s linear forwards !important;
+        }
 
-.progress.green .progress-right .progress-bar {
-    animation: loading-5 1.8s linear forwards !important;
-}
+        .progress.green .progress-left .progress-bar {
+            animation: none;
+        }
 
-.progress.green .progress-left .progress-bar {
-    animation: none;
-}
+        .progress.red .progress-bar {
+            border-color: #dc3545 !important
+        }
 
-.progress.red .progress-bar {
-  border-color: #dc3545 !important
-}
-.progress.yellow .progress-bar {
-    border-color: #ffc107 !important;
-}
-.progress.green .progress-bar {
-    border-color: #28a745 !important;
-}
+        .progress.yellow .progress-bar {
+            border-color: #ffc107 !important;
+        }
 
-.progress.sky .progress-bar {
-    border-color: #17a2b8 !important;
-}
+        .progress.green .progress-bar {
+            border-color: #28a745 !important;
+        }
 
+        .progress.sky .progress-bar {
+            border-color: #17a2b8 !important;
+        }
 
 </style>
 
 <script type="text/javascript">
-    
+
+    $(document).ready(function () {
+
+        getAuditScoreCard();
+    });
+
+
+    function getAuditScoreCard() {
+
+        $.ajax({
+            url: "/ApiCalls/get_audit_performance_chart_for_dashboard",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+
+                $('#headingSpanField').html(data[0].heading);
+                $.each(data, function (i, v) {
+                    $($('div.widget-title')[i]).html(v.department);
+                    if (v.totaL_ENTITIES != "" && v.nO_OF_ENTITIES != "")
+                        $($('span.ent_count_filed')[i]).html(v.nO_OF_ENTITIES + "/" + v.totaL_ENTITIES);
+
+                    if (v.remarks != "")
+                        $($('small.remarks_field_span')[i]).html(v.remarks);
+
+                    $($('div.progress-value')[i]).html(v.percentage);
+
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+
+
 </script>
 <div class="row w-100">
 
     <div class="row text-center col-md-12 mt-3">
-        <h1 class="w-100 text-center" style="color: #45c545;">Performance Score Card <br/> 2023 (April – June)</h1>
+        <h1 class="w-100 text-center" style="color: #45c545;">Performance Score Card <br /> <span id="headingSpanField"> </span></h1>
     </div>
-   <center class="w-100 container-fluid mt-4">
+    <center class="w-100 container-fluid mt-4">
         <div class="row col-md-12">
-            
+
             <div class="col-md-4 col-lg-4">
                 <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-secondary border-secondary card">
                     <div class="widget-chat-wrapper-outer w-100">
                         <div class="widget-chart-content">
                             <div class="widget-title opacity-5 text-uppercase">
-                                Field Audit
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
@@ -408,12 +450,15 @@
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
                                         </span>
-                                        296/607
-                                        <small class="opacity-5 pl-1">Entities</small><br/>
-                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1">CAU are audited quarterly</small>
+                                        <span class="ent_count_filed"></span>
+                                        <small class="opacity-5 pl-1">Entities</small><br />
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress blue">
+                                            <span class="progress-left">
+                                                <span class="progress-bar"></span>
+                                            </span>
                                             <span class="progress-right">
                                                 <span class="progress-bar"></span>
                                             </span>
@@ -432,7 +477,6 @@
                     <div class="widget-chat-wrapper-outer w-100">
                         <div class="widget-chart-content">
                             <div class="widget-title opacity-5 text-uppercase">
-                                Management Audit
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
@@ -440,8 +484,9 @@
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
                                         </span>
-                                        28 / 53
+                                        <span class="ent_count_filed"></span>
                                         <small class="opacity-5 pl-1">Entities</small>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress yellow">
@@ -460,13 +505,12 @@
                         </div>
                     </div>
                 </div>
-            </div>           
+            </div>
             <div class="col-md-4 col-lg-4">
                 <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-info border-info card">
                     <div class="widget-chat-wrapper-outer w-100">
                         <div class="widget-chart-content">
                             <div class="widget-title opacity-5 text-uppercase">
-                                I.S Audit
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
@@ -474,12 +518,13 @@
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
                                         </span>
-                                        6/12
+                                        <span class="ent_count_filed"></span>
                                         <small class="opacity-5 pl-1">Entities</small>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress sky">
-                                            
+
                                             <span class="progress-right">
                                                 <span class="progress-bar"></span>
                                             </span>
@@ -498,7 +543,6 @@
                     <div class="widget-chat-wrapper-outer w-100">
                         <div class="widget-chart-content">
                             <div class="widget-title opacity-5 text-uppercase">
-                                Inspections
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
@@ -506,8 +550,9 @@
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
                                         </span>
-                                        287/502
+                                        <span class="ent_count_filed"></span>
                                         <small class="opacity-5 pl-1">Branches</small>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress red">
@@ -532,16 +577,16 @@
                     <div class="widget-chat-wrapper-outer w-100">
                         <div class="widget-chart-content">
                             <div class="widget-title opacity-5 text-uppercase">
-                                Sharia Audit
                             </div>
                             <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
                                 <div class="row widget-chart-flex align-items-center">
                                     <div class="col-md-6" style="top:-23px !important;">
                                         <span class="opacity-10 text-success pr-2">
                                             <i class="fa fa-angle-up"></i>
-                                        </span><br/>                                    
+                                        </span><br />
+                                        <span class="ent_count_filed"></span>
+                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
 
-                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1">Pool Management is audited quarterly</small>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="progress green">
@@ -559,8 +604,7 @@
                     </div>
                 </div>
             </div>
-              
         </div>
-   </center>
+    </center>
 </div>
 

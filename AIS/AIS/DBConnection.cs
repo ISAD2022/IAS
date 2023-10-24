@@ -12222,6 +12222,7 @@ namespace AIS.Controllers
         }
 
         //get_audit_performance_for_dashboard
+
         public List<FADAuditPerformanceModel> GetAuditPerformanceForDashboard()
         {
             sessionHandler = new SessionHandler();
@@ -12249,6 +12250,37 @@ namespace AIS.Controllers
                     zb.R1 = rdr["R1"].ToString();
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
+                    list.Add(zb);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<AuditPerformanceChartDashboardModel> GetAuditPerformanceChartForDashboard()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditPerformanceChartDashboardModel> list = new List<AuditPerformanceChartDashboardModel>();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.p_get_dashborad_scorecard";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditPerformanceChartDashboardModel zb = new AuditPerformanceChartDashboardModel();
+                    zb.HEADING = rdr["heading"].ToString();
+                    zb.NO_OF_ENTITIES = rdr["no_of_ent"].ToString();
+                    zb.TOTAL_ENTITIES = rdr["tot_ent"].ToString();
+                    zb.REMARKS = rdr["remarks"].ToString();
+                    zb.DEPARTMENT = rdr["department"].ToString();
+                    zb.PERCENTAGE = rdr["pencent"].ToString();
                     list.Add(zb);
                 }
             }
