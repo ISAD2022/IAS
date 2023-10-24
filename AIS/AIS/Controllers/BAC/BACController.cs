@@ -39,6 +39,21 @@ namespace AIS.Controllers
             }
         }
 
+        [HttpGet("BAC/cia_analysis")]
+        public IActionResult cia_analysis()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["OptionList"] = dBConnection.GetBACCIAAnalysisOptions();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                return View("../BAC/cia_analysis");
+            }
+        }
 
         [HttpGet("BAC/agenda")]
         public IActionResult agenda()

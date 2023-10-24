@@ -40,15 +40,25 @@
             cache: false,
             success: function (data) {
                 var tr = data[0];
-                $('#viewerMainProcNameModalField').val(tr.process);
-                $('#viewerNameModalField').val(tr.neW_SUB_PROCESS);
-                $('#viewerDescModalField').val(tr.neW_PROCESS_DETAIL);
-                $('#viewerViolationNameModalField').val(tr.neW_VIOLATION);
-                $('#viewerControlModalField').val(tr.neW_FUNCTIONAL_RESP);
-                $('#viewerDivModalField').val(tr.neW_ROLE_RESP);
-                $('#viewerRiskModalField').val(tr.neW_RISK);
-                $('#viewerAnnexModalField').val(tr.neW_ANNEXURE);
 
+                 $('#viewerMainProcNameModalField').val(tr.process);
+                $('#viewerSubProcNameModalField').val(tr.neW_SUB_PROCESS);
+                $('#processDetailNewField').val(tr.neW_PROCESS_DETAIL);
+               
+                 
+                 // $('#viewerViolationNameModalField').val(tr.neW_VIOLATION);
+                // $('#viewerControlModalField').val(tr.neW_FUNCTIONAL_RESP);
+                // $('#viewerDivModalField').val(tr.neW_ROLE_RESP);
+                // $('#viewerRiskModalField').val(tr.neW_RISK);
+                // $('#viewerAnnexModalField').val(tr.neW_ANNEXURE);
+
+                $('#updatedViolationlist').val(tr.n_V_ID);
+                $('#updatedProcOwnerlist').val(tr.n_OWNER_ID);
+                $('#updatedRoleResplist').val(tr.n_ROLE_RESP_ID);
+                $('#updatedRisklist').val(tr.n_RISK_ID);
+                $('#updatedAnnexlist').val(tr.n_ANNEX_ID);
+    
+                
                 $('#oldProcessLabel').val(tr.process);
                 $('#oldViolationLabel').val(tr.violation);
                 $('#oldProcessOwnerLabel').val(tr.functionaL_RESP);
@@ -219,41 +229,19 @@
                         <form>
                             <h6 class="text-center"><b>Proposed Changes</b></h6>
                             <div class="form-group">
-
-                                <label>Process</label>
-
-                                <select disabled="disabled" id="updatedChecklist" class="form-select form-control">
-                                    <option value="0" id="0" selected>--Select Checklist--</option>
-                                    @{
-                                        if (ViewData["ChecklistTypes"] != null)
-                                        {
-                                            foreach (var item in (dynamic)(ViewData["ChecklistTypes"]))
-                                            {
-                                                <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
-
-                                            }
-                                        }
-                                    }
-
-                                </select>
+                                <label for="viewerMainProcNameModalField">Process</label>
+                                <input type="text" class="form-control" id="viewerMainProcNameModalField" />
 
                             </div>
                             <div class="form-group">
 
                                 <label>Sub Process</label>
-
-                                <select id="updatedSubChecklist" class="form-select form-control">
-                                    <option value="0" id="0" selected>--Select Sub-Checklist--</option>
-
-                                </select>
+                                <input disabled type="text" class="form-control" id="viewerSubProcNameModalField" />
 
                             </div>
                             <div class="form-group">
-
                                 <label>Process Detail</label>
-
-                                <textarea id="updatedProcDetailHeading" class="form-control"></textarea>
-
+                                <textarea disabled id="processDetailNewField" class="form-control"></textarea>
                             </div>
                             <div class="form-group">
 

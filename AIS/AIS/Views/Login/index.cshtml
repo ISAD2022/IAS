@@ -67,13 +67,20 @@
                 } 
                 else 
                 {
-                    if (g_retUrl != null && g_retUrl != "") {
-                        window.location.href = g_retUrl;
+                    //BAC GROUP ID = 37
+                    if (data.userGroupID==37 ) {
+                        window.location.href = "/BAC/Agenda";
+                    }else{
+                        if (g_retUrl != null && g_retUrl != "") {
+                            window.location.href = g_retUrl;
+                        }
+
+                        else {
+                            window.location.href = "/home";
+                        }
                     }
-                    
-                    else {
-                        window.location.href = "/home";
-                    }
+
+                   
                     
                 }
                 $('#submitLoginButton').attr('disabled', false);

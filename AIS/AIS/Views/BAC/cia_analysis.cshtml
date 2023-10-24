@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "CIA Analysis";
+    Layout = "_Layout";
+}
+
+<script>
+
+    $(document).ready(function () {
+
+       
+    });
+
+    function getBACAnalysis() {
+
+        $.ajax({
+            url: "/ApiCalls/get_bac_analysis",
+            type: "POST",
+            data: {
+                'PROCESS_ID': $('#BACAnalysisOptionBox option:selected').val(),
+            },
+            cache: false,
+            success: function (data) {
+                var sr = 1;
+                $.each(data, function (index, item) {
+                    $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.heading + "</td><td class=\"text-right\">" + item.count + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.newcount + "</td><td>" + item.auditcomments + "</td></tr>");
+                    sr++;
+                });
+
+            },
+            dataType: "json",
+        });
+
+    }
+
+   
+</script>
+<div class="row col-md-12">
+
+    <h3 style="color: rgb(186 113 46) !important;">CIA Analysis</h3>
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="col-md-12">
+           <select onchange="getBACAnalysis();" id="BACAnalysisOptionBox" class="form-control">
+               <option>--Select Process--</option>
+                @{
+                    if (ViewData["OptionList"] != null)
+                    {
+                        foreach (var item in (dynamic)(ViewData["OptionList"]))
+                        {
+                                    <option value="@item.ID">@item.HEADING</option>
+                       
+                        }
+                    }
+                }
+               
+           </select>
+    </div>    
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="mt-3 col-md-12">
+        <table id="bacanalysis_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(254 102 67) !important; ">
+                <tr>
+                    <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto">Heading</th>
+                    <th class="col-md-auto text-center">No. of Observations</th>                    
+                    <th class="col-md-auto text-center">Old</th>                    
+                    <th class="col-md-auto text-center">New</th>                    
+                    <th class="col-md-auto text-center">Audit Comments</th>                    
+                </tr>
+               
+
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

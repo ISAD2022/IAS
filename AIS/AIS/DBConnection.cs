@@ -2986,9 +2986,11 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -3241,6 +3243,14 @@ namespace AIS.Controllers
                     pTran.NEW_ANNEXURE = rdr["NEW_annexure"].ToString();
                     pTran.STATUS = rdr["STATUS"].ToString();
 
+                    pTran.N_S_ID = rdr["n_s_id"].ToString();
+                    pTran.N_D_ID = rdr["n_d_id"].ToString();
+                    pTran.N_ROLE_RESP_ID = rdr["n_role_resp_id"].ToString();
+                    pTran.N_OWNER_ID = rdr["n_owner_enitity_id"].ToString();
+                    pTran.N_RISK_ID = rdr["n_risk_id"].ToString();
+                    pTran.N_V_ID = rdr["n_v_id"].ToString();
+                    pTran.N_ANNEX_ID = rdr["n_annex"].ToString();
+
                     riskTransList.Add(pTran);
                 }
             }
@@ -3288,7 +3298,9 @@ namespace AIS.Controllers
 
                     pTran.ANNEXURE = rdr["annexure"].ToString();
                     pTran.NEW_ANNEXURE = rdr["NEW_annexure"].ToString();
-                    pTran.STATUS = rdr["STATUS"].ToString();
+
+
+                 
 
                     riskTransList.Add(pTran);
                 }
@@ -13033,6 +13045,70 @@ namespace AIS.Controllers
                     zb.ENTERED_ON = rdr["entered_on"].ToString();
                     zb.DELAY = rdr["delay"].ToString();
                     zb.STATUS = rdr["status"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<BACCIAAnalysisOptionsModel> GetBACCIAAnalysisOptions()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<BACCIAAnalysisOptionsModel> pdetails = new List<BACCIAAnalysisOptionsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACCIAAnalysisOptionsModel zb = new BACCIAAnalysisOptionsModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.HEADING = rdr["heading"].ToString();
+                    zb.AUDIT_COMMENTS = rdr["audit_comments"].ToString();
+                    zb.MONITORING = rdr["monitoring"].ToString();
+                    zb.AUTOMATION = rdr["automation"].ToString();                   
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<BACCIAAnalysisModel> GetBACCIAAnalysis(int processId)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<BACCIAAnalysisModel> pdetails = new List<BACCIAAnalysisModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = processId;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BACCIAAnalysisModel zb = new BACCIAAnalysisModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.COUNT = rdr["total"].ToString();
+                    zb.ANNEX = rdr["annex"].ToString();
+                    zb.HEADING = rdr["heading"].ToString();                    
+                    zb.OLDCOUNT = rdr["old_total"].ToString();                    
+                    zb.NEWCOUNT = rdr["new_total"].ToString();                    
+                    zb.AUDITCOMMENTS = rdr["audit_comments"].ToString();                    
                     pdetails.Add(zb);
                 }
             }

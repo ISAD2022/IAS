@@ -1553,6 +1553,12 @@ namespace AIS.Controllers
             return dBConnection.GetBACAgendaActionablesWithMeetingNo(STATUS,MEETING_NO);
 
         }
+        [HttpPost]
+        public List<BACCIAAnalysisModel> get_bac_analysis(int PROCESS_ID)
+        {
+            return dBConnection.GetBACCIAAnalysis(PROCESS_ID);
+
+        }
         #endregion
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
