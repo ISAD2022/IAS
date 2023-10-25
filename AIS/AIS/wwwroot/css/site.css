@@ -110,8 +110,8 @@ body {
 }
 
 100% {
-    -webkit-transform: rotate(30deg);
-    transform: rotate(30deg);
+    -webkit-transform: rotate(20deg);
+    transform: rotate(20deg);
 }
 
 }
@@ -176,6 +176,17 @@ body {
         transform: rotate(180deg);
     }
 }
+@keyframes loading-5b {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(80deg);
+        transform: rotate(80deg);
+    }
+}
 @keyframes loading-6 {
     0% {
         -webkit-transform: rotate(0deg);
@@ -185,5 +196,16 @@ body {
     100% {
         -webkit-transform: rotate(180deg);
         transform: rotate(180deg);
+    }
+}
+@keyframes loading-6b {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
     }
 }
