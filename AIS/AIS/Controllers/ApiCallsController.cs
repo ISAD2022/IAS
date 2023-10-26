@@ -1585,6 +1585,19 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<FunctionalAnnexureWiseObservationModel> get_functional_observations(int PROCESS_ID)
+        {
+            return dBConnection.GetFunctionalObservations(PROCESS_ID);
+
+        }
+        [HttpPost]
+        public string get_functional_observation_text(int PARA_ID, string PARA_CATEGORY)
+        {
+           return dBConnection.GetFunctionalObservationText(PARA_ID, PARA_CATEGORY);
+
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
