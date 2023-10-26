@@ -1565,6 +1565,27 @@ namespace AIS.Controllers
 
         }
         #endregion
+        [HttpPost]
+        public List<EntityWiseObservationModel> get_reporting_wise_observations()
+        {
+            return dBConnection.GetReportingOfficeWiseObservations();
+
+        }
+
+        [HttpPost]
+        public List<EntityWiseObservationModel> get_entity_wise_observations()
+        {
+            return dBConnection.GetEntityWiseObservations();
+        }
+
+        [HttpPost]
+        public List<AnnexWiseObservationModel> get_annex_wise_observations()
+        {
+            return dBConnection.GetAnnexureWiseObservations();
+
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

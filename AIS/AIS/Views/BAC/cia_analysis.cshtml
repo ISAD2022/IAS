@@ -12,6 +12,11 @@
 
     function getBACAnalysis() {
 
+        $('#bacanalysis_panel tbody').empty();
+
+        if ($('#BACAnalysisOptionBox option:selected').val() == "-1")
+            return;
+
         $.ajax({
             url: "/ApiCalls/get_bac_analysis",
             type: "POST",
@@ -21,18 +26,65 @@
             cache: false,
             success: function (data) {
                 var sr = 1;
+                var rowspan = 1;
+                var mergeRow = 1;
                 var currentT = 0;
                 var legacyT = 0;
                 var totalT = 0;
+                var heading_check = "";
+                var rowSpArr = [];
+                $.each(data, function (index, item) 
+                {
+                    if (item.heading == heading_check) {
+                        rowspan++;
+                       
+                    } else {
+                        if(rowspan>1)
+                            rowSpArr.push({ 'heading': heading_check, 'rowspan': rowspan });
+                        rowspan = 1;
+                        heading_check = item.heading;
+                    }
+
+                });
+                rowSpArr.push({ 'heading': heading_check, 'rowspan': rowspan });
+
+                console.log(rowSpArr);
+                rowspan = 1;
+                var heading_check = "";
+
+
                 $.each(data, function (index, item) {
+
                     currentT += parseInt(item.newcount);
                     legacyT += parseInt(item.oldcount);
                     totalT += parseInt(item.count);
-                    $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.heading + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td>" + item.auditcomments + "</td></tr>");
-                    sr++;
-                });
+                    if (item.heading != heading_check) {
+                        $.each(rowSpArr, function (i, v) {
+                            if (v.heading == item.heading) {
+                                mergeRow = v.rowspan;
+                            }
+                        });
+                        $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td style=\"vertical-align: middle;\" rowspan=\"" + mergeRow + "\">" + item.auditcomments + "</td></tr>");
+                        heading_check = item.heading;
+                    }
+                    else{
+                        $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td></tr>");
+                        heading_check = item.heading;
+                    }
+                    sr++;                   
+                });              
 
-                $('#bacanalysis_panel tbody').append("<tr><td colspan=\"2\">Total</td><td class=\"text-right text-bold\">" + currentT + "</td><td class=\"text-right text-bold\">" + legacyT + "</td><td class=\"text-right text-bold\">" + totalT + "</td><td></td></tr>");
+                if ($('#BACAnalysisOptionBox option:selected').val() == "0")
+                {
+                    $('#bacanalysis_panel tbody').append("<tr><td colspan=\"3\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td></td></tr>");
+                    $('.heading_field').show();
+
+                }                
+                else
+                {
+                    $('.heading_field').hide();
+                    $('#bacanalysis_panel tbody').append("<tr><td colspan=\"2\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td></td></tr>");
+                }                   
 
             },
             dataType: "json",
@@ -48,14 +100,19 @@
 </div>
 <div class="row col-md-12 mt-3">
     <div class="col-md-12">
+        <label class="text-bold"><b>Main Process</b></label>
+      </div>
+    <div class="col-md-12 mt-1">
+       
            <select onchange="getBACAnalysis();" id="BACAnalysisOptionBox" class="form-control">
-               <option>--Select Process--</option>
+               <option value="-1">--Select Main Process--</option>
+               <option value="0">All</option>
                 @{
                     if (ViewData["OptionList"] != null)
                     {
                         foreach (var item in (dynamic)(ViewData["OptionList"]))
                         {
-                                            <option value="@item.ID">@item.HEADING</option>
+                                                                                                            <option value="@item.ID">@item.HEADING</option>
                        
                         }
                     }
@@ -69,12 +126,13 @@
         <table id="bacanalysis_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(186 113 46) !important; ">
                 <tr>
-                    <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto">Heading</th>
-                    <th class="col-md-auto text-center">Current</th>                    
-                    <th class="col-md-auto text-center">Legacy</th>                    
-                    <th class="col-md-auto text-center">Total</th>                    
-                    <th class="col-md-auto text-center">Audit Comments</th>                    
+                    <th class="col-md-auto text-light">Sr. No.</th>
+                    <th class="col-md-auto text-light heading_field">Main Process</th>
+                    <th class="col-md-auto text-light">Annexure</th>
+                    <th class="col-md-auto text-center text-light">Current</th>
+                    <th class="col-md-auto text-center text-light">Legacy</th>
+                    <th class="col-md-auto text-center text-light">Total</th>
+                    <th class="col-md-auto text-center text-light">Audit Comments</th>
                 </tr>
                
 

@@ -189,6 +189,77 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult annex_wise_obs()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult reporting_wise_obs()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+          
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult entity_wise_obs()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+              if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult para_view()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

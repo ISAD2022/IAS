@@ -13148,5 +13148,120 @@ namespace AIS.Controllers
             return pdetails;
         }
         #endregion
+
+
+        #region Functional Head Dashboard
+        public List<EntityWiseObservationModel> GetReportingOfficeWiseObservations()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<EntityWiseObservationModel> pdetails = new List<EntityWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Functional_Reporting_office_WISE_ANALYSIS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EntityWiseObservationModel zb = new EntityWiseObservationModel();
+                    zb.ENTITY_ID = Convert.ToInt32(rdr["parent_id"].ToString());
+                    zb.REPORTING_OFFICE = rdr["name"].ToString();
+                    zb.TOTAL = rdr["total"].ToString();
+                    zb.OLD_TOTAL = rdr["old_total"].ToString();
+                    zb.NEW_TOTAL = rdr["new_total"].ToString();
+                    zb.R1 = rdr["r1"].ToString();
+                    zb.R2 = rdr["r2"].ToString();
+                    zb.R3 = rdr["r3"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+        public List<EntityWiseObservationModel> GetEntityWiseObservations()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<EntityWiseObservationModel> pdetails = new List<EntityWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Functional_ENTITY_WISE_ANALYSIS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EntityWiseObservationModel zb = new EntityWiseObservationModel();
+                    zb.ENTITY_ID = Convert.ToInt32(rdr["entity_id"].ToString());
+                    zb.REPORTING_OFFICE = rdr["REPORTING_OFFICE"].ToString();
+                    zb.ENTITY_NAME = rdr["name"].ToString();
+                    zb.TOTAL = rdr["total"].ToString();
+                    zb.OLD_TOTAL = rdr["old_total"].ToString();
+                    zb.NEW_TOTAL = rdr["new_total"].ToString();
+                    zb.R1 = rdr["r1"].ToString();
+                    zb.R2 = rdr["r2"].ToString();
+                    zb.R3 = rdr["r3"].ToString();                    
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<AnnexWiseObservationModel> GetAnnexureWiseObservations()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<AnnexWiseObservationModel> pdetails = new List<AnnexWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_Functional_ANALYSIS_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AnnexWiseObservationModel zb = new AnnexWiseObservationModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.HEADING = rdr["Heading"].ToString();
+                    zb.ANNEX = rdr["Annex"].ToString();
+                    zb.AUDIT_COMMENTS = rdr["AUDIT_COMMENTS"].ToString();
+                    zb.TOTAL = rdr["total"].ToString();
+                    zb.OLD_TOTAL = rdr["old_total"].ToString();
+                    zb.NEW_TOTAL = rdr["new_total"].ToString();
+                    zb.R1 = rdr["r1"].ToString();
+                    zb.R2 = rdr["r2"].ToString();
+                    zb.R3 = rdr["r3"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+
+        #endregion
     }
 }
