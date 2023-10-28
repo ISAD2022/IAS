@@ -13385,6 +13385,39 @@ namespace AIS.Controllers
             con.Dispose();
             return pdetails;
         }
+        public List<FunctionalAnnexureWiseObservationModel> GetAnalysisSummaryPara(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_SUMMARY";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = PROCESS_ID;
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
+                 
+                    zb.P_NAME = rdr["p_name"].ToString();
+                    zb.NAME = rdr["name"].ToString();
+                    zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
 
 
         #endregion

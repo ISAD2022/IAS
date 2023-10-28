@@ -63,14 +63,14 @@
                         });
 
                         if(item.indicator=="Y")
-                            $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td style=\"vertical-align: middle;\" rowspan=\"" + mergeRow + "\">" + item.auditcomments + "</td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaViewerDetails(" + item.id + ");\">View Detail</a></td><td class=\"actionsCol\"><a href=\"#\">View Summary</a></td></tr>");
+                            $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td style=\"vertical-align: middle;\" rowspan=\"" + mergeRow + "\">" + item.auditcomments + "</td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaViewerDetails(" + item.id + ");\">View Detail</a></td><td class=\"actionsCol\"><a  href=\"#\" onclick=\"getParaSummaryDetails(" + item.id + ");\">View Summary</a></td></tr>");
                         else
                             $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td style=\"vertical-align: middle;\" rowspan=\"" + mergeRow + "\">" + item.auditcomments + "</td><td class=\"actionsCol\"></td><td class=\"actionsCol\"></td></tr>");
                         heading_check = item.heading;
                     }
                     else{
                         if (item.indicator == "Y")
-                            $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaViewerDetails(" + item.id + ");\">View Detail</a></td><td class=\"actionsCol\"><a href=\"#\">View Summary</a></td></tr>");
+                            $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaViewerDetails(" + item.id + ");\">View Detail</a></td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaSummaryDetails(" + item.id + ");\">View Summary</a></td></tr>");
                         else
                             $('#bacanalysis_panel tbody').append("<tr><td>" + sr + "</td><td class=\"heading_field\">" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.newcount + "</td><td class=\"text-right\">" + item.oldcount + "</td><td class=\"text-right\">" + item.count + "</td><td class=\"actionsCol\" ></td><td class=\"actionsCol\"></td></tr>");
 
@@ -121,6 +121,7 @@
 
     function getParaViewerDetails(id) {
         $('#paraViewerModel').modal('show');
+        $('#entitywise_panel tbody').empty();
          $.ajax({
             url: "/ApiCalls/get_analysis_detail_paras",
             type: "POST",
@@ -134,6 +135,31 @@
                 $.each(data, function (index, item) {
 
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText(" + item.id + ", '"+item.parA_CATEGORY+"');\">View Para Text</a></td></tr>");
+                    sr++;
+                });
+
+
+            },
+            dataType: "json",
+        });
+    }
+
+    function getParaSummaryDetails(id) {
+        $('#paraSummaryModel').modal('show');
+        $('#summarywise_panel tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/get_analysis_summary_paras",
+            type: "POST",
+            data: {
+                'PROCESS_ID': id
+            },
+            cache: false,
+            success: function (data) {
+                var sr = 1;
+
+                $.each(data, function (index, item) {
+
+                    $('#summarywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.p_NAME + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td></tr>");
                     sr++;
                 });
 
@@ -198,11 +224,11 @@
 
 
 
-<div id="paraViewerModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog  modal-xl" role="document">
+<div id="paraSummaryModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Para Detail</h5>
+                <h5 class="modal-title">Paras Summary</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -211,14 +237,14 @@
                 <form>
                     <div class="row col-md-12">
                         <div class="mt-3 col-md-12">
-                            <table id="entitywise_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-                                <thead style="background-color: #FF5722 !important; ">
+                            <table id="summarywise_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: #dc3545 !important; ">
                                     <tr>
                                         <th class="col-md-auto text-light">Sr. No.</th>
+                                        <th class="col-md-auto text-light">Reporting Office</th>
                                         <th class="col-md-auto text-light">Entity Name</th>
                                         <th class="col-md-auto text-center text-light">Audit Period</th>
                                         <th class="col-md-auto text-center text-light">Para No</th>
-                                        <th class="col-md-auto text-center text-light"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -239,7 +265,7 @@
 
 
 <div id="paraTextViewerModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog  modal-xl" role="document">
+    <div class="modal-dialog  modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Para Text</h5>
@@ -267,7 +293,7 @@
 
 
 <div id="paraViewerModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog  modal-xl" role="document">
+    <div class="modal-dialog  modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Para Detail</h5>
@@ -280,7 +306,7 @@
                     <div class="row col-md-12">
                         <div class="mt-3 col-md-12">
                             <table id="entitywise_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-                                <thead style="background-color: #FF5722 !important; ">
+                                <thead style="background-color: #dc3545 !important; ">
                                     <tr>
                                         <th class="col-md-auto text-light">Sr. No.</th>
                                         <th class="col-md-auto text-light">Entity Name</th>
