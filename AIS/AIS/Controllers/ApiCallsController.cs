@@ -1604,11 +1604,25 @@ namespace AIS.Controllers
             return dBConnection.GetAnalysisDetailPara(PROCESS_ID);
 
         }
+        [HttpPost]
+        public List<FunctionalAnnexureWiseObservationModel> get_functional_resp_detail_paras(int PROCESS_ID)
+        {
+            return dBConnection.GetFunctionalRespDetailPara(PROCESS_ID);
+
+        }
 
         [HttpPost]
         public List<FunctionalAnnexureWiseObservationModel> get_analysis_summary_paras(int PROCESS_ID)
         {
             return dBConnection.GetAnalysisSummaryPara(PROCESS_ID);
+
+        }
+
+
+        [HttpPost]
+        public List<FunctionalAnnexureWiseObservationModel> get_functional_resp_summary_paras(int PROCESS_ID)
+        {
+            return dBConnection.GetFunctionalRespSummaryPara(PROCESS_ID);
 
         }
 

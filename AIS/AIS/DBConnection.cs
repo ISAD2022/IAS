@@ -8763,6 +8763,7 @@ namespace AIS.Controllers
                 {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Functional_owner"].ToString();
+                    zb.D_ID = rdr["d_id"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
                     zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
@@ -13385,6 +13386,39 @@ namespace AIS.Controllers
             con.Dispose();
             return pdetails;
         }
+        public List<FunctionalAnnexureWiseObservationModel> GetFunctionalRespDetailPara(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_PARA";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = PROCESS_ID;
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.NAME = rdr["name"].ToString();
+                    zb.PARA_CATEGORY = rdr["para_category"].ToString();
+                    zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
         public List<FunctionalAnnexureWiseObservationModel> GetAnalysisSummaryPara(int PROCESS_ID)
         {
             sessionHandler = new SessionHandler();
@@ -13410,6 +13444,40 @@ namespace AIS.Controllers
                  
                     zb.P_NAME = rdr["p_name"].ToString();
                     zb.NAME = rdr["name"].ToString();
+                    zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
+        }
+
+        public List<FunctionalAnnexureWiseObservationModel> GetFunctionalRespSummaryPara(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_PARA_summary";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = PROCESS_ID;
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
+
+                    zb.P_NAME = rdr["p_name"].ToString();
+                   // zb.NAME = rdr["name"].ToString();
                     zb.PARA_NO = rdr["para_no"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
