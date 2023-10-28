@@ -1598,6 +1598,12 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<FunctionalAnnexureWiseObservationModel> get_analysis_detail_paras(int PROCESS_ID)
+        {
+            return dBConnection.GetAnalysisDetailPara(PROCESS_ID);
+
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

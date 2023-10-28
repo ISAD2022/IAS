@@ -13136,6 +13136,7 @@ namespace AIS.Controllers
                     BACCIAAnalysisModel zb = new BACCIAAnalysisModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.COUNT = rdr["total"].ToString();
+                    zb.INDICATOR = rdr["indicator"].ToString();
                     zb.ANNEX = rdr["annex"].ToString();
                     zb.HEADING = rdr["heading"].ToString();                    
                     zb.OLDCOUNT = rdr["old_total"].ToString();                    
@@ -13349,6 +13350,40 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+        }
+
+        public List<FunctionalAnnexureWiseObservationModel> GetAnalysisDetailPara(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+
+            List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_DETAILS_PARA";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = PROCESS_ID;
+                cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID; 
+                cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
+                    zb.ID = Convert.ToInt32(rdr["id"].ToString());
+                    zb.NAME = rdr["name"].ToString();
+                    zb.PARA_CATEGORY = rdr["para_category"].ToString();
+                    zb.PARA_NO = rdr["para_no"].ToString();
+                    zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    pdetails.Add(zb);
+                }
+            }
+            con.Dispose();
+            return pdetails;
         }
 
 

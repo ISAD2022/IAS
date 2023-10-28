@@ -8,6 +8,7 @@ namespace AIS.Models
     {
         public int ID { get; set; }
         public string ANNEX { get; set; }
+        public string INDICATOR { get; set; }
         public string HEADING { get; set; }
         public string AUTOMATION { get; set; }
         public string MONITORING { get; set; }
