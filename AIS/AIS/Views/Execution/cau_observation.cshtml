@@ -127,6 +127,10 @@ label.heading{
     }
 
     function submitObservationToAuditee() {
+        if ($('#updatedAnnexlist').val() == 0) {
+            alert('Select Annexure');
+            return;
+        }
         if ($('#riskGroupSelectBox').val() == 0) {
             alert('Select Violation Category');
             return;
@@ -178,7 +182,9 @@ label.heading{
                 'ENG_ID': g_engId,
                 'BRANCH_ID': $('#brSearchField').val(),
                 'SUB_CHECKLISTID': $('#riskSubGroupSelectBox').val(),
-                'CHECKLIST_ID': $('#riskActivitiesSelectBox').val()
+                'CHECKLIST_ID': $('#riskActivitiesSelectBox').val(),
+                'ANNEXURE_ID': $('#updatedAnnexlist').val()
+
             },
             cache: false,
             success: function (data) {
@@ -254,6 +260,26 @@ label.heading{
 <div class="row col-md-12">
     <div class="col-md-12 mt-3">
         <center class="w-100"><h3>Observation</h3></center>
+        <div>
+            <h5>Annexure</h5>
+        </div>
+        <select id="updatedAnnexlist" class="form-select form-control">
+            <option selected="selected" value="0" id="0">--Select Annexure--</option>
+            @{
+                if (ViewData["AnnexList"] != null)
+                {
+
+                    foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                    {
+                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                    }
+
+                }
+            }
+
+        </select>
+    </div>
+    <div class="col-md-12 mt-3">
         <div>
             <h5>Checklist</h5>
         </div>

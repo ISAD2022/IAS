@@ -203,6 +203,7 @@ namespace AIS.Controllers
                 ObservationModel ob = new ObservationModel();
                 ob.HEADING = m.HEADING;
                 ob.SUBCHECKLIST_ID = S_ID;
+                ob.ANNEXURE_ID = m.ANNEXURE_ID;
                 ob.CHECKLISTDETAIL_ID = Convert.ToInt32(m.ID.Split("obs_")[1]);
                 ob.V_CAT_ID = V_CAT_ID;
                 ob.V_CAT_NATURE_ID = V_CAT_NATURE_ID;
@@ -221,7 +222,7 @@ namespace AIS.Controllers
             return "{\"success\":" + success + " , \"failed\":" + failed + "}";
         }
         [HttpPost]
-        public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID = 0, int BRANCH_ID = 0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0)
+        public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID = 0, int BRANCH_ID = 0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0, string ANNEXURE_ID="")
         {
             int success = 0;
             int failed = 0;
@@ -230,7 +231,7 @@ namespace AIS.Controllers
                 ObservationModel ob = new ObservationModel();
                 ob.SUBCHECKLIST_ID = SUB_CHECKLISTID;
                 ob.CHECKLISTDETAIL_ID = CHECKLIST_ID;
-
+                ob.ANNEXURE_ID = ANNEXURE_ID;
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;

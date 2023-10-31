@@ -269,6 +269,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
             ViewData["ZonesList"] = dBConnection.GetZones(false);
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -483,6 +484,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
