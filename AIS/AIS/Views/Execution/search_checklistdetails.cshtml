@@ -5,7 +5,7 @@
 <script type="text/javascript">
      $(document).ready(function () {
        
-        $("#subchecklistPanel").on("keyup", function () {
+        $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#subchecklistPanel tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
@@ -14,19 +14,16 @@
     });
 </script>
 <div class="row mt-3">
-    <div>
         <center>
             <h3 style="color: #45c545;">Checklist Detail</h3>
         </center>
-    </div>
-     <div class="row">
-        <div class="col-md-12">
-            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
-        </div>
-      
-    </div>
-    <br>
+  
+</div>
+<div class="row col-md-12 mt-3">
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+  </div>
 
+  <div class="row col-md-12 mt-3">
     <table id="subchecklistPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
@@ -45,7 +42,7 @@
                     foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
                         <tr>
-                            <td>sr</td>
+                            <td>@sr</td>
                             <td>@item.PROCESS</td>
                             <td>@item.SUB_PROCESS</td>
                             <td>@item.PROCESS_DETAIL</td>
@@ -57,4 +54,5 @@
             }
         </tbody>
     </table>
-</div>
+
+  </div>

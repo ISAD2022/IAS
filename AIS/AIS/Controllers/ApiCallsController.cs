@@ -1626,6 +1626,23 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public List<BranchModel> get_zone_Branches_for_Annexure_Assignment(int ENTITY_ID)
+        {
+            return dBConnection.GetZoneBranchesForAnnexureAssignment(ENTITY_ID);
+
+        }
+
+        [HttpPost]
+        public List<AllParaForAnnexureAssignmentModel> get_all_paras_for_annexure_assignment(int ENTITY_ID)
+        {
+            return dBConnection.GetAllParasForAnnexureAssignment(ENTITY_ID);
+        }
+        [HttpPost]
+        public string assign_annexure_with_para(string OBS_ID, string REF_P, string ANNEX_ID, string PARA_CATEGORY)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AssignAnnexureWithPara(OBS_ID, REF_P, ANNEX_ID, PARA_CATEGORY) + "\"}";           
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

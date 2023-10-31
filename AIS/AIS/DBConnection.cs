@@ -7214,9 +7214,11 @@ namespace AIS.Controllers
                 {
                     SearchChecklistDetailsModel cm = new SearchChecklistDetailsModel();
                     cm.PROCESS = rdr["P_NAME"].ToString();
-                    cm.SUB_PROCESS = rdr["P_NAME"].ToString();
-                    cm.PROCESS_DETAIL = rdr["P_NAME"].ToString();
+                    cm.SUB_PROCESS = rdr["S_NAME"].ToString();
+                    cm.PROCESS_DETAIL = rdr["C_NAME"].ToString();
                     cm.RISK = rdr["RISK"].ToString();
+                    list.Add(cm);
+
                 }
             }
             con.Dispose();
@@ -8610,6 +8612,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserRoleid", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -12883,6 +12887,126 @@ namespace AIS.Controllers
             return pdetails;
         }
 
+        public List<ZoneModel> GetZonesForAnnexureAssignment()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<ZoneModel> zoneList = new List<ZoneModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_Get_Auditee_Parent_FAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ZoneModel z = new ZoneModel();
+                    z.ZONEID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    z.ZONENAME = rdr["NAME"].ToString();
+                    zoneList.Add(z);
+                }
+            }
+            con.Dispose();
+            return zoneList;
+        }
+        public List<BranchModel> GetZoneBranchesForAnnexureAssignment(int ENTITY_ID=0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser(); 
+            var con = this.DatabaseConnection(); con.Open();
+            List<BranchModel> branchList = new List<BranchModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_Get_Auditee_Child_FAD";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    BranchModel br = new BranchModel();
+                    br.BRANCHID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    br.BRANCHNAME = rdr["NAME"].ToString();
+                    branchList.Add(br);
+                }
+            }
+            con.Dispose();
+            return branchList;
+        }
+
+        public List<AllParaForAnnexureAssignmentModel> GetAllParasForAnnexureAssignment(int ENTITY_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_Get_all_paras_fad";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AllParaForAnnexureAssignmentModel chk = new AllParaForAnnexureAssignmentModel();
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    chk.OBS_ID = rdr["OBS_ID"].ToString();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
+                    chk.PARA_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.ENTITY_NAME = rdr["NAME"].ToString();
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
+        public string AssignAnnexureWithPara(string OBS_ID, string REF_P, string ANNEX_ID, string PARA_CATEGORY)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_Update_paras_annex_fad";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CAT", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("ANEX", OracleDbType.Varchar2).Value = ANNEX_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+                  
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
 
 
         #region BAC PROCEDURE CALLS

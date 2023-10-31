@@ -829,7 +829,6 @@ namespace AIS.Controllers
             }
         }
 
-
         public IActionResult deposit_account_details()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -849,8 +848,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-
 
         public IActionResult disb_info()
         {
@@ -915,8 +912,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-     
+       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

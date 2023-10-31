@@ -424,6 +424,29 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult annexure_assignment_para()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ZonesList"] = dBConnection.GetZonesForAnnexureAssignment();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
         [HttpPost]
         public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
         {
