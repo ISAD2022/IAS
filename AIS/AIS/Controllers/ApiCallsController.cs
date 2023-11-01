@@ -976,7 +976,12 @@ namespace AIS.Controllers
             return dBConnection.GetParaText(ref_p);
          }
 
-       
+        [HttpPost]
+        public string get_all_para_text(string REF_P, string OBS_ID, string PARA_CATEGORY)
+        {
+            return dBConnection.GetAllParaText(REF_P, OBS_ID,PARA_CATEGORY);
+        }
+
 
         [HttpPost]
         public List<AuditeeOldParasPpnoModel> get_old_paras_for_monitoring_ppno(int ppno)

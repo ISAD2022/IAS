@@ -43,7 +43,7 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.reF_P + '\')"> View Para</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.reF_P + '\',\'' + v.obS_ID + '\',\'' + v.parA_CATEGORY + '\')"> View Para</a></td></tr>');
 
                     });
                 },
@@ -53,23 +53,25 @@
         }
     }
 
-    function viewParaText(ref_p) {
+    function viewParaText(refP, obsId, paraCat) {
         $('#viewMemoModel').modal('show');
         $('#viewMemo_memo').html("");
         $.ajax({
-            url: "/ApiCalls/get_para_text",
+            url: "/ApiCalls/get_all_para_text",
             type: "POST",
             data: {
-                'ref_p': ref_p
+                'REF_P': refP,
+                'OBS_ID': obsId,
+                'PARA_CATEGORY': paraCat
             },
             cache: false,
-            success: function (data) {  
+            success: function (data) {
                 console.log(data);
-
-                $('#viewMemo_memo').html(data);     
+                $('#viewMemo_memo').html(data);
             }
         });
     }
+
 
 </script>
 <h3 style=" display:block;color: #45c545;" class="mt-3">@ViewData["Title"]</h3>

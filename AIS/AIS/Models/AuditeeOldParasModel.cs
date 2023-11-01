@@ -19,6 +19,7 @@ namespace AIS.Models
         public string PARA_NO { get; set; }
         public string MEMO_NO { get; set; }
         public string GIST_OF_PARAS { get; set; }
+        public string OBS_ID { get; set; }
         public string AUDITEE_RESPONSE { get; set; }
         public string AUDITOR_REMARKS { get; set; }
         public DateTime? DATE_OF_LAST_COMPLIANCE_RECEIVED { get; set; }
