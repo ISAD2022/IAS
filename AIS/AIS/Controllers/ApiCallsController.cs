@@ -1654,6 +1654,33 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AssignAnnexureWithPara(OBS_ID, REF_P, ANNEX_ID, PARA_CATEGORY) + "\"}";           
         }
+
+        [HttpPost]
+        public string merge_duplicate_checklists(string MAIN_CHECKLIST_ID, List<string> MERGE_CHECKLIST_IDs)
+        {
+            foreach(string ID in MERGE_CHECKLIST_IDs)
+            {
+                dBConnection.MergeDuplicateChecklists(MAIN_CHECKLIST_ID, ID);
+            }
+            return "{\"Status\":true,\"Message\":\"Duplicates merged successfully\"}";
+
+        }
+        [HttpPost]
+        public List<MergeDuplicateChecklistModel> get_duplicate_checklists(int PROCESS_ID)
+        {
+            return dBConnection.GetDuplicateChecklists(PROCESS_ID);
+        }
+        [HttpPost]
+        public List<MergeDuplicateChecklistModel> get_duplicate_checklists_count(int PROCESS_ID)
+        {
+            return dBConnection.GetDuplicateChecklistsCount(PROCESS_ID);
+        }
+        [HttpPost]
+        public string authorize_merge_duplicate_checklists(int PROCESS_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeMergeDuplicateChecklists(PROCESS_ID) + "\"}";
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

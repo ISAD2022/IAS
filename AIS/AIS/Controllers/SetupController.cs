@@ -139,7 +139,31 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
             ViewData["checkListDetailsList"] = dBConnection.SearchChecklistDetails();
+            ViewData["ViolationsList"] = dBConnection.GetViolationsForChecklistDetail();
+            ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
+            ViewData["RoleRespList"] = dBConnection.GetRoleResponsibleForChecklistDetail();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult authorize_remove_duplicate_checklists()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditProcessListForMergeDuplicate();
+           if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
             }

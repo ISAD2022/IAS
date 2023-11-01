@@ -5909,7 +5909,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<AuditChecklistDetailsModel> GetReferredBackAuditChecklistDetail()
         {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
@@ -13070,7 +13069,124 @@ namespace AIS.Controllers
             return resp;
         }
 
+        public bool MergeDuplicateChecklists(string CHECKLIST_ID, string M_CHECKLIST_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_REMOVE_DUPLICATE_CHECKLIST_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_ID", OracleDbType.Varchar2).Value = CHECKLIST_ID;
+                cmd.Parameters.Add("D_ID", OracleDbType.Varchar2).Value = M_CHECKLIST_ID;
+                cmd.ExecuteReader();
+                
+            }
+            con.Dispose();
+            return true;
+        }
 
+        public List<AuditChecklistModel> GetAuditProcessListForMergeDuplicate()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditChecklistModel> list = new List<AuditChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS_DROPDOWN";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistModel chk = new AuditChecklistModel();
+                    chk.T_ID = Convert.ToInt32(rdr["ID"]);
+                    chk.HEADING = rdr["Main_checklist"].ToString();                  
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<MergeDuplicateChecklistModel> GetDuplicateChecklists(int PROCESS_ID)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<MergeDuplicateChecklistModel> list = new List<MergeDuplicateChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
+                    chk.ID= Convert.ToInt32(rdr["C_ID"]);
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<MergeDuplicateChecklistModel> GetDuplicateChecklistsCount(int PROCESS_ID)
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<MergeDuplicateChecklistModel> list = new List<MergeDuplicateChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS_COUNT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
+                    chk.NEW_COUNT = rdr["New"].ToString();
+                    chk.OLD_COUNT = rdr["Old"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public string AuthorizeMergeDuplicateChecklists(int PROCESS_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_AUTHORIZE_DUPLICATE_CHECKLIST_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp= rdr["remarks"].ToString();
+                    
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
         #region BAC PROCEDURE CALLS
         public List<BACAgendaModel> GetBACAgenda(int MEETING_NO)
         {

@@ -106,10 +106,16 @@
             success: function (data) {
 
                 alert(data.Message);
+                onAlertCallback(getEntityObservation);
                 $('#viewMemoModel').modal('hide');
+
             },
             dataType: "json"
         });
+    }
+
+    function reloadLocation() {
+        window.location.reload();
     }
   
 </script>
