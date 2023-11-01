@@ -1,0 +1,395 @@
+﻿@{
+    ViewData["Title"] = "Manage Checklist Detail";
+    Layout = "_Layout";
+}
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+<script type="text/javascript">
+    var g_procId = 0;
+    var g_subProcId = 0;
+    var g_procDetailId = 0;
+    var g_procDetailList = [];
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#checkListDetailsPanel tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+    function getAuditSubChecklist() {
+        var processId = $('#checklistSelectField').val();
+        if (processId != 0) {
+            $('#subchecklistSelectField').empty();
+            $.ajax({
+                url: "/ApiCalls/get_audit_sub_checklist",
+                type: "POST",
+                data: {
+                    'PROCESS_ID': processId
+                },
+                cache: false,
+                success: function (data) {
+                    var sr = 0;
+                    $('#subchecklistSelectField').append('<option value="0">--Select Audit Sub-Checklist--</option>');
+                    $.each(data, function (i, v) {
+                        sr++;
+                        $('#subchecklistSelectField').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
+
+                    });
+                },
+                dataType: "json",
+            });
+        } else {
+            g_entList = [];
+            $('#subchecklistSelectField').empty();
+            $('#subchecklistSelectField').append('<option value="0">--Select Audit Sub-Checklist--</option>');
+        }
+
+    }
+    function getAuditChecklistDetail() {
+        var processId = $('#checklistSelectField').val();
+        var subProcessId = $('#subchecklistSelectField').val();
+        $('#checklistDetailSelectField').empty();
+        $('#checklistDetailSelectField').append('<option value="0">--Select Checklist Detail--</option>');
+        if (processId != 0 && subProcessId != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_audit_checklist_detail_for_remove_duplicate",
+                type: "POST",
+                data: {
+                    'SUB_PROCESS_ID': subProcessId
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        $('#checklistDetailSelectField').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
+
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+    function openUpdateProcess(id, text) {
+        g_ProcId = $('#checklistSelectField').val();
+        $('#updateProcessModal').modal('show');
+        $('#entCodeField').val($('#checklistSelectField option:selected').text());
+
+    }
+    function updateProcess() {
+        if ($('#entCodeField').val() == "") {
+            alert("Please enter Checklist Title");
+            return;
+        }
+       
+            $.ajax({
+                url: "/ApiCalls/update_audit_checklist",
+                type: "POST",
+                data: {
+                'PROCESS_ID': g_ProcId,
+                    'HEADING': $('#entCodeField').val(),
+                    'ACTIVE': $('#entActiveField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    $('#updateProcessModal').modal('hide');
+                },
+                dataType: "json",
+            });
+        
+
+    }
+
+    function openUpdateSubCheclist() {
+        g_subProcId = $('#subchecklistSelectField').val();
+        $('#updateSubProcessModal').modal('show');
+        $('#subchecklist_DetailsList').empty();
+        $.each(g_subProcList, function (i, v) {
+            if (v.s_ID == g_subProcId) {
+                g_procId = v.t_ID;
+                $('#newChecklist').val(v.t_ID);
+                $('#entCodeField').val(v.heading);
+            }
+        });
+
+        $.ajax({
+            url: "/ApiCalls/get_checklist_details_for_sub_process",
+            type: "POST",
+            data: {
+                'SUB_PROCESS_ID': g_subProcId
+            },
+            cache: false,
+            success: function (data) {
+                g_procDetailList = data;
+                var sr = 0;
+                $.each(data, function (i, v) {
+                    $('#subchecklist_DetailsList').append('<li>' + v.heading + '</li>');
+                });
+            },
+            dataType: "json",
+        });
+    }
+
+    function updateSubProcess() {
+        if ($('#newChecklist').val() == 0) {
+            alert("Please select Process");
+            return;
+        }
+        if ($('#entCodeField').val() == "") {
+            alert("Please enter Sub Process Title");
+            return;
+        }
+      
+            $.ajax({
+                url: "/ApiCalls/update_audit_sub_checklist",
+                type: "POST",
+                data: {
+                    'OLD_PROCESS_ID': g_procId,
+                    'PROCESS_ID': $('#newChecklist').val(),
+                    'SUB_PROCESS_ID': g_subProcId,
+                    'HEADING': $('#entCodeField').val(),
+                    'ENTITY_TYPE_ID': 6
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                },
+                dataType: "json",
+            });
+        
+
+
+    }
+
+
+
+</script>
+<div class="row text-center mt-3">
+    <h3 style=" display:block;color: #45c545;">Remove Duplicate/Redundant Checklists Detail </h3>
+</div>
+<div class="row mt-3 col-md-12">
+    <div class="col-md-12">
+        <label><b>Audit Checklist</b></label>
+    </div>
+    <div class="col-md-11">
+        <select id="checklistSelectField" onchange="getAuditSubChecklist();" class="form-select form-control">
+            <option value="0" id="0" selected>--Select Process--</option>
+            @{
+                if (ViewData["ProcessList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                    {
+                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
+                    }
+                }
+            }
+
+        </select>
+    </div>
+    <div class="col-md-1">
+        <a onclick="openUpdateProcess();" class="text-danger text-underline">Update</a>
+    </div>
+
+</div>
+<div class="row mt-3 col-md-12">
+    <div class="col-md-12">
+        <label><b>Audit Sub Checklist</b></label>
+    </div>
+
+    <div class="col-md-11">
+        <select id="subchecklistSelectField" onchange="getAuditChecklistDetail();" class="form-select form-control">
+            <option value="0">--Select Sub-Checklist--</option>
+        </select>
+    </div>
+    <div class="col-md-1">
+        <a onclick="openUpdateSubCheclist();" class="text-danger text-underline">Update</a>
+    </div>
+</div>
+<div class="row mt-3 col-md-12">
+    <div class="col-md-12">
+        <label><b>Audit Checklist Detail</b></label>
+    </div>
+    <div class="col-md-11">
+        <select id="checklistDetailSelectField" class="form-select form-control">
+            <option value="0">--Select Checklist Detail--</option>
+        </select>
+    </div>
+    <div class="col-md-1">
+        <a class="text-danger text-underline">Update</a>
+    </div>
+</div>
+
+
+<div class="row col-md-12 mt-3">
+    <h5>Search Checklist Detail</h5>
+    <input id="searchTableRecord" type="text" class="form-control" />
+</div>
+
+
+<div class="row col-md-12 mt-1">
+    <table id="checkListDetailsPanel" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-1 font-weight-bold">ID</th>
+                <th class="col-md-2 font-weight-bold">Process</th>
+                <th class="col-md-4 font-weight-bold">Sub Process</th>
+                <th class="col-md-4 font-weight-bold">Process Detail</th>
+                <th class="col-md-1 font-weight-bold">Risk</th>
+                <th class="col-md-auto"><input id="selectAllHeaderCheckbox" type="checkbox"/></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["checkListDetailsList"] != null)
+                {
+                   
+                    foreach (var item in (dynamic)(ViewData["checkListDetailsList"]))
+                    {
+                            <tr>
+                                <td>@item.ID</td>
+                                <td>@item.PROCESS</td>
+                                <td>@item.SUB_PROCESS</td>
+                                <td>@item.PROCESS_DETAIL</td>
+                                <td>@item.RISK</td>
+                                <td class="text-center"><input type="checkbox" /></td>
+                            </tr>
+                       
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div class="row col-md-12">
+    <button class="btn btn-danger col-md-3 offset-md-9">Merge Duplicates</button>
+</div>
+
+
+<div id="updateProcessModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Add/Update Process</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Heading</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <textarea id="entCodeField" class="form-control" type="text"></textarea>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Is Active</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="entActiveField" class="form-control">
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateProcess();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="updateSubProcessModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Add/Update Sub Process</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Checklist</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="newChecklist" class="form-select form-control">
+                                <option value="0" id="0" selected>--Select Checklist Type--</option>
+                                @{
+                                    if (ViewData["ProcessList"] != null)
+                                    {
+                                        foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                                        {
+                                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
+                                        }
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Heading</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <textarea id="entCodeField" class="form-control" type="text"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Checklist Details</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <ul id="subchecklist_DetailsList">
+                            </ul>
+
+                        </div>
+                    </div>
+
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateSubProcess();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
+
+            </div>
+        </div>
+    </div>
+</div>

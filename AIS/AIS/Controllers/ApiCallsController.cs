@@ -1336,6 +1336,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditChecklistDetail(SUB_PROCESS_ID);
         }
+        [HttpPost]
+        public List<AuditChecklistDetailsModel> get_audit_checklist_detail_for_remove_duplicate(int SUB_PROCESS_ID = 0)
+        {
+            return dBConnection.GetAuditChecklistDetailForRemoveDuplicate(SUB_PROCESS_ID);
+        }
 
         [HttpPost]
         public List<AuditChecklistDetailsModel> get_checklist_details_for_sub_process(int SUB_PROCESS_ID = 0)

@@ -5843,6 +5843,43 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<AuditChecklistDetailsModel> GetAuditChecklistDetailForRemoveDuplicate(int SUB_PROCESS_ID = 0)
+        {
+            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_Get_ChecklistDetail_FOR_DUPLICATE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("subProcessId", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
+                    if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
+                        chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.ID = Convert.ToInt32(rdr["S_ID"].ToString());
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.V_ID = Convert.ToInt32(rdr["V_ID"].ToString());
+                    chk.ROLE_RESP_ID = Convert.ToInt32(rdr["role_resp_id"].ToString());
+                    chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["owner_entity_id"].ToString());
+                    chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                    chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public List<AuditChecklistDetailsModel> GetChecklistDetailForSubProcess(int SUB_PROCESS_ID = 0)
         {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
@@ -7215,6 +7252,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     SearchChecklistDetailsModel cm = new SearchChecklistDetailsModel();
+                    cm.ID =Convert.ToInt32(rdr["ID"].ToString());
                     cm.PROCESS = rdr["P_NAME"].ToString();
                     cm.SUB_PROCESS = rdr["S_NAME"].ToString();
                     cm.PROCESS_DETAIL = rdr["C_NAME"].ToString();

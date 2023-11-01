@@ -133,6 +133,26 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult remove_duplicate_checklists()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            ViewData["checkListDetailsList"] = dBConnection.SearchChecklistDetails();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult ref_checklist_detail()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
