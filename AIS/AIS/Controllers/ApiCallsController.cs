@@ -1671,7 +1671,7 @@ namespace AIS.Controllers
             return dBConnection.GetDuplicateChecklists(PROCESS_ID);
         }
         [HttpPost]
-        public List<MergeDuplicateChecklistModel> get_duplicate_checklists_count(int PROCESS_ID)
+        public MergeDuplicateChecklistModel get_duplicate_checklists_count(int PROCESS_ID)
         {
             return dBConnection.GetDuplicateChecklistsCount(PROCESS_ID);
         }

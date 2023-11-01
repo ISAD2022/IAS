@@ -58,7 +58,6 @@
             });
         }
     }
-
     function countDuplicate(){
         var processId = $('#checklistSelectField').val();
         $.ajax({
@@ -69,6 +68,7 @@
             },
             cache: false,
             success: function (data) {
+                console.log("newww count",data);
                 $('#legacyObsLinked').html(data.olD_COUNT);
                 $('#newObsLinked').html(data.neW_COUNT);
             },
@@ -146,11 +146,11 @@
         <tbody>
             <tr>
                 <td>Legacy Observations Linked</td>
-                <td id="legacyObsLinked"></td>
+                <td id="legacyObsLinked">-</td>
             </tr>
             <tr>
                 <td>New Observations Linked</td>
-                <td id="newObsLinked"></td>
+                <td id="newObsLinked">-</td>
             </tr>
         </tbody>
     </table>
@@ -158,7 +158,7 @@
 
 <div class="row col-md-12 mt-3">
 
-    <button onclick="countDuplicate();" class="btn btn-danger col-md-3 offset-md-3">Linked Observations</button>
-    <button onclick="authorizeMergeDuplicate();" class="btn btn-danger col-md-3 offset-md-3">Auhtorize Merge Duplicates</button>
+    <button onclick="countDuplicate();" class="btn btn-danger col-md-3 offset-md-6">Linked Observations Count</button>
+    <button onclick="authorizeMergeDuplicate();" class="btn btn-danger col-md-3">Auhtorize Merge Duplicates</button>
 </div>
 

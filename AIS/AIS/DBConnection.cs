@@ -13139,10 +13139,11 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<MergeDuplicateChecklistModel> GetDuplicateChecklistsCount(int PROCESS_ID)
+        public MergeDuplicateChecklistModel GetDuplicateChecklistsCount(int PROCESS_ID)
         {
+            MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
+
             var con = this.DatabaseConnection(); con.Open();
-            List<MergeDuplicateChecklistModel> list = new List<MergeDuplicateChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
 
@@ -13155,14 +13156,12 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
                     chk.NEW_COUNT = rdr["New"].ToString();
-                    chk.OLD_COUNT = rdr["Old"].ToString();
-                    list.Add(chk);
+                    chk.OLD_COUNT = rdr["Old"].ToString();                   
                 }
             }
             con.Dispose();
-            return list;
+            return chk;
         }
         public string AuthorizeMergeDuplicateChecklists(int PROCESS_ID)
         {
