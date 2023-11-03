@@ -77,19 +77,24 @@
         var entId = 0;
         if ($('#childposting').val() == 0)
             entId = $('#controlingsearch').val();
-            else
+        else
             entId = $('#childposting').val();
 
-            if(entId==0){
-                alert("Select Reporting Office or Place of Posting to Proceed");
-                return;
-            }
+        if ($('#newAnnexlist').val() == 0) {
+            alert("Select Annexure to Proceed");
+            return;
+        }
+        if (entId == 0) {
+            alert("Select Reporting Office or Place of Posting to Proceed");
+            return;
+        }
 
         $.ajax({
             url: "/ApiCalls/get_functional_observations",
             type: "POST",
             data: {
-                'PROCESS_ID': entId
+                'ANNEX_ID': $('#newAnnexlist').val(),
+                'ENTITY_ID': entId
             },
             cache: false,
             success: function (data) {
@@ -98,7 +103,7 @@
                 $.each(data, function (index, item) {
 
 
-                    $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText(" + item.id + ", '"+item.parA_CATEGORY+"');\">View Para Text</a></td></tr>");
+                    $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
 
@@ -108,15 +113,16 @@
         });
     }
 
-    function getParaText(id, pc) {
+    function getParaText(refP, obsId, pc) {
         $('#paraTextViewerModel').modal("show");
         $('#paraTextDivField').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_functional_observation_text",
+            url: "/ApiCalls/get_all_para_text",
             type: "POST",
             data: {
-                'PARA_ID': id,
+                'REF_P': refP,
+                'OBS_ID': obsId,
                 'PARA_CATEGORY': pc
             },
             cache: false,
@@ -135,6 +141,21 @@
 <div class="row col-md-12 mt-3">
     <div class="col-md-12">
         <label class="text-bold"><b>Annexure</b></label>
+        <select id="newAnnexlist" class="form-select form-control">
+            <option selected="selected" value="0" id="0">--Select Annexure--</option>
+            @{
+                if (ViewData["AnnexList"] != null)
+                {
+
+                    foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                    {
+                        <option id="@item.ID" value="@item.ID">@item.HEADING</option>
+                    }
+
+                }
+            }
+
+        </select>
     </div>
     <div class="row col-md-12 mt-3">
         <div class="col-md-2">
@@ -150,7 +171,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                         {
-                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                         }
                     }
                 }

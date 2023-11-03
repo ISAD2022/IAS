@@ -1595,11 +1595,17 @@ namespace AIS.Controllers
             return dBConnection.GetAnnexureWiseObservations();
 
         }
+        [HttpPost]
+        public List<FunctionalAnnexureWiseObservationModel> get_entity_wise_observation_detail(int ENTITY_ID)
+        {
+            return dBConnection.GetEntityWiseObservationDetail(ENTITY_ID);
+
+        }
 
         [HttpPost]
-        public List<FunctionalAnnexureWiseObservationModel> get_functional_observations(int PROCESS_ID)
+        public List<FunctionalAnnexureWiseObservationModel> get_functional_observations(int ANNEX_ID, int ENTITY_ID)
         {
-            return dBConnection.GetFunctionalObservations(PROCESS_ID);
+            return dBConnection.GetFunctionalObservations(ANNEX_ID, ENTITY_ID);
 
         }
         [HttpPost]
