@@ -6,7 +6,7 @@
 <script type="text/javascript">
 
 
-    var g_memoStatusReversalIds=[];   
+    var g_memoStatusReversalIds = [];
 
     function getrelation(parentEntityId = 0, userEntityId = 0) {
 
@@ -87,12 +87,12 @@
             cache: false,
             success: function (data) {
 
-                $.each(data,function(i,v){
+                $.each(data, function (i, v) {
 
-                    if (v.audiT_START_DATE!=null)
-                        v.audiT_START_DATE=v.audiT_START_DATE.split(' ')[0];
+                    if (v.audiT_START_DATE != null)
+                        v.audiT_START_DATE = v.audiT_START_DATE.split(' ')[0];
 
-                        if (v.audiT_END_DATE!=null)
+                    if (v.audiT_END_DATE != null)
                         v.audiT_END_DATE = v.audiT_END_DATE.split(' ')[0];
 
                     if (v.oP_START_DATE != null)
@@ -103,21 +103,21 @@
 
                     i = i + 1;
 
-                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td></tr>');
+                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td class="text-center"><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td><td class="text-center"><a class="text-primary text-center" onclick="getObservationsForReNumbering(' + v.enG_ID + ');" href="#">Change Observation Number</a></td></tr>');
                 })
-               
+
             },
             dataType: "json",
         });
 
     }
 
-    function getObservationsForStatusReversal(engId){
+    function getObservationsForStatusReversal(engId) {
 
         $('#statusReversalModal').modal('show');
         $('#engObsListPanel tbody').empty();
 
-       $.ajax({
+        $.ajax({
             url: "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
@@ -129,11 +129,38 @@
                 $.each(data, function (i, v) {
 
                     if (v.memO_DATE != null)
-                        v.memO_DATE = v.memO_DATE.split(' ')[0];                 
+                        v.memO_DATE = v.memO_DATE.split(' ')[0];
 
-                        i=i+1;
+                    i = i + 1;
 
-                    $('#engObsListPanel').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input id="rev_checkbox_"+'+v.id+' onclick="memoIdsToStatusReversal(this,' + v.id + ');" type="checkbox" /></td></tr>');
+                    $('#engObsListPanel').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input id="rev_checkbox_"+' + v.id + ' onclick="memoIdsToStatusReversal(this,' + v.id + ');" type="checkbox" /></td></tr>');
+                })
+            },
+            dataType: "json",
+        });
+    }
+    function getObservationsForReNumbering(engId) {
+
+        $('#numberChangeModal').modal('show');
+        $('#engObsListPanel_changeNo tbody').empty();
+
+        $.ajax({
+            url: "/ApiCalls/get_observation_details_for_status_reversal",
+            type: "POST",
+            data: {
+                'ENG_ID': engId
+            },
+
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+
+                    if (v.memO_DATE != null)
+                        v.memO_DATE = v.memO_DATE.split(' ')[0];
+
+                    i = i + 1;
+
+                    $('#engObsListPanel_changeNo').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input name="memonoradio" id="rev_checkbox_"+' + v.id + ' onclick="memoIdsToNumberChange(this,' + v.id + ');" type="radio" /></td></tr>');
                 })
             },
             dataType: "json",
@@ -144,29 +171,38 @@
 
         $('#assignmentReversalModal').modal('show');
     }
-      
-    function memoIdsToStatusReversal(e, id){
+
+    function memoIdsToStatusReversal(e, id) {
 
         if ($('#rev_checkbox_' + id).is(":checked"))
             g_memoStatusReversalIds.push(id);
-        else{
+        else {
 
 
 
         }
     }
 
-    function updateMemoStatuses(){        
+    function memoIdsToNumberChange() {
+
+    }
+
+
+    function updateMemoStatuses() {
         $('#newStatusReversalModel').modal('show');
     }
 
-    function updateNewStatusRequest(){
+    function updateNewStatusRequest() {
 
+    }
+
+    function updateMemoNumber() {
+        $('#memoNumberChangeModal').modal('show');
     }
 
 </script>
 <div class="row col-md-12 mt-3">
-<h3 style=" display:block;color: #45c545;">Engagement Reversal</h3>
+    <h3 style=" display:block;color: #45c545;">Observation Reversal / Re-Numbering</h3>
 </div>
 
 
@@ -229,14 +265,12 @@
                 <th class="col-md-auto">Operational Start Date</th>
                 <th class="col-md-auto">Operational End Date</th>
                 <th class="col-md-auto">Status</th>
-                <th colspan="2" class="col-md-auto text-center">Action</th>
+                <th colspan="3" class="col-md-auto text-center">Action</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
-
-
 
 <div id="statusReversalModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
@@ -253,12 +287,12 @@
                     <div class="row col-md-12 mt-3">
                         <table id="engObsListPanel" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
                             <thead>
-                                <tr style="background-color: rgb(181 229 117 / 93%) !important;">                                   
-                                    
+                                <tr style="background-color: rgb(181 229 117 / 93%) !important;">
+
                                     <th class="col-md-auto">Sr No.</th>
                                     <th class="col-md-auto">Memo No</th>
                                     <th class="col-md-auto">Memo Date</th>
-                                    <th class="col-md-auto">Assigned To</th>                                    
+                                    <th class="col-md-auto">Assigned To</th>
                                     <th class="col-md-auto">Status</th>
                                     <th class="col-md-auto"></th>
                                 </tr>
@@ -268,13 +302,83 @@
                     </div>
 
 
-                  
+
                 </div>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button onclick="updateMemoStatuses();" type="button" data-dismiss="modal" class="btn btn-success">Update Status</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="numberChangeModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observation Status Reversal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-md-12">
+
+                    <div class="row col-md-12 mt-3">
+                        <table id="engObsListPanel_changeNo" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+                            <thead>
+                                <tr style="background-color: rgb(181 229 117 / 93%) !important;">
+
+                                    <th class="col-md-auto">Sr No.</th>
+                                    <th class="col-md-auto">Memo No</th>
+                                    <th class="col-md-auto">Memo Date</th>
+                                    <th class="col-md-auto">Assigned To</th>
+                                    <th class="col-md-auto">Status</th>
+                                    <th class="col-md-auto"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateMemoNumber();" type="button" data-dismiss="modal" class="btn btn-success">Update Memo Number</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="memoNumberChangeModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">New Memo Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>New Memo Number</label>
+                        <input class="form-control" id="memonumber_input" />
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateNewMemoNumber();" type="button" data-dismiss="modal" class="btn btn-success">Update Memo Number</button>
 
             </div>
         </div>
@@ -317,23 +421,23 @@
             <div class="modal-body">
                 <div class="row col-md-12">
                     <div class="col-md-4">
-                            <label>New Status</label>
+                        <label>New Status</label>
                     </div>
                     <div class="col-md-8">
-                            <select class="form-control" id="newStatusReservalSelectionBox">
-                                <option value="0" id="0" selected>--Select New Status--</option>
-                                @{
-                                    if (ViewData["statusList"] != null)
+                        <select class="form-control" id="newStatusReservalSelectionBox">
+                            <option value="0" id="0" selected>--Select New Status--</option>
+                            @{
+                                if (ViewData["statusList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["statusList"]))
                                     {
-                                        foreach (var item in (dynamic)(ViewData["statusList"]))
-                                        {
-                                            <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
+                                        <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
 
-                                        }
                                     }
                                 }
+                            }
 
-                            </select>
+                        </select>
                     </div>
 
                 </div>
