@@ -1687,6 +1687,17 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeMergeDuplicateChecklists(PROCESS_ID) + "\"}";
         }
 
+
+        [HttpPost]
+        public string update_observation_status_for_reversal(List<int> OBS_IDS, int NEW_STATUS_ID, int ENG_ID)
+        {
+            string resp="";
+            foreach(int ID in OBS_IDS)
+            {
+                resp += dBConnection.UpdateObservationStatusForReversal(ID, NEW_STATUS_ID, ENG_ID) + "<br />";
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

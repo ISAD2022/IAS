@@ -13826,6 +13826,35 @@ namespace AIS.Controllers
         }
 
 
+        public string UpdateObservationStatusForReversal(int OBS_ID, int NEW_STATUS_ID, int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            var resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_audit_observation_reversal";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Varchar2).Value = ENG_ID;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("S_ID", OracleDbType.Varchar2).Value = NEW_STATUS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();                    
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+
+
         #endregion
     }
 }

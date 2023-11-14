@@ -7,6 +7,7 @@
 
 
     var g_memoStatusReversalIds = [];
+    var g_engId = 0;
 
     function getrelation(parentEntityId = 0, userEntityId = 0) {
 
@@ -113,6 +114,7 @@
     }
 
     function getObservationsForStatusReversal(engId) {
+        g_engId = engId;
 
         $('#statusReversalModal').modal('show');
         $('#engObsListPanel tbody').empty();
@@ -131,9 +133,7 @@
                     if (v.memO_DATE != null)
                         v.memO_DATE = v.memO_DATE.split(' ')[0];
 
-                    i = i + 1;
-
-                    $('#engObsListPanel').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input id="rev_checkbox_"+' + v.id + ' onclick="memoIdsToStatusReversal(this,' + v.id + ');" type="checkbox" /></td></tr>');
+                    $('#engObsListPanel').append('<tr><td class="text-center">' + ++i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input class="rev_chk_obs" id="' + v.id + '"  type="checkbox" /></td></tr>');
                 })
             },
             dataType: "json",
@@ -170,29 +170,35 @@
     function getObservationsForAssignmentReversal(engId) {
 
         $('#assignmentReversalModal').modal('show');
-    }
-
-    function memoIdsToStatusReversal(e, id) {
-
-        if ($('#rev_checkbox_' + id).is(":checked"))
-            g_memoStatusReversalIds.push(id);
-        else {
-
-
-
-        }
-    }
-
-    function memoIdsToNumberChange() {
-
-    }
-
+    }    
 
     function updateMemoStatuses() {
         $('#newStatusReversalModel').modal('show');
     }
 
     function updateNewStatusRequest() {
+        var obsIds = [];
+
+        $('.rev_chk_obs').each(function (i, v) {
+            if ($(v).is(':checked'))
+                obsIds.push($(v).attr('id'));
+        });
+
+        $.ajax({
+            url: "/ApiCalls/update_observation_status_for_reversal",
+            type: "POST",
+            data: {
+                'OBS_IDS': obsIds,
+                'NEW_STATUS_ID': $('#newStatusReservalSelectionBox').val(),
+                'ENG_ID': g_engId
+            },
+
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+            },
+            dataType: "json",
+        });
 
     }
 
@@ -220,7 +226,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                     {
-                        <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                     }
                 }
             }
@@ -431,7 +437,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["statusList"]))
                                     {
-                                        <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
+                                                                <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
 
                                     }
                                 }
