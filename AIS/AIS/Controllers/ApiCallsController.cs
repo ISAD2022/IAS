@@ -1443,7 +1443,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, string OBS_ID)
+        public List<ComplianceHistoryModel> get_settled_para_compliance_history(string REF_P, string OBS_ID)
         {
             return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
 

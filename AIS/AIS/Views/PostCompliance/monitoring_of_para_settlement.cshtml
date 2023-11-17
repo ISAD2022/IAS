@@ -57,7 +57,7 @@
         $('#manageComplianceHistPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_settled_para_compliance_history",
+            url: "/ApiCalls/get_compliance_history_count",
             type: "POST",
             data: {
                 'REF_P': paraREF,
@@ -65,23 +65,41 @@
             },
             cache: false,
             success: function (data) {
-                var cycle_count = 0;
-                $.each(data, function (i, v) {
-                    if (v.coM_SEQ_NO > cycle_count) {
-                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                        cycle_count++;
-                    }
-                    else
-                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
+                g_compCount = data.Message;
+                if (g_compCount > 0) {
 
-                });
+                    $.ajax({
+                        url: "/ApiCalls/get_compliance_history",
+                        type: "POST",
+                        data: {
+                            'REF_P': paraREF,
+                            'OBS_ID': obsID
+                        },
+                        cache: false,
+                        success: function (data) {
+                            var cycle_count = 0;
+                            $.each(data, function (i, v) {
+                                if (v.coM_SEQ_NO > cycle_count) {
+                                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                                    cycle_count++;
+                                }
+                                else
+                                    $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
 
+                            });
+
+                        },
+
+                        dataType: "json",
+                    });
+
+
+                }
             },
 
             dataType: "json",
         });
 
-       
 
     }
 
