@@ -951,10 +951,10 @@ namespace AIS.Controllers
         }       
 
         [HttpPost]
-        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID, string SEQUENCE, string AUDITED_BY)
+        public string submit_old_para_compliance_head_status(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID, string SEQUENCE, string AUDITED_BY, string ENTITY_ID)
         {
             string response = "";
-            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS, PARA_REF, PARA_INDICATOR, PARA_CATEGORY, AU_OBS_ID, SEQUENCE, AUDITED_BY);
+            response = dBConnection.AddOldParasheadStatusUpdate(PARA_ID, REMARKS, NEW_STATUS, PARA_REF, PARA_INDICATOR, PARA_CATEGORY, AU_OBS_ID, SEQUENCE, AUDITED_BY, ENTITY_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 
@@ -1443,6 +1443,13 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, string OBS_ID)
+        {
+            return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
+
+        }
+
+        [HttpPost]
         public string get_new_para_text(string OBS_ID)
         {
             return dBConnection.GetNewParaText(OBS_ID);
@@ -1697,6 +1704,12 @@ namespace AIS.Controllers
             }
             return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
         }
+
+        [HttpPost]
+        public List<SettledParasMonitoringModel> get_settled_paras_for_monitoring(int ENTITY_ID)
+        {
+            return dBConnection.GetSettledParasForMonitoring(ENTITY_ID);
+        }    
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
