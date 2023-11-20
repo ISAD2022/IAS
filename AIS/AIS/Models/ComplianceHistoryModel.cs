@@ -15,6 +15,7 @@ namespace AIS.Models
         public string ROLE_ID { get; set; }
         public string STAGE { get; set; }
         public string NAME { get; set; }
+        public string DESIGNATION { get; set; }
         public string AUDITED_BY { get; set; }
         public string ENTITY_ID { get; set; }
         public string C_STATUS { get; set; }

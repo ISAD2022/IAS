@@ -1445,7 +1445,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<ComplianceHistoryModel> get_settled_para_compliance_history(string REF_P, string OBS_ID)
         {
-            return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
+            return dBConnection.GetSettledParaComplianceHistory(REF_P, OBS_ID);
 
         }
 
@@ -1709,8 +1709,19 @@ namespace AIS.Controllers
         public List<SettledParasMonitoringModel> get_settled_paras_for_monitoring(int ENTITY_ID)
         {
             return dBConnection.GetSettledParasForMonitoring(ENTITY_ID);
-        }    
+        }
+        [HttpPost]
+        public string submit_settled_para_compliance_comments(string REF_P, string OBS_ID, string COMMENTS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SaveSettledParaCompliacne(REF_P, OBS_ID, COMMENTS) + "\"}";
 
+        }
+
+        [HttpPost]
+        public List<StatusWiseComplianceModel> get_status_wise_compliance(string AUDITEE_ID, string START_DATE, string END_DATE, string RELATION_CHECK)
+        {
+            return dBConnection.GetStatusWiseCompliance(AUDITEE_ID,START_DATE,END_DATE, RELATION_CHECK);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

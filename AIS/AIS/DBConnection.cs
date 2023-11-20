@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -13932,7 +13932,119 @@ namespace AIS.Controllers
             return list;
         }
 
+        public List<ComplianceHistoryModel> GetSettledParaComplianceHistory(string REF_P, string OBS_ID)
+        {
 
+            List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_GET_SETTLED_PARA_DETAILS_PARA_COMPLIANCE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceHistoryModel st = new ComplianceHistoryModel();
+                  
+                    st.REMARKS = rdr["remarks"].ToString();
+                    st.ATTENDED_BY = rdr["attended_by"].ToString();
+                 
+                    st.NAME = rdr["EMP_NAME"].ToString();
+                    st.DESIGNATION = rdr["DESIGNATION"].ToString();
+                    st.COM_SEQ_NO = rdr["COMPLIANCE_CYCLE"].ToString();                
+                    stList.Add(st);
+                }
+            }
+            con.Dispose();
+            return stList;
+
+        }
+        public string SaveSettledParaCompliacne(string REF_P, string OBS_ID, string COMMENTS)
+        {
+
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_fad.P_GET_SETTLED_PARA_DETAILS_PARA_COMPLIANCE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = REF_P;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceHistoryModel st = new ComplianceHistoryModel();
+
+                    st.REMARKS = rdr["remarks"].ToString();
+                    st.ATTENDED_BY = rdr["attended_by"].ToString();
+
+                    st.NAME = rdr["EMP_NAME"].ToString();
+                    st.DESIGNATION = rdr["DESIGNATION"].ToString();
+                    st.COM_SEQ_NO = rdr["COMPLIANCE_CYCLE"].ToString();
+                    resp = "";
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<StatusWiseComplianceModel> GetStatusWiseCompliance(string AUDITEE_ID, string START_DATE, string END_DATE, string RELATION_CHECK)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List <StatusWiseComplianceModel> respList= new List<StatusWiseComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_STATUS_WISE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("R_C", OracleDbType.Varchar2).Value = RELATION_CHECK;
+                cmd.Parameters.Add("AUDITEE_ID", OracleDbType.Int32).Value = AUDITEE_ID;
+                cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value = START_DATE;
+                cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = END_DATE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    StatusWiseComplianceModel st = new StatusWiseComplianceModel();
+                    st.parent_id = rdr["parent_id"].ToString();
+                    st.parent_Office = rdr["parent_Office"].ToString();
+                    st.entity_id = rdr["entity_id"].ToString();
+                    st.entity_name = rdr["entity_name"].ToString();
+                    st.auditby_id = rdr["auditby_id"].ToString();
+                    st.complaince_Submitted = rdr["complaince_Submitted"].ToString();
+                    st.complaince_received_at_Incharge_implementation = rdr["complaince_received_at_Incharge_implementation"].ToString();
+                    st.referredback_by_Controlling_office = rdr["referredback_by_Controlling_office"].ToString();
+                    st.complaince_Submitted_To_Incharge_AZ = rdr["complaince_Submitted_To_Incharge_AZ"].ToString();
+                    st.complaince_Referred_back_by_Incharge_Implementation = rdr["complaince_Referred_back_by_Incharge_Implementation"].ToString();
+                    st.para_settled_by_Incharge_AZ = rdr["para_settled_by_Incharge_AZ"].ToString();
+                    st.complaince_Referred_back_by_Incharge_AZ = rdr["complaince_Referred_back_by_Incharge_AZ"].ToString();
+
+                    respList.Add(st);
+
+
+
+                }
+            }
+            con.Dispose();
+            return respList;
+
+        }
         #endregion
     }
 }

@@ -6,6 +6,8 @@
     var g_paraId = 0;
     var refp = 0;
     var g_obsList = [];
+    var g_obsId = 0;
+    var g_paraRefP = 0;
 
     function getSettledParasForMonitoring() {
 
@@ -32,6 +34,9 @@
     }
 
     function getParaText(refP, obsId, pc) {
+
+        g_obsId = obsId;
+        g_paraRefP = refP;
         $('#paraTextViewerModel').modal("show");
         $('#paraTextDivField').empty();
 
@@ -51,13 +56,13 @@
     }
 
     function viewParaCompliance(paraREF, obsID) {
-        g_paraRef = paraREF;
-        g_auOBSID = obsID;
+        g_paraRefP = paraREF;
+        g_obsId = obsID;
         $('#viewParaComplianceModel').modal('show');
         $('#manageComplianceHistPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_compliance_history_count",
+            url: "/ApiCalls/get_settled_para_compliance_history",
             type: "POST",
             data: {
                 'REF_P': paraREF,
@@ -65,40 +70,23 @@
             },
             cache: false,
             success: function (data) {
-                g_compCount = data.Message;
-                if (g_compCount > 0) {
+                var rowSpan = data.length;
+                $.each(data, function (i, v) {
+                    var lastCol = '';
 
-                    $.ajax({
-                        url: "/ApiCalls/get_compliance_history",
-                        type: "POST",
-                        data: {
-                            'REF_P': paraREF,
-                            'OBS_ID': obsID
-                        },
-                        cache: false,
-                        success: function (data) {
-                            var cycle_count = 0;
-                            $.each(data, function (i, v) {
-                                if (v.coM_SEQ_NO > cycle_count) {
-                                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                                    cycle_count++;
-                                }
-                                else
-                                    $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
+                    if (i == 0)
+                        lastCol = '<td rowspan="' + rowSpan + '"><a href=\"#\" onclick=\"getComplianceText(' + v.coM_SEQ_NO + ');;\">View Compliance</a></td>';
 
-                            });
+                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td><div>' + v.designation + '</div></td><td>' + v.remarks + '</td>' + lastCol + '</tr>');
 
-                        },
+                });
 
-                        dataType: "json",
-                    });
-
-
-                }
             },
 
             dataType: "json",
         });
+
+
 
 
     }
@@ -109,8 +97,8 @@
             url: "/ApiCalls/get_old_para_compliance_cycle_text",
             type: "POST",
             data: {
-                'REF_P': g_paraRef,
-                'OBS_ID': g_auOBSID,
+                'REF_P': g_paraRefP,
+                'OBS_ID': g_obsId,
                 'COM_SEQ': comSeq
 
             },
@@ -125,8 +113,37 @@
 
 
     }
+    function markActionComments(refP, obsId) {
 
-  
+        g_obsId = obsId;
+        g_paraRefP = refP;
+        $('#viewParaComplianceCommentsModel').modal('show');
+        $('#commentsOnCompliance').val('');
+    }
+
+    function saveCommentsOnSettledCompliance() {
+
+        $.ajax({
+            url: "/ApiCalls/submit_settled_para_compliance_comments",
+            type: "POST",
+            data: {
+                'REF_P': g_paraRefP,
+                'OBS_ID': g_obsId,
+                'COMMENTS': $('#commentsOnCompliance').val()
+
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+
+            dataType: "json",
+        });
+
+
+    }
+
     function reloadLocation() {
         getSettledParasForMonitoring();
     }
@@ -168,8 +185,8 @@
                     <th class="col-md-auto">Settled On</th>
                     <th class="col-md-auto">Risk</th>
                     <th class="col-md-auto">Para Text</th>
-                    <th class="col-md-auto">View Compliance</th>                    
-                    <th class="col-md-auto">Action</th>                    
+                    <th class="col-md-auto">View Compliance</th>
+                    <th class="col-md-auto">Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -225,7 +242,6 @@
                         <table id="manageComplianceHistPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
                             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                                 <tr>
-                                    <th class="col-md-auto">Compliance Cycle</th>
                                     <th class="col-md-auto">PP Number</th>
                                     <th class="col-md-auto">Designation</th>
                                     <th class="col-md-auto">Name</th>
@@ -267,6 +283,34 @@
                 </form>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="viewParaComplianceCommentsModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:85% !important;">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Comments</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <textarea id="commentsOnCompliance" class="form-control"></textarea>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="saveCommentsOnSettledCompliance();" type="button" class="btn btn-danger" data-dismiss="modal">Save Comments</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
