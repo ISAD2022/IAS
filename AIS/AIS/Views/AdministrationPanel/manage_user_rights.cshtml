@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Manage User Rights";
+    Layout = "_Layout";
+
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.step1').hide();
+        $('#deleteUser').show();
+        $('.next-btn, .prev-btn').on('click', function () {
+            var currentSection = $(this).closest('.step-section');
+            var targetSection = $('#' + $(this).data('next') || $(this).data('prev'));
+
+            currentSection.hide();
+            targetSection.show();
+        });    
+      
+    });
+
+    function DeleteUserRights(){
+        $.ajax({
+            url: "/ApiCalls/admin_delete_user_rights",
+            type: "POST",
+            data: {
+               
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                $('.step1').show();
+                $('#deleteUser').hide();
+
+            },
+            dataType: "json",
+        });
+    }
+</script>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="multiStepForm">
+            <!-- Step 1 Section -->
+            <div class="step-section" id="step1">
+                <h2>Step 1: Delete Users</h2>
+                <!-- Your form fields for step 1 go here -->
+                <div class="form-group">
+                    <p>All the Users will be deleted in temp Table</p>
+                    <button id="deleteUser" onclick="DeleteUserRights();" class="btn btn-danger col-md-3">Apply</button>
+                </div>
+                <button type="button" class="step1 btn btn-primary next-btn" data-next="step2">Next</button>
+            </div>
+
+            <!-- Step 2 Section -->
+            <div class="step-section" id="step2" style="display: none;">
+                <h2>Step 2: Add New Users</h2>
+                <!-- Your form fields for step 2 go here -->
+               
+                <button type="button" class="btn btn-secondary prev-btn" data-prev="step1">Previous</button>
+                <button type="button" class="btn btn-primary next-btn" data-next="step3">Next</button>
+            </div>
+
+            <!-- Step 3 Section -->
+            <div class="step-section" id="step3" style="display: none;">
+                <h2>Step 3: Additional Information</h2>
+                <!-- Your form fields for step 3 go here -->
+                <div class="form-group">
+                    <label for="additionalInfo">Additional Information:</label>
+                    <textarea class="form-control" id="additionalInfo" name="additionalInfo"></textarea>
+                </div>
+                <button type="button" class="btn btn-secondary prev-btn" data-prev="step2">Previous</button>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

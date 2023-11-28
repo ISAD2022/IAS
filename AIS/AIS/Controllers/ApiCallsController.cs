@@ -1722,6 +1722,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetStatusWiseCompliance(AUDITEE_ID,START_DATE,END_DATE, RELATION_CHECK);
         }
+        [HttpPost]
+        public string admin_delete_user_rights( )
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AdminDeleteUserRights() + "\"}";
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
