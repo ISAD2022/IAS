@@ -14044,9 +14044,8 @@ namespace AIS.Controllers
             con.Dispose();
             return respList;
 
-        }
-
-        public string AdminDeleteUserRights()
+        }     
+        public List<AdminNewUsersAIS> AdminNewUsersInAIS()
         {
 
             sessionHandler = new SessionHandler();
@@ -14054,23 +14053,36 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
+            List<AdminNewUsersAIS> resp = new List<AdminNewUsersAIS>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_Del_User_Data_in_temp_table";
+                cmd.CommandText = "pkg_ad.P_get_new_user";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();              
+                cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["no_of_records"].ToString();
+                    AdminNewUsersAIS rd = new AdminNewUsersAIS();
+                    rd.ENTITY_NAME = rdr["name"].ToString();
+                    rd.ENTITY_ID = rdr["entity_id"].ToString();
+                    rd.DESIGNATION = rdr["designation"].ToString();
+                    rd.DESIGNATION_CODE = rdr["designationcode"].ToString();
+                    rd.EMPLOYEE_TYPE = rdr["employeetype"].ToString();
+                    rd.POSTING_TYPE = rdr["posting_Type"].ToString();
+                    rd.PPNO = rdr["ppno"].ToString();
+                    rd.EMP_NAME = rdr["e_name"].ToString();
+                    rd.CODE = rdr["code"].ToString();
+
+                    resp.Add(rd);
+
                 }
             }
             con.Dispose();
             return resp;
 
         }
+      
         #endregion
     }
 }

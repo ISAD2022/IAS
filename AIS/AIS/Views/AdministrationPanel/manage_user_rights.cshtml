@@ -6,25 +6,37 @@
 
 
 <script type="text/javascript">
+
+   
     $(document).ready(function () {
-        $('.step1').hide();
-        $('#deleteUser').show();
-        $('.next-btn, .prev-btn').on('click', function () {
-            var currentSection = $(this).closest('.step-section');
-            var targetSection = $('#' + $(this).data('next') || $(this).data('prev'));
-
-            currentSection.hide();
-            targetSection.show();
-        });    
-      
-    });
-
-    function DeleteUserRights(){
+        
+    });  
+    
+  
+    function getNewUsersInAIS() {
         $.ajax({
-            url: "/ApiCalls/admin_delete_user_rights",
+            url: "/ApiCalls/admin_get_new_users",
             type: "POST",
             data: {
-               
+
+            },
+            cache: false,
+            success: function (data) {
+                $('#newUsersGrid tbody').empty();
+                $.each(data, function (i, v) {
+                    $('#newUsersGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.ppno + '</td><td>' + v.emP_NAME + '</td><td>' + v.designatioN_CODE + '</td><td>' + v.designation + '</td><td>' + v.employeE_TYPE + '</td><td>' + v.postinG_TYPE + '</td><td>' + v.code + '</td><td>' + v.entitY_NAME + '</td><td>' + v.entitY_ID + '</td></tr>')
+                });
+              
+            },
+            dataType: "json",
+        });
+    }
+    function AddUserDetails() {
+        $.ajax({
+            url: "/ApiCalls/admin_get_user_details",
+            type: "POST",
+            data: {
+
             },
             cache: false,
             success: function (data) {
@@ -40,39 +52,37 @@
 
 
 <div class="row">
-    <div class="col-md-12">
-        <form id="multiStepForm">
-            <!-- Step 1 Section -->
-            <div class="step-section" id="step1">
-                <h2>Step 1: Delete Users</h2>
-                <!-- Your form fields for step 1 go here -->
-                <div class="form-group">
-                    <p>All the Users will be deleted in temp Table</p>
-                    <button id="deleteUser" onclick="DeleteUserRights();" class="btn btn-danger col-md-3">Apply</button>
-                </div>
-                <button type="button" class="step1 btn btn-primary next-btn" data-next="step2">Next</button>
-            </div>
+    <div class="col-md-12 row">
+        <div class="col-md-12 text-center">
+            
+            <button type="button" id="deleteUser" onclick="getNewUsersInAIS();" class="btn btn-danger col-md-4">Find New Users</button>
+            <button type="button" id="deleteUser" onclick="getOldUsersInAIS();" class="btn btn-danger offset-md-1 col-md-4">Find Old Users</button>
+        </div>    
 
-            <!-- Step 2 Section -->
-            <div class="step-section" id="step2" style="display: none;">
-                <h2>Step 2: Add New Users</h2>
-                <!-- Your form fields for step 2 go here -->
-               
-                <button type="button" class="btn btn-secondary prev-btn" data-prev="step1">Previous</button>
-                <button type="button" class="btn btn-primary next-btn" data-next="step3">Next</button>
-            </div>
-
-            <!-- Step 3 Section -->
-            <div class="step-section" id="step3" style="display: none;">
-                <h2>Step 3: Additional Information</h2>
-                <!-- Your form fields for step 3 go here -->
-                <div class="form-group">
-                    <label for="additionalInfo">Additional Information:</label>
-                    <textarea class="form-control" id="additionalInfo" name="additionalInfo"></textarea>
-                </div>
-                <button type="button" class="btn btn-secondary prev-btn" data-prev="step2">Previous</button>
-                <button type="submit" class="btn btn-success">Submit</button>
-            </div>
-        </form>
     </div>
 </div>
+
+<div class="row col-md-12 mt-3">
+    <table id="newUsersGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-1 text-center">Sr. No.</th>
+                <th class="col-md-1">PP No</th>
+                <th class="col-md-2">Employee Name</th>
+                <th class="col-md-1">Designation Code</th>
+                <th class="col-md-2">Designation</th>
+                <th class="col-md-1">Employee Type</th>
+                <th class="col-md-2">Posting Type</th>
+                <th class="col-md-2">Code</th>
+                <th class="col-md-2">Entity Name</th>
+                <th class="col-md-2">Entity Id</th>
+                
+
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
