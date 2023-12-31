@@ -49,6 +49,8 @@ namespace AIS.Controllers
         }
         public IActionResult Change_Password()
         {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             TempData["Message"] = "";
             TempData["SessionKill"] = "";
             return View();

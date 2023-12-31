@@ -231,6 +231,7 @@
             success: function (data) {
                 alert(data.Message);
                 onAlertCallback(reloadLocation);
+                $('#submitAuditeeButton_memoReply').removeAttr('disabled');
             },
             dataType: "json",
         });

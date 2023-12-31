@@ -700,9 +700,9 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("DESCRIPTION", OracleDbType.Varchar2).Value = periodModel.DESCRIPTION;
                 cmd.Parameters.Add("STARTDATE", OracleDbType.Date).Value = periodModel.START_DATE;
                 cmd.Parameters.Add("ENDDATE", OracleDbType.Date).Value = periodModel.END_DATE;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                //cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                //cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                //cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1912,10 +1912,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_pass;             
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -1932,9 +1930,10 @@ namespace AIS.Controllers
                     cmd.CommandText = "pkg_lg.P_ChangePassword";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
+                    cmd.Parameters.Add("PP_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
                     cmd.Parameters.Add("enc_pass", OracleDbType.Varchar2).Value = enc_new_pass;
-                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                    
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                    
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
                     res = true;
@@ -4415,6 +4414,7 @@ namespace AIS.Controllers
         }
 
 
+     
         public bool SaveAuditObservation(ObservationModel ob)
         {
             //105400
@@ -4513,7 +4513,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("ANNEX_ID", OracleDbType.Int32).Value = ob.ANNEXURE_ID;
+                cmd.Parameters.Add("ANNEX_ID", OracleDbType.Int32).Value = ob.ANNEXURE_ID==""?0: Convert.ToInt32(ob.ANNEXURE_ID);
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
