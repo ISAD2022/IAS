@@ -231,8 +231,9 @@ namespace AIS.Controllers
         public IActionResult entity_addition()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages(); 
+            ViewData["AuditEntitiesType"] = dBConnection.GetAuditEntityTypes();
+            ViewData["Audit_By"] = dBConnection.GetAuditBy();
 
             if (!sessionHandler.IsUserLoggedIn())
             {

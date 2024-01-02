@@ -1488,6 +1488,71 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+
+
+        public List<AuditEntitiesModel> GetAuditEntityTypes()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_Entity_type";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();
+                    entity.AUTID = Convert.ToInt32(rdr["AUTID"]);
+                    entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
+                    entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    entity.AUDITABLE = rdr["AUDITABLE"].ToString();
+                    //entity.D_RISK = rdr["d_risk"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<AuditEntitiesModel> GetAuditBy()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_audited_by";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();
+                    entity.AUTID = Convert.ToInt32(rdr["entity_id"]);
+                    entity.ENTITYTYPEDESC = rdr["deptname"].ToString();
+                   
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_ID = 0)
         {
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -14082,7 +14147,204 @@ namespace AIS.Controllers
             return resp;
 
         }
-      
+
+        public List<AuditParaReconsillation> GetAuditParaRensillation()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditParaReconsillation> resp = new List<AuditParaReconsillation>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_FAD_audit_Para_Reconciliation";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditParaReconsillation rd = new AuditParaReconsillation();
+
+                    rd.AUDIT_ZONE = rdr["Audit_zone"].ToString();
+                    rd.ENTITY_TYPE_DESC = rdr["entitytypedesc"].ToString();
+                    rd.REPORTING_OFFICE = rdr["Reporting_Office"].ToString();
+                    rd.ENTITY_NAME = rdr["Auditee"].ToString();
+                    rd.OPEN_BALANCE = rdr["Open_balance"].ToString();
+                    rd.ADDED = rdr["Added"].ToString();
+                    rd.TOTAL = rdr["Total"].ToString();
+                    rd.SETTLED_LEGACY = rdr["Settled_Legacy"].ToString();
+                    rd.SETTLED_NEW_PARA = rdr["Settled_New_Paras"].ToString();
+                    rd.UN_SETTLED = rdr["Un_Settled"].ToString();
+                    rd.INDICATOR = rdr["ind"].ToString();                  
+                    rd.PERCENTAGE = rdr["percentage"].ToString();                  
+                    resp.Add(rd);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<HREntitiesModel> GetHREntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<HREntitiesModel> resp = new List<HREntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_HR_ENTITIES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_CODE", OracleDbType.Int32).Value = ENTITY_CODE;
+                cmd.Parameters.Add("ENT_NAME", OracleDbType.Varchar2).Value = ENTITY_NAME;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    HREntitiesModel mod = new HREntitiesModel();
+                    mod.REPORTING_CODE = rdr["Rept_code"].ToString();
+                    mod.REPORTING_NAME = rdr["Rept_name"].ToString();
+                    mod.REPORTING_STATUS = rdr["Rept_status"].ToString();
+                    mod.REPORTING_INDICATOR = rdr["Rept_ind"].ToString();
+
+                    mod.ENTITY_CODE = rdr["Entity_code"].ToString();
+                    mod.ENTITY_NAME = rdr["Entity_name"].ToString();
+                    mod.ENTITY_STATUS = rdr["Entity_status"].ToString();
+                    mod.ENTITY_INDICATOR = rdr["ind"].ToString();
+                    resp.Add(mod);                                    
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<AISEntitiesModel> GetAISEntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AISEntitiesModel> resp = new List<AISEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_AIS_ENTITIES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_CODE", OracleDbType.Int32).Value = ENTITY_CODE;
+                cmd.Parameters.Add("ENT_NAME", OracleDbType.Varchar2).Value = ENTITY_NAME;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AISEntitiesModel mod = new AISEntitiesModel();
+                    mod.ENTITY_ID = rdr["entity_id"].ToString();
+                    mod.ENTITY_CODE = rdr["code"].ToString();
+                    mod.DESCRIPTION = rdr["description"].ToString();
+                    mod.ENTITY_NAME = rdr["name"].ToString();
+                    mod.TYPE_ID = rdr["type_id"].ToString();
+                    mod.AUDIT_BY_ID = rdr["auditby_id"].ToString();
+                    mod.AUDIT_BY = rdr["audit_by"].ToString();
+                    mod.STATUS = rdr["active"].ToString();
+                    mod.AUDITABLE = rdr["auditable"].ToString();
+                    resp.Add(mod);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string UpdateAISEntityForAdminPanelEntityAddition(string ENTITY_ID, string ENTITY_NAME, string ENTITY_CODE, string AUDITABLE, string AUDIT_BY_ID, string ENTITY_TYPE_ID, string ENT_DESC, string STATUS)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UpdateENTITIEES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("e_CODE", OracleDbType.Int32).Value = ENTITY_CODE;
+                cmd.Parameters.Add("e_NAME", OracleDbType.Varchar2).Value = ENTITY_NAME;
+                cmd.Parameters.Add("e_DISCRIPTION", OracleDbType.Varchar2).Value = ENT_DESC;
+                cmd.Parameters.Add("e_AUDITEDBY", OracleDbType.Varchar2).Value = AUDIT_BY_ID;
+                cmd.Parameters.Add("e_TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("e_STATUS", OracleDbType.Varchar2).Value = STATUS;
+                cmd.Parameters.Add("e_AUDITABLE", OracleDbType.Varchar2).Value = AUDITABLE;
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddAISEntityForAdminPanelEntityAddition( string ENTITY_NAME, string ENTITY_CODE, string AUDITABLE, string AUDIT_BY_ID, string ENTITY_TYPE_ID, string ENT_DESC, string STATUS)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_InsertENTITIEES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("e_CODE", OracleDbType.Int32).Value = ENTITY_CODE;
+                cmd.Parameters.Add("e_NAME", OracleDbType.Varchar2).Value = ENTITY_NAME;
+                cmd.Parameters.Add("e_DISCRIPTION", OracleDbType.Varchar2).Value = ENT_DESC;
+                cmd.Parameters.Add("e_AUDITEDBY", OracleDbType.Varchar2).Value = AUDIT_BY_ID;
+                cmd.Parameters.Add("e_TYPEID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("e_STATUS", OracleDbType.Varchar2).Value = STATUS;
+                cmd.Parameters.Add("e_AUDITABLE", OracleDbType.Varchar2).Value = AUDITABLE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
         #endregion
     }
 }
