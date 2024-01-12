@@ -11,8 +11,8 @@
 
     });
 
-    function openVoucherCheckingFile() {
-        $('#newVoucherCheckingDialog').modal('show');
+    function openFixedAssetModel() {
+        $('#newFixedAssetDialog').modal('show');
     }
 
 
@@ -28,10 +28,12 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr. No</th>
-                    <th class="col-md-auto">Voucher /Account No</th>
-                    <th class="col-md-auto">Discrepency/Observation</th>
-                    <th class="col-md-auto">Memo/Para No reference</th>
-                    <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openVoucherCheckingFile();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
+                    <th class="col-md-auto">Asset Name</th>
+                    <th class="col-md-auto">Physical Existance</th>
+                    <th class="col-md-auto">As per Fixed Asset Register</th>
+                    <th class="col-md-auto">Difference</th>
+                    <th class="col-md-auto">Remarks</th>
+                    <th class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="openFixedAssetModel();" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -39,12 +41,22 @@
         </table>
     </div>
 
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-2 offset-md-8">
+            <button onclick="window.location.href='account_opening'" class="btn btn-danger w-100">Account Opening</button>
+        </div>
+        <div class="col-md-2">
+            <button onclick="window.location.href='cash_count'" class="btn btn-success w-100">Cash Counter</button>
+        </div>
+
+    </div>
+
 </div>
 
 
 
 
-<div id="newVoucherCheckingDialog" class="modal" tabindex="-1" role="dialog">
+<div id="newFixedAssetDialog" class="modal" tabindex="-1" role="dialog">
     <div class="modal-xl modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -56,23 +68,31 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Voucher / Account Number</label>
-                        <input type="text" class="form-control" id="accountnumber_txtField" />
-                    </div>
-                 
-                    <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Observation</label>
-                        <textarea class="form-control" id="ob_txtField"></textarea>
+                        <label for="commentAreaInCommentsBox">Asset Name</label>
+                        <input type="text" class="form-control" id="assetName_txtField" />
                     </div>
                     <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Para No</label>
-                        <input type="text" class="form-control" id="pno_txtField" />
+                        <label for="commentAreaInCommentsBox">Physical Existance</label>
+                        <input type="text" class="form-control" id="pyex_txtField" />
                     </div>
+                    <div class="form-group">
+                        <label for="commentAreaInCommentsBox">As per Fixed Asset Register</label>
+                        <input type="text" class="form-control" id="fixedAsset_txtField" />
+                    </div>
+                    <div class="form-group">
+                        <label for="commentAreaInCommentsBox">Difference</label>
+                        <input type="text" class="form-control" id="diff_txtField" />
+                    </div>
+                    <div class="form-group">
+                        <label for="commentAreaInCommentsBox">Remarks</label>
+                        <input type="text" class="form-control" id="rem_txtField" />
+                    </div>
+                
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="finalCommentsButtonSave" type="button" class="btn btn-danger">Add New</button>
+                <button type="button" class="btn btn-danger">Add New</button>
             </div>
         </div>
     </div>

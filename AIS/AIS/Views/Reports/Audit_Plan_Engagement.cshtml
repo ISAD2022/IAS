@@ -1,132 +1,155 @@
 ﻿@{
-    ViewData["Title"] = "Audit_Plan_Engagement";
+    ViewData["Title"] = "Report ~ Para Position Analysis";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
+
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
-            $("#A_P_E_T tbody tr").filter(function () {
+            $("#observation_panel tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
 
 
-    });
 
-    function getauditplanengagement() {
+    })
 
-        var bid = $('#auditCriteriaPeriodField option:selected').attr('id');
-        if (bid != 0) {
-            $.ajax({
-                url: "/ApiCalls/getauditplanengagement",
-                type: "POST",
-                data: {
-                    'b_id': bid
-                },
-                cache: false,
-                success: function (data) {
-                   // console.log(data);
-                    $('#A_P_E_T tbody').empty();
-                    //console.log(data);
-                    $.each(data, function (i, v) {
-                        console.log(v);
-                        $('#A_P_E_T tbody').append('<tr><td class="col-md-auto" style="text-align:center">' + v.auditperiod + '</td><td class="col-md-auto" style="text-align:center">' + v.parenT_OFFICE + '</td><td class="col-md-auto" style="text-align:center">' + v.enitiY_NAME + '</td><td class="pr-2">' + v.audiT_STARTDATE.split('T')[0] + '</td><td class="col-md-auto" style="text-align:center">' + v.audiT_ENDDATE.split('T')[0] + '</td><td>' + v.traveL_DAY + '</td><td>' + v.revenuE_RECORD_DAY + '</td><td>' + v.discussioN_DAY + '</td><td class="col-md-auto" style="text-align:center">' + v.teaM_NAME + '</td><td class="col-md-auto" style="text-align:center">' + v.status + '</td> </tr>')
-                    });
-                },
-                dataType: "json",
-            });
+    function getAuditEngagementDetials() {
+
+        if ($('#auditedByField').val() == 0) {
+            alert("Select Audited By Department");
+            return;
         }
-    }</script>
 
-<div class="mt-3 mb-4">
-    <h3 style="color: #45c545;">Audit Plan Engagement</h3>
+        if ($('#auditPeriodField').val() == 0) {
+            alert("Select Audit Period");
+            return;
+        }
+
+        $('#observation_panel tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/get_audit_plan_engagement_detailed_report",
+            type: "POST",
+            data: {
+                'AUDITED_BY': $('#auditedByField').val(),
+                    'PERIOD_ID': $('#auditPeriodField').val()
+            },
+            cache: false,
+            success: function (data) {
 
 
-</div>
-<!--<div class="panel panel-default">
-    Default panel contents
-<div class="panel-heading"> </div>
-<div class="panel-body">
-    <p>...</p>
-</div>
+                $.each(data, function (i, v) {
 
-List group
-<ul class="list-group">
-    <li class="list-group-item">Branch Special Audit</li>
-    <li class="list-group-item">SAM Protfolio </li>
-    <li class="list-group-item">Budget Assesment</li>
-    <li class="list-group-item">Profitabilty Assesment of the branches</li>
-    <li class="list-group-item">Inspection</li>
-</ul>
--->
-<div class="row col-md-12 mt-2">
+                    $('#observation_panel tbody').append('<tr><td align="center"> ' + ++i + '</td><td  align="left">' + v.enG_ID + '</td><td  align="left">' + v.reportinG_OFFICE + '</td><td align="left">' + v.entitY_NAME + '</td><td align="left">' + v.audiT_TEAM + '</td><td align="left">' + v.oP_START_DATE + '</td><td align="left">' + v.oP_END_DATE + '</td><td align="left">' + v.audiT_START_DATE + '</td><td align="left">' + v.audiT_END_DATE + '</td><td align="left">' + v.traveL_DAYS + '</td><td align="left">' + v.discussioN_DAYS + '</td><td align="left">' + v.revenuE_RECORD_DAYS + '</td><td align="left">' + v.weekenD_DAYS + '</td><td align="left">' + v.totaL_DAYS + '</td><td align="left">' + v.enG_STATUS + '</td></tr>');
 
-    
-        <label><b>Audit Period</b></label>
-        <select id="auditCriteriaPeriodField" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>--Select Audit Period--</option>
-            @{
-                if (ViewData["AuditPeriodList"] != null)
-                {
+                });
 
-                    foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
-                    {
-                        <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
+
+            },
+            dataType: "json",
+        });
+
+
+    }
+
+
+</script>
+<div class="row col-md-12">
+
+    <div class="row col-md-12 mt-1">
+
+        <h3 style="color: #45c545;">Audit Plan Engagements Detail</h3>
+
+
+
+        <div class="row col-md-12 mt-3">
+            <div class="col-md-2">
+                <label><b>Audited By</b></label>
+            </div>
+            <div class="col-md-4">
+                <select id="auditedByField"  class="form-control form-select">
+                    <option id="0" value="0" selected="selected">--Select Audited By Department--</option>
+
+
+                    @{
+                        if (ViewData["AuditDepartmentList"] != null)
+                        {
+                            foreach (var item in (dynamic)(ViewData["AuditDepartmentList"]))
+                            {
+                                <option value="@item.ENTITY_ID">@item.NAME</option>
+                            }
+                        }
                     }
 
-                }
-            }
-        </select>
 
 
-   
-    <!--- <div class="row col-md-6">
-          <label><b> Entity Types</b></label>
-          <select id="A_dept" onchange="ShowBranchInfoBox();" class="form-select form-control" aria-label="Default select example">
-              <option value="0" id="0">--Select Entity Types--</option>
+                </select>
+            </div>
 
 
-          </select>
-      </div>-->
+            <div class="col-md-2">
+                <label><b>Audit Period</b></label>
+            </div>
+            <div class="col-md-4">
+                <select id="auditPeriodField" class="form-control form-select">
+                    <option id="0" value="0" selected="selected">--Select Audit Period--</option>
 
+
+                    @{
+                        if (ViewData["AuditPeriodList"] != null)
+                        {
+                            foreach (var item in (dynamic)(ViewData["AuditPeriodList"]))
+                            {
+                                <option value="@item.AUDITPERIODID">@item.DESCRIPTION</option>
+                            }
+                        }
+                    }
+
+
+
+                </select>
+            </div>
+        </div>
+
+
+        <div class="row col-md-12 mt-3">
+
+            <button onclick="getAuditEngagementDetials();" class="btn btn-danger col-md-3">Search</button>
+        </div>
+
+        <div class="row col-md-12 mt-3">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+
+        <div class="row mt-3 col-md-12">
+            <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+                    <tr>
+                        <th class="col-md-auto">Sr. No.</th>
+                        <th class="col-md-auto ">ENG_ID</th>                        
+                        <th class="col-md-auto ">Reporting Office</th>
+                        <th class="col-md-auto ">Entity Name</th>
+                        <th class="col-md-auto text-center">Audit Team</th>
+                        <th class="col-md-auto text-center">Operation Start Date</th>
+                        <th class="col-md-auto text-center">Operation End Date</th>
+                        <th class="col-md-auto text-center">Audit Start Date</th>
+                        <th class="col-md-auto text-center">Audit End Date</th>
+                        <th class="col-md-auto text-center">Travel Days</th>
+                        <th class="col-md-auto text-center">Discussion Days</th>
+                        <th class="col-md-auto text-center">Revenue Record Days</th>
+                        <th class="col-md-auto text-center">Weekend Days</th>
+                        <th class="col-md-auto text-center">Total Days</th>
+                        <th class="col-md-auto text-center">Total Status</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<div class="row col-md-12 w-100 mt-3">
-    <button onclick="getauditplanengagement();" class="btn btn-primary">Find</button>
-</div>
-<div class="row col-md-12 mt-3 mb-2">
-   
-        <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
-   
-</div>
-
-
-<div class="mt-3">
-    <table id="A_P_E_T" class="table table-hover table-bordered table-hover mt-3 table-striped" style="font-size:smaller">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-            <tr>
-                <th class="col-md-auto" style="text-align:center">Audit Period</th>
-                <th class="col-md-auto" style="text-align:center">Parent/Reporting Office</th>
-                <th class="col-md-auto" style="text-align:center">Entity Name</th>
-                <th class="col-md-auto" style="text-align:center">Audit Period Start Date</th>
-                <th class="col-md-auto" style="text-align:center">Audit Period End Date</th>
-                <th class="col-md-auto">Travel Days</th>
-                <th class="col-md-auto">Revenue Record Review Day</th>
-                <th class="col-md-auto">Discussion Day</th>
-                <th class="col-md-auto"style="text-align:center">Team Name</th>
-                <!--<th>Member Name</th>-->
-                <th style="text-align:center">Status</th>
-
-
-
-
-            </tr>
-        </thead>
-        <tbody>
-         
-        </tbody>
-    </table>
-</div>
-
 

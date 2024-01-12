@@ -3,16 +3,16 @@
     Layout = "_Layout";
 }
 <script type="text/javascript">
-  
+
 </script>
 <div>
     <div class="row" style="margin-top:20px;">
         <div class="col-md-12">
-           
-         <h3 style="color: #45c545;">Task List/Job Assignment</h3>
-           
+
+            <h3 style="color: #45c545;">Task List/Job Assignment</h3>
+
         </div>
-        
+
         <div class="col-md-12 mt-3">
             <h6>Job Assigned To: @ViewData["EMP_NAME"] </h6>
             <h6>Team: @ViewData["TEAM_NAME"] </h6>
@@ -33,6 +33,7 @@
                     <th class="col-md-2 font-weight-bold text-center">Operational Period End</th>
                     <th class="col-md-1 font-weight-bold text-center">Status</th>
                     <th class="col-md-auto font-weight-bold"></th>
+                    <th class="col-md-auto font-weight-bold"></th>
                 </tr>
             </thead>
             <tbody>
@@ -48,64 +49,70 @@
                             var osdate = item.OPERATION_STARTDATE.ToString();
                             var oedate = item.OPERATION_ENDDATE.ToString();
 
-                                <tr>
-                                    <td class="text-center" style="width:50px">@index</td>
-                                    <td class="col-md-auto text-center">@item.AUDIT_YEAR</td>
+                            <tr>
+                                <td class="text-center" style="width:50px">@index</td>
+                                <td class="col-md-auto text-center">@item.AUDIT_YEAR</td>
 
 
-                                    <td class="col-md-auto text-center">@item.ENTITY_NAME</td>
-                                    <td class="col-md-1 text-center">@sDate.Split(" ")[0]</td>
-                                    <td class="col-md-1 text-center">@eDate.Split(" ")[0]</td>
-                                    <td class="col-md-2 text-center">@osdate.Split(" ")[0]</td>
-                                    <td class="col-md-2 text-center">@oedate.Split(" ")[0]</td>
-                                    <td class="col-md-1 text-center">
-                                        @{
-                                            if (item.ENG_STATUS == "Completed")
-
-                                            { <span class="badge badge-success rounded-pill d-inline">@item.ENG_STATUS</span>}
+                                <td class="col-md-auto text-center">@item.ENTITY_NAME</td>
+                                <td class="col-md-1 text-center">@sDate.Split(" ")[0]</td>
+                                <td class="col-md-1 text-center">@eDate.Split(" ")[0]</td>
+                                <td class="col-md-2 text-center">@osdate.Split(" ")[0]</td>
+                                <td class="col-md-2 text-center">@oedate.Split(" ")[0]</td>
+                                <td class="col-md-1 text-center">
+                                    @{
+                                        if (item.STATUS_ID == 6)
+                                        {
+                                            <span class="badge badge-success rounded-pill d-inline">@item.ENG_STATUS</span>
+                                        }
                                         else
-                                        { <span class="badge badge-danger rounded-pill d-inline">@item.ENG_STATUS</span>}
+                                        {
+                                            <span class="badge badge-danger rounded-pill d-inline">@item.ENG_STATUS</span>
                                         }
-                                    </td>
-                                    <td class="text-hover text-danger text-center">
-                                        @{
+                                    }
+                                </td>
+                                <td class="text-hover text-danger text-center">
+                                    @{
 
-                                            if (item.STATUS_ID == 1)
+                                        if (item.STATUS_ID == 1)
+                                        {
+                                            <a href="/Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                        }
+                                        else if (item.STATUS_ID == 2)
+                                        {
+                                            if (item.ENTITY_TYPE == 6)
                                             {
-                                                <a href="/Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
-                                            else if (item.STATUS_ID == 2)
-                                            {
-                                                if (item.ENTITY_TYPE == 6)
-                                                {
-                                                    <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
-                                                }
                                             else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
-                                                {
-                                                    <a href="/Execution/cau_observation?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
-                                                }
-                                                else
-                                                {
-                                                    <a href="/Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
-                                                }
+                                            {
+                                                <a href="/Execution/cau_observation?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
 
-                                            }
-                                            else if (item.STATUS_ID == 3)
-                                            {
-                                                <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
-
-                                            }
-                                            else if (item.STATUS_ID == 4)
-                                            {
-                                                <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
-                                            }
-                                            else if (item.STATUS_ID == 5)
-                                            {
-                                                <a href="#">Meeting with Managment</a>
-                                            }
                                         }
-                                    </td>
-                                </tr>
+                                        else if (item.STATUS_ID == 3)
+                                        {
+                                            <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+
+                                        }
+                                        else if (item.STATUS_ID == 4)
+                                        {
+                                            <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                        }
+                                        else if (item.STATUS_ID == 5)
+                                        {
+                                            <a href="#">Meeting with Managment</a>
+                                        }
+                                    }
+                                </td>
+                                <td class="col-md-1 text-center">
+                                    <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">Working Paper</a>
+                                </td>
+                            </tr>
                             index++;
                         }
                     }

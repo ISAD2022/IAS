@@ -8,13 +8,69 @@
 <script>
     var g_paraId = 0;
     $(document).ready(function () {
-
+        getVoucherChecking();
     });
 
     function openVoucherCheckingFile() {
         $('#newVoucherCheckingDialog').modal('show');
     }
+    function getVoucherChecking() {
 
+        $.ajax({
+            url: "/ApiCalls/Get_Working_Paper_Voucher_Checking",
+            type: "POST",
+            data: {
+
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $.each(data, function (i, v) {
+
+                    $('#manageObsPanel').append('<tr><td>' + ++i + '</td><td>' + v.v_NUMBER + '</td><td>' + v.observation + '</td><td>' + v.parA_NO + '</td><td><a href="#" onclick="updateVoucherChecking(' + v.V_ID + ');"></a></td></tr>');
+
+                })
+
+            },
+
+            dataType: "json",
+        });
+    }
+
+    function updateVoucherChecking(vId){
+
+    }
+
+    function AddNewVoucherChecking() {
+
+        if ($('#accountnumber_txtField').val() == "") {
+            alert("Provide Voucher Number to proceed");
+            return;
+        }
+
+
+        $.ajax({
+            url: "/ApiCalls/Add_Working_Paper_Voucher_Checking",
+            type: "POST",
+            data: {
+                'VNUMBER': $('#accountnumber_txtField').val(),
+                'OBS': $('#ob_txtField').val(),
+                'PARA_NO': $('#pno_txtField').val()
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+
+            },
+
+            dataType: "json",
+        });
+    }
+
+    function reloadLocation() {
+        window.location.reload();
+    }
 
 </script>
 
@@ -38,9 +94,17 @@
           
         </table>
     </div>
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-2 offset-md-8">
+            <button onclick="window.location.href='loan_case_file'" class="btn btn-danger w-100">Loan Case File</button>
+        </div>
+        <div class="col-md-2">
+            <button onclick="window.location.href='account_opening'" class="btn btn-success w-100">Account Opening Form</button>
+        </div>
+
+    </div>
 
 </div>
-
 
 
 
@@ -61,18 +125,18 @@
                     </div>
                  
                     <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Observation</label>
+                        <label for="commentAreaInCommentsBox">Observation (if any)</label>
                         <textarea class="form-control" id="ob_txtField"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Para No</label>
+                        <label for="commentAreaInCommentsBox">Para No (if any)</label>
                         <input type="text" class="form-control" id="pno_txtField" />
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="finalCommentsButtonSave" type="button" class="btn btn-danger">Add New</button>
+                <button onclick="AddNewVoucherChecking();" type="button" class="btn btn-danger">Add New</button>
             </div>
         </div>
     </div>

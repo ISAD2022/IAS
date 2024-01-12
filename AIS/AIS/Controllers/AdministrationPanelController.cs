@@ -233,6 +233,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages(); 
             ViewData["AuditEntitiesType"] = dBConnection.GetAuditEntityTypes();
+            ViewData["RelationshipList"] = dBConnection.Getrealtionshiptype();
             ViewData["Audit_By"] = dBConnection.GetAuditBy();
 
             if (!sessionHandler.IsUserLoggedIn())

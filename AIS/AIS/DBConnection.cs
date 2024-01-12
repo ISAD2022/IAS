@@ -5268,6 +5268,7 @@ namespace AIS.Controllers
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                    chk.HEADING = rdr["OBS_HEADING"].ToString();
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
@@ -8699,6 +8700,40 @@ namespace AIS.Controllers
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["ENTITY_TYPE"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+
+        public List<AuditeeEntitiesModel> GetAuditDepartmentsZones()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_AUDITED_BY_DEPARTMENTS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["NAME"].ToString();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     entitiesList.Add(entity);
                 }
             }
@@ -14232,7 +14267,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<AISEntitiesModel> GetAISEntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE)
+        public List<AISEntitiesModel> GetAISEntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE, int ENT_TYPE_ID=0)
         {
 
             sessionHandler = new SessionHandler();
@@ -14248,6 +14283,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENT_CODE", OracleDbType.Int32).Value = ENTITY_CODE;
                 cmd.Parameters.Add("ENT_NAME", OracleDbType.Varchar2).Value = ENTITY_NAME;
+                cmd.Parameters.Add("ENT_TYPE", OracleDbType.Int32).Value = ENT_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -14343,7 +14379,371 @@ namespace AIS.Controllers
 
         }
 
+        public List<EntityMappingForEntityAddition> GetAISEntityMappingForAdminPanelEntityAddition(string ENTITY_ID)
+        {
 
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<EntityMappingForEntityAddition> respOut = new List<EntityMappingForEntityAddition>() ;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_auditee_entities_mapping";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+            
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;              
+                cmd.Parameters.Add("T_ID", OracleDbType.Varchar2).Value = 0;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EntityMappingForEntityAddition resp = new EntityMappingForEntityAddition();
+                    resp.PARENT_ID = rdr["parent_id"].ToString();
+                    resp.PARENT_CODE = rdr["parent_code"].ToString();
+                    resp.CHILD_CODE = rdr["child_code"].ToString();
+                    resp.CHILD_ID = rdr["entity_id"].ToString();
+                    resp.AUDITED_BY = rdr["auditedby"].ToString();
+                    resp.PARENT_NAME = rdr["p_name"].ToString();
+                    resp.CHILD_NAME = rdr["c_name"].ToString();
+                    resp.PARENT_TYPE_ID = rdr["p_type_id"].ToString();
+                    resp.CHILD_TYPE_ID = rdr["c_type_id"].ToString();
+                    resp.RELATION_TYPE_ID = rdr["relation_type_id"].ToString();
+                    respOut.Add(resp);
+                }
+            }
+            con.Dispose();
+            return respOut;
+
+        }
+        public string UpdateAISEntityMappingForAdminPanelEntityAddition(string P_ENTITY_ID, string ENTITY_ID, string RELATION_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+           
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_ENTITIES_MAPPING";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_ENT_ID", OracleDbType.Int32).Value = P_ENTITY_ID;
+                cmd.Parameters.Add("RELATION_ID", OracleDbType.Int32).Value = RELATION_TYPE_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string AddAISEntityMappingForAdminPanelEntityAddition(string P_ENTITY_ID, string ENTITY_ID, string RELATION_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_ENTITIES_MAPPING";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_ENT_ID", OracleDbType.Int32).Value = P_ENTITY_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("RELATION_ID", OracleDbType.Int32).Value = RELATION_TYPE_ID;              
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<AuditPlanEngDetailReport> GetAuditPlanEngagementDetailedReport(string AUDITED_BY, string PERIOD_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditPlanEngDetailReport> resp = new List<AuditPlanEngDetailReport>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_FAD_audit_Plan_Details";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("AUDITED_ID", OracleDbType.Int32).Value = AUDITED_BY;
+                cmd.Parameters.Add("PERIOD_ID", OracleDbType.Int32).Value = PERIOD_ID;
+              
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditPlanEngDetailReport eng = new AuditPlanEngDetailReport();
+                    eng.ENG_ID = rdr["eng_id"].ToString();
+                    eng.REPORTING_OFFICE = rdr["reporting_office"].ToString();
+                    eng.ENTITY_NAME = rdr["name"].ToString();
+                    eng.OP_START_DATE = rdr["t_name"].ToString();
+                    eng.OP_END_DATE = rdr["operation_startdate"].ToString();
+                    eng.AUDIT_START_DATE = rdr["operation_enddate"].ToString();
+                    eng.AUDIT_END_DATE = rdr["audit_startdate"].ToString();
+                    eng.TRAVEL_DAYS = rdr["travel_day"].ToString();
+                    eng.DISCUSSION_DAYS = rdr["discussion_day"].ToString();
+                    eng.REVENUE_RECORD_DAYS = rdr["revenue_record_day"].ToString();
+                    eng.WEEKEND_DAYS = rdr["total_weekend_days"].ToString();
+                    eng.TOTAL_DAYS = rdr["total_days"].ToString();
+                    eng.AUDIT_TEAM = rdr["t_name"].ToString();
+                    eng.ENG_STATUS = rdr["status"].ToString();
+                    resp.Add(eng);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
+        public List<LoanCaseFileDetailsModel> GetWorkingPaperLoanCases(int LC_ID=0)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanCaseFileDetailsModel> resp = new List<LoanCaseFileDetailsModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_GetLoanCaseFile";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("LCID", OracleDbType.Int32).Value = LC_ID; 
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    LoanCaseFileDetailsModel eng = new LoanCaseFileDetailsModel();
+                    eng.LC_ID = rdr["LC_ID"].ToString();
+                    eng.LC_NUMBER = rdr["LC_NUMBER"].ToString();
+                    eng.CATEGORY = rdr["CATEGORY"].ToString();
+                    eng.OBSERVATION = rdr["OBSERVATION"].ToString();
+                    eng.DISB_DATE = rdr["DISB_DATE"].ToString();
+                    eng.AMOUNT = rdr["AMOUNT"].ToString();
+                    eng.PARA_NO = rdr["PARA_NO"].ToString();
+                    resp.Add(eng);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string AddWorkingPaperLoanCases(string LCNUMBER, string LCAMOUNT, DateTime DISBDATE, string LCAT, string OBS, string PARA_NO)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_AddLoanCaseFile";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;            
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("LCNUMBER", OracleDbType.Varchar2).Value = LCNUMBER;
+                cmd.Parameters.Add("LCAmount", OracleDbType.Int32).Value = LCAMOUNT;
+                cmd.Parameters.Add("DISBDATE", OracleDbType.Date).Value = DISBDATE;
+                cmd.Parameters.Add("LC", OracleDbType.Varchar2).Value = LCAT;
+                cmd.Parameters.Add("OBS", OracleDbType.Varchar2).Value = OBS;
+                cmd.Parameters.Add("PARA_NO", OracleDbType.Varchar2).Value = PARA_NO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<VoucherCheckingDetailsModel> GetWorkingPaperVoucherChecking(int V_ID = 0)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<VoucherCheckingDetailsModel> resp = new List<VoucherCheckingDetailsModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_GetVoucherChecking";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("VID", OracleDbType.Int32).Value = V_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    VoucherCheckingDetailsModel eng = new VoucherCheckingDetailsModel();
+                    eng.V_ID = rdr["V_ID"].ToString();
+                    eng.V_NUMBER = rdr["V_NUMBER"].ToString();
+                    eng.OBSERVATION = rdr["OBSERVATION"].ToString();
+                    eng.PARA_NO = rdr["PARA_NO"].ToString();
+                    resp.Add(eng);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string AddWorkingVoucherChecking(string VNUMBER, string OBS, string PARA_NO)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_AddVoucherChecking";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("VNUMBER", OracleDbType.Varchar2).Value = VNUMBER;
+                cmd.Parameters.Add("OBS", OracleDbType.Varchar2).Value = OBS;
+                cmd.Parameters.Add("PARA_NO", OracleDbType.Varchar2).Value = PARA_NO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<AccountOpeningDetailsModel> GetWorkingPaperAccountOpening(int AID = 0)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AccountOpeningDetailsModel> resp = new List<AccountOpeningDetailsModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_GetAccountOpeningDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("AID", OracleDbType.Int32).Value = AID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AccountOpeningDetailsModel eng = new AccountOpeningDetailsModel();
+                    eng.A_ID = rdr["A_ID"].ToString();
+                    eng.V_NUMBER = rdr["V_NUMBER"].ToString();
+                    eng.A_NATURE = rdr["A_NUMBER"].ToString();
+                    eng.OBSERVATION = rdr["OBSERVATION"].ToString();
+                    eng.PARA_NO = rdr["PARA_NO"].ToString();
+                    resp.Add(eng);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string AddWorkingAccountOpening(string VNUMBER, string ANATURE, string OBS, string PARA_NO)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_AddAccountOpeningDetails";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("VNUMBER", OracleDbType.Varchar2).Value = VNUMBER;
+                cmd.Parameters.Add("ANATURE", OracleDbType.Varchar2).Value = ANATURE;
+                cmd.Parameters.Add("OBS", OracleDbType.Varchar2).Value = OBS;
+                cmd.Parameters.Add("PARA_NO", OracleDbType.Varchar2).Value = PARA_NO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
 
         #endregion
     }

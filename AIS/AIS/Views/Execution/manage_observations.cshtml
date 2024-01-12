@@ -15,6 +15,13 @@
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
+
+        $('#updateMemoContent').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
     });
     function reloadLocation() {
         getEntityObservation();
@@ -35,6 +42,7 @@
                 console.log(data);
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0].obS_TEXT);
+                $('#viewMemo_heading').html(data[0].heading);
                 $('#viewMemo_response').html(data[0].obS_REPLY);
                 $('#viewMemo_subprocess').html(data[0].nature);
                 $('#viewMemo_violation').html(data[0].violation);
@@ -150,7 +158,7 @@
                 success: function (data) {
                     $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td></tr>');
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td class="text-center"><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Edit Memo</a></td></tr>');
                     });
                     setTimeout(function () {
                         if (g_obsId != 0) {
@@ -165,6 +173,45 @@
             });
 
         }
+    }
+
+    function ObservationUpdatePanel(obs_id) {
+        g_obsId = obs_id;
+        $.ajax({
+            url: "/ApiCalls/get_dept_observation_text",
+            type: "POST",
+            data: {
+                'OBS_ID': obs_id
+            },
+            cache: false,
+            success: function (data) {
+                $('#updateMemoModel').modal('show');
+                $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');
+                $('#updateMemo_heading').val(data[0].heading);
+            },
+            dataType: "json",
+        });
+
+    }
+
+    function finalUpdateMemoContent(obs_id) {
+        g_obsId = obs_id;
+        $.ajax({
+            url: "/ApiCalls/update_observation_text",
+            type: "POST",
+            data: {
+                'OBS_ID': g_obsId,
+                'OBS_TITLE': $('#updateMemo_heading').val(),
+                'OBS_TEXT': $('.richText-editor').html()              
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+
     }
 
 </script>
@@ -208,38 +255,15 @@
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
                     <th class="col-md-auto">Violation</th>
-                    <th class="col-md-auto">Nature</th>
-                    <th class="col-md-auto d-none">Observation</th>
-                    <th class="col-md-auto d-none">Auditee Response</th>
+                    <th class="col-md-auto">Nature</th>                    
                     <th class="col-md-auto">Risk Category</th>
-                    <th class="col-md-auto">Status</th>
-                    <th class="d-none"></th>
-                    <th class="d-none"></th>
+                    <th class="col-md-auto">Status</th>                   
+                    <th class="col-md-auto text-center">Action</th>
                     <th class="col-md-auto text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @{
-                    if (ViewData["ManageObservations"] != null)
-                    {
-
-                        foreach (var item in (dynamic)(ViewData["ManageObservations"]))
-                        {
-                                <tr id="@item.OBS_ID">
-                                    <td class="text-center">@item.MEMO_NO</td>
-                                    <td>@item.VIOLATION</td>
-                                    <td>@item.NATURE</td>
-                                    <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                    <td class="d-none period_name_field">@item.PERIOD</td>
-                                    <td>@item.OBS_RISK</td>
-                                    <td>@item.OBS_STATUS</td>
-
-                                    <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                   
-                                </tr>
-                        }
-                    }
-                }
+             
             </tbody>
 
         </table>
@@ -291,7 +315,10 @@
                         <label for="viewMemo_subprocess" class="font-weight-bold">Nature</label>
                         <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
-
+                    <div class="form-group">
+                        <label for="viewMemo_heading" class="font-weight-bold">Heading</label>
+                        <div id="viewMemo_heading" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
@@ -306,6 +333,45 @@
                 <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
                
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="updateMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                   
+                    <div class="form-group">
+                        <label for="updateMemo_heading" class="font-weight-bold">Title / Heading</label>
+                        <input id="updateMemo_heading" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateMemoContent" class="font-weight-bold">Memo</label>
+                        <textarea id="updateMemoContent" rows="5" class="form-control">
+
+                        </textarea>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+
+                <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger">Update Memo Text</button>
+
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

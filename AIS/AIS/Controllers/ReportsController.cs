@@ -586,7 +586,8 @@ namespace AIS.Controllers
         public IActionResult Audit_Plan_Engagement()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
+            ViewData["AuditDepartmentList"] = dBConnection.GetAuditDepartmentsZones();
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
             if (!sessionHandler.IsUserLoggedIn())
             {
