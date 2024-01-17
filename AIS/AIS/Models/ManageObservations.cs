@@ -7,6 +7,7 @@ namespace AIS.Models
     public class ManageObservations
     {        
         public int OBS_ID { get; set; }
+        public int? ANNEXURE_ID { get; set; }
         public string ENTITY_NAME { get; set; }
         public string PROCESS { get; set; }
         public string PROCESS_ID { get; set; }

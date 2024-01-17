@@ -143,10 +143,12 @@ label.heading{
             alert('Select Sub Checklist Detail');
             return;
         }
-        //if ($('#auditCriteriaRiskField').val() == 0) {
-        //    alert('Select Risk');
-        //    return;
-        //}
+
+        
+        if ($('#viewMemo_risk').val() == 0) {
+           alert('Select Risk');
+           return;
+        }
         if ($('#viewMemo_heading').val() == 0) {
             alert('Please Enter Para Heading');
             return;
@@ -167,6 +169,7 @@ label.heading{
             'MEMO': $('.richText-editor').html(),
             'ID': 'obs_0',
             'HEADING': $('#viewMemo_heading').val(),
+            'RISK': $('#viewMemo_risk').val(),
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
             'RESPONSIBLE_PPNO': resP,
@@ -314,6 +317,25 @@ label.heading{
         <div class="page-wrapper box-content">
             <textarea id="template_box" class="content" name="example"></textarea>
         </div>
+    </div>
+    <div class="col-md-12 mt-3">
+        <h5>Risk</h5>
+        <select id="viewMemo_risk"  class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected>--Select Risk Category--</option>
+            @{
+                if (ViewData["RiskList"] != null)
+                {
+
+                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                    {
+                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                    }
+
+                }
+            }
+        </select>
+
+
     </div>
     <div class="row col-sm-12">
         <div class="col-md-2 mt-3">

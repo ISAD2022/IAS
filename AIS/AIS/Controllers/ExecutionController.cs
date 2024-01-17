@@ -290,6 +290,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
+           
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -311,6 +312,8 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -485,6 +488,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

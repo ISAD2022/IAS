@@ -7,7 +7,12 @@
 
 <script>
     var g_paraId = 0;
+    var g_engID = 0;
     $(document).ready(function () {
+
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_engID = url.searchParams.get("engId");
 
         getLoanCaseFiles();
 
@@ -23,7 +28,7 @@
             url: "/ApiCalls/Get_Working_Paper_Loan_Cases",
             type: "POST",
             data: {
-
+                'ENGID': g_engID
             },
             cache: false,
             success: function (data) {
@@ -73,6 +78,7 @@
             url: "/ApiCalls/Add_Working_Paper_Loan_Cases",
             type: "POST",
             data: {
+                'ENGID': g_engID,
                 'LCNUMBER': $('#loancasenumber_txtField').val(),
                 'LCAMOUNT': $('#osamount_txtField').val(),
                 'DISBDATE': $('#dateofdisb_txtField').val(),
@@ -93,6 +99,10 @@
 
     function reloadLocation() {
         window.location.reload();
+    }
+
+    function redirectToNexPage() {
+        window.location.href = 'voucher_checking?engId=' + g_engID;
     }
 </script>
 
@@ -121,7 +131,7 @@
     </div>
 
     <div class="row col-md-12 mt-3">
-        <button onclick="window.location.href='voucher_checking'" class="btn btn-success col-md-2 offset-md-10">Voucher Checking</button>
+        <button onclick="redirectToNexPage();" class="btn btn-success col-md-2 offset-md-10">Voucher Checking</button>
     </div>
 
 </div>
@@ -131,7 +141,7 @@
     <div class="modal-xl modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">New Loan Case File</h5>
+                <h5 class="modal-title">New Loan Case Record</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

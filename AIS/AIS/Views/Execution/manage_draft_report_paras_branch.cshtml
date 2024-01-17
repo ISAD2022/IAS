@@ -10,6 +10,7 @@
     var g_riskId = 0;
     var g_obsList = [];
     $(document).ready(function () {
+        $('#entitySelectField').select2();
         var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();

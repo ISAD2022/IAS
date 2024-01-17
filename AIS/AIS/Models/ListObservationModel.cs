@@ -9,6 +9,7 @@ namespace AIS.Models
         public string ID { get; set; }
         public string MEMO { get; set; }
         public string HEADING { get; set; }
+        public int RISK { get; set; }
         public string ANNEXURE_ID { get; set; }
         public string OBSERVATION_TEXT { get; set; }
         public int DAYS { get; set; }

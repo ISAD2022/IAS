@@ -7,7 +7,14 @@
 
 <script>
     var g_paraId = 0;
+    var g_engID = 0;
     $(document).ready(function () {
+
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_engID = url.searchParams.get("engId");
+
+
         getVoucherChecking();
     });
 
@@ -20,7 +27,7 @@
             url: "/ApiCalls/Get_Working_Paper_Voucher_Checking",
             type: "POST",
             data: {
-
+                'ENGID': g_engID
             },
             cache: false,
             success: function (data) {
@@ -37,7 +44,7 @@
         });
     }
 
-    function updateVoucherChecking(vId){
+    function updateVoucherChecking(vId) {
 
     }
 
@@ -53,6 +60,7 @@
             url: "/ApiCalls/Add_Working_Paper_Voucher_Checking",
             type: "POST",
             data: {
+                'ENGID':g_engID,
                 'VNUMBER': $('#accountnumber_txtField').val(),
                 'OBS': $('#ob_txtField').val(),
                 'PARA_NO': $('#pno_txtField').val()
@@ -72,13 +80,21 @@
         window.location.reload();
     }
 
+    function redirectToNexPage() {
+        window.location.href = 'account_opening?engId=' + g_engID;
+    }
+
+    function redirectToPreviousPage() {
+        window.location.href = 'loan_case_file?engId=' + g_engID;
+    }
+
 </script>
 
 <div class="row">
     <div class="col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Working Paper for Voucher Checking</h3>
     </div>
-   
+
     <div class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -91,15 +107,15 @@
                 </tr>
             </thead>
             <tbody></tbody>
-          
+
         </table>
     </div>
     <div class="row col-md-12 mt-3">
         <div class="col-md-2 offset-md-8">
-            <button onclick="window.location.href='loan_case_file'" class="btn btn-danger w-100">Loan Case File</button>
+            <button onclick="redirectToPreviousPage()" class="btn btn-danger w-100">Loan Case File</button>
         </div>
         <div class="col-md-2">
-            <button onclick="window.location.href='account_opening'" class="btn btn-success w-100">Account Opening Form</button>
+            <button onclick="redirectToNexPage();" class="btn btn-success w-100">Account Opening Form</button>
         </div>
 
     </div>
@@ -112,7 +128,7 @@
     <div class="modal-xl modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">New Loan Case File</h5>
+                <h5 class="modal-title">New Voucher Checking Record</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -123,7 +139,7 @@
                         <label for="commentAreaInCommentsBox">Voucher / Account Number</label>
                         <input type="text" class="form-control" id="accountnumber_txtField" />
                     </div>
-                 
+
                     <div class="form-group">
                         <label for="commentAreaInCommentsBox">Observation (if any)</label>
                         <textarea class="form-control" id="ob_txtField"></textarea>

@@ -210,7 +210,7 @@ namespace AIS.Controllers
                 ob.ENGPLANID = ENG_ID;
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
-                ob.SEVERITY = RISK_ID;
+                ob.SEVERITY = m.RISK;
                 ob.NO_OF_INSTANCES = m.NO_OF_INSTANCES;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
@@ -236,7 +236,7 @@ namespace AIS.Controllers
                 ob.REPLYDATE = DateTime.Today.AddDays(m.DAYS);
                 ob.OBSERVATION_TEXT = m.MEMO;
                 ob.HEADING = m.HEADING;
-                ob.SEVERITY = 1;
+                ob.SEVERITY = m.RISK;
                 ob.BRANCH_ID = BRANCH_ID;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
@@ -255,10 +255,10 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);
         }
         [HttpPost]
-        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "")
+        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "", int RISK_ID=0, int ANNEXURE_ID=0)
         {
             string response = "";
-            response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID, OBS_TITLE);
+            response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID, OBS_TITLE, RISK_ID, ANNEXURE_ID);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -1793,45 +1793,75 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<LoanCaseFileDetailsModel> Get_Working_Paper_Loan_Cases(int LC_ID=0)
+        public List<LoanCaseFileDetailsModel> Get_Working_Paper_Loan_Cases(string ENGID)
         {
-            return dBConnection.GetWorkingPaperLoanCases(LC_ID);
+            return dBConnection.GetWorkingPaperLoanCases(ENGID);
 
         }
 
         [HttpPost]
-        public string Add_Working_Paper_Loan_Cases(string LCNUMBER, string LCAMOUNT, DateTime DISBDATE, string LCAT, string OBS, string PARA_NO)
+        public string Add_Working_Paper_Loan_Cases(string ENGID, string LCNUMBER, string LCAMOUNT, DateTime DISBDATE, string LCAT, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingPaperLoanCases(LCNUMBER, LCAMOUNT, DISBDATE, LCAT, OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingPaperLoanCases(ENGID,LCNUMBER, LCAMOUNT, DISBDATE, LCAT, OBS, PARA_NO) + "\"}";
 
         }
 
          [HttpPost]
-        public List<VoucherCheckingDetailsModel> Get_Working_Paper_Voucher_Checking(int LC_ID=0)
+        public List<VoucherCheckingDetailsModel> Get_Working_Paper_Voucher_Checking(string ENGID)
         {
-            return dBConnection.GetWorkingPaperVoucherChecking(LC_ID);
+            return dBConnection.GetWorkingPaperVoucherChecking(ENGID);
 
         }
 
         [HttpPost]
-        public string Add_Working_Paper_Voucher_Checking(string VNUMBER, string OBS, string PARA_NO)
+        public string Add_Working_Paper_Voucher_Checking(string ENGID, string VNUMBER, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingVoucherChecking(VNUMBER, OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingVoucherChecking(ENGID,VNUMBER, OBS, PARA_NO) + "\"}";
 
         }
         [HttpPost]
-        public List<AccountOpeningDetailsModel> Get_Working_Paper_Account_Opening(int AID = 0)
+        public List<AccountOpeningDetailsModel> Get_Working_Paper_Account_Opening(string ENGID)
         {
-            return dBConnection.GetWorkingPaperAccountOpening(AID);
+            return dBConnection.GetWorkingPaperAccountOpening(ENGID);
 
         }
 
         [HttpPost]
-        public string Add_Working_Paper_Account_Opening(string VNUMBER, string OBS, string PARA_NO)
+        public string Add_Working_Paper_Account_Opening(string ENGID,string VNUMBER, string ANATURE, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingVoucherChecking(VNUMBER, OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingAccountOpening(ENGID,VNUMBER, ANATURE,OBS, PARA_NO) + "\"}";
 
         }
+
+        [HttpPost]
+        public List<FixedAssetsDetailsModel> Get_Working_Paper_Fixed_Assets(string ENGID)
+        {
+            return dBConnection.GetWorkingPaperFixedAssets(ENGID);
+
+        }
+
+        [HttpPost]
+        public string Add_Working_Paper_Fixed_Assets(string ENGID, string A_NAME, string PHY_EX, string FAR, string DIFF, string REM)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingFixedAssets(ENGID, A_NAME, PHY_EX, FAR, DIFF, REM) + "\"}";
+
+        }
+
+
+        [HttpPost]
+        public List<CashCountDetailsModel> Get_Working_Paper_Cash_Counter(string ENGID)
+        {
+            return dBConnection.GetWorkingPaperCashCounter(ENGID);
+
+        }
+
+        [HttpPost]
+        public string Add_Working_Paper_Cash_Counter(string ENGID, string DVAULT, string NOVAULT, string TOTVAULT, string DSR, string NOSR, string TOTSR, string DIFF)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingCashCounter(ENGID, DVAULT, NOVAULT, TOTVAULT, DSR, NOSR, TOTSR, DIFF) + "\"}";
+
+        }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

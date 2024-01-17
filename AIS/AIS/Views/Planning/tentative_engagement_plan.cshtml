@@ -65,7 +65,10 @@
            
             if (g_entityType == 25 || g_entityType == 6  )
             {
-                
+                if (dataTemp.getDay() == 0) {
+                    dataTemp.setDate(dataTemp.getDate() + 1)
+                }
+
             }
             else
             {
