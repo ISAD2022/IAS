@@ -10,6 +10,7 @@
     var g_riskId = 0;
     var g_obsList = [];
     $(document).ready(function () {
+        $('#entitySelectField').select2();
         var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
@@ -56,8 +57,15 @@
     function finalCommentsButtonSave() {
         var svpComments = "";
         svpComments = $('#commentAreaInCommentsBox').val();
+
+        //
+        if ($('#draftNoInCommentsBox').val() == "") {
+            alert("Please enter Draft Para No to proceed");
+            return;
+        }
+
         if ($('#commentAreaInCommentsBox').val() == "") {
-            alert("Please enter the Comments First");
+            alert("Please enter the Comments to proceed");
             return;
         }
 
@@ -68,6 +76,7 @@
             data: {
                 'OBS_ID': g_obsId,
                 'NEW_STATUS_ID': g_newStatusId,
+                'DRAFT_PARA_NO': $('#draftNoInCommentsBox').val(),
                 'RISK_ID': g_riskId,
                 'AUDITOR_COMMENT': svpComments
             },
@@ -108,10 +117,10 @@
                         if (v.obS_STATUS_ID == 3 && v.obS_RISK_ID == 3)
                             $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ', 4,' + v.obS_RISK_ID + ');" class="text-hover text-danger mr-5px"><small>Resolved at Memo Level</small></a></td><td><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',5,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Draft Report</small></a></td></tr>');
                         else if (v.obS_STATUS_ID == 3 && v.obS_RISK_ID != 3)
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>-</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',5,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Draft Report</small></a></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center">-</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',5,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Draft Report</small></a></td></tr>');
 
                         else
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td><td class="text-center"><small>-</small></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.violation + '</td><td>' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center">-</td><td class="text-center">-</td></tr>');
 
                     });
 
@@ -205,6 +214,10 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="form-group">
+                        <label for="commentAreaInCommentsBox">Draft Para No</label>
+                        <input class="form-control" id="draftNoInCommentsBox" placeholder="Draft Para No" />
+                    </div>
                     <div class="form-group">
                         <label for="commentAreaInCommentsBox">Comments</label>
                         <textarea class="form-control" rows="4" id="commentAreaInCommentsBox" placeholder="Enter Comments here.."></textarea>

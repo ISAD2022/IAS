@@ -57,6 +57,13 @@
     function finalCommentsButtonSave() {
         var svpComments = "";
         svpComments = $('#commentAreaInCommentsBox').val();
+
+        if ($('#draftNoInCommentsBox').val() == "") {
+            alert("Please enter Draft Para No to proceed");
+            return;
+        }
+
+
         if ($('#commentAreaInCommentsBox').val() == "") {
             alert("Please enter the Comments First");
             return;
@@ -69,6 +76,7 @@
             data: {
                 'OBS_ID': g_obsId,
                 'NEW_STATUS_ID': g_newStatusId,
+                'DRAFT_PARA_NO': $('#draftNoInCommentsBox').val(),
                 'RISK_ID': g_riskId,
                 'AUDITOR_COMMENT': svpComments
             },
@@ -204,6 +212,10 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="form-group">
+                        <label for="commentAreaInCommentsBox">Draft Para No</label>
+                        <input class="form-control" id="draftNoInCommentsBox" placeholder="Draft Para No" />
+                    </div>
                     <div class="form-group">
                         <label for="commentAreaInCommentsBox">Comments</label>
                         <textarea class="form-control" rows="4" id="commentAreaInCommentsBox" placeholder="Enter Comments here.."></textarea>

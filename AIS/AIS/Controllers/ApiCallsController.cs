@@ -262,7 +262,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
-        public string update_observation_status(int OBS_ID, int NEW_STATUS_ID, int RISK_ID, string AUDITOR_COMMENT)
+        public string update_observation_status(int OBS_ID, int NEW_STATUS_ID, string DRAFT_PARA_NO, int RISK_ID, string AUDITOR_COMMENT)
         {
             string response = "";
 
@@ -270,7 +270,7 @@ namespace AIS.Controllers
                 if (RISK_ID != 3)
                     return "{\"Status\":false,\"Message\":\"Only Low Risk para can be settled by Team Lead\"}";
 
-            response = dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID, AUDITOR_COMMENT);
+            response = dBConnection.UpdateAuditObservationStatus(OBS_ID, NEW_STATUS_ID, DRAFT_PARA_NO, AUDITOR_COMMENT);
 
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 

@@ -206,6 +206,7 @@
                 else
                     $('#roleSaveField').val(0);
 
+                $('#mySelect2').trigger('change');
                 if (user.isActive == "Y")
                     $('#isActiveSaveField').attr('checked', true);
                 else
@@ -294,6 +295,7 @@
         $('#passSaveField').val('');
         $('#conPassSaveField').val('');
         $('#roleSaveField').val(0);
+        $('#mySelect2').trigger('change');
         $('#isActiveSaveField').attr('checked', false);
     }
     function saveButtonClickHandler() {
