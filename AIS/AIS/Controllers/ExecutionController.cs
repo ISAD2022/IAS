@@ -270,6 +270,7 @@ namespace AIS.Controllers
             ViewData["RISK_GROUPS"] = dBConnection.GetRiskGroup();
             ViewData["ZonesList"] = dBConnection.GetZones(false);
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -289,8 +290,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
-           
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();           
             ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -510,6 +511,7 @@ namespace AIS.Controllers
             ViewData["DivisionList"] = dBConnection.GetDivisions(false);
             ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
             ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["OtherEntityList"] = dBConnection.GetAuditEntitiesForOtherEntitySelection();
             ViewData["RiskList"]= dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {

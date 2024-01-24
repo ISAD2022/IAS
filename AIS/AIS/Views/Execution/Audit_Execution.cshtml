@@ -15,6 +15,7 @@
             videoEmbed: false,
             urls: false
         });
+        $('#otherDepSelectField').select2();
     });
 
     function div_risksubcategoryShowHide() {
@@ -92,6 +93,7 @@
             'MEMO': $('.richText-editor').html(),
             'ID': 'obs_0',
             'HEADING': $('#viewMemo_heading').val(),
+            'RISK': $('#auditCriteriaRiskField').val(),
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'LOANCASE': '',
             'NO_OF_INSTANCES': $('#viewMemo_noinstances').val(),
@@ -107,14 +109,12 @@
                 'S_ID': 0,
                 'V_CAT_NATURE_ID': $('#riskSubGroupSelectBox').val(),
                 'V_CAT_ID': $('#riskGroupSelectBox').val(),
-                'RISK_ID': $('#auditCriteriaRiskField').val()
+                'RISK_ID': $('#auditCriteriaRiskField').val(),
+                    'OTHER_ENTITY_ID': $('#otherDepSelectField').val()
             },
             cache: false,
-            success: function (data) {
-                if (data.failed>0)
-                    alert("<p>Memo Already Saved</p>");
-                else
-                    alert("<p>Memo Successfully Saved</p>");
+            success: function (data) { 
+                    alert(data.Message);
             },
             dataType: "json",
         });
@@ -135,7 +135,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
                     {
-                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                            <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
                     }
                 }
             }
@@ -158,7 +158,7 @@
 
                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                     {
-                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                     }
 
                 }
@@ -174,6 +174,25 @@
         <div class="page-wrapper box-content">
             <textarea id="template_box" class="content" name="example"></textarea>
         </div>
+    </div>
+    <p class="text-center text-red heading mt-3" style="font-weight:bold; color:red;">
+        Please select Entity only in case you want to send this observation to other Entity.
+        In case of forwarding/submitting the observation to Default Auditee, Do Not Select any Entity Name
+    </p>
+    <div class="col-md-12 mt-3">
+        <label>Entity Name</label>
+        <select id="otherDepSelectField" class="form-select form-control" aria-label="Default select example">
+            <option value="0" id="0" selected="selected">--Select Entity--</option>
+            @{
+                if (ViewData["OtherEntityList"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["OtherEntityList"]))
+                    {
+                            <option id="@item.AUTID" value="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                    }
+                }
+            }
+        </select>
     </div>
     <div class="row col-md-12 mt-3">
 

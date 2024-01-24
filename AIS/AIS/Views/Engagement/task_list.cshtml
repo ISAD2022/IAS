@@ -15,7 +15,6 @@
 
         <div class="col-md-12 mt-3">
             <h6>Job Assigned To: @ViewData["EMP_NAME"] </h6>
-            <h6>Team: @ViewData["TEAM_NAME"] </h6>
             <h6>PP. No. @ViewData["PPNumber"] </h6>
         </div>
 
@@ -27,11 +26,13 @@
                     <th class="col-md-2 font-weight-bold text-center">Audit Period</th>
 
                     <th class="col-md-auto font-weight-bold text-center">Audit Entity</th>
+                    <th class="col-md-auto font-weight-bold text-center">Team Name</th>
                     <th class="col-md-1 font-weight-bold text-center">Start Date</th>
                     <th class="col-md-1 font-weight-bold text-center">End Date</th>
                     <th class="col-md-2 font-weight-bold text-center">Operational Period Start</th>
                     <th class="col-md-2 font-weight-bold text-center">Operational Period End</th>
                     <th class="col-md-1 font-weight-bold text-center">Status</th>
+                    <th class="col-md-auto font-weight-bold"></th>
                     <th class="col-md-auto font-weight-bold"></th>
                     <th class="col-md-auto font-weight-bold"></th>
                 </tr>
@@ -52,9 +53,8 @@
                             <tr>
                                 <td class="text-center" style="width:50px">@index</td>
                                 <td class="col-md-auto text-center">@item.AUDIT_YEAR</td>
-
-
                                 <td class="col-md-auto text-center">@item.ENTITY_NAME</td>
+                                <td class="col-md-auto text-center">@item.TEAM_NAME</td>
                                 <td class="col-md-1 text-center">@sDate.Split(" ")[0]</td>
                                 <td class="col-md-1 text-center">@eDate.Split(" ")[0]</td>
                                 <td class="col-md-2 text-center">@osdate.Split(" ")[0]</td>
@@ -96,12 +96,35 @@
                                         }
                                         else if (item.STATUS_ID == 3)
                                         {
-                                            <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            if (item.ENTITY_TYPE == 6)
+                                            {
+                                                <a href="/Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
+                                            {
+                                                <a href="/Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }                                           
 
                                         }
                                         else if (item.STATUS_ID == 4)
                                         {
-                                            <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            if (item.ENTITY_TYPE == 6)
+                                            {
+                                                <a href="/Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
+                                            {
+                                                <a href="/Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            }
+                                          
                                         }
                                         else if (item.STATUS_ID == 5)
                                         {
@@ -111,6 +134,16 @@
                                 </td>
                                 <td class="col-md-1 text-center">
                                     <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">Working Paper</a>
+                                </td>
+
+                                <td class="col-md-1 text-center">
+                                    @{
+                                        if (item.ISCLOSE == "Z")
+                                        {
+                                            <a class="d-none" href="/Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
+                                        }                                        
+                                }
+                                
                                 </td>
                             </tr>
                             index++;

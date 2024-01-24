@@ -194,10 +194,10 @@ namespace AIS.Controllers
             return dBConnection.GetAuditChecklistDetails(S_ID);
         }
         [HttpPost]
-        public string save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID = 0, int V_CAT_NATURE_ID = 0, int RISK_ID = 0)
+        public string save_observations(List<ListObservationModel> LIST_OBS, int ENG_ID, int S_ID, int V_CAT_ID = 0, int V_CAT_NATURE_ID = 0, int OTHER_ENTITY_ID = 0)
         {
-            int success = 0;
-            int failed = 0;
+
+            string responses = "";
             foreach (ListObservationModel m in LIST_OBS)
             {
                 ObservationModel ob = new ObservationModel();
@@ -212,20 +212,18 @@ namespace AIS.Controllers
                 ob.OBSERVATION_TEXT = m.MEMO;
                 ob.SEVERITY = m.RISK;
                 ob.NO_OF_INSTANCES = m.NO_OF_INSTANCES;
+                ob.OTHER_ENTITY_ID = OTHER_ENTITY_ID;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
-                if (dBConnection.SaveAuditObservation(ob))
-                    success++;
-                else
-                    failed++;
+                responses += dBConnection.SaveAuditObservation(ob);
+                    
             }
-            return "{\"success\":" + success + " , \"failed\":" + failed + "}";
+            return "{\"Status\":true,\"Message\":\"" + responses + "\"}";
         }
         [HttpPost]
         public string save_observations_cau(List<ListObservationModel> LIST_OBS, int ENG_ID = 0, int BRANCH_ID = 0, int SUB_CHECKLISTID = 0, int CHECKLIST_ID = 0, string ANNEXURE_ID = "")
         {
-            int success = 0;
-            int failed = 0;
+            string responses = "";
             foreach (ListObservationModel m in LIST_OBS)
             {
                 ObservationModel ob = new ObservationModel();
@@ -240,12 +238,9 @@ namespace AIS.Controllers
                 ob.BRANCH_ID = BRANCH_ID;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
-                if (dBConnection.SaveAuditObservationCAU(ob))
-                    success++;
-                else
-                    failed++;
+                responses += dBConnection.SaveAuditObservationCAU(ob);
             }
-            return "{\"success\":" + success + " , \"failed\":" + failed + "}";
+            return "{\"success\":\" true \" , \"Message\":" + responses + "}";
         }
 
 
@@ -275,6 +270,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 
         }
+      
         [HttpPost]
         public string drop_observation(int OBS_ID)
         {
@@ -337,9 +333,9 @@ namespace AIS.Controllers
             return resp;
         }
         [HttpPost]
-        public List<ClosingDraftTeamDetailsModel> closing_draft_report_status()
+        public List<ClosingDraftTeamDetailsModel> closing_draft_report_status(int ENG_ID = 0)
         {
-            return dBConnection.GetClosingDraftObservations();
+            return dBConnection.GetClosingDraftObservations(ENG_ID);
         }
         [HttpPost]
         public List<FadOldParaReportModel> get_fad_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
@@ -1861,7 +1857,12 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingCashCounter(ENGID, DVAULT, NOVAULT, TOTVAULT, DSR, NOSR, TOTSR, DIFF) + "\"}";
 
         }
+        [HttpPost]
+        public List<AnnexureExerciseStatus> Get_Annexure_Exercise_Status()
+        {
+            return dBConnection.GetAnnexureExerciseStatus();
 
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

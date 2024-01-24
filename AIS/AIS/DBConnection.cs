@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -1489,7 +1489,37 @@ namespace AIS.Controllers
 
         }
 
+        public List<AuditEntitiesModel> GetAuditEntitiesForOtherEntitySelection()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
 
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_get_auditee_submission_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditEntitiesModel entity = new AuditEntitiesModel();
+                    entity.AUTID = Convert.ToInt32(rdr["entity_id"]);                  
+                    entity.ENTITYTYPEDESC = rdr["name"].ToString();
+                 
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<AuditEntitiesModel> GetAuditEntityTypes()
         {
             sessionHandler = new SessionHandler();
@@ -3732,8 +3762,12 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     RiskModel risk = new RiskModel();
+                    if(rdr["R_ID"].ToString()!=null && rdr["R_ID"].ToString() != "")
                     risk.R_ID = Convert.ToInt32(rdr["R_ID"]);
+                    
+                        
                     risk.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    if(risk.R_ID>0)
                     riskList.Add(risk);
                 }
             }
@@ -3855,6 +3889,7 @@ namespace AIS.Controllers
                     tlist.ENG_NEXT_STATUS = rdr["ENG_NEXT_STATUS"].ToString();
                     tlist.ISACTIVE = rdr["ISACTIVE"].ToString();
                     tlist.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
+                    tlist.ISCLOSE = rdr["CLOSING"].ToString();
                     if (rdr["OPERATION_STARTDATE"].ToString() != null && rdr["OPERATION_STARTDATE"].ToString() != "")
                         tlist.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]);
                     if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
@@ -4477,13 +4512,13 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
-
      
-        public bool SaveAuditObservation(ObservationModel ob)
+        public string SaveAuditObservation(ObservationModel ob)
         {
             //105400
             int addedObsId = 0;
+            string returnResp = "";
+            bool proceed = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4508,52 +4543,62 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
                 cmd.Parameters.Add("NOINSTANCES", OracleDbType.Int32).Value = ob.NO_OF_INSTANCES;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = ob.HEADING;
+                cmd.Parameters.Add("OT_ENT_ID", OracleDbType.Int32).Value = ob.OTHER_ENTITY_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ANNEX_ID", OracleDbType.Int32).Value = ob.ANNEXURE_ID;
+            
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
-                        return false;
+                        returnResp=rdr["remarks"].ToString();
                     }
                     else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
                     {
                         addedObsId = Convert.ToInt32(rdr["ID"].ToString());
+                        returnResp = rdr["remarks"].ToString();
+                        proceed = true;
                     }
                 }
-                if (ob.RESPONSIBLE_PPNO != null)
+                if (proceed)
                 {
-                    if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
+                    if (ob.RESPONSIBLE_PPNO != null)
                     {
-                        foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
                         {
-                            cmd.CommandText = "pkg_ar.P_responibilityassigned";
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.Clear();
-                            cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
-                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                            cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
-                            cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
-                            cmd.ExecuteReader();
+                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                            {
+                                cmd.CommandText = "pkg_ar.P_responibilityassigned";
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.Clear();
+                                cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
+                                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                                cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
+                                cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
+                                cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
+                                cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
+                                cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
+                                cmd.ExecuteReader();
+                            }
                         }
-                    }
 
+                    }
                 }
+                
             }
             con.Dispose();
-            return true;
+            return returnResp;
         }
-        public bool SaveAuditObservationCAU(ObservationModel ob)
+        public string SaveAuditObservationCAU(ObservationModel ob)
         {
 
             int addedObsId = 0;
+            string returnResp = "";
+            bool proceed = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4585,39 +4630,45 @@ namespace AIS.Controllers
                 {
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
-                        return false;
+                        returnResp = rdr["remarks"].ToString();
                     }
                     else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
                     {
                         addedObsId = Convert.ToInt32(rdr["ID"].ToString());
+                        returnResp = rdr["remarks"].ToString();
+                        proceed = true;
 
                     }
                 }
-                if (ob.RESPONSIBLE_PPNO != null)
+                if (proceed)
                 {
-                    if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
+                    if (ob.RESPONSIBLE_PPNO != null)
                     {
-                        foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
                         {
-                            cmd.CommandText = "pkg_ar.P_responibilityassigned";
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.Clear();
-                            cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
-                            cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                            cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
-                            cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
-                            cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
-                            cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
-                            cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
-                            cmd.ExecuteReader();
+                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                            {
+                                cmd.CommandText = "pkg_ar.P_responibilityassigned";
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.Parameters.Clear();
+                                cmd.Parameters.Add("ID", OracleDbType.Int32).Value = addedObsId;
+                                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                                cmd.Parameters.Add("RES_PP", OracleDbType.Int32).Value = pp.PP_NO;
+                                cmd.Parameters.Add("LOANCASE", OracleDbType.Int32).Value = pp.LOAN_CASE;
+                                cmd.Parameters.Add("ACCNUMBER", OracleDbType.Int32).Value = pp.ACCOUNT_NUMBER;
+                                cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
+                                cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
+                                cmd.ExecuteReader();
+                            }
                         }
-                    }
 
+                    }
                 }
+              
 
             }
             con.Dispose();
-            return true;
+            return returnResp;
         }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
         {
@@ -5270,6 +5321,8 @@ namespace AIS.Controllers
                     chk.NATURE = rdr["NATURE"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     chk.HEADING = rdr["OBS_HEADING"].ToString();
+                    if(rdr["OBS_RISK_ID"].ToString() != null && rdr["OBS_RISK_ID"].ToString() !="")
+                    chk.OBS_RISK_ID =Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
                     list.Add(chk);
@@ -5524,8 +5577,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
-        //
         public List<ManageObservations> GetEntityReportParasForBranch(int ENG_ID = 0)
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -6145,7 +6196,7 @@ namespace AIS.Controllers
             }
             return resp;
         }
-        public string SubmitAuditObservationToAuditee(int OBS_ID)
+        public string SubmitAuditObservationToAuditee(int OBS_ID=0)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -6196,7 +6247,73 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("NEW_STATUS_ID", OracleDbType.Int32).Value = NEW_STATUS_ID;
-                cmd.Parameters.Add("DRAFT_PARA_NO", OracleDbType.Varchar2).Value = DRAFT_PARA_NO;
+                cmd.Parameters.Add("D_PARA_NO", OracleDbType.Varchar2).Value = DRAFT_PARA_NO;
+                cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Remarks;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+                }
+
+                if (NEW_STATUS_ID == 4 || NEW_STATUS_ID == 5)
+                {
+                    cmd.CommandText = "pkg_ar.AUDITOR_RESPONSE";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("AUDITOR_COMMENT", OracleDbType.Varchar2).Value = AUDITOR_COMMENT;
+                    cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
+                    cmd.ExecuteReader();
+
+                }
+                else if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
+                {
+                    cmd.CommandText = "pkg_ar.AUDITOR_REPLY";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                    cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("AUDITOR_COMMENT", OracleDbType.Varchar2).Value = AUDITOR_COMMENT;
+                    cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
+                    cmd.ExecuteReader();
+                }
+
+            }
+            con.Dispose();
+            return resp;
+        }
+
+        public string UpdateAuditObservationStatusByHead(int OBS_ID, int NEW_STATUS_ID, string FINAL_PARA_NO, string AUDITOR_COMMENT)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string Remarks = "";
+            if (NEW_STATUS_ID == 4)
+                Remarks = "Settled";
+            else if (NEW_STATUS_ID == 5)
+                Remarks = "Add to Draft Report";
+            else if (NEW_STATUS_ID == 8)
+                Remarks = "Add to Final Report";
+            else if (NEW_STATUS_ID == 9)
+                Remarks = "Para settle in discussion";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ar.P_UpdateAuditObservationStatusByHead";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("NEW_STATUS_ID", OracleDbType.Int32).Value = NEW_STATUS_ID;
+                cmd.Parameters.Add("F_PARA_NO", OracleDbType.Varchar2).Value = FINAL_PARA_NO;
                 cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = Remarks;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6271,7 +6388,8 @@ namespace AIS.Controllers
             return resp;
         }
 
-        public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations()
+
+        public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations(int ENG_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6285,6 +6403,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ar.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -14907,6 +15026,41 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<AnnexureExerciseStatus> GetAnnexureExerciseStatus()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AnnexureExerciseStatus> resp = new List<AnnexureExerciseStatus>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_FAD_ANNEXURE_REPORT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();              
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AnnexureExerciseStatus eng = new AnnexureExerciseStatus();
+                    eng.PPNO = rdr["ppno"].ToString();
+                    eng.NAME = rdr["name"].ToString();
+                    eng.AUDIT_ZONE = rdr["audit_zone"].ToString();
+                    eng.TOTAL = rdr["total"].ToString();
+                    eng.PENDING = rdr["Pending"].ToString();
+                    eng.COMPLETED = rdr["Completed"].ToString();
+                    resp.Add(eng);
                 }
             }
             con.Dispose();

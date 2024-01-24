@@ -192,12 +192,8 @@ label.heading{
             cache: false,
             success: function (data) {
                 $('#submitCAUobBtn').attr('disabled', false);
-                if (data.failed > 0)
-                    alert("<p>Memo Already Saved</p>");
-                else
-                    alert("<p>Memo Successfully Saved</p>");
-
-                onAlertCallback(reloadLocation);
+                alert(data.Message);
+                onAlertCallback(reloadLocation);        
             },
             dataType: "json",
         });
@@ -274,7 +270,7 @@ label.heading{
 
                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                     {
-                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                            <option id="@item.ID" value="@item.ID">@item.CODE</option>
                     }
 
                 }
@@ -293,7 +289,7 @@ label.heading{
                 {
                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                     {
-                        <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                            <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
                     }
                 }
             }
@@ -328,7 +324,7 @@ label.heading{
 
                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                     {
-                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                     }
 
                 }
@@ -376,7 +372,7 @@ label.heading{
                         {
                             foreach (var item in (dynamic)(ViewData["ZonesList"]))
                             {
-                                <option id="@item.ZONECODE" value="@item.ZONECODE">@item.ZONENAME</option>
+                                    <option id="@item.ZONECODE" value="@item.ZONECODE">@item.ZONENAME</option>
                             }
                         }
                     }

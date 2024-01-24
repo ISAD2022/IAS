@@ -35,6 +35,7 @@ namespace AIS.Models
         public int V_CAT_ID { get; set; }
         public int NO_OF_INSTANCES { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
+        public int? OTHER_ENTITY_ID { get; set; }
         public string TEAM_LEAD { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }
 

@@ -24,7 +24,6 @@
                 if(data.length>0)
                     $('#entityNameField').html(data[0].entitY_NAME);
                 $.each(data, function (i, v) {
-                    g_engId = v.enG_PLAN_ID;
                     $('#joiningAuditorDetailsTable tbody').append('<tr><td>' + v.teaM_MEM_PPNO + '</td><td>' + v.membeR_NAME + '</td><td>' + v.joininG_DATE.split('T')[0] + '</td><td>' + v.completioN_DATE.split('T')[0] + '</td></tr>');
                     $('#auditorWiseProgessTable tbody').append('<tr><td class="text-center">' + v.membeR_NAME + '</td><td class="text-center">' + v.isteamlead + '</td><td class="text-center">' + v.totaL_NO_OB + '</td><td class="text-center">' + v.dropped + '</td><td class="text-center">' + v.submitteD_TO_AUDITEE + '</td><td class="text-center">' + v.responded + '</td><td class="text-center">' + v.resolved + '</td><td class="text-center">' + v.addeD_TO_DRAFT + '</td></tr>');
                 });   

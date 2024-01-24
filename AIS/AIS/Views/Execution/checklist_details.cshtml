@@ -68,8 +68,7 @@
             },
             cache: false,
             success: function (data) {
-
-                alert("<p> " + data.success + "  Memo(s) Successfully Saved</p><p>" + data.failed + " Memo(s) Already Saved</p>");
+                alert(data.Message);
                 onAlertCallback(reloadLocation);
             },
             dataType: "json",

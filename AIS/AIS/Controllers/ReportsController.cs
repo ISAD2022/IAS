@@ -44,6 +44,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult annexure_exercise_status()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult FAD_New_Para_Performance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
