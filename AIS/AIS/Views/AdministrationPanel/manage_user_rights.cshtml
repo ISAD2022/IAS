@@ -24,18 +24,24 @@
             success: function (data) {
                 $('#newUsersGrid tbody').empty();
                 $.each(data, function (i, v) {
-
                     if (v.entitY_ID.trim().length > 0)
-                        $('#newUsersGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.ppno + '</td><td>' + v.emP_NAME + '</td><td>' + v.designatioN_CODE + '</td><td>' + v.designation + '</td><td>' + v.employeE_TYPE + '</td><td>' + v.postinG_TYPE + '</td><td>' + v.code + '</td><td>' + v.entitY_NAME + '</td><td>' + v.entitY_ID + '</td><td></td></tr>');
+                        $('#newUsersGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.ppno + '</td><td>' + v.emP_NAME + '</td><td>' + v.designatioN_CODE + '</td><td>' + v.designation + '</td><td>' + v.employeE_TYPE + '</td><td>' + v.postinG_TYPE + '</td><td>' + v.code + '</td><td>' + v.entitY_NAME + '</td><td>' + v.entitY_ID + '</td><td><a href="#" onclick="AddUserDetails(' + v.designatioN_CODE + ',\'' + v.designation + '\');" class="text-danger">Update User</a></td><td><input type="checkbox" ppno="' + v.ppno + '" class="selectBoxForUpdate" /></td></tr>');
                     else
-                        $('#newUsersGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.ppno + '</td><td>' + v.emP_NAME + '</td><td>' + v.designatioN_CODE + '</td><td>' + v.designation + '</td><td>' + v.employeE_TYPE + '</td><td>' + v.postinG_TYPE + '</td><td>' + v.code + '</td><td>' + v.entitY_NAME + '</td><td>' + v.entitY_ID + '</td><td><a href="#" onclick="addNewEntityInAIS();" class="text-danger">Add New Entity</a></td></tr>');
+                        $('#newUsersGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.ppno + '</td><td>' + v.emP_NAME + '</td><td>' + v.designatioN_CODE + '</td><td>' + v.designation + '</td><td>' + v.employeE_TYPE + '</td><td>' + v.postinG_TYPE + '</td><td>' + v.code + '</td><td>' + v.entitY_NAME + '</td><td>' + v.entitY_ID + '</td><td><a href="#" onclick="addNewEntityInAIS(\'' + v.code + '\',\'' + v.entitY_NAME + '\');" class="text-danger">Add New Entity</a></td><td><input type="checkbox" ppno="' + v.ppno + '" class="selectBoxForUpdate" /></td></tr>');
+                                               
                 });
+
+                if (data.length > 0) 
+                    $('#updateButtonAtEnd').removeClass('d-none');
+                else
+                    $('#updateButtonAtEnd').addClass('d-none');
               
             },
             dataType: "json",
         });
     }
-    function AddUserDetails() {
+
+    function viewUserDetails(){
         $.ajax({
             url: "/ApiCalls/admin_get_user_details",
             type: "POST",
@@ -52,10 +58,78 @@
             dataType: "json",
         });
     }
+    function AddUserDetails(code,name) {
 
-    function addNewEntityInAIS() {
-        window.location.href = "/AdministrationPanel/entity_addition";
+        $('#addUserModel').modal('show');
+        $('#modalDesignationCode').val(code);
+        $('#modalDesignationName').val(name);
+        $('#modalRoleName').empty();
+        $.ajax({
+            url: "/ApiCalls/admin_get_user_details",
+            type: "POST",
+            data: {
+                "DESIGNATION_CODE": code
+            },
+            cache: false,
+            success: function (data) {
+                $('#modalRoleName').append('<option value="0">--Select Group--</option>');
+                var selIndex = 0;
+                if (data.length == 1)
+                    selIndex = 0;
+                else
+                    selIndex = data.length;
+                $.each(data, function (i, v) {
+                    var selected = "";
+                    if (selIndex==i && selIndex==0)
+                        selected = "selected=\"selected\"";
+                    $('#modalRoleName').append('<option ' + selected + ' value=' + v.grouP_ID + '>' + v.grouP_NAME + '</option>');
+                });
+               
+            },
+            dataType: "json",
+        });
     }
+
+    function addNewEntityInAIS(code,name) {
+        window.location.href = "/AdministrationPanel/entity_addition?code="+code+"&name="+name;
+    }
+
+    function updateAllSelectedUsers(){
+        var ppNos = [];
+        $.each($('.selectBoxForUpdate'),function (i,v) {
+            if ($(v).is(':checked')) {
+                ppNos.push($(v).attr('ppno'));
+
+            }
+        });
+
+        $.ajax({
+            url: "/ApiCalls/update_new_user_admin_panel",
+            type: "POST",
+            data: {
+                'PPNOArr': ppNos
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+            },
+            dataType: "json",
+        });
+    }
+
+    function selectAllUserRows(){
+
+        if ($('#selectAllChkBox').is(':checked'))
+        {
+            $('.selectBoxForUpdate').prop('checked', true);
+
+        } else {
+            $('.selectBoxForUpdate').prop('checked', false);
+        }
+        
+
+    }
+
 </script>
 
 
@@ -84,7 +158,8 @@
                 <th class="col-md-2">Code</th>
                 <th class="col-md-2">Entity Name</th>
                 <th class="col-md-2">Entity Id</th>
-                <th class="col-md-2">Action</th>
+                <th class="col-md-2">Action</th>             
+                <th class="col-md-2"><input type="checkbox" id="selectAllChkBox" onclick="selectAllUserRows();" /></th>             
                 
 
             </tr>
@@ -92,6 +167,53 @@
         <tbody>
         </tbody>
     </table>
+    <div class="col-md-12 row">
+        <button id="updateButtonAtEnd" class="btn btn-primary d-none offset-md-9 col-md-3" onclick="updateAllSelectedUsers();">Update Selected Users</button>
+    </div>
+    
 </div>
 
 
+
+<div id="addUserModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Add Checklist Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-md-12">
+                  <div class="col-md-6">
+                      <h5>Current Situation</h5>
+                      <div class="form-group">
+                          <label>Designation Code</label>
+                          <input disabled="disabled" id="modalDesignationCode" type="text" class="form-control" />
+                      </div>
+                        <div class="form-group">
+                            <label>Designation Name</label>
+                            <input disabled="disabled" id="modalDesignationName" type="text" class="form-control" />
+                        </div>
+                  </div>
+                  <div class="col-md-6">
+
+                        <h5>New Situation</h5>
+                        <div class="form-group">
+                            <label>Role Name</label>
+                            <select id="modalRoleName" class="form-control">
+                             
+                            </select>
+                        </div>
+                  </div>                 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="addProcessDetail();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
+
+            </div>
+        </div>
+    </div>
+</div>

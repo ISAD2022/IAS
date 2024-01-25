@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
+using System.Security.Cryptography;
 
 
 namespace AIS.Controllers
@@ -1863,7 +1864,23 @@ namespace AIS.Controllers
 
         }
 
+        [HttpPost]
+        public string update_new_user_admin_panel(List<int> PPNOArr)
+        {
+            string resp = "";
+            foreach(int ppno in PPNOArr)
+            {
+                resp =dBConnection.UpdateNewUsersAdminPanel(ppno);
+            }
 
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+        }
+
+        [HttpPost]
+        public List<UserRoleDetailAdminPanelModel> admin_get_user_details(string DESIGNATION_CODE)
+        {
+            return dBConnection.GetUserDetailAdminPanel(DESIGNATION_CODE);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

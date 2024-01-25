@@ -7501,6 +7501,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -14331,7 +14333,6 @@ namespace AIS.Controllers
                     rd.PPNO = rdr["ppno"].ToString();
                     rd.EMP_NAME = rdr["e_name"].ToString();
                     rd.CODE = rdr["code"].ToString();
-
                     resp.Add(rd);
 
                 }
@@ -15088,6 +15089,67 @@ namespace AIS.Controllers
                     eng.PENDING = rdr["Pending"].ToString();
                     eng.COMPLETED = rdr["Completed"].ToString();
                     resp.Add(eng);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string UpdateNewUsersAdminPanel(int PPNO)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_NEW_USER";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();                
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = PPNO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<UserRoleDetailAdminPanelModel> GetUserDetailAdminPanel(string DESINATION_CODE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<UserRoleDetailAdminPanelModel> resp = new List<UserRoleDetailAdminPanelModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_user_role_type";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_CODE", OracleDbType.Int32).Value = DESINATION_CODE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRoleDetailAdminPanelModel m = new UserRoleDetailAdminPanelModel();
+                    m.GROUP_NAME = rdr["group_name"].ToString();
+                    m.GROUP_ID = rdr["group_id"].ToString();
+                    m.ROLE_ID = rdr["role_id"].ToString();
+                    resp.Add(m);
                 }
             }
             con.Dispose();
