@@ -5273,6 +5273,8 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if(rdr["MEMO_NO"].ToString()!=null && rdr["MEMO_NO"].ToString()!="")
                     chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
+
                     chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
@@ -5367,6 +5369,7 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
@@ -5459,7 +5462,11 @@ namespace AIS.Controllers
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
-                        chk.MEMO_NO =Convert.ToInt32(rdr["MEMO_NO"].ToString());
+                        chk.MEMO_NO =Convert.ToInt32(rdr["MEMO_NO"].ToString());                   
+
+                    if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
+                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
@@ -5506,11 +5513,15 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
+                    if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
+                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+
+                    if (rdr["FINAL_PARA"].ToString() != null && rdr["FINAL_PARA"].ToString() != "")
+                        chk.FINAL_PARA_NO = Convert.ToInt32(rdr["FINAL_PARA"]);
+
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
-
-
-
 
                     chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
                     chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
@@ -5556,6 +5567,11 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
+                    if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
+                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+                   
+
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
@@ -5585,7 +5601,7 @@ namespace AIS.Controllers
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ar.R_GetManagedDraftObservationsbranch";
+                cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -5599,6 +5615,12 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
+                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+
+                    if (rdr["FINAL_PARA"].ToString() != null && rdr["FINAL_PARA"].ToString() != "")
+                        chk.FINAL_PARA_NO = Convert.ToInt32(rdr["FINAL_PARA"]);
+
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();
@@ -5650,6 +5672,11 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+                    if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
+                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+                    if (rdr["FINAL_PARA"].ToString() != null && rdr["FINAL_PARA"].ToString() != "")
+                        chk.FINAL_PARA_NO = Convert.ToInt32(rdr["FINAL_PARA"]);
+
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["CHECK_LIST_DETAIL"].ToString();

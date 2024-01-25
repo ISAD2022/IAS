@@ -18,6 +18,8 @@ namespace AIS.Models
         public string VIOLATION { get; set; }
         public string NATURE { get; set; }
         public int MEMO_NO { get; set; }
+        public int DRAFT_PARA_NO { get; set; }
+        public int FINAL_PARA_NO { get; set; }
         public string OBS_TEXT { get; set; }
         public string OBS_REPLY { get; set; }
         public string HEADING { get; set; }

@@ -475,7 +475,6 @@ namespace AIS.Controllers
         [HttpPost]
         public CAUOMAssignmentModel CAU_get_Pre_Added_OM(string OM_NO, string INS_YEAR)
         {
-
             return dBConnection.CAUGetPreAddedOM(OM_NO, INS_YEAR);
 
         }

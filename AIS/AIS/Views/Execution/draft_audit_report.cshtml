@@ -78,9 +78,9 @@
                             isbranch = true;
                         }
                         if (v.obS_STATUS_ID == 5)
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ', 9,' + v.obS_RISK_ID + ');" class="text-hover text-danger mr-5px"><small>Settle</small></a></td><td><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',8,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ', 9,' + v.obS_RISK_ID + ');" class="text-hover text-danger mr-5px"><small>Settle</small></a></td><td><a href="#" onclick="updateObservationStatus(' + v.obS_ID + ',8,' + v.obS_RISK_ID + ');" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a></td></tr>');
                         else
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td><td class="text-center"><small>-</small></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td><td class="text-center"><small>-</small></td></tr>');
 
                     });
 
@@ -165,6 +165,14 @@
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
         $('#commentsBox').modal('show');
+        if (g_newStatusId == 9) {
+            $('#finalNoInCommentsBox').val(0);
+            $('#finalNoInCommentsBox').attr("disabled", true);
+
+        } else {
+            $('#finalNoInCommentsBox').val('');
+            $('#finalNoInCommentsBox').attr("disabled", false);
+        }
     }
 
 
@@ -222,6 +230,8 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
+                    <th class="col-md-auto">Draft Para No.</th>
+                    <th class="col-md-auto">Final Para No.</th>
                     <th class="col-md-auto deptfield">Violation</th>
                     <th class="col-md-auto deptfield">Nature</th>
                     <th class="col-md-auto">Observation</th>
