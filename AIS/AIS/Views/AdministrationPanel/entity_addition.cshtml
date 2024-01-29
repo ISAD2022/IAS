@@ -9,8 +9,18 @@
     var g_entIdToUpdate = 0;
     var g_entIdtoUpdateMapping = 0;
     var g_mappingExists = [];
+    var url_string = window.location;
+    var url = new URL(url_string);
+    var ent_code = url.searchParams.get("code");
+    var ent_name = url.searchParams.get("name");
 
     $(document).ready(function () {
+
+        $('#entityNameTextBar').val(ent_name);
+        $('#entityCodeTextBar').val(ent_code);
+
+        $('#AISentityNameTextBar').val(ent_name);
+        $('#AISentityCodeTextBar').val(ent_code);
 
     });
 

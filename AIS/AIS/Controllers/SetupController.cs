@@ -107,6 +107,32 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        //engagement_shifting
+
+        public IActionResult para_migration()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditEntitiesType"] = dBConnection.GetAuditEntityTypes();
+            ViewData["RelationshipList"] = dBConnection.Getrealtionshiptype();
+            ViewData["Audit_By"] = dBConnection.GetAuditBy();
+
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult manage_checklist_detail()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
