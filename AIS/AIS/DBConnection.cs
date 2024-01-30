@@ -5390,47 +5390,89 @@ namespace AIS.Controllers
         }
         public List<ManageObservations> GetManagedObservationTextForBranches(int OBS_ID = 0)
         {
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
+            
             List<ManageObservations> list = new List<ManageObservations>();
-            using (OracleCommand cmd = con.CreateCommand())
+            if (loggedInUser.UserEntityID == 112242 || loggedInUser.UserEntityID == 112248)
             {
-                cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranchesText";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (OracleCommand cmd = con.CreateCommand())
                 {
-                    ManageObservations chk = new ManageObservations();
+                    cmd.CommandText = "pkg_ar.P_GetManagedObservationstext";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
-                    //chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
-                    chk.PROCESS = rdr["PROCESS"].ToString();
-                    chk.PROCESS_ID = rdr["PROCESS_ID"].ToString();
-                    chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
-                    chk.SUB_PROCESS_ID = rdr["SUB_PROCESS_ID"].ToString();
-                    chk.HEADING = rdr["HEADINGS"].ToString();
-                    if(rdr["RISK_ID"].ToString()!=null && rdr["RISK_ID"].ToString() !="")
-                    chk.OBS_RISK_ID =Convert.ToInt32(rdr["RISK_ID"].ToString());
-                    if (rdr["ANNEXURE_ID"].ToString() != null && rdr["ANNEXURE_ID"].ToString() != "")
-                        chk.ANNEXURE_ID =Convert.ToInt32(rdr["ANNEXURE_ID"].ToString());
-                    chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
-                    chk.Checklist_Details_Id = rdr["Check_List_Detail_Id"].ToString();
-                    chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
-                    chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
-                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
-                    list.Add(chk);
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        ManageObservations chk = new ManageObservations();
+
+                        //chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                        chk.PROCESS = rdr["PROCESS"].ToString();
+                        chk.PROCESS_ID = rdr["PROCESS_ID"].ToString();
+                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                        chk.SUB_PROCESS_ID = rdr["SUB_PROCESS_ID"].ToString();
+                        chk.HEADING = rdr["HEADINGS"].ToString();
+                        if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
+                            chk.OBS_RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                        if (rdr["ANNEXURE_ID"].ToString() != null && rdr["ANNEXURE_ID"].ToString() != "")
+                            chk.ANNEXURE_ID = Convert.ToInt32(rdr["ANNEXURE_ID"].ToString());
+                        chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
+                        chk.Checklist_Details_Id = rdr["Check_List_Detail_Id"].ToString();
+                        chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                        chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
+                        chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+                        list.Add(chk);
+                    }
                 }
             }
+            else
+            {
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranchesText";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        ManageObservations chk = new ManageObservations();
+
+                        //chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                        chk.PROCESS = rdr["PROCESS"].ToString();
+                        chk.PROCESS_ID = rdr["PROCESS_ID"].ToString();
+                        chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
+                        chk.SUB_PROCESS_ID = rdr["SUB_PROCESS_ID"].ToString();
+                        chk.HEADING = rdr["HEADINGS"].ToString();
+                        if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
+                            chk.OBS_RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
+                        if (rdr["ANNEXURE_ID"].ToString() != null && rdr["ANNEXURE_ID"].ToString() != "")
+                            chk.ANNEXURE_ID = Convert.ToInt32(rdr["ANNEXURE_ID"].ToString());
+                        chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
+                        chk.Checklist_Details_Id = rdr["Check_List_Detail_Id"].ToString();
+                        chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
+                        chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
+                        chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+                        list.Add(chk);
+                    }
+                }
+            }
+          
+          
             con.Dispose();
             return list;
         }
@@ -8584,7 +8626,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<AuditeeEntitiesModel> GetObservationEntitiesForPreConcluding()
+        public List<AuditeeEntitiesModel> GetObservationEntitiesForPreConcluding(int pageId=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8598,6 +8640,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("userentityid", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("PAGE_ID", OracleDbType.Int32).Value = pageId;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 

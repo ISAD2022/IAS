@@ -81,6 +81,7 @@ namespace AIS
             var loggedInUser = sessionHandler.GetSessionUser();
             AvatarNameDisplayModel av = new AvatarNameDisplayModel();
             av.Menu_Id = 1020304050;
+            av.Id = 11223344;
             av.PPNO = loggedInUser.PPNumber;
             av.Name = loggedInUser.Name;
 

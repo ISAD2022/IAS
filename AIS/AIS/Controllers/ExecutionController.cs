@@ -820,8 +820,18 @@ namespace AIS.Controllers
         public IActionResult pre_concluding_audit()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
+            var pageData = dBConnection.GetTopMenuPages();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding();
+            int pageId = 0;
+            foreach( MenuPagesModel pm in pageData)
+            {
+                if(pm.Page_Name== "Pre Concluding Audit")
+                {
+                    pageId = pm.Id;
+                }
+
+            }
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding(pageId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

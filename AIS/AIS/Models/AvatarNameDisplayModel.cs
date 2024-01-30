@@ -6,6 +6,7 @@ namespace AIS.Models
     {        
         public string PPNO { get; set; }
         public int Menu_Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         
     }
