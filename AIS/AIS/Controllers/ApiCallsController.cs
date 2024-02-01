@@ -298,6 +298,13 @@ namespace AIS.Controllers
         {
             return dBConnection.GetManagedObservationText(ENG_ID, OBS_ID);
         }
+
+        [HttpPost]
+        public List<ManageObservations> get_details_for_manage_observations_text(int OBS_ID = 0, string INDICATOR="")
+        {
+            return dBConnection.GetManagedAllObservationsText(OBS_ID, INDICATOR);
+        }
+
         [HttpPost]
         public List<SubCheckListStatus> get_subchecklist_status(int ENG_ID = 0, int S_ID = 0)
         {
@@ -485,6 +492,15 @@ namespace AIS.Controllers
         {
             return dBConnection.CAUGetAssignedOMs();
         }
+
+        [HttpPost]
+        public List<ManageObservations> get_observations_for_selected_entity(int ENG_ID)
+        {
+            return dBConnection.GetManagedObservationsForSelectedEntity(ENG_ID);
+
+        }
+
+
         [HttpPost]
         public List<ManageObservations> get_observations(int ENG_ID, int OBS_ID = 0)
         {

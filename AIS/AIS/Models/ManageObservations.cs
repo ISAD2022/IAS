@@ -30,8 +30,11 @@ namespace AIS.Models
         public int OBS_STATUS_ID { get; set; }
         public string OBS_STATUS { get; set; }
         public string PERIOD { get; set; }
-        public int NO_OF_INSTANCES { get; set; }
+        public int? NO_OF_INSTANCES { get; set; }
+        public string AMOUNT { get; set; }
         public string PPNO_TEST { get; set; }
+        public string INDICATOR {  get; set; }
+        public string TYPE_INDICATOR {  get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
     }
 }

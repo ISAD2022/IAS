@@ -42,6 +42,28 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult obs_management(int engId = 0)
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["EntitiesList"] = dBConnection.GetEntitiesDropDownForManageObservations();
+            
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult Settled_Para()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -820,18 +842,8 @@ namespace AIS.Controllers
         public IActionResult pre_concluding_audit()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            var pageData = dBConnection.GetTopMenuPages();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            int pageId = 0;
-            foreach( MenuPagesModel pm in pageData)
-            {
-                if(pm.Page_Name== "Pre Concluding Audit")
-                {
-                    pageId = pm.Id;
-                }
-
-            }
-            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding(pageId);
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();        
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
