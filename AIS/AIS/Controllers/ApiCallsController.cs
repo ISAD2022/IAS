@@ -300,7 +300,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<ManageObservations> get_details_for_manage_observations_text(int OBS_ID = 0, string INDICATOR="")
+        public List<ObservationTextModel> get_details_for_manage_observations_text(int OBS_ID = 0, string INDICATOR="")
         {
             return dBConnection.GetManagedAllObservationsText(OBS_ID, INDICATOR);
         }
@@ -492,14 +492,19 @@ namespace AIS.Controllers
         {
             return dBConnection.CAUGetAssignedOMs();
         }
+        [HttpPost]
+        public List<ObservationSummaryModel> get_observations_summary_for_selected_entity(int ENG_ID)
+        {
+            return dBConnection.GetManagedObservationsSummaryForSelectedEntity(ENG_ID);
+
+        }
 
         [HttpPost]
-        public List<ManageObservations> get_observations_for_selected_entity(int ENG_ID)
+        public List<ObservationRevisedModel> get_observations_for_selected_entity(int ENG_ID)
         {
             return dBConnection.GetManagedObservationsForSelectedEntity(ENG_ID);
 
         }
-
 
         [HttpPost]
         public List<ManageObservations> get_observations(int ENG_ID, int OBS_ID = 0)

@@ -5236,14 +5236,57 @@ namespace AIS.Controllers
             con.Dispose();
             return response;
         }
-        public List<ManageObservations> GetManagedObservationsForSelectedEntity(int ENG_ID = 0)
+        public List<ObservationSummaryModel> GetManagedObservationsSummaryForSelectedEntity(int ENG_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();       
+            List<ObservationSummaryModel> list = new List<ObservationSummaryModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_get_details_for_manage_observations_summary";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationSummaryModel chk = new ObservationSummaryModel();
+    
+                    chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"]);                 
+                    chk.PPNO = rdr["PPNO"].ToString();
+                    chk.E_NAME = rdr["E_NAME"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    chk.TEAM = rdr["TEAM"].ToString();
+                    chk.CREATED = rdr["CREATED"].ToString();
+                    chk.SUBMIT_TO_AUDITEE = rdr["SUBMIT_TO_AUDITEE"].ToString();
+                    chk.RESPONDED_BY_AUDITEE = rdr["RESPONDED_BY_AUDITEE"].ToString();
+                    chk.DROP_RESOLVED_BY_TEAM_HEAD = rdr["Drop_Resolved_by_team_head"].ToString();
+                    chk.ADDED_TO_DRAFT = rdr["ADDED_TO_DRAFT"].ToString();
+                    chk.ADDED_TO_FINAL = rdr["ADDED_TO_FINAL"].ToString();
+                    chk.SETTELED = rdr["SETTELED"].ToString();
+                    chk.TOTAL = rdr["TOTAL"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<ObservationRevisedModel> GetManagedObservationsForSelectedEntity(int ENG_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ObservationRevisedModel> list = new List<ObservationRevisedModel>();       
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5258,21 +5301,21 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ManageObservations chk = new ManageObservations();
+                    ObservationRevisedModel chk = new ObservationRevisedModel();
 
                     chk.OBS_ID = Convert.ToInt32(rdr["OBD_ID"]);
                     if (rdr["MEMO"].ToString() != null && rdr["MEMO"].ToString() != "")
-                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO"]);
+                        chk.MEMO = Convert.ToInt32(rdr["MEMO"]);
                     if (rdr["DRAFT_PARA"].ToString() != null && rdr["DRAFT_PARA"].ToString() != "")
-                        chk.DRAFT_PARA_NO = Convert.ToInt32(rdr["DRAFT_PARA"]);
+                        chk.DRAFT_PARA = Convert.ToInt32(rdr["DRAFT_PARA"]);
                     if (rdr["FINAL_PARA"].ToString() != null && rdr["FINAL_PARA"].ToString() != "")
-                        chk.FINAL_PARA_NO = Convert.ToInt32(rdr["FINAL_PARA"]);
-                    chk.INDICATOR = rdr["IND"].ToString();
-                    chk.TYPE_INDICATOR = rdr["T_IND"].ToString();                
-                    chk.HEADING = rdr["Title"].ToString();
-                    chk.ENTITY_NAME = rdr["e_name"].ToString();                    
-                    chk.OBS_STATUS = rdr["status"].ToString();                    
-                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["status_id"].ToString());                    
+                        chk.FINAL_PARA = Convert.ToInt32(rdr["FINAL_PARA"]);
+                    chk.IND = rdr["IND"].ToString();
+                    chk.T_IND = rdr["T_IND"].ToString();                
+                    chk.TITLE = rdr["Title"].ToString();
+                    chk.E_NAME = rdr["e_name"].ToString();                    
+                    chk.STATUS = rdr["status"].ToString();                    
+                    chk.STATUS_ID = Convert.ToInt32(rdr["status_id"].ToString());                    
                     
                     list.Add(chk);
                 }
@@ -5377,14 +5420,14 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<ManageObservations> GetManagedAllObservationsText(int OBS_ID = 0, string INDICATOR="")
+        public List<ObservationTextModel> GetManagedAllObservationsText(int OBS_ID = 0, string INDICATOR="")
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();
+            List<ObservationTextModel> list = new List<ObservationTextModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5400,18 +5443,19 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ManageObservations chk = new ManageObservations();
-                    chk.VIOLATION = rdr["CP"].ToString();
-                    chk.PROCESS = rdr["CP"].ToString();
-                    chk.NATURE = rdr["PSN"].ToString();
-                    chk.SUB_PROCESS= rdr["PSN"].ToString();
-                    chk.Checklist_Details = rdr["CD"].ToString();
-                    chk.OBS_TEXT = rdr["TEXT"].ToString();
-                    chk.HEADING = rdr["TITLE"].ToString();
-                    chk.OBS_RISK = rdr["RISK"].ToString();                    
-                    chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["Instances"].ToString());                    
+                    ObservationTextModel chk = new ObservationTextModel();
+                    chk.CP = rdr["CP"].ToString();                    
+                    chk.CP_ID = rdr["CP_ID"].ToString();                    
+                    chk.PSN = rdr["PSN"].ToString();                    
+                    chk.PSN_ID = rdr["PSN_ID"].ToString();                    
+                    chk.CD = rdr["CD"].ToString();
+                    chk.CD_ID = rdr["CD_ID"].ToString();
+                    chk.TEXT = rdr["TEXT"].ToString();
+                    chk.TITLE = rdr["TITLE"].ToString();
+                    chk.RISK = rdr["RISK"].ToString();                    
+                    chk.INSTANCES =rdr["Instances"].ToString();                    
                     chk.AMOUNT = rdr["amount"].ToString();                    
-                    chk.OBS_RISK_ID =Convert.ToInt32(rdr["RISK_ID"].ToString());                    
+                    chk.RISK_ID =rdr["RISK_ID"].ToString();                    
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
                     list.Add(chk);

@@ -12,6 +12,7 @@
     var g_currentStatus = 0;
     $(document).ready(function () {
         $('#entitySelectField').select2();
+        $('#manageObsPanel_parent').hide();
         var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
@@ -25,11 +26,41 @@
         });
     });
     function reloadLocation() {
-        getEntityObservation();
+        
+        getEntityObservationSummary();
+    }
+    function getEntityObservationSummary(){
+        $('#manageObsPanelSummary tbody').empty();
+        $('#manageObsPanel tbody').empty();
+        if ($('#entitySelectField option:selected').val() != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_observations_summary_for_selected_entity",
+                type: "POST",
+                data: {
+                    'ENG_ID': $('#entitySelectField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                    
+                        $('#manageObsPanelSummary tbody').append(' <tr><td>' + v.e_NAME + '</td><td>' + v.status + '</td><td>' + v.team + '</td><td>' + v.created + '</td><td>' + v.submiT_TO_AUDITEE + '</td><td>' + v.respondeD_BY_AUDITEE + '</td><td>' + v.droP_RESOLVED_BY_TEAM_HEAD + '</td><td>' + v.addeD_TO_DRAFT + '</td><td>' + v.addeD_TO_FINAL + '</td><td>' + v.setteled + '</td><td>' + v.total + '</td></tr>');
+                    });
+                
+
+                },
+                dataType: "json",
+            });
+
+        }else{
+            $('#manageObsPanel_parent').hide();
+            $('#manageObsPanelSummary tbody').empty();
+            $('#manageObsPanel tbody').empty();
+        }
     }
 
     function getEntityObservation() {
         $('#manageObsPanel tbody').empty();
+       
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
                 url: "/ApiCalls/get_observations_for_selected_entity",
@@ -39,9 +70,17 @@
                 },
                 cache: false,
                 success: function (data) {
+                    if(data.length>0){
+                        $('#manageObsPanel_parent').show();
+                    }else{
+                        $('#manageObsPanel_parent').hide();
+                    }
                     $.each(data, function (i, v) {
-                        $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.drafT_PARA_NO + '</td><td>' + v.finaL_PARA_NO + '</td><td>' + v.entitY_NAME + '</td><td>' + v.heading + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ', \'' + v.typE_INDICATOR + '\')" href="#" class="text-hover">View Memo</a></td><td class="text-center"><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Edit Memo</a></td></tr>');
+
+                        if (v.ind=="")                     
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memo + '</td><td>' + v.drafT_PARA + '</td><td>' + v.finaL_PARA + '</td><td></td><td>' + v.title + '</td><td>' + v.status + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', \'' + v.t_INDICATOR + '\')" href="#" class="text-hover">View Memo</a></td><td class="text-center"><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Edit Memo</a></td></tr>');
+                        else
+                            $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memo + '</td><td>' + v.drafT_PARA + '</td><td>' + v.finaL_PARA + '</td><td>' + v.e_NAME + '</td><td>' + v.title + '</td><td>' + v.status + '</td><td class="text-center"><a onclick="ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', \'' + v.t_INDICATOR + '\')" href="#" class="text-hover">View Memo</a></td><td class="text-center"><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Edit Memo</a></td></tr>');
                     });
                     setTimeout(function () {
                         if (g_obsId != 0) {
@@ -59,9 +98,8 @@
     }
 
 
-    function ObservationViewerPanel(obs_id, status_id, risk_id,indicator) {
+    function ObservationViewerPanel(obs_id, status_id, indicator) {
         g_obsId = obs_id;
-        g_riskId = risk_id;
         g_currentStatus = status_id;
         $.ajax({
             url: "/ApiCalls/get_details_for_manage_observations_text",
@@ -73,17 +111,18 @@
             cache: false,
             success: function (data) {
                 console.log(data);
+                g_riskId = data[0].risk;
                 if (indicator=="D"){
                     $('#viewMemo_checklistdetail_parent').hide();
                     $('#listofRespPersons_parent').hide();
-                    $('#viewMemo_subprocess').html(data[0].nature);
-                    $('#viewMemo_violation').html(data[0].violation);
+                    $('#viewMemo_subprocess').html(data[0].cp);
+                    $('#viewMemo_violation').html(data[0].psn);
                 }else{
                     $('#viewMemo_checklistdetail_parent').show();
                     $('#listofRespPersons_parent').show();
-                    $('#viewMemo_process').html(data[0].process);
-                    $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
-                    $('#viewMemo_violation').html(data[0].checklist_Details); 
+                    $('#viewMemo_process').html(data[0].cp);
+                    $('#viewMemo_subprocess').html(data[0].psn);
+                    $('#viewMemo_violation').html(data[0].cd); 
                     $('#listofRespPersons tbody').empty();
                     if (data[0].responsiblE_PPs.length > 0) {
                         $.each(data[0].responsiblE_PPs, function (j, pp) {
@@ -94,9 +133,9 @@
                     }
                 }
                 $('#viewMemoModel').modal('show');
-                $('#viewMemo_memo').html(data[0].obS_TEXT);
-                $('#viewMemo_heading').html(data[0].heading);
-                $('#viewMemo_risk').val(data[0].obS_RISK_ID);
+                $('#viewMemo_memo').html(data[0].text);
+                $('#viewMemo_heading').html(data[0].title);
+                $('#viewMemo_risk').val(data[0].risK_ID);
                 $('#viewMemo_response').html(data[0].obS_REPLY);
               
                 
@@ -254,14 +293,14 @@
         </div>
         <div class="col-md-10">
             <input id="entityNameField" disabled="disabled" class="form-control ml-1 d-none" type="text" />
-            <select id="entitySelectField" onchange="getEntityObservation()" class="form-control form-select">
+            <select id="entitySelectField" onchange="getEntityObservationSummary();" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
                     if (ViewData["EntitiesList"] != null)
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                                <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
                         }
                     }
                 }
@@ -270,14 +309,33 @@
         </div>
     </div>
     <div class="row col-md-12 mt-3">
-        <div class="col-md-2">
-            <label><b>Audit Period:</b></label>
-        </div>
-        <div class="col-md-10 ">
-            <input id="auditPeriodNameField" disabled="disabled" class="form-control ml-1" type="text" />
-        </div>
+        <table id="manageObsPanelSummary" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+
+                    <th class="col-md-auto">Audit Team</th>
+                    <th class="col-md-auto">Progress Status</th>
+                    <th class="col-md-auto">Team Lead / Member</th>
+                    <th class="col-md-auto">Created</th>
+                    <th class="col-md-auto">Submit to Auditee</th>
+                    <th class="col-md-auto">Responded to Auditee</th>
+                    <th class="col-md-auto">Dropped/ Resolved by Team Lead</th>
+                    <th class="col-md-auto">Added to Draft</th>
+                    <th class="col-md-auto">Added to Final</th>
+                    <th class="col-md-auto">Settled</th>
+                    <th class="col-md-auto">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+
+        </table>
     </div>
-    <div class="row col-md-12 mt-3">
+
+    <div class="row col-md-12  mt-3">
+        <button onclick="getEntityObservation();" class="btn btn-danger offset-md-9 col-md-3">View Details</button>
+    </div>
+    <div id="manageObsPanel_parent" class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
@@ -363,7 +421,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -447,7 +505,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
