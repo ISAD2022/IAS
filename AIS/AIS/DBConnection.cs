@@ -754,16 +754,17 @@ namespace AIS.Controllers
             con.Dispose();
             return teamList;
         }
-        public AuditTeamModel AddAuditTeam(AuditTeamModel aTeam)
+        public string AddAuditTeam(AuditTeamModel aTeam)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
+            string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                string _sql = "pkg_pg.P_addauditteam";
+                cmd.CommandText = "pkg_pg.P_addauditteam";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("teamname", OracleDbType.Varchar2).Value = aTeam.NAME;
@@ -775,12 +776,16 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.CommandText = _sql;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
 
-            }
+                }
             con.Dispose();
-            return aTeam;
+            return resp;
         }
         public bool DeleteAuditTeam(string T_CODE)
         {
@@ -14221,6 +14226,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("a_id", OracleDbType.Varchar2).Value = PROCESS_ID;
                 cmd.Parameters.Add("r_id", OracleDbType.Varchar2).Value = loggedInUser.UserGroupID;
                 cmd.Parameters.Add("ent_id", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15368,6 +15374,47 @@ namespace AIS.Controllers
                     m.GROUP_NAME = rdr["group_name"].ToString();
                     m.GROUP_ID = rdr["group_id"].ToString();
                     m.ROLE_ID = rdr["role_id"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<ComplianceSummaryModel> GetComplianceSummary(string entityID="")
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceSummaryModel> resp = new List<ComplianceSummaryModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_db.P_compliance_summary";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("ENTITY", OracleDbType.Int32).Value = entityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceSummaryModel m = new ComplianceSummaryModel();
+                    m.ID = rdr["Region_id"].ToString();
+                    m.NAME = rdr["Region"].ToString();
+                    m.TOTAL_PARA = rdr["Total_para"].ToString();
+                    m.TOTAL_COMPLIANCE = rdr["Total_Comp"].ToString();
+                    m.AT_REPORTING = rdr["AT_reporting"].ToString();
+                    m.UNDER_CONSIDERATION = rdr["Under_consideration"].ToString();
+                    m.SETTLED = rdr["settled"].ToString();
+                    m.REJECTED = rdr["Rejected"].ToString();
+                 
                     resp.Add(m);
                 }
             }

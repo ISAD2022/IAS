@@ -531,8 +531,9 @@ namespace AIS.Controllers
             return dBConnection.AddAuditEngagementPlan(eng);
         }
         [HttpPost]
-        public List<AuditTeamModel> add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
+        public string add_audit_team(List<AddAuditTeamModel> AUDIT_TEAM)
         {
+            string resp = "";
             List<AuditTeamModel> aTeams = new List<AuditTeamModel>();
             int newTeamId = dBConnection.GetLatestTeamID();
             if (AUDIT_TEAM.Count > 0 && AUDIT_TEAM != null)
@@ -547,11 +548,11 @@ namespace AIS.Controllers
                     ateam.IS_TEAMLEAD = item.ISTEAMLEAD;
                     ateam.PLACE_OF_POSTING = item.PLACEOFPOSTING;
                     ateam.STATUS = "Y";
-                    dBConnection.AddAuditTeam(ateam);
-                    aTeams.Add(ateam);
+                    resp +=dBConnection.AddAuditTeam(ateam);
+                    
                 }
             }
-            return aTeams;
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
         }
         [HttpPost]
         public bool delete_audit_team(string T_CODE)
