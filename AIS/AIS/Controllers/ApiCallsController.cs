@@ -1907,6 +1907,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetComplianceSummary(ENTITY_ID);
         }
+        [HttpPost]
+        public List<EntitiesShiftingDetailsModel> get_entity_shifting_details(string ENTITY_ID = "")
+        {
+            return dBConnection.GetEntityShiftingDetails(ENTITY_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

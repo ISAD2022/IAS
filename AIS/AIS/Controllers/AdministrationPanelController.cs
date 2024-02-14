@@ -250,7 +250,29 @@ namespace AIS.Controllers
                     return View();
             }
         }
-    
+        public IActionResult entity_shifting()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditEntitiesType"] = dBConnection.GetAuditEntityTypes();
+            ViewData["RelationshipList"] = dBConnection.Getrealtionshiptype();
+            ViewData["Audit_By"] = dBConnection.GetAuditBy();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult groups()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

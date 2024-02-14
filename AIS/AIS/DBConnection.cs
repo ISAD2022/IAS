@@ -15423,6 +15423,50 @@ namespace AIS.Controllers
 
         }
 
+
+        public List<EntitiesShiftingDetailsModel> GetEntityShiftingDetails(string ENTITY_ID = "")
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<EntitiesShiftingDetailsModel> resp = new List<EntitiesShiftingDetailsModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_details_for_entity_shifting";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EntitiesShiftingDetailsModel m = new EntitiesShiftingDetailsModel();
+                    m.NAME = rdr["NAME"].ToString();
+                    m.E_SIZE = rdr["E_SIZE"].ToString();
+                    m.RISK = rdr["RISK"].ToString();
+                    m.ENG_ID = rdr["ENG_ID"].ToString();
+                    m.START_DATE = rdr["START_DATE"].ToString();
+                    m.END_DATE = rdr["END_DATE"].ToString();
+                    m.TOTAL_PARA = rdr["TOTAL_PARA"].ToString();
+                    m.LEGACY_PARA = rdr["LEGAGY_PARA"].ToString();
+                    m.LEGACY_OPEN = rdr["LEGACY_OPEN"].ToString();
+                    m.LEGACY_CLOSE = rdr["LEGACY_CLOSE"].ToString();
+                    m.AIS_PARA = rdr["AIS_PARA"].ToString();
+                    m.AIS_OPEN = rdr["AIS_OPEN"].ToString();
+                    m.AIS_CLOSE = rdr["AIS_CLOSE"].ToString();
+                    m.COMP_SUB = rdr["COMP_SUB"].ToString();  
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
         #endregion
     }
 }
