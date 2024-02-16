@@ -1912,6 +1912,31 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntityShiftingDetails(ENTITY_ID);
         }
+        [HttpPost]
+        public List<AuditEntitiesModel> get_entity_types()
+        {
+            return dBConnection.GetEntityTypes();
+        }
+        [HttpPost]
+        public string update_entity_types(AuditEntitiesModel ENTITY_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEntityTypes(ENTITY_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public List<AuditEntityRelationsModel> get_entity_relations()
+        {
+            return dBConnection.GetEntityRelations();
+        }
+
+        public List<EntitiesMappingModel> get_entities_mapping(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
+        {
+            return dBConnection.GetEntitiesMapping(ENT_ID, P_TYPE, C_TYPE, RELATION_TYPE, IND);
+        }
+
+        public List<EntitiesMappingModel> get_entities_mapping_reporting(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
+        {
+            return dBConnection.GetEntitiesMappingReporting(ENT_ID, P_TYPE, C_TYPE, RELATION_TYPE, IND);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
