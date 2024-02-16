@@ -1682,11 +1682,11 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
-                    if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
-                        entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    if (rdr["entitycode"].ToString() != "" && rdr["entitycode"].ToString() != null)
+                        entity.ENTITY_ID = Convert.ToInt32(rdr["entitycode"]);
 
-                    if (rdr["E_NAME"].ToString() != "" && rdr["E_NAME"].ToString() != null)
-                        entity.NAME = rdr["E_NAME"].ToString();
+                    if (rdr["ENTITY_TYPE"].ToString() != "" && rdr["ENTITY_TYPE"].ToString() != null)
+                        entity.NAME = rdr["ENTITY_TYPE"].ToString();
 
                     entitiesList.Add(entity);
                 }
@@ -15660,6 +15660,37 @@ namespace AIS.Controllers
                     m.P_TYPE_ID = rdr["P_TYPE_ID"].ToString();
                     m.C_TYPE_ID = rdr["C_TYPE_ID"].ToString();
                     m.RELATION_TYPE_ID = rdr["RELATION_TYPE_ID"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<EntitiesMappingModel> GetParentChildEntities(string P_TYPE_ID, string C_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_ENTITIES_MAPPING_REPORTING";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();                
+                cmd.Parameters.Add("P_TYPE", OracleDbType.Varchar2).Value = P_TYPE_ID;
+                cmd.Parameters.Add("C_TYPE", OracleDbType.Varchar2).Value = C_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EntitiesMappingModel m = new EntitiesMappingModel();
+                    m.PARENT_ID = rdr["PARENT_ID"].ToString();              
+                    m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
                 }
             }

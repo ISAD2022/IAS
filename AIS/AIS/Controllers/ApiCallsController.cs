@@ -1937,6 +1937,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntitiesMappingReporting(ENT_ID, P_TYPE, C_TYPE, RELATION_TYPE, IND);
         }
+
+        public List<EntitiesMappingModel> get_entities_of_parent_child(string P_TYPE_ID, string C_TYPE_ID)
+        {
+            return dBConnection.GetParentChildEntities(P_TYPE_ID, C_TYPE_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

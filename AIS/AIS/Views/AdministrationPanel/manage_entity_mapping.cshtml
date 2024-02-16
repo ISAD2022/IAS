@@ -122,6 +122,27 @@
 
         }
     }
+    function getEntityIDDropBox(){
+
+        $('#entityIDDropBox').empty():
+        $('#entityIDDropBox').append('<option value=0>--Select Entity--</option>'):
+        $.ajax({
+            url: "/ApiCalls/get_entities_of_parent_child",
+            type: "POST",
+            data: {
+                'P_TYPE_ID': $('#parentTypeID').val(),
+                'C_TYPE_ID': $('#childTypeID').val(),
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    $('#entityIDDropBox').append('<option value=' + v.parenT_ID + '>' + v.p_NAME + '</option>'):
+                });
+             
+            },
+            dataType: "json",
+        });
+    }
 </script>
 
 
@@ -140,7 +161,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                     {
-                        <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                     }
                 }
             }
@@ -155,8 +176,19 @@
         <h6>Parent Type ID</h6>
     </div>
     <div class="col-md-8">
-        <select class="form-control" id="parentTypeID">
+        <select onchange="getEntityIDDropBox();" class="form-control" id="parentTypeID">
             <option value="0">--Select Parent Type ID--</option>
+
+            @{
+                if (ViewData["EntitiesType"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["EntitiesType"]))
+                    {
+                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                    }
+                }
+            }
+
            
         </select>
     </div>
@@ -166,12 +198,37 @@
         <h6>Child Type ID</h6>
     </div>
     <div class="col-md-8">
-        <select class="form-control" id="childTypeID">
+        <select onchange="getEntityIDDropBox();" class="form-control" id="childTypeID">
             <option value="0">--Select Child Type ID--</option>
+
+            @{
+                if (ViewData["EntitiesType"] != null)
+                {
+                    foreach (var item in (dynamic)(ViewData["EntitiesType"]))
+                    {
+                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                    }
+                }
+            }
+
             
         </select>
     </div>
 </div>
+
+<div class="row col-md-12 mt-1">
+    <div class="col-md-4">
+        <h6>Entity ID</h6>
+    </div>
+    <div class="col-md-8">
+        <select class="form-control" id="entityIDDropBox">
+            <option value="0">--Select Entity ID--</option>
+           
+
+        </select>
+    </div>
+</div>
+
 <div class="row col-md-12 mt-1">
     <div class="col-md-4">
         <h6>Data Source</h6>
@@ -264,7 +321,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["AuditedByList"]))
                                 {
-                                    <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                                        <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
                                 }
                             }
                         }
