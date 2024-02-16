@@ -138,10 +138,18 @@
     function getFromEntityDetail() {
        
         if ($('#inputFromEntityId').val() == "") {
-            alert("Enter Entity ID to proceed");
+            alert("Enter Old Entity ID to proceed");
+            return;
+        }
+        if ($('#inputToEntityId').val() == "") {
+            alert("Enter New Entity ID to proceed");
             return;
         }
 
+      
+        getToEntityDetail();
+    }
+    function getToEntityDetail() {     
         $('#summaryPanel').removeClass('d-none');
         $.ajax({
             url: "/ApiCalls/get_entity_shifting_details",
@@ -167,7 +175,7 @@
                     $('#totAISOpenFrom').html(val.aiS_OPEN);
                     $('#totAISCloseFrom').html(val.aiS_CLOSE);
                     $('#compFrom').html(val.comP_SUB);
-                }else{
+                } else {
                     $('#entityNameFrom').html('');
                     $('#entitySizeFrom').html('');
                     $('#entityRiskFrom').html('');
@@ -188,16 +196,6 @@
             },
             dataType: "json",
         });
-    }
-    function getToEntityDetail() {
-     
-
-        if($('#inputToEntityId').val()==""){
-            alert("Enter Entity ID to proceed");
-            return;
-        }
-
-        $('#summaryPanel').removeClass('d-none');
         $.ajax({
             url: "/ApiCalls/get_entity_shifting_details",
             type: "POST",
@@ -459,7 +457,7 @@
 </div>
 
 <div class="col-md-12 row mt-3">
-    <h3 class="text-center" style="display:block;color:chocolate ;">OLD/FROM AIS Entities</h3>
+    <h3 class="text-center" style="display:block;color:chocolate ;">AIS Entities</h3>
 
 
     <div class="row col-md-12 mt-3">
@@ -512,333 +510,153 @@
         </div>
     </div>
 </div>
-<div class="row col-md-12 mt-3">
-
-    <div class="col-md-12 row mt-3">
-        <h3 class="text-center" style=" display:block;color:chocolate ;">NEW/TO AIS Entities</h3>
-
-    </div>
-
-    <div class="row col-md-12 mt-3">
-        <div class="col-md-6">
-            <div class="col-md-12 row">
-                <div class="col-md-3">
-                    <label>Entity Name</label>
-                </div>
-                <div class="col-md-7">
-                    <input class="form-control" id="AISentityNameTextBar" type="text" />
-                </div>
-                <div class="col-md-2">
-                    <button onclick="getAISEntityDetailsByName();" class="btn btn-danger w-100"> Find</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="col-md-12 row">
-                <div class="col-md-3">
-                    <label>Entity Code</label>
-                </div>
-                <div class="col-md-7">
-                    <input id="AISentityCodeTextBar" class="form-control" type="text" />
-                </div>
-                <div class="col-md-2">
-                    <button onclick="getAISEntityDetailsByCode();" class="btn btn-danger w-100"> Find</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-3 col-md-12">
-            <table id="ais_entity_find_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-                <thead style="background-color: rgb(181 229 117 / 93%) !important;">
-                    <tr>
-                        <th class="col-md-auto">Sr. No.</th>
-                        <th class="col-md-auto">Entity ID</th>
-                        <th class="col-md-auto">Entity Code</th>
-                        <th class="col-md-auto">Entity Name </th>
-                        <th class="col-md-auto">Entity Type ID</th>
-                        <th class="col-md-auto">Audit By</th>
-                        <th class="col-md-auto">Auditable</th>
-                        <th class="col-md-auto">Status</th>
-                        <th class="col-md-auto"></th>
-                        <th class="col-md-auto"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button onclick="clearAISEntitiesPanel();" class="btn btn-sm btn-success offset-md-11 col-md-1 mt-1"> Clear Table</button>
-        </div>
-
-
-    </div>
-</div>
 
 <div class="row col-md-12 mt-3">
-    <div class="col-md-6 row">
-        <div class="col-md-3">
+    <div class="col-md-12 row">
+        <div class="col-md-2">
             <label>Old/From AIS Entity ID</label>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
             <input class="form-control" id="inputFromEntityId" type="text" placeholder="Enter Old/From AIS Entity" />
         </div>
         <div class="col-md-4">
+            <input class="form-control" id="inputToEntityId" type="text" placeholder="Enter New/To AIS Entity" />
+        </div>
+        <div class="col-md-2">
             <button onclick="getFromEntityDetail();" class="btn btn-danger">Summary Details</button>
         </div>      
         
-    </div>
-
-    <div class="col-md-6 row">
-        <div class="col-md-3">
-            <label>New/To AIS Entity ID</label>
-        </div>
-        <div class="col-md-5">
-            <input class="form-control" id="inputToEntityId" type="text" placeholder="Enter New/To AIS Entity" />
-        </div>
-        <div class="col-md-4">
-            <button onclick="getToEntityDetail();" class="btn btn-danger">Summary Details</button>
-        </div>
-
-    </div>
+    </div>    
 
 </div>
+
 <div id="summaryPanel" class="row col-md-12 mt-3">
-    <div class="col-md-6">
-        <center><h4><u>Old/From AIS Entity Summary</u></h4></center>
-        <div class="row">
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Entity Name</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entityNameFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Size</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entitySizeFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Risk</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entityRiskFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement ID</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engIDFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement Start Date</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engStartFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement End Date</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engEndFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Total Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totParaFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para Open</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegOpenFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para Close</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegCloseFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para Open</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISOpenFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para Close</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISCloseFrom"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Compliance Submitted</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="compFrom"></label>
-                </div>
-            </div>
+    <div class="mt-3 col-md-12">
+        <table id="summary_table" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+                <tr>                    
+                    <th class="col-md-auto"></th>
+                    <th class="col-md-auto">Old/From AIS Entity</th>
+                    <th class="col-md-auto">New/To AIS Entity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Entity Name</td>
+                    <td id="entityNameFrom"> </td>
+                    <td id="entityNameTo"> </td>
+                    
+                </tr>
+                <tr>
+                    <td>Entity Size</td>
+                    <td id="entitySizeFrom"> </td>
+                    <td id="entitySizeTo"> </td>
 
-        </div>
-    </div>
-    <div class="col-md-6">
-        <center><h4><u>New/To AIS Entity Summary</u></h4></center>
-        <div class="row">
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Entity Name</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entityNameTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Size</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entitySizeTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Risk</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="entityRiskTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement ID</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engIDTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement Start Date</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engStartTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Engagement End Date</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="engEndTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Total Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totParaTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para Open</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegOpenTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Legacy Para Close</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totLegCloseTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para Open</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISOpenTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>AIS Para Close</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="totAISCloseTo"></label>
-                </div>
-            </div>
-            <div class="mt-1 col-md-12 row">
-                <div class="col-md-6">
-                    <label>Compliance Submitted</label>
-                </div>
-                <div class="col-md-6">
-                    <label id="compTo"></label>
-                </div>
-            </div>
-        </div>
-    </div>
+                </tr>
+                <tr>
+                    <td>Entity Risk</td>
+                    <td id="entityRiskFrom"> </td>
+                    <td id="entityRiskTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Engagement ID</td>
+                    <td id="engIDFrom"> </td>
+                    <td id="engIDTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Engagement Start Date</td>
+                    <td id="engStartFrom"> </td>
+                    <td id="engStartTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Engagement End Date</td>
+                    <td id="engEndFrom"> </td>
+                    <td id="engEndTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Total Para</td>
+                    <td id="totParaFrom"> </td>
+                    <td id="totParaTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Legacy Para</td>
+                    <td id="totLegFrom"> </td>
+                    <td id="totLegTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Legacy Para Open</td>
+                    <td id="totLegOpenFrom"> </td>
+                    <td id="totLegOpenTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>Legacy Para Close</td>
+                    <td id="totLegCloseFrom"> </td>
+                    <td id="totLegCloseTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>AIS Para</td>
+                    <td id="totAISFrom"> </td>
+                    <td id="totAISTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>AIS Para Open</td>
+                    <td id="totAISOpenFrom"> </td>
+                    <td id="totAISOpenTo"> </td>
+
+                </tr>
+                <tr>
+                    <td>AIS Para Close</td>
+                    <td id="totAISCloseFrom"> </td>
+                    <td id="totAISCloseTo"> </td>
+                    
+                </tr>
+                <tr>
+                    <td>Compliance Submitted</td>
+                    <td id="compFrom"> </td>
+                    <td id="compTo"> </td>
+
+                </tr>
+            </tbody>
+        </table>
+    
+    </div>  
 </div>
 
+<div class="row col-md-12 mt-3">
+    <center class="w-100 row col-md-12">
+        <div class="col-md-2">
+            <button class="btn btn-primary col-md-12">Update Plan</button>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-success col-md-12">Update Engagement</button>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-danger col-md-12">Move Legacy Para</button>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-warning col-md-12">Move AIS Para</button>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-info col-md-12">Move Compliance</button>
+        </div>
+
+    </center>
+    
+    
+    
+    
+
+</div>
 
 
 
@@ -1181,3 +999,4 @@
         </div>
     </div>
 </div>
+
