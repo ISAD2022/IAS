@@ -16,11 +16,24 @@
     });
 
     function getEntityMapping() {
+        var indicator = "";
+        if ($('#entityIDDropBox').val() != 0) {
+            indicator = "Y";
+        }
+        else if ($('#parentTypeID').val() != 0) {
+            indicator = "Y";
+        }
+        else if ($('#childTypeID').val() != 0) {
+            indicator = "Y";
+        }
         $.ajax({
             url: "/ApiCalls/get_entities_mapping",
             type: "POST",
             data: {
-
+                "ENT_ID": $('#entityIDDropBox').val(),
+                "P_TYPE": $('#parentTypeID').val(),
+                "C_TYPE": $('#childTypeID').val(),
+                "IND":indicator
             },
             cache: false,
             success: function (data) {
@@ -34,11 +47,24 @@
         });
     }
     function getEntityMappingReporting() {
+        var indicator = "";
+        if ($('#entityIDDropBox').val() != 0) {
+            indicator = "Y";
+        }
+        else if ($('#parentTypeID').val() != 0) {
+            indicator = "Y";
+        }
+        else if ($('#childTypeID').val() != 0) {
+            indicator = "Y";
+        }
         $.ajax({
             url: "/ApiCalls/get_entities_mapping_reporting",
             type: "POST",
             data: {
-
+                "ENT_ID": $('#entityIDDropBox').val(),
+                "P_TYPE": $('#parentTypeID').val(),
+                "C_TYPE": $('#childTypeID').val(),
+                "IND": indicator
             },
             cache: false,
             success: function (data) {
@@ -122,10 +148,9 @@
 
         }
     }
-    function getEntityIDDropBox(){
-
-        $('#entityIDDropBox').empty():
-        $('#entityIDDropBox').append('<option value=0>--Select Entity--</option>'):
+    function getEntityIDDropBox() {
+        $('#entityIDDropBox').empty();
+        $('#entityIDDropBox').append('<option value=0>--Select Entity--</option>');
         $.ajax({
             url: "/ApiCalls/get_entities_of_parent_child",
             type: "POST",
@@ -136,7 +161,7 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                    $('#entityIDDropBox').append('<option value=' + v.parenT_ID + '>' + v.p_NAME + '</option>'):
+                    $('#entityIDDropBox').append('<option value=' + v.parenT_ID + '>' + v.p_NAME + '</option>');
                 });
              
             },
@@ -161,7 +186,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                     {
-                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                     }
                 }
             }
@@ -184,7 +209,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesType"]))
                     {
-                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                                <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                     }
                 }
             }
@@ -206,7 +231,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesType"]))
                     {
-                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                                <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                     }
                 }
             }
@@ -321,7 +346,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["AuditedByList"]))
                                 {
-                                        <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
+                                            <option value="@item.AUTID">@item.ENTITYTYPEDESC</option>
                                 }
                             }
                         }

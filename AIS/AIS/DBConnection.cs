@@ -15600,7 +15600,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("P_TYPE", OracleDbType.Varchar2).Value = P_TYPE;
                 cmd.Parameters.Add("C_TYPE", OracleDbType.Varchar2).Value = C_TYPE;
                 cmd.Parameters.Add("REALTION_TYPE", OracleDbType.Int32).Value = RELATION_TYPE;
-                cmd.Parameters.Add("ind", OracleDbType.Int32).Value = IND;
+                cmd.Parameters.Add("ind", OracleDbType.Varchar2).Value = IND;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15643,7 +15643,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("P_TYPE", OracleDbType.Varchar2).Value = P_TYPE;
                 cmd.Parameters.Add("C_TYPE", OracleDbType.Varchar2).Value = C_TYPE;
                 cmd.Parameters.Add("REALTION_TYPE", OracleDbType.Int32).Value = RELATION_TYPE;
-                cmd.Parameters.Add("ind", OracleDbType.Int32).Value = IND;
+                cmd.Parameters.Add("ind", OracleDbType.Varchar2).Value = IND;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15679,7 +15679,7 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_GET_ENTITIES_MAPPING_REPORTING";
+                cmd.CommandText = "pkg_ad.P_get_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();                
                 cmd.Parameters.Add("P_TYPE", OracleDbType.Varchar2).Value = P_TYPE_ID;
