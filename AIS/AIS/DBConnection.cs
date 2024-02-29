@@ -54,8 +54,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
+                ocsb.Password = "ztblaisdev";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -15693,6 +15693,68 @@ namespace AIS.Controllers
                 {
                     EntitiesMappingModel m = new EntitiesMappingModel();
                     m.PARENT_ID = rdr["PARENT_ID"].ToString();              
+                    m.P_NAME = rdr["P_NAME"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<GroupWiseUsersCountModel> GetGroupWiseUsersCount()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GroupWiseUsersCountModel> resp = new List<GroupWiseUsersCountModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_GROUP_WISE_USERS_COUNT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GroupWiseUsersCountModel m = new GroupWiseUsersCountModel();
+                    m.G_ID = rdr["G_ID"].ToString();
+                    m.G_NAME = rdr["G_NAME"].ToString();
+                    m.U_COUNT = rdr["U_COUNT"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<GroupWisePagesModel> GetGroupWisePages()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GroupWisePagesModel> resp = new List<GroupWisePagesModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_GROUP_WISE_PAGES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GroupWisePagesModel m = new GroupWisePagesModel();
+                    m.G_ID = rdr["G_ID"].ToString();
+                    m.G_NAME = rdr["G_NAME"].ToString();
                     m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
                 }

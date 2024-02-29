@@ -605,7 +605,7 @@ namespace AIS.Controllers
         public IActionResult Audit_Plan_Engagement()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["AuditDepartmentList"] = dBConnection.GetAuditDepartmentsZones();
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
             if (!sessionHandler.IsUserLoggedIn())
@@ -1198,6 +1198,47 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult group_wise_users_count()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+        public IActionResult group_wise_pages()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

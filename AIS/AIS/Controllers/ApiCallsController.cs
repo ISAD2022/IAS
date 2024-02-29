@@ -1927,20 +1927,30 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntityRelations();
         }
-
+        [HttpPost]
         public List<EntitiesMappingModel> get_entities_mapping(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
         {
             return dBConnection.GetEntitiesMapping(ENT_ID, P_TYPE, C_TYPE, RELATION_TYPE, IND);
         }
-
+        [HttpPost]
         public List<EntitiesMappingModel> get_entities_mapping_reporting(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
         {
             return dBConnection.GetEntitiesMappingReporting(ENT_ID, P_TYPE, C_TYPE, RELATION_TYPE, IND);
         }
-
+        [HttpPost]
         public List<EntitiesMappingModel> get_entities_of_parent_child(string P_TYPE_ID, string C_TYPE_ID)
         {
             return dBConnection.GetParentChildEntities(P_TYPE_ID, C_TYPE_ID);
+        }
+        [HttpPost]
+        public List<GroupWiseUsersCountModel> get_group_wise_users_count()
+        {
+            return dBConnection.GetGroupWiseUsersCount();
+        }
+        [HttpPost]
+        public List<GroupWisePagesModel> get_group_wise_pages()
+        {
+            return dBConnection.GetGroupWisePages();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
