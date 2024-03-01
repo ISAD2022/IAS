@@ -388,19 +388,7 @@ namespace AIS.Controllers
             }
         }
         [HttpPost]
-        public DivisionModel division_add(DivisionModel div)
-        {
-            if (div.ISACTIVE == "Active")
-                div.ISACTIVE = "Y";
-            else if (div.ISACTIVE == "InActive")
-                div.ISACTIVE = "N";
-           
-            if (div.DIVISIONID == 0)
-                div=dBConnection.AddDivision(div);
-            else
-                div=dBConnection.UpdateDivision(div);
-            return div;
-        }
+      
         public IActionResult departments()
         {
 
@@ -423,19 +411,7 @@ namespace AIS.Controllers
             }
         }
         [HttpPost]
-        public DepartmentModel department_add(DepartmentModel dept)
-        {
-            if (dept.STATUS == "Active")
-                dept.STATUS = "A";
-            else if (dept.STATUS == "InActive")
-                dept.STATUS = "I";
-
-            if (dept.ID == 0)
-                dept = dBConnection.AddDepartment(dept);
-            else
-                dept = dBConnection.UpdateDepartment(dept);
-            return dept;
-        }
+      
         public IActionResult audit_zones()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

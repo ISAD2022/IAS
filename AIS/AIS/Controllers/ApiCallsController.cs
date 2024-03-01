@@ -59,36 +59,7 @@ namespace AIS.Controllers
             return br;
         }
 
-        [HttpPost]
-        public DivisionModel division_add(DivisionModel div)
-        {
-            if (div.ISACTIVE == "Active")
-                div.ISACTIVE = "Y";
-            else if (div.ISACTIVE == "InActive")
-                div.ISACTIVE = "N";
-
-            if (div.DIVISIONID == 0)
-                div = dBConnection.AddDivision(div);
-            else
-                div = dBConnection.UpdateDivision(div);
-            return div;
-        }
-
-        [HttpPost]
-        public DepartmentModel department_add(DepartmentModel dept)
-        {
-            if (dept.STATUS == "Active")
-                dept.STATUS = "A";
-            else if (dept.STATUS == "InActive")
-                dept.STATUS = "I";
-
-            if (dept.ID == 0)
-                dept = dBConnection.AddDepartment(dept);
-            else
-                dept = dBConnection.UpdateDepartment(dept);
-            return dept;
-        }
-
+       
         [HttpPost]
         public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
         {
@@ -1941,6 +1912,11 @@ namespace AIS.Controllers
         public List<EntitiesMappingModel> get_entities_of_parent_child(string P_TYPE_ID, string C_TYPE_ID)
         {
             return dBConnection.GetParentChildEntities(P_TYPE_ID, C_TYPE_ID);
+        }
+        [HttpPost]
+        public string submit_entity_shifting_from_admin_panel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF, DateTime CIR_DATE,string CIR)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitEntityShiftingFromAdminPanel(FROM_ENT_ID, TO_ENT_ID, CIR_REF, CIR_DATE, CIR) + "\"}";
         }
         [HttpPost]
         public List<GroupWiseUsersCountModel> get_group_wise_users_count()

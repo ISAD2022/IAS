@@ -13,6 +13,7 @@
     var url = new URL(url_string);
     var ent_code = url.searchParams.get("code");
     var ent_name = url.searchParams.get("name");
+    var g_uploadedAttachment="";
 
     $(document).ready(function () {
         $('#summaryPanel').addClass('d-none');
@@ -20,6 +21,26 @@
         $('#entityCodeTextBar').val(ent_code);
         $('#AISentityNameTextBar').val(ent_name);
         $('#AISentityCodeTextBar').val(ent_code);
+
+
+         $('#circularRefField').on('change', function (e) {
+        var file = e.target.files[0];
+
+        if (file) {
+          // Use FileReader to read the file and get base64 encoding
+          var reader = new FileReader();
+
+          reader.onload = function (readerEvent) {
+            g_uploadedAttachment = readerEvent.target.result;
+         
+          };
+
+          // Read the file as Data URL (base64)
+          reader.readAsDataURL(file);
+        }
+      });
+
+
     });
 
 
@@ -447,8 +468,31 @@
 
     }
 
-    function proceedToEntityShifting(){
+    function proceedToEntityShifting() {
         $('#proceedToEntityShift').modal('show');
+    }
+
+    function saveInsertAISEntityShifting() {
+
+        $.ajax({
+            url: "/ApiCalls/submit_entity_shifting_from_admin_panel",
+            type: "POST",
+            data: {
+                'FROM_ENT_ID': $('#inputFromEntityId').val(),
+                'TO_ENT_ID': $('#inputToEntityId').val(),
+                'CIR_REF': $('#circularRefNoField').val() ,
+                'CIR_DATE': $('#circularRefDateField').val(),
+                'CIR': g_uploadedAttachment
+
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+
+            },
+            dataType: "json",
+        });
+
     }
 
 
@@ -1010,19 +1054,19 @@
             </div>
             <div class="modal-body">
                 <form>
-                  <div class="form-group">
-                      <label>Circular Reference No</label>
-                      <input type="text" class="form-control" />
-                  </div>
+                    <div class="form-group">
+                        <label>Circular Reference No</label>
+                        <input id="circularRefNoField" type="text" class="form-control" />
+                    </div>
 
                     <div class="form-group">
                         <label>Circular Reference Date</label>
-                        <input type="date" class="form-control" />
+                        <input id="circularRefDateField" type="date" class="form-control" />
                     </div>
 
                     <div class="form-group">
                         <label>Circular Reference Attachment</label>
-                        <input type="file" class="form-control" />
+                        <input id="circularRefField" type="file" class="form-control" />
                     </div>
 
 
@@ -1030,8 +1074,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="saveInsertAISEntityMapping();" type="button" data-dismiss="modal" class="btn btn-danger">Add Mapping</button>
-                <button onclick="saveUpdateAISEntityMapping();" type="button" data-dismiss="modal" class="btn btn-success">Update Mapping</button>
+                <button onclick="saveInsertAISEntityShifting();" type="button" data-dismiss="modal" class="btn btn-danger">Submit</button>
 
             </div>
         </div>

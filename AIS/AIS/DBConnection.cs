@@ -2362,23 +2362,7 @@ namespace AIS.Controllers
             con.Dispose();
             return divList;
         }
-        public DivisionModel AddDivision(DivisionModel div)
-        {
-
-            var con = this.DatabaseConnection(); con.Open();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "INSERT INTO T_DIVISION d (d.ID,d.CODE, d.NAME, d.DESCRIPTION, d.STATUS) VALUES ( '" + div.CODE + "','" + div.CODE + "','" + div.NAME + "','" + div.DESCRIPTION + "','" + div.ISACTIVE + "')";
-                OracleDataReader rdr = cmd.ExecuteReader();
-
-            }
-            con.Dispose();
-            return div;
-        }
-        public DivisionModel UpdateDivision(DivisionModel div)
-        {
-            return div;
-        }
+       
         public List<DepartmentModel> GetDepartments(int div_code = 0, bool sessionCheck = true)
         {
             sessionHandler = new SessionHandler();
@@ -2510,22 +2494,7 @@ namespace AIS.Controllers
             con.Dispose();
             return subentity;
         }
-        public DepartmentModel AddDepartment(DepartmentModel dept)
-        {
-            return dept;
-        }
-        public DepartmentModel UpdateDepartment(DepartmentModel dept)
-        {
-
-            var con = this.DatabaseConnection(); con.Open();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "UPDATE t_auditee_entities_maping  mp SET mp.AUDITEDBY='" + dept.AUDITED_BY_DEPID + "' WHERE mp.CODE=" + dept.CODE;
-                OracleDataReader rdr = cmd.ExecuteReader();
-            }
-            con.Dispose();
-            return dept;
-        }
+        
         public List<RiskGroupModel> GetRiskGroup()
         {
             var con = this.DatabaseConnection(); con.Open();
@@ -15695,6 +15664,41 @@ namespace AIS.Controllers
                     m.PARENT_ID = rdr["PARENT_ID"].ToString();              
                     m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string SubmitEntityShiftingFromAdminPanel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF_NO, DateTime CIR_DATE, string CIR)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Add_Entity_shifting";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Old_Ent_id", OracleDbType.Varchar2).Value = FROM_ENT_ID;
+                cmd.Parameters.Add("new_ent_id", OracleDbType.Varchar2).Value = TO_ENT_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("CIR_NO", OracleDbType.Varchar2).Value = CIR_REF_NO;
+                cmd.Parameters.Add("CIR_ATTACH", OracleDbType.Clob).Value = CIR;
+                cmd.Parameters.Add("CIR_DATE", OracleDbType.Date).Value = CIR_DATE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                 resp= rdr["remarks"].ToString();                 
                 }
             }
             con.Dispose();
