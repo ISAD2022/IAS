@@ -24,26 +24,23 @@
         });
     });
 
-    function viewParaDetails(ref_p, memo_no, paraId, paraCat, obsId, audBy) {
-        g_auObsId = obsId;
-        g_paraId = ref_p;
-        g_paraCat = paraCat;
-        g_auditedBy = audBy;
+    function viewParaDetails(newParaId=0, oldParaId=0, indicator='', memo_no='') {
+
+        //get_old_para_compliance_text
+       
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text",
+            url: "/ApiCalls/get_para_compliance_text",
             type: "POST",
             data: {
-                'REF_P': ref_p,
-                'OBS_ID': g_auObsId,
-                'PARA_CATEGORY': paraCat
+                'NEW_PARA_ID': newParaId,
+                'OLD_PARA_ID': oldParaId,
+                'INDICATOR': indicator
             },
             cache: false,
             success: function (data) {
                 $('#viewMemoModel').modal('show');
-                $('#viewMemo_memoNumber').val(memo_no);
-                $('#viewMemo_process').val(data.checklist);
-                $('#viewMemo_subprocess').val(data.subchecklist);
-                $('#viewMemo_checklist_detail').val(data.checklistdetail);
+                $('#viewMemo_memoNumber').val(memo_no);             
+                $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
                 $('#viewMemo_memo').html(data.parA_TEXT);
                 $('#viewMemo_compliance').val('').trigger('change');
                 $('#listofRespPersons tbody').empty();
@@ -63,7 +60,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance",
+            url: "/ApiCalls/get_paras_for_compliance_by_auditee",
             type: "POST",
             data: {
 
@@ -73,7 +70,7 @@
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.amount + '</p></td><td><p  class="fw-normal mb-1">' + child.voL_I_II + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\',\'' + child.parA_CATEGORY + '\',\'' + child.aU_OBS_ID + '\' ,\'' + child.auditeD_BY + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
             },
@@ -217,9 +214,7 @@
                 <tr>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Amount</th>
-                    <th class="col-md-auto">VOL I II</th>
+                    <th class="col-md-auto">Title / Gist</th>                   
                     <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
@@ -249,20 +244,9 @@
                         <input id="viewMemo_memoNumber" class="form-control" disabled="disabled" />
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_memo">Process</label>
-                        <input id="viewMemo_process" class="form-control" disabled="disabled" />
+                        <label for="viewMemo_memoNumber">Gist of Para</label>
+                        <input id="viewMemo_paraGist" class="form-control" disabled="disabled" />
                     </div>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Sub Process</label>
-                        <input id="viewMemo_subprocess" class="form-control" disabled="disabled" />
-
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Checklist Detail</label>
-                        <input id="viewMemo_checklist_detail" class="form-control" disabled="disabled" />
-
-                    </div>
-
                     <div class="form-group">
                         <label for="viewMemo_memo">Para</label>
                         <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>

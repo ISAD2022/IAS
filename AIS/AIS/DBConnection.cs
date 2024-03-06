@@ -33,7 +33,6 @@ namespace AIS.Controllers
         [Obsolete]
         private readonly IHostingEnvironment _env;
 
-
         [Obsolete]
         public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env)
         {
@@ -68,7 +67,6 @@ namespace AIS.Controllers
             }
             catch (Exception e) { return null; }
         }
-
         #endregion
 
         #region Session Handling
@@ -4863,18 +4861,19 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<ObservationResponsiblePPNOModel> GetOldParasObservationResponsiblePPNOs(string PARA_REF, string PARA_CATEGORY)
+        public List<ObservationResponsiblePPNOModel> GetOldParasObservationResponsiblePPNOs(int OLD_PARA_ID=0, int NEW_PARA_ID=0, string INDICATOR="")
         {
             var con = this.DatabaseConnection(); con.Open();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.p_get_para_responsibles";
+                cmd.CommandText = "pkg_ae.p_GetParaComplianceResponsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("paraRef", OracleDbType.Varchar2).Value = PARA_REF;
-                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("Old_id", OracleDbType.Int32).Value = OLD_PARA_ID;
+                cmd.Parameters.Add("new_id", OracleDbType.Int32).Value = NEW_PARA_ID;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -8654,7 +8653,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public List<AuditeeEntitiesModel> GetEntitiesDropDownForManageObservations()
         {
             sessionHandler = new SessionHandler();
@@ -8936,8 +8934,6 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
-
-
         public List<UserRelationshipModel> Getparentrepoffice(int r_id = 0)
         {
 
@@ -9059,8 +9055,6 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
-
-
         public List<AuditeeEntitiesModel> GetAuditDepartmentsZones()
         {
             sessionHandler = new SessionHandler();
@@ -10054,7 +10048,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<GetOldParasBranchComplianceModel> GetOldParasBranchCompliance()
+        public List<GetOldParasBranchComplianceModel> GetParasForComplianceByAuditee()
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10064,7 +10058,7 @@ namespace AIS.Controllers
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFAD";
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByAuditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("EntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -10077,15 +10071,14 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
-                    chk.ID = rdr["id"].ToString();
-                    chk.REF_P = rdr["ref_p"].ToString();
-                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
-                    chk.AMOUNT = rdr["amount"].ToString();
-                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
-                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
-                    chk.AUDITED_BY = rdr["auditedby"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_paraid"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_paraid"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString()); 
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();                   
+                    chk.INDICATOR = rdr["IND"].ToString();
+                   
+                    chk.AUDITED_BY = rdr["auditby_id"].ToString();
                     list.Add(chk);
+
                 }
             }
             con.Dispose();
@@ -10113,16 +10106,10 @@ namespace AIS.Controllers
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
-                    chk.PARA_NO = rdr["para_no"].ToString();
-                    chk.ID = rdr["id"].ToString();
-                    chk.REF_P = rdr["ref_p"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();                   
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
-                    chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                    chk.AMOUNT = rdr["amount"].ToString();
-                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
-                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    chk.VOL_I_II = rdr["vol_i_ii"].ToString();
-                    chk.STATUS_ID = rdr["C_STATUS"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_paraid"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_paraid"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
                     chk.AUDITED_BY = rdr["auditedby"].ToString();
                     list.Add(chk);
                 }
@@ -10130,7 +10117,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceText(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
+        public GetOldParasBranchComplianceTextModel GetParaComplianceText( int OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10140,23 +10127,21 @@ namespace AIS.Controllers
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFADtext";
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByAuditee_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
-                cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = PARA_CATEGORY;
+                cmd.Parameters.Add("Old_id", OracleDbType.Int32).Value = OLD_PARA_ID;
+                cmd.Parameters.Add("new_id", OracleDbType.Int32).Value = NEW_PARA_ID;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
-                    chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                   
+                    chk.PARA_TEXT = rdr["text"].ToString();
+                    chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
+                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(OLD_PARA_ID,NEW_PARA_ID,INDICATOR);
                 }
             }
             con.Dispose();
@@ -10211,17 +10196,10 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
+                    chk.GIST_OF_PARA = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
-                    chk.ZONE_REPLY = rdr["Zone_reply_old"].ToString();
-                    chk.ZONE_REPLY_NEW = rdr["Zone_reply_new"].ToString();
-                    chk.IMP_REPLY = rdr["imp_remarks"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10249,14 +10227,10 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.REPLY = rdr["REPLY"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    chk.GIST_OF_PARA = rdr["para_text"].ToString();
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10284,16 +10258,10 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.REPLY = rdr["REPLY"].ToString();
-                    chk.ZONE_REPLY = rdr["REVIEWER_REMARKS"].ToString();
-                    chk.IMP_REPLY = rdr["IMP_REMARKS"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    chk.GIST_OF_PARA = rdr["para_text"].ToString();
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10323,15 +10291,10 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
-                    chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
-                    chk.ZONE_REPLY = rdr["Reviewer_remarks"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                   chk.PARA_TEXT = rdr["para_text"].ToString();
+                    chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10360,17 +10323,11 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
+                    
                     chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
-                    chk.ZONE_REPLY = rdr["Reviewer_remarks"].ToString();
-                    chk.IMP_REPLY = rdr["AZ_remarks"].ToString();
-                    chk.HEAD_REPLY = rdr["remarks"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10400,17 +10357,11 @@ namespace AIS.Controllers
 
                 while (rdr.Read())
                 {
-                    chk.CHECKLIST = rdr["checklist"].ToString();
-                    chk.SUBCHECKLIST = rdr["subchecklist"].ToString();
-                    chk.CHECKLISTDETAIL = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
-                    chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.BRANCH_REPLY = rdr["Branch_reply"].ToString();
-                    chk.ZONE_REPLY = rdr["Reviewer_remarks"].ToString();
-                    chk.IMP_REPLY = rdr["Imp_remarks"].ToString();
-                    chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
-                    chk.UPDATED_RESPONSIBLE_PPs_BY_IMP = this.GetOldParasObservationResponsiblePPNOsUpdatedByImp(PID, chk.PARA_CATEGORY, 0);
-                    chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
+                    //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
+                    //chk.UPDATED_RESPONSIBLE_PPs_BY_IMP = this.GetOldParasObservationResponsiblePPNOsUpdatedByImp(PID, chk.PARA_CATEGORY, 0);
+                    //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
                 }
             }
             con.Dispose();
@@ -10981,7 +10932,6 @@ namespace AIS.Controllers
             return resp;
         }
 
-
         public string GetAllParaText(string REF_P, string OBS_ID, string PARA_CATEGORY)
         {
             string resp = "";
@@ -11262,7 +11212,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceTextupdate()
         {
             sessionHandler = new SessionHandler();
@@ -11288,14 +11237,14 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
-                    chk.ID = rdr["id"].ToString();
+                   /* chk.ID = rdr["id"].ToString();
                     chk.REF_P = rdr["ref_p"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
                     chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
                     chk.AMOUNT = rdr["amount"].ToString();
                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
+                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();*/
                     list.Add(chk);
                 }
             }
@@ -11400,7 +11349,6 @@ namespace AIS.Controllers
             return planList;
         }
 
-
         public List<AuditeeAddressModel> GetAddress(int ENT_ID)
         {
             sessionHandler = new SessionHandler();
@@ -11452,7 +11400,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
         public List<GetAuditeeParasModel> GetAuditeReportStatus(int eng_id)
         {
             sessionHandler = new SessionHandler();
@@ -11486,7 +11433,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
 
         public List<AuditConcludingEntitiesModel> GetAuditConcludingEntities()
         {
@@ -11559,7 +11505,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
         public List<GetFinalReportModel> GetAuditeeParas(int eng_id)
         {
             sessionHandler = new SessionHandler();
@@ -11607,7 +11552,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
 
         public string CloseDraftAuditReport(int ENG_ID)
         {
@@ -11862,7 +11806,6 @@ namespace AIS.Controllers
             return list;
         }
 
-
         public List<FADEntityRiskModel> FADGetEntityRisk()
         {
 
@@ -11895,7 +11838,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
 
         public List<ObservationResponsiblePPNOModel> GetLegacyParaResponsiblePersons(int PARA_REF)
         {
@@ -11997,7 +11939,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
 
         public List<FADNewOldParaPerformanceModel> GetFADNewOldParaPerformance(int AUDIT_ZONE_ID)
         {
@@ -13942,7 +13883,6 @@ namespace AIS.Controllers
         }
         #endregion
 
-
         #region Functional Head Dashboard
         public List<EntityWiseObservationModel> GetReportingOfficeWiseObservations()
         {
@@ -14316,7 +14256,6 @@ namespace AIS.Controllers
             return pdetails;
         }
 
-
         public string UpdateObservationStatusForReversal(int OBS_ID, int NEW_STATUS_ID, int ENG_ID)
         {
             sessionHandler = new SessionHandler();
@@ -14583,7 +14522,6 @@ namespace AIS.Controllers
 
         }
 
-
         public List<HREntitiesModel> GetHREntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE)
         {
 
@@ -14804,7 +14742,6 @@ namespace AIS.Controllers
 
         }
 
-
         public string AddAISEntityMappingForAdminPanelEntityAddition(string P_ENTITY_ID, string ENTITY_ID, string RELATION_TYPE_ID)
         {
 
@@ -14834,7 +14771,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
 
         public List<AuditPlanEngDetailReport> GetAuditPlanEngagementDetailedReport(string AUDITED_BY, string PERIOD_ID)
         {
@@ -15143,7 +15079,6 @@ namespace AIS.Controllers
 
         }
 
-
         public string AddWorkingFixedAssets(string ENGID, string A_NAME, string PHY_EX, string FAR, string DIFF, string REM)
         {
 
@@ -15178,7 +15113,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
 
         public List<CashCountDetailsModel> GetWorkingPaperCashCounter(string ENGID)
         {
@@ -15220,7 +15154,6 @@ namespace AIS.Controllers
 
         }
 
-
         public string AddWorkingCashCounter(string ENGID, string DVAULT, string NOVAULT, string TOTVAULT, string DSR, string NOSR, string TOTSR, string DIFF)
         {
 
@@ -15258,7 +15191,6 @@ namespace AIS.Controllers
 
         }
 
-
         public List<AnnexureExerciseStatus> GetAnnexureExerciseStatus()
         {
 
@@ -15292,7 +15224,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
 
         public string UpdateNewUsersAdminPanel(int PPNO)
         {
@@ -15395,7 +15326,6 @@ namespace AIS.Controllers
 
         }
 
-
         public List<EntitiesShiftingDetailsModel> GetEntityShiftingDetails(string ENTITY_ID = "")
         {
 
@@ -15438,7 +15368,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
 
         public List<AuditEntitiesModel> GetEntityTypes()
         {
@@ -15670,7 +15599,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
         public string SubmitEntityShiftingFromAdminPanel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF_NO, DateTime CIR_DATE, string CIR)
         {
 
@@ -15761,6 +15689,37 @@ namespace AIS.Controllers
                     m.G_NAME = rdr["G_NAME"].ToString();
                     m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string UpdateComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp="";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_COMPLIANCE_FLOW";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITY_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
+                cmd.Parameters.Add("P_GROUP_ID", OracleDbType.Int32).Value = PREV_GROUP_ID;
+                cmd.Parameters.Add("N_GROUP_ID", OracleDbType.Int32).Value = NEXT_GROUP_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {                   
+                    resp = rdr["remarks"].ToString();                    
                 }
             }
             con.Dispose();

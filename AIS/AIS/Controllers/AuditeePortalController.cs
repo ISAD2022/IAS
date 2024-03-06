@@ -170,7 +170,7 @@ namespace AIS.Controllers
                     return View();
             }
         }       
-        public IActionResult old_para_br_comp()
+        public IActionResult paras_compliance_by_auditee()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();

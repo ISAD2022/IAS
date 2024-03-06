@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Runtime.ConstrainedExecution;
 
 
 namespace AIS.Controllers
@@ -818,9 +819,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance()
+        public List<GetOldParasBranchComplianceModel> get_paras_for_compliance_by_auditee()
         {
-            return dBConnection.GetOldParasBranchCompliance();
+            return dBConnection.GetParasForComplianceByAuditee();
         }
         [HttpPost]
         public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_ref()
@@ -829,9 +830,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
+        public GetOldParasBranchComplianceTextModel get_para_compliance_text(int OLD_PARA_ID = 0, int NEW_PARA_ID = 0, string INDICATOR = "")
         {
-            return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+           // return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
+            return dBConnection.GetParaComplianceText(OLD_PARA_ID, NEW_PARA_ID, INDICATOR);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_compliance_cycle_text(string REF_P, string OBS_ID, string COM_SEQ)
@@ -1927,6 +1929,13 @@ namespace AIS.Controllers
         public List<GroupWisePagesModel> get_group_wise_pages()
         {
             return dBConnection.GetGroupWisePages();
+        }
+
+
+        [HttpPost]
+        public string update_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
