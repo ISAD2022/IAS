@@ -33,7 +33,7 @@
                 var srNo = 1;
                 $.each(data, function (index, row) {
                   
-                    $('#group_wise_pages_grid tbody').append('<tr><td>' + srNo + '</td><td>' + row.g_ID+ '</td><td>' + row.g_NAME+ '</td><td>' + row.p_NAME+ '</td></tr>');
+                    $('#group_wise_pages_grid tbody').append('<tr><td>' + srNo + '</td><td>' + row.g_NAME+ '</td><td>' + row.p_NAME+ '</td></tr>');
                     srNo++;
                 });
 
@@ -60,7 +60,6 @@
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th>Sr. No.</th>
-                <th>Group Id</th>
                 <th>Group Name</th>
                 <th>Page Name</th>
               
