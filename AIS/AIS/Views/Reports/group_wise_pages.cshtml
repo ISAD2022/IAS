@@ -16,17 +16,18 @@
 
         getGroupWisePages();
      
-    }); 
+    });
 
+   
     function getGroupWisePages() {
 
-        $('#group_wise_user_grid tbody').empty();
+        $('#group_wise_pages_grid tbody').empty();
         $.ajax({
             url: "/ApiCalls/get_group_wise_pages",
             type: "POST",
             data: {
-               
-            },
+                "GROUP_ID":$('#groupSelectionBox').val()
+                },
             cache: false,
             success: function (data) {
 
@@ -48,6 +49,25 @@
 <div class="mt-3 mb-4">
     <h3 style="color: #45c545;">Group Wise Pages</h3>
 </div>
+
+
+<div id="groupSelectionPanel" class="row col-md-12 mt-3">
+    <label>Group / Role</label>
+    <select id="groupSelectionBox" onchange="getGroupWisePages()" class="form-select form-control" aria-label="Default select example">
+        <option value="0" selected>--Select Group/Roles--</option>
+        @{
+            if (ViewData["GroupList"] != null)
+            {
+                foreach (var item in (dynamic)(ViewData["GroupList"]))
+                {
+                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                }
+            }
+        }
+    </select>
+</div>
+
+
 
 <div class="mt-3">
 

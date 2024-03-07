@@ -15664,7 +15664,7 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public List<GroupWisePagesModel> GetGroupWisePages()
+        public List<GroupWisePagesModel> GetGroupWisePages(string GROUP_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -15679,7 +15679,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_rpt.R_GROUP_WISE_PAGES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-
+                cmd.Parameters.Add("G_ID", OracleDbType.Int32).Value = GROUP_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

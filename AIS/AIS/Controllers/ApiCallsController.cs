@@ -1926,9 +1926,9 @@ namespace AIS.Controllers
             return dBConnection.GetGroupWiseUsersCount();
         }
         [HttpPost]
-        public List<GroupWisePagesModel> get_group_wise_pages()
+        public List<GroupWisePagesModel> get_group_wise_pages(string GROUP_ID)
         {
-            return dBConnection.GetGroupWisePages();
+            return dBConnection.GetGroupWisePages(GROUP_ID);
         }
 
 
