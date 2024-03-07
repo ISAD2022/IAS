@@ -1930,6 +1930,12 @@ namespace AIS.Controllers
         {
             return dBConnection.GetGroupWisePages(GROUP_ID);
         }
+        public ComplianceFlowModel get_prev_next_group_stage(string ENTITY_TYPE, string GROUP_ROLE)
+        {
+            return dBConnection.GetPrevNextGroupStage(ENTITY_TYPE, GROUP_ROLE);
+        }
+
+       
 
 
         [HttpPost]

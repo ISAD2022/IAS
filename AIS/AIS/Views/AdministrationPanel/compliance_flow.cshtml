@@ -31,6 +31,24 @@
         }
         else {
             $('#prevNextGroupSelectionPanel').show();
+
+           
+            $.ajax({
+                url: "/ApiCalls/get_prev_next_group_stage",
+                type: "POST",
+                data: {
+                    "GROUP_ID": $('#groupSelectionBox').val()
+                },
+                cache: false,
+                success: function (data) {
+
+                    $('#prevGroupSelectionBox').val(data.preV_GROUP_ID);
+                    $('#nextGroupSelectionBox').val(data.nexT_GROUP_ID);
+                    
+
+                },
+                dataType: "json",
+            });
         }
     }
     function showMenuPagesBlock() {
