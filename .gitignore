@@ -248,3 +248,9 @@ paket-files/
 .idea/
 *.sln.iml
 AIS/AIS/Properties/launchSettings.json
+*.cache
+*.cache
+*.v2
+*.bin
+*.dll
+*.bin
