@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIS", "AIS\AIS.csproj", "{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72EF75F1-0BBC-4A96-8514-1C6E7E854FCB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {948975D1-7885-43BC-A400-2BEF74402B73}
+	EndGlobalSection
+EndGlobal

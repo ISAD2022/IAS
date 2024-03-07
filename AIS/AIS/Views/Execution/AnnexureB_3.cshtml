@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Annexure - B";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    $('#document').ready(function () {
+        $('#sidebar_policy').hide();
+    });
+</script>
+
+<div class="row" style="margin-top:50px;">
+    <div class="row w-100">
+        <h6 style="display:block;">Other Comments</h6>
+    </div>
+
+    <table class="table table-bordered" id="Other Comments" class="table mb-0 mt-3 bg-white table-hover table-striped">
+
+        <tbody>
+            <tr>
+                <td>Branch Premesis Status (Owned or Rented)</td>
+                <td><input type="text" /></td>
+                <td>Monthly Rental Cost (if rente)</td>
+                <td><input type="text" /></td>
+            </tr>
+            <tr>
+                <td>Building Age</td>
+                <td><input type="text" /></td>
+                <td>Building Construction Category (A class, B class etc.)</td>
+                <td><input type="text" /></td>
+            </tr>
+            <tr>
+                <td>Comments on status of cleanliness</td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td>Details of Repairs undertaken since last inspection (if application)</td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td>Other Comments / Recommendations on Branch condition and state</td>
+                <td colspan="3"></td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="col-md-6 mt-5">
+        <button onclick="window.location.href = './AnnexureB_4';" " class="btn-primary" style="float:right;">Next</button>
+    </div>
+

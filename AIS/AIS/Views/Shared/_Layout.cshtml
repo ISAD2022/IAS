@@ -1,0 +1,282 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AIS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/rich-text-editor/richtext.min.css">
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="stylesheet" href="/lib/bootstrap-image-uploader/jquery.imagesloader.css" />
+    <link rel="stylesheet" href="/lib/select2/select2.min.css" />
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/print-preview/print_preview.js"></script>
+    <script type="text/javascript" src="/lib/select2/select2.min.js"></script>
+    <style>
+        navImg .dropdown-toggle::after {
+            display: none !important;
+        }
+
+        .policy-item {
+            height: 44px;
+            border-bottom: 1px solid white;
+            text-align: left !important;
+            padding-top: 14px;
+        }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).ajaxStart(function () {
+                $("#wait").css("display", "block");
+            });
+            $(document).ajaxComplete(function () {
+                $("#wait").css("display", "none");
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light font-weight-bold" style="background: linear-gradient(45deg, #10ce55b5, #3958a8b5); ">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBarTopMenu" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#"><img height="50" src="/Images/ztbllogo.png" alt="Logo"></a>
+
+            <div id="navBarTopMenu" class="collapse navbar-collapse" style="font-size:14px;">
+
+                <ul class="navbar-nav mt-2 mt-lg-0">
+                    @{
+                        @if (ViewData["TopMenu"] != null)
+                        {
+                            foreach (var item in (dynamic)(ViewData["TopMenu"]))
+                            {
+                                <li class="nav-item active dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @item.Menu_Name
+                                    </a>
+                                    @if (ViewData["TopMenuPages"] != null)
+                                    {
+                                        <ul class="dropdown-menu" aria-labelledby="">
+                                            @{
+                                                foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
+                                                {
+                                                    if (itemPage.Menu_Id != 1020304050)
+                                                    {
+                                                        if (itemPage.Menu_Id == item.Menu_Id)
+                                                        {
+                                                            if (itemPage.Hide_Menu == 0)
+                                                            {
+                                                                <li> <a class="dropdown-item" href="~/@itemPage.Page_Path">@itemPage.Page_Name</a></li>
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                           
+
+                                        </ul>
+                                    }
+                                </li>
+
+                            }
+                        }
+                    }
+                    <!--  <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            Tutorials
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#">HTML</a></li>
+                            <li><a tabindex="-1" href="#">CSS</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" href="#">Another dropdown <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>                   
+                 
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navRisk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navRisk">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navPlanning" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navPlanning">
+                            <a class="dropdown-item" href="~/Planning/audit_period">Audit Period</a>
+                            <a class="dropdown-item" href="~/Planning/team_members">Team Members</a>
+                            <a class="dropdown-item" href="~/Planning/audit_criteria">Audit Criteria</a>
+                            <a class="dropdown-item" href="~/Planning/holiday_calendar">Holiday Calender</a>
+                            <a class="dropdown-item" href="~/Planning/tentative_audit_plan">Tentative Audit Plan</a>
+                            <a class="dropdown-item" href="~/Planning/submission_for_review">Submission for Review</a>
+                            <a class="dropdown-item" href="~/Planning/submission_for_approval">Submission for Approval</a>
+                            <a class="dropdown-item" href="~/Planning/plan_approvals">Plan Approvals</a>
+                            <a class="dropdown-item" href="~/Planning/post_changes_approved_plan">Post Changes in Approved Plan</a>
+                            <a class="dropdown-item" href="~/Planning/post_changes_team_members">Post Changes in Team Members</a>
+                            <a class="dropdown-item" href="~/Planning/special_assignment">Special Assignments</a>
+
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navEngagement" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Engagement
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navEngagement">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navExecution" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Execution
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navExecution">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navReports" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Reports
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navReports">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navSetup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Setup
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navSetup">
+                            <a class="dropdown-item" href="~/BranchSetup/">Branch</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navSetup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Administration Panel
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navSetup">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                        -->
+                </ul>
+            </div>
+            <div id="navBarTopMenu" class="collapse navbar-collapse">
+
+                <ul class="navbar-nav mt-2 mt-lg-0" style="float: right; margin-right: 20px; margin-left: auto;">
+                    <span style="margin-top: 13px; font-size: 14px;">
+                        Welcome:
+                        @if (ViewData["TopMenuPages"] != null)
+                        {
+                            foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
+                            {
+                                if (itemPage.Menu_Id == 1020304050)
+                                {
+                                    <span id="avatarEmpName">
+                                        @itemPage.Name (@itemPage.PPNO)
+                                    </span>
+                                }
+                            }
+
+                        }
+
+                    </span>
+                    <li id="avatarImg" class="nav-item active dropdown float-right">
+                        <a class="nav-link dropdown-toggle" href="#" id="navImg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="rounded-circle" height="25" src="~/Images/profile.png" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navImg">
+                            <a class="dropdown-item" href="~/Home/Change_Password">Change Password</a>
+                            <a id="logout_action_url" class="dropdown-item" href="~/Login/Logout">Logout</a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <main role="main" class="p-3">
+            @RenderBody()
+        </main>
+        <div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
+            <img src='~/Images/ajax_loader.gif' width="64" height="64" /><br>Loading..
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container text-center">
+            &copy; ZTBL INTERNAL AUDIT & INSPECTION DIVISION (Developed By A.A.A)
+        </div>
+    </footer>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/idleSessionHandler.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
+    <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
+    <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>
+    <script type="text/javascript" src="~/lib/canvasjs/canvasjs.min.js"></script>
+    <script src="/lib/bootstrap-image-uploader/jquery.imagesloader-1.0.1.js" type="text/javascript"></script>
+
+
+    @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.dropdown-submenu a.test').on("click", function (e) {
+                $(this).next('ul').toggle();
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

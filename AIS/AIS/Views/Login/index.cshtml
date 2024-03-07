@@ -1,0 +1,184 @@
+﻿@{
+    ViewData["Title"] = "Login";
+
+}
+<script type="text/javascript">
+    var g_reqSend = true;
+    var g_retUrl = "";
+    $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_retUrl = url.searchParams.get("retUrl");
+        $(document).keydown(function (event) {
+            var id = event.key || event.which || event.keyCode || 0;
+            if (id == "Enter") {
+                doLoginSubmit();
+            }
+        });
+    })
+    function doKillSessionSubmit() {
+        
+            $.ajax({
+                url: "/ApiCalls/kill_session",
+                type: "POST",
+                data: {
+                    'PPNumber': $('#inputPPNoField').val(),
+                    'Password': $('#inputPassword').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    console.log('killsession', data);
+                    if (data) {
+                        $('#submitKillSessionButton').addClass('d-none');
+                        $('#submitLoginButton').removeClass('d-none');
+                    }
+                },
+                dataType: "json",
+            });
+    }
+
+    function doLoginSubmit() {
+
+        $('#submitLoginButton').attr('disabled', true);
+
+        $.ajax({
+            url: "/Login/DoLogin",
+            type: "POST",
+            data: {
+                'PPNumber': $('#inputPPNoField').val(),
+                'Password': $('#inputPassword').val(),
+            },
+            cache: false,
+            success: function (data) {               
+                if (!data.isAuthenticate) {
+                    $('#submitKillSessionButton').addClass('d-none');
+                    $('#submitLoginButton').removeClass('d-none');
+                    $('#loginerrormodal').modal('show');
+                    $('#errorDescField').text(data.errorMsg);
+                }
+                else if (data.isAlreadyLoggedIn) {
+                    $('#submitKillSessionButton').removeClass('d-none');
+                    $('#submitLoginButton').addClass('d-none');
+                    $('#loginerrormodal').modal('show');
+                    $('#errorDescField').text(data.errorMsg);
+                    $('#inputPPNoField').attr('disabled', true);
+                    $('#inputPassword').attr('disabled', true);
+
+                } 
+                else 
+                {
+                    //BAC GROUP ID = 37
+                    if (data.userGroupID==37 ) {
+                        window.location.href = "/BAC/Agenda";
+                    }else{
+                        if (g_retUrl != null && g_retUrl != "") {
+                            window.location.href = g_retUrl;
+                        }
+
+                        else {
+                            window.location.href = "/home";
+                        }
+                    }
+
+                   
+                    
+                }
+                $('#submitLoginButton').attr('disabled', false);
+            },
+            dataType: "json",
+        });
+    }
+     
+
+</script>
+
+<div class="text-center">
+
+    @if (TempData["SessionKill"].ToString() == "killsession")
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+               $('#submitKillSessionButton').removeClass('d-none');
+                $('#submitLoginButton').addClass('d-none');
+                $('#loginerrormodal').modal('show');
+            };
+        </script>
+    }
+    else if (TempData["Message"].ToString() != "")
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            $('#loginerrormodal').modal('show');
+        };
+    </script>
+}
+
+    <!-- Section: Design Block -->
+    <section class="text-center">
+        <!-- Background image -->
+        <div class="p-5 bg-image bg-gradient" style="height: 350px; background: linear-gradient(160deg, hsl(98deg 97% 46%), #0002f3bf);">
+            <img style="height: 226px;" src="~/Images/ztbllogo.png" />
+        </div>
+        <!-- Background image -->
+
+        <div class="card mx-5 mx-md-5 shadow-5-strong" style="margin-top: -50px; backdrop-filter: blur(30px); background: linear-gradient(160deg, #0002f3bf, hsl(98deg 97% 46%)); ">
+            <div class="card-body py-4 px-md-4">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-6">
+                        <h2 class="fw-bold mb-5" style="color:white">Audit & Investigation Solution</h2>
+                        <form action="#" method="post">
+                            <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
+                            <!-- Email input -->
+                            <div class="form-outline mb-4">
+                                <input autocomplete="off" required type="number"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
+                            </div>
+
+                            <!-- Password input -->
+                            <div class="form-outline mb-4">
+                                <input autocomplete="off" required type="password" placeholder="Password" id="inputPassword" name="Password" class="form-control" />
+                            </div>
+
+                            <!-- <center>
+                                 <div id="captchaBackground">
+                                     <canvas style="height:100px;" id="captcha">captcha text</canvas>
+                                     <input class="form-control w-50" id="textBox" type="text" name="text">
+                                     <span id="output"></span>
+                                 </div>
+                             </center> -->
+                            <!-- Submit button -->
+                            <button id="submitKillSessionButton" type="button" class="btn btn-block btn-danger mb-4 d-none" onclick="doKillSessionSubmit();">
+                                Kill Session
+                            </button>
+                            <button id="submitLoginButton" type="button" class="btn btn-block mb-4" style="background: #dcde8b; " onclick="doLoginSubmit();">
+                                Login
+                            </button>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Section: Design Block -->
+
+</div>
+<div class="modal" id="loginerrormodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title">Invalid Login Credentials</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <p id="errorDescField"></p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

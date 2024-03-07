@@ -1,0 +1,140 @@
+﻿@{
+    ViewData["Title"] = "FAD_Gistwise_Details_Monthly";
+    Layout = "_Layout";
+}
+<script>
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#A_P_E_T tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+    });
+</script>
+
+<div class="row col-md-12 mt-3">
+    <h3 style=" display:block;color: #45c545;">FAD Monthly Gistwise Details</h3>
+</div>
+<div class="row col-md-12 mt-2">
+    <div style=" width:155px">
+        <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+    </div>
+    <div class=" col-md-5 mr-1">
+        <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
+    </div>
+
+    <div style=" width:135px">
+        <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
+    </div>
+    <div style=" width:545px">
+        <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
+    </div>
+</div>
+<div class="row col-md-12 mt-2">
+    <div style=" width:155px">
+        <label for="periodStartModalField"><b>Select Volume</b><span class="text-danger">*</span></label>
+    </div>
+    <div class=" col-md-5 mr-1">
+        <select id="entitySelectField" onchange="" class="form-control form-select">
+            <option value="0" id="0">--Select Volume--</option>
+            </select>
+    </div>
+
+    <div style=" width:135px">
+        <label for="periodEndModalField"><b>PP No.</b><span class="text-danger">*</span></label>
+    </div>
+    <div style=" width:545px">
+        <input type="text" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="Enter PP No. To Search..">
+    </div>
+</div>
+<div class="row col-md-12 mt-2">
+    <div style=" width:155px">
+        <label for="periodStartModalField"><b>Audit Period</b><span class="text-danger">*</span></label>
+    </div>
+    <div class=" col-md-5 mr-1">
+        <select id="entitySelectField" onchange="" class="form-control form-select">
+            <option value="0" id="0">--Select Audit Period--</option>
+        </select>
+    </div>
+
+    <div style=" width:135px">
+        <label for="periodEndModalField"><b>Branch Name</b><span class="text-danger">*</span></label>
+    </div>
+    <div style=" width:545px">
+        <input type="text" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="Select Branch Name">
+    </div>
+</div>
+
+
+
+<div class="row col-md-12 mt-1">
+    <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
+   
+</div>
+
+
+
+
+<div class="row col-md-12 mt-3 mb-2">
+
+    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
+
+</div>
+
+<div class="row col-md-12 mt-3">
+    <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped" style="font-size:small">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-auto">Sr. No</th>
+                <th class="col-md-auto">Audit Zone</th>
+                <th class="col-md-auto">Operational Zone</th>
+
+                <th class="col-md-auto">Branch Name</th>
+
+                <th class="col-md-auto">Branch Code</th>
+                <th class="col-md-auto">Audit Period</th>
+                <th class="col-md-auto">Para No.</th>
+                <th class="col-md-auto">Para Gist</th>
+                <th class="col-md-auto">Instances</th>
+                <th class="col-md-auto">Amount Involved</th>
+                <th class="col-md-auto">Vol I/II</th>
+                <th class="col-md-auto">Name</th>
+                <th class="col-md-auto">PP No.</th>
+                <th class="col-md-auto">Designation</th>
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["ZONEWISEPERFORMANCE"] != null)
+                {
+
+                    var index = 1;
+                    foreach (var item in (dynamic)(ViewData["ZONEWISEPERFORMANCE"]))
+                    {
+
+                        <tr>
+                            <td>@index</td>
+                            <td>@item.ZONENAME</td>
+                            <td>@item.PARA_TOTAL</td>
+                            <td>@item.PARA_PENDING</td>
+                            <td>@item.PARA_ENTERED</td>
+                        </tr>
+                        index++;
+                    }
+                }
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<div class="col-md-12 offset-md-12 mt-4">
+    <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;">Download Report/Print</button>
+</div>

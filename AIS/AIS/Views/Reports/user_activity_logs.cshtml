@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "User Wise Performance";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+
+    function getActivityLog() {
+
+        $.ajax({
+            url: "/ApiCalls/get_user_activity_log",
+            type: "POST",
+            data: {
+                'PP_NO': $('#ppNumField').val()
+            },
+            cache: false,
+            success: function (data) {
+                $('#userWiseActivityLog tbody').empty();
+                var sr = 1;
+                $.each(data, function (i, v) {
+                    $('#userWiseActivityLog tbody').append('<tr><td>' + sr + '</td><td>' + v.useR_PP_NUMBER + '</td><td>' + v.useR_NAME + '</td><td>' + v.starT_DATE + '</td><td>' + v.enD_DATE + '</td><td>' + v.activity + '</td><td>' + v.actions + '</td><td>' + v.duration + '</td></tr>');
+                    sr++;
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">User Wise Activity Logs / Actions Performed</h3>
+    </div>
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-2">
+            <label class="text-bold">PP Number</label>
+        </div>
+        <div class="col-md-10">
+          <input class="form-control" id="ppNumField" />
+        </div>
+    </div>
+   
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-12">
+            <button class="offset-md-8 col-md-4 btn btn-primary" onclick="getActivityLog();">Search</button>
+        </div>
+       
+    </div>
+    <div class="row col-md-12 mt-3">
+        <table id="userWiseActivityLog" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-1">Sr. No</th>
+                    <th class="col-md-2">P.P</dr>Number</th>
+                    <th class="col-md-2">Name</th>
+                    <th class="col-md-auto">Start Date &</dr> Time</th>
+                    <th class="col-md-auto">End Date &</dr> Time</th>
+                    <th class="col-md-5">Activity</th>
+                    <th class="col-md-5">Actions</th>
+                    <th class="col-md-auto">Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+              
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
