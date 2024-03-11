@@ -15783,6 +15783,7 @@ namespace AIS.Controllers
                     ComplianceFlowModel cm = new ComplianceFlowModel();
 
                     cm.ENTITY_TYPE_ID = rdr["e_id"].ToString();
+                    cm.ENTITY_TYPE_NAME = rdr["e_name"].ToString();
                     cm.GROUP_ID = rdr["g_id"].ToString();
                     cm.GROUP_NAME= rdr["g_name"].ToString();
                     cm.PREV_GROUP_ID = rdr["prev_r_id"].ToString() == "" ? "0" : rdr["prev_r_id"].ToString();
