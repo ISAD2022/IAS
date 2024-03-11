@@ -15759,6 +15759,44 @@ namespace AIS.Controllers
             return resp;
 
         }
+
+        public List<ComplianceFlowModel> GetEntityTypeComplianceFlow(string ENTITY_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceFlowModel> resp = new List<ComplianceFlowModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_entity_type_compliance_flow";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceFlowModel cm = new ComplianceFlowModel();
+
+                    cm.ENTITY_TYPE_ID = rdr["e_id"].ToString();
+                    cm.GROUP_ID = rdr["g_id"].ToString();
+                    cm.GROUP_NAME= rdr["g_name"].ToString();
+                    cm.PREV_GROUP_ID = rdr["prev_r_id"].ToString() == "" ? "0" : rdr["prev_r_id"].ToString();
+                    cm.PREV_GROUP_NAME = rdr["prev_r_name"].ToString();
+                    cm.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
+                    cm.NEXT_GROUP_NAME = rdr["next_r_name"].ToString();
+                    resp.Add(cm);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
         #endregion
     }
 }
