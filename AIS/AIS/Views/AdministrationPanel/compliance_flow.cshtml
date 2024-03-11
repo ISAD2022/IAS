@@ -7,7 +7,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#groupSelectionPanel').hide();
-       $('#prevNextGroupSelectionPanel').hide();
+        $('#prevNextGroupSelectionPanel').hide();
+        entityTypeSelectionChangeEvent();
 
     });
     function entityTypeSelectionChangeEvent() {
@@ -39,7 +40,7 @@
         else {
             $('#prevNextGroupSelectionPanel').show();
 
-           
+
             $.ajax({
                 url: "/ApiCalls/get_prev_next_group_stage",
                 type: "POST",
@@ -52,16 +53,16 @@
 
                     $('#prevGroupSelectionBox').val(data.preV_GROUP_ID);
                     $('#nextGroupSelectionBox').val(data.nexT_GROUP_ID);
-                    
+
 
                 },
                 dataType: "json",
             });
         }
     }
- 
+
     function UpdateComplianceWorkFlow() {
-        if ($('#prevGroupSelectionBox option:selected').val()==0){
+        if ($('#prevGroupSelectionBox option:selected').val() == 0) {
             alert("Plase select Previous Role State to proceed");
             return;
         }
@@ -80,22 +81,22 @@
             },
             cache: false,
             success: function (data) {
-             alert(data.Message);
+                alert(data.Message);
                 onAlertCallback(reloadPage)
             },
             dataType: "json",
         });
     }
 
-    function addComplianceFlow(entTypeId, grpId){
+    function addComplianceFlow() {
+        $('#addComplianceFlowEntityTypeModal').modal('show');
+    }
+
+    function updateComplianceFlow(entId,grpId) {
         $('#updateComplianceFlowEntityTypeModal').modal('show');
     }
 
-    function updateComplianceFlow() {
-        $('#updateComplianceFlowEntityTypeModal').modal('show');
-    }
-
-    function reloadPage(){
+    function reloadPage() {
         window.location.reload();
     }
 
@@ -107,7 +108,7 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-   
+
     <div class="col-md-12">
         <label>Entity Type</label>
     </div>
@@ -126,7 +127,7 @@
         </select>
 
     </div>
-   
+
     <div class="col-md-3">
         <button onclick="addComplianceFlow();" class="btn btn-primary col-md-12">Add Compliance Flow</button>
     </div>
@@ -134,7 +135,7 @@
 
 
 <div class="mt-3 row col-md-12">
-   
+
     <table id="entity_compliance_flow_grid" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
@@ -150,7 +151,7 @@
         <tbody>
         </tbody>
     </table>
-   
+
 </div>
 
 
@@ -214,11 +215,93 @@
                                     }
                                 }
                             }
-                        </select>                     
+                        </select>
 
                     </div>
 
 
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="UpdateComplianceWorkFlow();" type="button" data-dismiss="modal" class="btn btn-success">Update Compliance Flow</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id="addComplianceFlowEntityTypeModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" style="min-width:90%" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Compliance Flow</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <label>Group / Role</label>
+                    <select id="entityTypeSelectionField_modal" class="form-select form-control" aria-label="Default select example">
+                        <option value="0" selected>--Select Entity Type--</option>
+                        @{
+                            if (ViewData["EntitiesList"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                                {
+                                    <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <label>Group / Role</label>
+                    <select id="groupSelectionBox" onchange="groupSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
+                        <option value="0" selected>--Select Group/Roles--</option>
+                        @{
+                            if (ViewData["GroupList"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["GroupList"]))
+                                {
+                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                }
+                            }
+                        }
+                    </select>
+
+                    <label> Previous Role State</label>
+                    <select id="prevGroupSelectionBox" class="form-select form-control" aria-label="Default select example">
+                        <option value="0" selected>--Select Group/Roles--</option>
+                        @{
+                            if (ViewData["GroupList"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["GroupList"]))
+                                {
+                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                }
+                            }
+                        }
+                    </select>
+
+                    <label> Next Role State</label>
+                    <select id="nextGroupSelectionBox" class="form-select form-control" aria-label="Default select example">
+                        <option value="0" selected>--Select Group/Roles--</option>
+                        @{
+                            if (ViewData["GroupList"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["GroupList"]))
+                                {
+                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                }
+                            }
+                        }
+                    </select>
 
                 </form>
             </div>
