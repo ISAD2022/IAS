@@ -15708,7 +15708,7 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_rpt.R_get_prev_next_group_stage";
+                cmd.CommandText = "pkg_ad.P_get_group_prev_next_stage";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE;
