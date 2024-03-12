@@ -15791,7 +15791,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<ComplianceFlowModel> GetEntityTypeComplianceFlow(string ENTITY_TYPE_ID)
+        public List<ComplianceFlowModel> GetComplianceFlowByEntityType(string ENTITY_TYPE_ID)
         {
 
             sessionHandler = new SessionHandler();

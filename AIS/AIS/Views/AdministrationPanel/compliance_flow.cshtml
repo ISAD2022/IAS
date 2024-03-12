@@ -14,7 +14,7 @@
     function entityTypeSelectionChangeEvent() {
         $('#entity_compliance_flow_grid tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_entity_type_compliance_flow",
+            url: "/ApiCalls/get_compliance_flow_by_entity_type",
             type: "POST",
             data: {
                 "ENTITY_TYPE_ID": $('#entityTypeSelectionField').val()

@@ -1942,9 +1942,9 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
         }
         [HttpPost]
-        public List<ComplianceFlowModel> get_entity_type_compliance_flow(string ENTITY_TYPE_ID)
+        public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(string ENTITY_TYPE_ID)
         {
-            return dBConnection.GetEntityTypeComplianceFlow(ENTITY_TYPE_ID);
+            return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
