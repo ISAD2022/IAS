@@ -93,11 +93,11 @@
             type: "POST",
             data: {
                 'GROUP_ID': $('#groupSelectionBox option:selected').val(),
-                'ENTITY_TYPE_ID': $('#entityTypeSelectionField option:selected').val(),
+                'ENTITY_TYPE_ID': $('#entityTypeSelectionField_modal option:selected').val(),
                 'PREV_GROUP_ID': $('#prevGroupSelectionBox option:selected').val(),
                 'NEXT_GROUP_ID': $('#nextGroupSelectionBox option:selected').val(),
-                'COMP_UP_STATUS_ID': $('#CompUpStatusSelectionBox option:selected').val(),
-                'COMP_DOWN_STATUS_ID': $('#CompDownStatusSelectionBox option:selected').val(),
+                'COMP_UP_STATUS': $('#CompUpStatusSelectionBox option:selected').val(),
+                'COMP_DOWN_STATUS': $('#CompDownStatusSelectionBox option:selected').val(),
             },
             cache: false,
             success: function (data) {
@@ -113,7 +113,7 @@
     }
 
     function updateComplianceFlow(entId,grpId) {
-        $('#updateComplianceFlowEntityTypeModal').modal('show');
+        $('#addComplianceFlowEntityTypeModal').modal('show');
     }
 
     function reloadPage() {
@@ -172,83 +172,6 @@
         </tbody>
     </table>
 
-</div>
-
-
-
-<div id="updateComplianceFlowEntityTypeModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" style="min-width:90%" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Update Compliance Flow</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-
-
-                    <div id="groupSelectionPanel" class="row col-md-12 mt-3">
-                        <label>Group / Role</label>
-                        <select id="groupSelectionBox" onchange="groupSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
-                            <option value="0" selected>--Select Group/Roles--</option>
-                            @{
-                                if (ViewData["GroupList"] != null)
-                                {
-                                    foreach (var item in (dynamic)(ViewData["GroupList"]))
-                                    {
-                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
-                                    }
-                                }
-                            }
-                        </select>
-                    </div>
-
-                    <div id="prevNextGroupSelectionPanel" class="row col-md-12 mt-3">
-
-                        <label> Previous Role State</label>
-                        <select id="prevGroupSelectionBox" class="form-select form-control" aria-label="Default select example">
-                            <option value="0" selected>--Select Group/Roles--</option>
-                            @{
-                                if (ViewData["GroupList"] != null)
-                                {
-                                    foreach (var item in (dynamic)(ViewData["GroupList"]))
-                                    {
-                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
-                                    }
-                                }
-                            }
-                        </select>
-
-
-
-                        <label> Next Role State</label>
-                        <select id="nextGroupSelectionBox" class="form-select form-control" aria-label="Default select example">
-                            <option value="0" selected>--Select Group/Roles--</option>
-                            @{
-                                if (ViewData["GroupList"] != null)
-                                {
-                                    foreach (var item in (dynamic)(ViewData["GroupList"]))
-                                    {
-                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
-                                    }
-                                }
-                            }
-                        </select>
-
-                    </div>
-
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="UpdateComplianceWorkFlow();" type="button" data-dismiss="modal" class="btn btn-success">Update Compliance Flow</button>
-
-            </div>
-        </div>
-    </div>
 </div>
 
 
