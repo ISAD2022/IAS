@@ -15811,8 +15811,8 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
-                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
-                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entity.NAME = rdr["statusname"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["statusid"].ToString());
                     entitiesList.Add(entity);
                 }
             }
