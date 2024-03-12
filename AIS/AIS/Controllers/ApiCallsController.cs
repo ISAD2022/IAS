@@ -1933,8 +1933,12 @@ namespace AIS.Controllers
         public ComplianceFlowModel get_prev_next_group_stage(string ENTITY_TYPE, string GROUP_ROLE)
         {
             return dBConnection.GetPrevNextGroupStage(ENTITY_TYPE, GROUP_ROLE);
-        }     
-
+        }
+        [HttpPost]
+        public string add_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID,string COMP_UP_STATUS, string COMP_DOWN_STATUS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID, COMP_UP_STATUS, COMP_DOWN_STATUS) + "\"}";
+        }
 
         [HttpPost]
         public string update_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)

@@ -15860,6 +15860,48 @@ namespace AIS.Controllers
 
         }
 
+        public string AddComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COM_UP_STATUS
+            , string COM_DOWN_STATUS)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_UPDATE_COMPLIANCE_FLOW";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITY_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
+                cmd.Parameters.Add("P_GROUP_ID", OracleDbType.Int32).Value = PREV_GROUP_ID;
+                cmd.Parameters.Add("N_GROUP_ID", OracleDbType.Int32).Value = NEXT_GROUP_ID;
+                cmd.Parameters.Add("C_UP_STATUS", OracleDbType.Int32).Value = COM_UP_STATUS;
+                cmd.Parameters.Add("C_DOWN_STATUS", OracleDbType.Int32).Value = COM_DOWN_STATUS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
+
+
+
+
+
+
         public string UpdateComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
         {
 
