@@ -15698,37 +15698,7 @@ namespace AIS.Controllers
 
 
 
-        public ComplianceFlowModel GetPrevNextGroupStage(string ENTITY_TYPE, string GROUP_ROLE)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            ComplianceFlowModel resp = new ComplianceFlowModel();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_get_group_prev_next_stage";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE;
-                cmd.Parameters.Add("G_ROLE", OracleDbType.Int32).Value = GROUP_ROLE;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp.ENTITY_TYPE_ID = rdr["e_id"].ToString();
-                    resp.GROUP_ID = rdr["g_id"].ToString();
-                    resp.PREV_GROUP_ID = rdr["prev_r_id"].ToString()==""?"0": rdr["prev_r_id"].ToString();
-                    resp.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
+       
         public List<GroupModel> GetRolesForComplianceFlow()
         {
             sessionHandler = new SessionHandler();
@@ -15821,7 +15791,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<ComplianceFlowModel> GetComplianceFlowByEntityType(string ENTITY_TYPE_ID)
+        public List<ComplianceFlowModel> GetComplianceFlowByEntityType(string ENTITY_TYPE_ID, string GROUP_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -15837,6 +15807,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("G_ID", OracleDbType.Int32).Value = GROUP_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15851,6 +15822,10 @@ namespace AIS.Controllers
                     cm.PREV_GROUP_NAME = rdr["prev_r_name"].ToString();
                     cm.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
                     cm.NEXT_GROUP_NAME = rdr["next_r_name"].ToString();
+                    cm.COMP_DOWN_STATUS = rdr["c_status_down"].ToString();
+                    cm.COMP_UP_STATUS = rdr["c_status_up"].ToString();
+
+                    
                     resp.Add(cm);
 
                 }

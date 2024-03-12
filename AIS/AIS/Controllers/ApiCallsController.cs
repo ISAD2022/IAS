@@ -1930,10 +1930,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetGroupWisePages(GROUP_ID);
         }
-        public ComplianceFlowModel get_prev_next_group_stage(string ENTITY_TYPE, string GROUP_ROLE)
-        {
-            return dBConnection.GetPrevNextGroupStage(ENTITY_TYPE, GROUP_ROLE);
-        }
+        
         [HttpPost]
         public string add_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID,string COMP_UP_STATUS, string COMP_DOWN_STATUS)
         {
@@ -1946,9 +1943,9 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
         }
         [HttpPost]
-        public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(string ENTITY_TYPE_ID)
+        public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(string ENTITY_TYPE_ID, string GROUP_ID)
         {
-            return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID);
+            return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID, GROUP_ID);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -15,6 +15,8 @@ namespace AIS.Models
         public string NEXT_GROUP_NAME { get; set; }
         public string PREV_GROUP_ID { get; set; }
         public string PREV_GROUP_NAME { get; set; }
+        public string COMP_UP_STATUS { get; set; }
+        public string COMP_DOWN_STATUS { get; set; }
        
     }
 }

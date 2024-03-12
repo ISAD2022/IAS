@@ -5,6 +5,9 @@
 }
 
 <script type="text/javascript">
+
+    var g_entTypeId = 0;
+    var g_groupId = 0;
     $(document).ready(function () {
         $('#groupSelectionPanel').hide();
         $('#prevNextGroupSelectionPanel').hide();
@@ -29,39 +32,6 @@
             dataType: "json",
         });
     }
-
-    function groupSelectionChangeEvent() {
-
-        if ($('#groupSelectionBox option:selected').val() == 0) {
-
-            $('#prevNextGroupSelectionPanel').hide();
-
-        }
-        else {
-            $('#prevNextGroupSelectionPanel').show();
-
-
-            $.ajax({
-                url: "/ApiCalls/get_prev_next_group_stage",
-                type: "POST",
-                data: {
-                    "ENTITY_TYPE": $('#entityTypeSelectionField').val(),
-                    "GROUP_ROLE": $('#groupSelectionBox').val()
-                },
-                cache: false,
-                success: function (data) {
-
-                    $('#prevGroupSelectionBox').val(data.preV_GROUP_ID);
-                    $('#nextGroupSelectionBox').val(data.nexT_GROUP_ID);
-
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-
-
     function addComplianceWorkFlow() {
         if ($('#entityTypeSelectionField_modal option:selected').val() == 0) {
             alert("Please select Entity type to proceed");
@@ -109,11 +79,48 @@
     }
 
     function addComplianceFlow() {
+        g_entTypeId = 0;
+        g_groupId = 0;
         $('#addComplianceFlowEntityTypeModal').modal('show');
+        $('#addComplianceFlowEntityTypeModal .modal-title').html('Add Compliance Flow');
+        $('#addComplianceFlowEntityTypeModal .btn-footer').html('Add Compliance Flow');
+        $('#entityTypeSelectionField_modal').val(0);
+        $('#groupSelectionBox').val(0);
+        $('#prevGroupSelectionBox').val(0);
+        $('#nextGroupSelectionBox').val(0);
+        $('#CompUpStatusSelectionBox').val(0);
+        $('#CompDownStatusSelectionBox').val(0);
+
     }
 
     function updateComplianceFlow(entId,grpId) {
+        g_entTypeId = entId;
+        g_groupId = grpId;
         $('#addComplianceFlowEntityTypeModal').modal('show');
+        $('#addComplianceFlowEntityTypeModal .modal-title').html('Update Compliance Flow');
+        $('#addComplianceFlowEntityTypeModal .btn-footer').html('Update Compliance Flow');
+        $.ajax({
+            url: "/ApiCalls/get_compliance_flow_by_entity_type",
+            type: "POST",
+            data: {
+                "ENTITY_TYPE_ID": g_entTypeId,
+                    "GROUP_ID": g_groupId
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    $('#entityTypeSelectionField_modal').val(v.entitY_TYPE_ID);
+                    $('#groupSelectionBox').val(v.grouP_ID);
+                    $('#prevGroupSelectionBox').val(v.preV_GROUP_ID);
+                    $('#nextGroupSelectionBox').val(v.nexT_GROUP_ID);
+                    $('#CompUpStatusSelectionBox').val(v.comP_UP_STATUS);
+                    $('#CompDownStatusSelectionBox').val(v.comP_DOWN_STATUS);
+                });
+
+            },
+            dataType: "json",
+        });
+     
     }
 
     function reloadPage() {
@@ -140,7 +147,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
-                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                     }
                 }
             }
@@ -198,20 +205,20 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                                 {
-                                    <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                                 }
                             }
                         }
                     </select>
                     <label>Group / Role</label>
-                    <select id="groupSelectionBox" onchange="groupSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
+                    <select id="groupSelectionBox"  class="form-select form-control" aria-label="Default select example">
                         <option value="0" selected>--Select Group/Roles--</option>
                         @{
                             if (ViewData["GroupList"] != null)
                             {
                                 foreach (var item in (dynamic)(ViewData["GroupList"]))
                                 {
-                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
                                 }
                             }
                         }
@@ -225,7 +232,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["GroupList"]))
                                 {
-                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
                                 }
                             }
                         }
@@ -239,7 +246,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["GroupList"]))
                                 {
-                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                        <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
                                 }
                             }
                         }
@@ -255,7 +262,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["StatusList"]))
                                 {
-                                    <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                                 }
                             }
                         }
@@ -270,7 +277,7 @@
                             {
                                 foreach (var item in (dynamic)(ViewData["StatusList"]))
                                 {
-                                    <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                                 }
                             }
                         }
@@ -282,7 +289,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="addComplianceWorkFlow();" type="button" data-dismiss="modal" class="btn btn-success">Add Compliance Flow</button>
+                <button onclick="addComplianceWorkFlow();" type="button" data-dismiss="modal" class="btn btn-success btn-footer">Add Compliance Flow</button>
 
             </div>
         </div>
