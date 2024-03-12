@@ -15791,6 +15791,36 @@ namespace AIS.Controllers
 
         }
 
+        public List<AuditeeEntitiesModel> GetComplianceStatusesForComplianceFlow()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_compliance_statuses_for_compliance_flow";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
         public List<ComplianceFlowModel> GetComplianceFlowByEntityType(string ENTITY_TYPE_ID)
         {
 
