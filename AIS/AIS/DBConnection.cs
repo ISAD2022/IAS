@@ -15696,6 +15696,8 @@ namespace AIS.Controllers
 
         }
 
+
+
         public ComplianceFlowModel GetPrevNextGroupStage(string ENTITY_TYPE, string GROUP_ROLE)
         {
 
@@ -15727,7 +15729,106 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public List<GroupModel> GetRolesForComplianceFlow()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<GroupModel> groupList = new List<GroupModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_roles_for_compliance_flow";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GroupModel grp = new GroupModel();
+                    grp.GROUP_ID = Convert.ToInt32(rdr["GROUP_ID"]);
+                    grp.GROUP_NAME = rdr["GROUP_NAME"].ToString();
+                    grp.GROUP_DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    grp.GROUP_CODE = Convert.ToInt32(rdr["GROUP_ID"]);
+                    grp.ISACTIVE = rdr["STATUS"].ToString();
+                    groupList.Add(grp);
+                }
+            }
+            con.Dispose();
+            return groupList;
+        }
+        public List<AuditeeEntitiesModel> GetEntityTypesForComplianceFlow()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_ent_types_for_compliance_flow";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<ComplianceFlowModel> GetEntityTypeComplianceFlow(string ENTITY_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceFlowModel> resp = new List<ComplianceFlowModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_entity_type_compliance_flow";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceFlowModel cm = new ComplianceFlowModel();
+
+                    cm.ENTITY_TYPE_ID = rdr["e_id"].ToString();
+                    cm.ENTITY_TYPE_NAME = rdr["e_name"].ToString();
+                    cm.GROUP_ID = rdr["g_id"].ToString();
+                    cm.GROUP_NAME = rdr["g_name"].ToString();
+                    cm.PREV_GROUP_ID = rdr["prev_r_id"].ToString() == "" ? "0" : rdr["prev_r_id"].ToString();
+                    cm.PREV_GROUP_NAME = rdr["prev_r_name"].ToString();
+                    cm.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
+                    cm.NEXT_GROUP_NAME = rdr["next_r_name"].ToString();
+                    resp.Add(cm);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
 
         public string UpdateComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
         {
@@ -15760,44 +15861,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<ComplianceFlowModel> GetEntityTypeComplianceFlow(string ENTITY_TYPE_ID)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<ComplianceFlowModel> resp = new List<ComplianceFlowModel>();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_get_entity_type_compliance_flow";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ComplianceFlowModel cm = new ComplianceFlowModel();
-
-                    cm.ENTITY_TYPE_ID = rdr["e_id"].ToString();
-                    cm.ENTITY_TYPE_NAME = rdr["e_name"].ToString();
-                    cm.GROUP_ID = rdr["g_id"].ToString();
-                    cm.GROUP_NAME= rdr["g_name"].ToString();
-                    cm.PREV_GROUP_ID = rdr["prev_r_id"].ToString() == "" ? "0" : rdr["prev_r_id"].ToString();
-                    cm.PREV_GROUP_NAME = rdr["prev_r_name"].ToString();
-                    cm.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
-                    cm.NEXT_GROUP_NAME = rdr["next_r_name"].ToString();
-                    resp.Add(cm);
-
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
+     
         #endregion
     }
 }
