@@ -536,8 +536,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["GroupList"] = dBConnection.GetGroups();
-            ViewData["EntitiesList"] = dBConnection.GetEntityTypeList();
+            ViewData["GroupList"] = dBConnection.GetRolesForComplianceFlow();
+            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForComplianceFlow();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
