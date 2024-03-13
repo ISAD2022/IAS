@@ -15823,7 +15823,9 @@ namespace AIS.Controllers
                     cm.NEXT_GROUP_ID = rdr["next_r_id"].ToString() == "" ? "0" : rdr["next_r_id"].ToString();
                     cm.NEXT_GROUP_NAME = rdr["next_r_name"].ToString();
                     cm.COMP_DOWN_STATUS = rdr["c_status_down"].ToString();
+                    cm.COMP_DOWN_STATUS_DESC = rdr["c_status_down_desc"].ToString();
                     cm.COMP_UP_STATUS = rdr["c_status_up"].ToString();
+                    cm.COMP_UP_STATUS_DESC = rdr["c_status_up_desc"].ToString();
 
                     
                     resp.Add(cm);
