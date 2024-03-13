@@ -11,10 +11,12 @@ namespace AIS.Models
         public int? NEW_PARA_ID { get; set; }
         public int? OLD_PARA_ID { get; set; }
         public string GIST_OF_PARAS { get; set; }
-        public string AUDITED_BY { get; set; }
+        public string AUDIT_BY_ID { get; set; }
+        public string NEXT_R_ID { get; set; }
+        public string PREV_R_ID { get; set; }
+        public string STATUS_UP { get; set; }
+        public string STATUS_DOWN { get; set; }
         public string INDICATOR { get; set; }
-        public string COMPLIANCE_ID { get; set; }
-        public string COMPLIANCE_STATUS { get; set; }
-        public string COMPLIANCE_CYCLE { get; set; }
+     
     }
 }

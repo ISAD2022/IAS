@@ -53,8 +53,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -10074,9 +10074,11 @@ namespace AIS.Controllers
                     chk.NEW_PARA_ID = rdr["new_paraid"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_paraid"].ToString());
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString()); 
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();                   
-                    chk.INDICATOR = rdr["IND"].ToString();
-                   
-                    chk.AUDITED_BY = rdr["auditby_id"].ToString();
+                    chk.AUDIT_BY_ID = rdr["auditby_id"].ToString();
+                    chk.NEXT_R_ID = rdr["next_r_id"].ToString();
+                    chk.PREV_R_ID = rdr["per_r_id"].ToString();
+                    chk.STATUS_UP = rdr["c_status_up"].ToString();
+                    chk.STATUS_DOWN = rdr["c_status_down"].ToString();
                     list.Add(chk);
 
                 }
@@ -13463,6 +13465,8 @@ namespace AIS.Controllers
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
                     chk.REF_P = rdr["REF_P"].ToString();
+                    chk.ANNEX_ID = rdr["ANNEX_ID"].ToString();
+                    chk.ANNEXURE = rdr["NAME"].ToString();
                     list.Add(chk);
                 }
             }
