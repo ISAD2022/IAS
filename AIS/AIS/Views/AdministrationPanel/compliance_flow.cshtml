@@ -9,6 +9,9 @@
     var g_entTypeId = 0;
     var g_groupId = 0;
     $(document).ready(function () {
+        $('#entityTypeSelectionField').select2();
+        $('#entityTypeSelectionField').css("width", "100% !important");
+
         $('#groupSelectionPanel').hide();
         $('#prevNextGroupSelectionPanel').hide();
         entityTypeSelectionChangeEvent();
