@@ -17,6 +17,9 @@ namespace AIS.Models
         public string STATUS_UP { get; set; }
         public string STATUS_DOWN { get; set; }
         public string INDICATOR { get; set; }
+        public string PREV_ROLE { get; set; }
+        public string NEXT_ROLE { get; set; }
+        public string RECEIVED_FROM { get; set; }
      
     }
 }

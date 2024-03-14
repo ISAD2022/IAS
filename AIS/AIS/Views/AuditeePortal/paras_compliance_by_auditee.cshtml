@@ -3,10 +3,8 @@
     Layout = "_Layout";
 }
 <script>
-    var g_paraId = 0;
-    var g_auObsId = 0;
-    var g_paraCat = "";
-    var g_auditedBy = "";
+    var g_newParaId = 0;
+    var g_oldParaId = 0;
     var g_obsList = [];
 
     $(document).ready(function () {
@@ -24,38 +22,6 @@
         });
     });
 
-    function viewParaDetails(newParaId=0, oldParaId=0, indicator='', memo_no='') {
-
-        //get_old_para_compliance_text
-       
-        $.ajax({
-            url: "/ApiCalls/get_para_compliance_text",
-            type: "POST",
-            data: {
-                'NEW_PARA_ID': newParaId,
-                'OLD_PARA_ID': oldParaId,
-                'INDICATOR': indicator
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemoModel').modal('show');
-                $('#viewMemo_memoNumber').val(memo_no);             
-                $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
-                $('#viewMemo_memo').html(data.parA_TEXT);
-                $('#viewMemo_compliance').val('').trigger('change');
-                $('#listofRespPersons tbody').empty();
-                if (data.responsiblE_PPs.length > 0) {
-                    $.each(data.responsiblE_PPs, function (j, pp) {
-                        var srNo = $('#listofRespPersons tbody tr').length;
-                        srNo++;
-                        $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                    });
-                }
-            },
-
-            dataType: "json",
-        });
-    }
     function getLegacyPara() {
 
         $('#manageObsPanel tbody').empty();
@@ -68,18 +34,121 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
+                var hidePrevCol = "";
+                var hideNextCol = "";
+
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                 $.each(data, function (index, child) {
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+
+                    if (child.preV_ROLE == "N") {
+                        child.preV_ROLE = "";
+                        hidePrevCol = "d-none";
+                    }
+
+                    if (child.nexT_ROLE == "N") {
+                        child.nexT_ROLE = "";
+                        hideNextCol = "d-none";
+                    }
+                    if (child.receiveD_FROM == "N") {
+                        child.receiveD_FROM = "";
+                    }
+
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.preV_ROLE + '</p></td><td><p class="fw-normal mb-1">' + child.nexT_ROLE + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
+                if (hidePrevCol != "") {
+                    var columnIndexToHide = 3;
+                    $('#manageObsPanel tr').find('td:nth-child(' + (columnIndexToHide + 1) + '), th:nth-child(' + (columnIndexToHide + 1) + ')').hide();
+                }
+                if (hideNextCol != "") {
+                    var columnIndexToHide = 4;
+                    $('#manageObsPanel tr').find('td:nth-child(' + (columnIndexToHide + 1) + '), th:nth-child(' + (columnIndexToHide + 1) + ')').hide();
+                }
+
+
             },
 
             dataType: "json",
         });
 
     }
-    function PublishCompliance() {
+
+    function viewParaDetails(newParaId = 0, oldParaId = 0, indicator = '', memo_no = '', prevRole, nextRole) {
+
+        g_newParaId = newParaId;
+        g_oldParaId = oldParaId;
+
+        $.ajax({
+            url: "/ApiCalls/get_para_compliance_text",
+            type: "POST",
+            data: {
+                'NEW_PARA_ID': newParaId,
+                'OLD_PARA_ID': oldParaId,
+                'INDICATOR': indicator
+            },
+            cache: false,
+            success: function (data) {
+
+                if (prevRole == "") {
+                    $('#viewMemoModel').modal('show');
+                    $('#viewMemo_memoNumber').val(memo_no);
+                    $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
+                    $('#viewMemo_memo').html(data.parA_TEXT);
+                    $('#viewMemo_compliance').val('').trigger('change');
+                    if (prevRole == "")
+                        $('#prevRoleButtonHandler').remove();
+                    else
+                        $('#prevRoleButtonHandler').html(prevRole);
+
+                    if (nextRole == "")
+                        $('#nextRoleButtonHandler').remove();
+                    else
+                        $('#nextRoleButtonHandler').html(nextRole);
+
+                    $('#listofRespPersons tbody').empty();
+                    if (data.responsiblE_PPs.length > 0) {
+                        $.each(data.responsiblE_PPs, function (j, pp) {
+                            var srNo = $('#listofRespPersons tbody tr').length;
+                            srNo++;
+                            $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
+                        });
+                    }
+
+                } else {
+                    $('#viewMemoReportingModel').modal('show');
+                    $('#viewMemo_memoNumber_rep').val(memo_no);
+                    $('#viewMemo_paraGist_rep').val(data.gisT_OF_PARA);
+                    $('#viewMemo_memo_rep').html(data.parA_TEXT);
+                    $('#viewMemo_compliance_rep').val('');
+                    if (prevRole == "")
+                        $('#prevRoleButtonHandler_rep').remove();
+                    else
+                        $('#prevRoleButtonHandler_rep').html(prevRole);
+
+                    if (nextRole == "")
+                        $('#nextRoleButtonHandler_rep').remove();
+                    else
+                        $('#nextRoleButtonHandler_rep').html(nextRole);
+
+                    $('#listofRespPersons_rep tbody').empty();
+                    if (data.responsiblE_PPs.length > 0) {
+                        $.each(data.responsiblE_PPs, function (j, pp) {
+                            var srNo = $('#listofRespPersons_rep tbody tr').length;
+                            srNo++;
+                            $('#listofRespPersons_rep tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
+                        });
+                    }
+
+                }
+
+
+            },
+
+            dataType: "json",
+        });
+    }
+
+    function PublishCompliance(ind) {
 
         if ($('.richText-editor').html() == "") {
             alert("Please enter Reply");
@@ -103,14 +172,13 @@
 
 
         $.ajax({
-            url: "/ApiCalls/add_old_para_br_compliance_reply",
+            url: "/ApiCalls/submit_post_audit_compliance",
             type: "POST",
             data: {
-                'Para_ID': g_paraId,
-                'Para_Cat': g_paraCat,
-                'AU_OBS_ID': g_auObsId,
-                'AUDITED_BY': g_auditedBy,
-                'REPLY': $('.richText-editor').html(),
+                'OLD_PARA_ID': g_oldParaId,
+                'NEW_PARA_ID': g_newParaId,
+                'INDICATOR': ind,
+                'COMPLIANCE': $('.richText-editor').html(),
                 'EVIDENCE_LIST': productImagesArr
             },
             cache: false,
@@ -132,7 +200,7 @@
         $('#manageComplianceHistPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_compliance_history_count",
+            url: "/ApiCalls/get_compliance_history",
             type: "POST",
             data: {
                 'REF_P': paraREF,
@@ -140,36 +208,16 @@
             },
             cache: false,
             success: function (data) {
-                g_compCount = data.Message;
-                if (g_compCount > 0) {
+                var cycle_count = 0;
+                $.each(data, function (i, v) {
+                    if (v.coM_SEQ_NO > cycle_count) {
+                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                        cycle_count++;
+                    }
+                    else
+                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
 
-                    $.ajax({
-                        url: "/ApiCalls/get_compliance_history",
-                        type: "POST",
-                        data: {
-                            'REF_P': paraREF,
-                            'OBS_ID': obsID
-                        },
-                        cache: false,
-                        success: function (data) {
-                            var cycle_count = 0;
-                            $.each(data, function (i, v) {
-                                if (v.coM_SEQ_NO > cycle_count) {
-                                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                                    cycle_count++;
-                                }
-                                else
-                                    $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
-
-                            });
-
-                        },
-
-                        dataType: "json",
-                    });
-
-
-                }
+                });
             },
 
             dataType: "json",
@@ -214,7 +262,10 @@
                 <tr>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Title / Gist</th>                   
+                    <th class="col-md-auto">Title / Gist</th>
+                    <th class="col-md-auto">Previous Role</th>
+                    <th class="col-md-auto">Next Role</th>
+                    <th class="col-md-auto">Receive From</th>
                     <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
@@ -364,7 +415,72 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="PublishCompliance()" type="button" class="btn btn-danger">Save changes</button>
+                <button id="prevRoleButtonHandler" onclick="PublishCompliance('D')" type="button" class="btn btn-danger"></button>
+                <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="viewMemoReportingModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="viewMemo_memoNumber">Memo Number</label>
+                        <input id="viewMemo_memoNumber_rep" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memoNumber">Gist of Para</label>
+                        <input id="viewMemo_paraGist_rep" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">Para</label>
+                        <div id="viewMemo_memo_rep" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_respPP_rep" class="font-weight-bold">Responsible Personals</label>
+                        <div class="col-md-12 pl-0 pr-0">
+                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="viewMemo_compliance">Compliance</label>
+                        <textarea class="form-control" id="viewMemo_compliance_rep"></textarea>
+                    </div>
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="prevRoleButtonHandler_rep" onclick="PublishCompliance('D')" type="button" class="btn btn-danger"></button>
+                <button id="nextRoleButtonHandler_rep" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

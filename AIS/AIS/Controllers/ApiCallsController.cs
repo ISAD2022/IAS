@@ -876,10 +876,10 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public string add_old_para_br_compliance_reply(string Para_ID, int AU_OBS_ID, string Para_Cat, string REPLY, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST, string AUDITED_BY)
+        public string submit_post_audit_compliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
             string response = "";
-            response = dBConnection.AddOldParasBranchComplianceReply(Para_ID, AU_OBS_ID, Para_Cat, REPLY, EVIDENCE_LIST, AUDITED_BY);
+            response = dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, EVIDENCE_LIST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]

@@ -4,12 +4,12 @@
 }
 
 <script type="text/javascript">
-    
+
     var g_refP = "";
     var g_obsId = "";
     var g_pc = "";
     $('#document').ready(function () {
-      
+
     });
 
     function getZoneBranches() {
@@ -50,7 +50,7 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.anneX_ID + '"><td>' + v.anneX_ID + '</td><td>' + v.annexure + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.parA_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.parA_CATEGORY + '\', \'' + v.obS_ID + '\',\'' + v.reF_P + '\')"> View Para</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.anneX_ID + '"><td>' + v.audiT_PERIOD + '</td><td class="text-right">' + v.parA_NO + '</td><td class="text-right">' + v.anneX_ID + '</td><td>' + v.annexure + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="viewParaText(\'' + v.parA_CATEGORY + '\', \'' + v.obS_ID + '\',\'' + v.reF_P + '\',\'' + v.anneX_ID + '\')"> View Para</a></td></tr>');
 
                     });
                 },
@@ -60,11 +60,11 @@
         }
     }
 
-    function viewParaText(pc, obsId,ref_p) {
+    function viewParaText(pc, obsId, ref_p, annex_id) {
         g_refP = ref_p;
         g_obsId = obsId;
         g_pc = pc;
-        
+
 
         var callURL = "";
         if (pc == "N")
@@ -72,6 +72,7 @@
         else
             callURL = "/ApiCalls/get_para_text";
         $('#viewMemoModel').modal('show');
+        $('#updatedAnnexlist').val(annex_id);
         $('#viewMemo_memo').html("");
         $.ajax({
             url: callURL,
@@ -88,7 +89,7 @@
     }
     function assignAnnexureWithPara() {
 
-        if ($('#updatedAnnexlist').val()==0){
+        if ($('#updatedAnnexlist').val() == 0) {
             alert("Select Annexure to proceed");
             return;
         }
@@ -117,7 +118,7 @@
     function reloadLocation() {
         window.location.reload();
     }
-  
+
 </script>
 <div class="row col-md-12">
     <h3 style="color: rgb(186 113 46) !important;">Annexure Assignment with Audit Paras</h3>
@@ -134,7 +135,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["ZonesList"]))
                     {
-                                            <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
+                        <option value="@item.ZONEID" id="@item.ZONEID">@item.ZONENAME</option>
                     }
                 }
             }
@@ -156,21 +157,22 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-     <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-1">Annexure ID</th>
-                    <th class="col-md-2">Annexure</th>
-                    <th class="col-md-1">Audit Year</th>
-                    <th class="col-md-1">Para Number</th>
-                    <th class="col-md-5">Gist of Para</th>
-                    <th class="col-md-2 text-center"></th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
- 
+    <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped" style="font-size:12px !important;">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-2">Audit Year</th>
+
+                <th class="col-md-1">Para Number</th>
+                <th class="col-md-1">Annexure ID</th>
+                <th class="col-md-3">Annexure</th>
+                <th class="col-md-4">Gist of Para</th>
+                <th class="col-md-1 text-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
 </div>
 
 <div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
@@ -199,7 +201,7 @@
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                     {
-                                                            <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                     }
 
                                 }
