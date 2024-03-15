@@ -55,18 +55,9 @@
                         child.receiveD_FROM = "";
                     }
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.preV_ROLE + '</p></td><td><p class="fw-normal mb-1">' + child.nexT_ROLE + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
-                });
-                if (hidePrevCol != "") {
-                    var columnIndexToHide = 3;
-                    $('#manageObsPanel tr').find('td:nth-child(' + (columnIndexToHide + 1) + '), th:nth-child(' + (columnIndexToHide + 1) + ')').hide();
-                }
-                if (hideNextCol != "") {
-                    var columnIndexToHide = 4;
-                    $('#manageObsPanel tr').find('td:nth-child(' + (columnIndexToHide + 1) + '), th:nth-child(' + (columnIndexToHide + 1) + ')').hide();
-                }
-
+                });              
 
             },
 
@@ -155,13 +146,15 @@
     function PublishCompliance(ind) {
 
         var complianceRemarks = "";
+        var commentsRemarks = "";
+        var productImagesArr = [];
 
-        if (prevRole == "") {
+        if (g_prevRole == "") {
             if ($('.richText-editor').html() == "") {
                 alert("Please provide Compliance to proceed");
                 return;
             }
-            var productImagesArr = [];
+          
             g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
             $.each(g_imgFiles, function (i, v) {
                 var ProductObject = {
@@ -185,7 +178,7 @@
                 alert("Please provide Remarks to proceed");
                 return;
             }
-            complianceRemarks = $('#viewMemo_compliance_rep').val();
+            commentsRemarks = $('#viewMemo_compliance_rep').val();
         }
                
 
@@ -197,6 +190,7 @@
                 'NEW_PARA_ID': g_newParaId,
                 'INDICATOR': ind,
                 'COMPLIANCE': complianceRemarks,
+                'COMMENTS': commentsRemarks,
                 'EVIDENCE_LIST': productImagesArr
             },
             cache: false,
@@ -270,21 +264,16 @@
 </script>
 
 <div class="row">
-    <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Post Compliance Of Outstanding Paras</h3>
-        <h5>Branch Name: <span id="entityNameField"></span></h5>
-    </div>
+   
 
     <div class="col-md-12 mt-3">
-        <h5 class=""> Pending Compliance</h5>
+      
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Previous Role</th>
-                    <th class="col-md-auto">Next Role</th>
                     <th class="col-md-auto">Receive From</th>
                     <th class="col-md-auto">Compliance History</th>
                     <th class="col-md-auto">Action</th>
