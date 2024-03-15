@@ -26,8 +26,27 @@ namespace AIS.Controllers
             tm = _tpMenu;
         }
 
-      
-   
+
+
+        public IActionResult post_compliance()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
         public IActionResult compliance_submitted_by_auditee()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

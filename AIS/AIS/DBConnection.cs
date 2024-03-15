@@ -10348,14 +10348,14 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("Auditee_COM", OracleDbType.Clob).Value = COMPLIANCE;
-                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("P_IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     //AUD_RESP_ID = Convert.ToInt32(rdr["RESPID"]);
-                    //resp = rdr["remarks"].ToString();
-                    resp = "Compliance Submitted";
+                    resp = rdr["remarks"].ToString();
+                    
                 }
                 //  cmd.ExecuteReader();
               /*  if (EVIDENCE_LIST != null)
