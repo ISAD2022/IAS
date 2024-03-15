@@ -10344,11 +10344,11 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Old_id", OracleDbType.Int32).Value = OLD_PARA_ID;
                 cmd.Parameters.Add("new_id", OracleDbType.Int32).Value = NEW_PARA_ID;
-                cmd.Parameters.Add("Entity_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("Entity_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("Auditee_COM", OracleDbType.Clob).Value = COMPLIANCE;
-                cmd.Parameters.Add("IND", OracleDbType.Clob).Value = INDICATOR;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
