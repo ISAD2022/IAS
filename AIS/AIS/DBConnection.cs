@@ -10033,6 +10033,7 @@ namespace AIS.Controllers
                     chk.NEXT_ROLE = rdr["next_Role"].ToString();
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
+                    chk.COM_ID = rdr["COM_ID"].ToString();
                     list.Add(chk);
 
                 }
@@ -13078,7 +13079,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<ComplianceHistoryModel> GetComplianceHistory(string REF_P, string OBS_ID)
+        public List<ComplianceHistoryModel> GetComplianceHistory(string COM_ID)
         {
 
             List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
@@ -13089,8 +13090,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
-                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("COM_ID", OracleDbType.Varchar2).Value = COM_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -13100,7 +13100,6 @@ namespace AIS.Controllers
                     st.OBS_ID = rdr["AU_OBS_ID"].ToString();
                     st.REF_P = rdr["ref_p"].ToString();
                     st.REMARKS = rdr["remarks"].ToString();
-                    //st.ATTENDED_ON = rdr["attended_on,"].ToString();
                     st.ATTENDED_BY = rdr["attended_by"].ToString();
                     st.ROLE_ID = rdr["roleid"].ToString();
                     st.STAGE = rdr["STAGE"].ToString();

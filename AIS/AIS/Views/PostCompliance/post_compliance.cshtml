@@ -55,7 +55,7 @@
                         child.receiveD_FROM = "";
                     }
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.reF_P + '\',\'' + child.aU_OBS_ID + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.coM_ID + '\',\'' + child.indicator + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });              
 
@@ -207,9 +207,8 @@
         $('#viewMemoReportingModel').modal('hide');
         getLegacyPara();
     }
-    function viewParaCompliance(paraREF, obsID) {
-        g_paraRef = paraREF;
-        g_auOBSID = obsID;
+    function viewParaCompliance(comID, ind) {
+       
         $('#viewParaComplianceModel').modal('show');
         $('#manageComplianceHistPanel tbody').empty();
 
@@ -217,8 +216,7 @@
             url: "/ApiCalls/get_compliance_history",
             type: "POST",
             data: {
-                'REF_P': paraREF,
-                'OBS_ID': obsID
+                'COM_ID': comID,
             },
             cache: false,
             success: function (data) {

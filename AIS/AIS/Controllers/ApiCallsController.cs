@@ -1407,12 +1407,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceTextAuditee(COMPLIANCE_ID) + "\"}";
 
         }
-        [HttpPost]
-        public string get_compliance_history_count_auditee(string REF_P, string OBS_ID)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCountAuditee(REF_P, OBS_ID) + "\"}";
-
-        }
+      
         [HttpPost]
         public List<ComplianceHistoryModel> get_compliance_history_auditee(string REF_P, string OBS_ID)
         {
@@ -1426,9 +1421,9 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public List<ComplianceHistoryModel> get_compliance_history(string REF_P, string OBS_ID)
+        public List<ComplianceHistoryModel> get_compliance_history(string COM_ID)
         {
-            return dBConnection.GetComplianceHistory(REF_P, OBS_ID);
+            return dBConnection.GetComplianceHistory(COM_ID);
 
         }
 

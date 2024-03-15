@@ -20,6 +20,7 @@ namespace AIS.Models
         public string PREV_ROLE { get; set; }
         public string NEXT_ROLE { get; set; }
         public string RECEIVED_FROM { get; set; }
+        public string COM_ID { get; set; }
      
     }
 }
