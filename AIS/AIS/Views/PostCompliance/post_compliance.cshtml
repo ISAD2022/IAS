@@ -220,24 +220,31 @@
             },
             cache: false,
             success: function (data) {
-                var cycle_count = 0;
+
+                var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
                 $.each(data, function (i, v) {
-                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="getComplianceText(' + v.hisT_ID + ',' + v.coM_ID + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                      
+                    if (v.coM_CYCLE > cycle_count) {
+                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                        cycle_count++;
+                    }
+                    else
+                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
+
                 });
+             
             },
 
             dataType: "json",
         });
     }
-    function getComplianceText(histID, comID) {
+    function getComplianceText(comID,cycle) {
         $('#viewParaComplianceTextModel').modal('show');
         $.ajax({
             url: "/ApiCalls/get_old_para_compliance_cycle_text",
             type: "POST",
             data: {
                 'COM_ID': comID,
-                'HIST_ID': histID
+                'C_CYCLE': cycle
             },
             cache: false,
             success: function (data) {

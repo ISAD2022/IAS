@@ -10108,7 +10108,7 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string COM_ID, string HIST_ID)
+        public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string COM_ID, string C_CYCLE)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10122,7 +10122,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceforhistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("HIST_ID", OracleDbType.Int32).Value = HIST_ID;
+                cmd.Parameters.Add("C_CYCLE", OracleDbType.Int32).Value = C_CYCLE;
                 cmd.Parameters.Add("COM_ID", OracleDbType.Int32).Value = COM_ID;                
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -13385,6 +13385,9 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
                 cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = REF_P;
                 cmd.Parameters.Add("ANEX", OracleDbType.Varchar2).Value = ANNEX_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

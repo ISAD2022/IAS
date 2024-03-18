@@ -836,9 +836,9 @@ namespace AIS.Controllers
             return dBConnection.GetParaComplianceText(OLD_PARA_ID, NEW_PARA_ID, INDICATOR);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_compliance_cycle_text(string COM_ID, string HIST_ID)
+        public GetOldParasBranchComplianceTextModel get_old_para_compliance_cycle_text(string COM_ID, string C_CYCLE)
         {
-            return dBConnection.GetOldParasComplianceCycleText(COM_ID, HIST_ID);
+            return dBConnection.GetOldParasComplianceCycleText(COM_ID, C_CYCLE);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
