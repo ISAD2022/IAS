@@ -10108,32 +10108,32 @@ namespace AIS.Controllers
             return chk;
         }
 
-        public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string Ref_P, string OBS_ID, string COM_SEQ)
+        public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string COM_ID, string HIST_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
+            GetOldParasBranchComplianceTextModel resp = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history_auditee_text";
+                
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceforhistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = Ref_P;
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Varchar2).Value = OBS_ID;
-                cmd.Parameters.Add("c_seq", OracleDbType.Varchar2).Value = COM_SEQ;
+                cmd.Parameters.Add("HIST_ID", OracleDbType.Int32).Value = HIST_ID;
+                cmd.Parameters.Add("COM_ID", OracleDbType.Int32).Value = COM_ID;                
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
-
                 while (rdr.Read())
                 {
-                    chk.PARA_TEXT = rdr["reply"].ToString();
+                   
+                    resp.PARA_TEXT =rdr["reply"].ToString();
                 }
             }
             con.Dispose();
-            return chk;
+            return resp;
         }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
@@ -13014,80 +13014,17 @@ namespace AIS.Controllers
             return resp;
 
         }
+     
 
-        public List<ComplianceHistoryModel> GetComplianceHistoryAuditee(string REF_P, string OBS_ID)
+        public List<PostComplianceHistoryModel> GetComplianceHistory(string COM_ID)
         {
 
-            List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
+            List<PostComplianceHistoryModel> stList = new List<PostComplianceHistoryModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_auditee";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
-                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ComplianceHistoryModel st = new ComplianceHistoryModel();
-                    st.ID = Convert.ToInt32(rdr["ID"].ToString());
-                    st.OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    st.REF_P = rdr["ref_p"].ToString();
-                    st.REMARKS = rdr["remarks"].ToString();
-                    st.ATTENDED_ON = rdr["attended_on,"].ToString();
-                    st.ATTENDED_BY = rdr["attended_by"].ToString();
-                    st.ROLE_ID = rdr["roleid"].ToString();
-                    st.STAGE = rdr["STAGE"].ToString();
-                    st.SEQ = rdr["seq"].ToString();
-                    st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
-                    st.ENTITY_ID = rdr["entity_id"].ToString();
-                    st.AUDITED_BY = rdr["auditedby"].ToString();
-                    st.C_STATUS = rdr["c_status"].ToString();
-                    st.PARA_CATEGORY = rdr["para_category"].ToString();
-                    stList.Add(st);
-                }
-            }
-            con.Dispose();
-            return stList;
-
-        }
-
-        public string GetComplianceHistoryCount(string REF_P, string OBS_ID)
-        {
-            string resp = "";
-            var con = this.DatabaseConnection(); con.Open();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history_num";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("REF_P", OracleDbType.Varchar2).Value = REF_P;
-                cmd.Parameters.Add("OBSID", OracleDbType.Varchar2).Value = OBS_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp = rdr["no_of_records"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-
-        public List<ComplianceHistoryModel> GetComplianceHistory(string COM_ID)
-        {
-
-            List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
-            var con = this.DatabaseConnection(); con.Open();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_hd.P_get_v_auditee_paras_compliance_history";
+                cmd.CommandText = "pkg_ae.P_GetParasForCompliancehistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("COM_ID", OracleDbType.Varchar2).Value = COM_ID;
@@ -13095,21 +13032,19 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ComplianceHistoryModel st = new ComplianceHistoryModel();
-                    st.ID = Convert.ToInt32(rdr["ID"].ToString());
-                    st.OBS_ID = rdr["AU_OBS_ID"].ToString();
-                    st.REF_P = rdr["ref_p"].ToString();
-                    st.REMARKS = rdr["remarks"].ToString();
-                    st.ATTENDED_BY = rdr["attended_by"].ToString();
-                    st.ROLE_ID = rdr["roleid"].ToString();
-                    st.STAGE = rdr["STAGE"].ToString();
-                    st.NAME = rdr["DESIGNATION"].ToString();
-                    st.SEQ = rdr["seq"].ToString();
-                    st.COM_SEQ_NO = rdr["com_seq_id"].ToString();
-                    st.ENTITY_ID = rdr["entity_id"].ToString();
-                    st.AUDITED_BY = rdr["auditedby"].ToString();
-                    st.C_STATUS = rdr["c_status"].ToString();
-                    st.PARA_CATEGORY = rdr["para_category"].ToString();
+                    PostComplianceHistoryModel st = new PostComplianceHistoryModel();
+                    st.HIST_ID = Convert.ToInt32(rdr["HIST_ID"].ToString());
+                    st.COM_ID = Convert.ToInt32(rdr["COM_ID"].ToString());
+                    st.COM_CYCLE = rdr["COM_CYCLE"].ToString();
+                    st.COM_STAGE = rdr["COM_STAGE"].ToString();
+                    st.COM_STATUS = rdr["COM_STATUS"].ToString();
+                    st.COMMENT_BY_ROLE = rdr["COMMENT_BY_ROLE"].ToString();
+                    st.NAME = rdr["NAME"].ToString();
+                    st.DESIGNATION = rdr["DESIGNATION"].ToString();
+                    st.PP_NO = rdr["PP_NO"].ToString();
+                    st.COMMENT_ON = rdr["COMMENT_ON"].ToString();
+                    st.COMMENTS = rdr["COMMENTS"].ToString();
+                    st.COM_FLOW = rdr["COM_FLOW"].ToString();
                     stList.Add(st);
                 }
             }

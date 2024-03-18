@@ -57,7 +57,7 @@
 
                     $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.coM_ID + '\',\'' + child.indicator + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
-                });              
+                });
 
             },
 
@@ -154,7 +154,7 @@
                 alert("Please provide Compliance to proceed");
                 return;
             }
-          
+
             g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
             $.each(g_imgFiles, function (i, v) {
                 var ProductObject = {
@@ -180,7 +180,7 @@
             }
             commentsRemarks = $('#viewMemo_compliance_rep').val();
         }
-               
+
 
         $.ajax({
             url: "/ApiCalls/submit_post_audit_compliance",
@@ -208,7 +208,7 @@
         getLegacyPara();
     }
     function viewParaCompliance(comID, ind) {
-       
+
         $('#viewParaComplianceModel').modal('show');
         $('#manageComplianceHistPanel tbody').empty();
 
@@ -222,31 +222,22 @@
             success: function (data) {
                 var cycle_count = 0;
                 $.each(data, function (i, v) {
-                    if (v.coM_SEQ_NO > cycle_count) {
-                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_SEQ_NO + '</div></td><td>' + v.attendeD_BY + '</td><td><div>' + v.name + '</div><td>' + v.stage + '</td></td><td>' + v.remarks + '</td><td><a onclick="getComplianceText(' + v.coM_SEQ_NO + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                        cycle_count++;
-                    }
-                    else
-                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.attendeD_BY + '</div></td><td><div>' + v.name + '</div></td><td>' + v.stage + '</td><td>' + v.remarks + '</td><td></td></tr>');
-
+                    $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="getComplianceText(' + v.hisT_ID + ',' + v.coM_ID + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                      
                 });
             },
 
             dataType: "json",
         });
-
-
     }
-    function getComplianceText(comSeq) {
+    function getComplianceText(histID, comID) {
         $('#viewParaComplianceTextModel').modal('show');
         $.ajax({
             url: "/ApiCalls/get_old_para_compliance_cycle_text",
             type: "POST",
             data: {
-                'REF_P': g_paraRef,
-                'OBS_ID': g_auOBSID,
-                'COM_SEQ': comSeq
-
+                'COM_ID': comID,
+                'HIST_ID': histID
             },
             cache: false,
             success: function (data) {
@@ -262,10 +253,10 @@
 </script>
 
 <div class="row">
-   
+
 
     <div class="col-md-12 mt-3">
-      
+
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
@@ -514,6 +505,7 @@
                                     <th class="col-md-auto">PP Number</th>
                                     <th class="col-md-auto">Designation</th>
                                     <th class="col-md-auto">Name</th>
+                                    <th class="col-md-auto">Remarks Role</th>
                                     <th class="col-md-auto">Remarks</th>
                                     <th class="col-md-auto">View Compliance</th>
                                 </tr>

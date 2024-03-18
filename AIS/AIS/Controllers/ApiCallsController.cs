@@ -836,9 +836,9 @@ namespace AIS.Controllers
             return dBConnection.GetParaComplianceText(OLD_PARA_ID, NEW_PARA_ID, INDICATOR);
         }
         [HttpPost]
-        public GetOldParasBranchComplianceTextModel get_old_para_compliance_cycle_text(string REF_P, string OBS_ID, string COM_SEQ)
+        public GetOldParasBranchComplianceTextModel get_old_para_compliance_cycle_text(string COM_ID, string HIST_ID)
         {
-            return dBConnection.GetOldParasComplianceCycleText(REF_P, OBS_ID, COM_SEQ);
+            return dBConnection.GetOldParasComplianceCycleText(COM_ID, HIST_ID);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
@@ -1407,21 +1407,9 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceTextAuditee(COMPLIANCE_ID) + "\"}";
 
         }
-      
+        
         [HttpPost]
-        public List<ComplianceHistoryModel> get_compliance_history_auditee(string REF_P, string OBS_ID)
-        {
-            return dBConnection.GetComplianceHistoryAuditee(REF_P, OBS_ID);
-
-        }
-        [HttpPost]
-        public string get_compliance_history_count(string REF_P, string OBS_ID)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceHistoryCount(REF_P, OBS_ID) + "\"}";
-
-        }
-        [HttpPost]
-        public List<ComplianceHistoryModel> get_compliance_history(string COM_ID)
+        public List<PostComplianceHistoryModel> get_compliance_history(string COM_ID)
         {
             return dBConnection.GetComplianceHistory(COM_ID);
 
