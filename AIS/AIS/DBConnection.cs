@@ -10333,6 +10333,7 @@ namespace AIS.Controllers
         {
 
             string resp = "";
+            Int32 TEXT_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -10355,39 +10356,34 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    //AUD_RESP_ID = Convert.ToInt32(rdr["RESPID"]);
-                    resp = rdr["remarks"].ToString();
-                    
+                   resp = rdr["remarks"].ToString();
+                   TEXT_ID = Convert.ToInt32(rdr["text_id"].ToString());
+
                 }
-                //  cmd.ExecuteReader();
-              /*  if (EVIDENCE_LIST != null)
+                cmd.ExecuteReader();
+                if (EVIDENCE_LIST != null)
                 {
                     if (EVIDENCE_LIST.Count > 0)
                     {
                         foreach (var item in EVIDENCE_LIST)
                         {
-                            string fileName = Para_ID + "_" + item.IMAGE_NAME;
-                            cmd.CommandText = "pkg_ae.P_AddOldParasReply_evidences";
+                            string fileName = TEXT_ID + "_" + item.IMAGE_NAME;
+                            cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_Evidence";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
-                            cmd.Parameters.Add("RESPID", OracleDbType.Int32).Value = AUD_RESP_ID;
-                            cmd.Parameters.Add("P_C", OracleDbType.Varchar2).Value = Para_Cat;
-                            cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = Para_ID;
-                            cmd.Parameters.Add("AUOBSID", OracleDbType.Varchar2).Value = AU_OBS_ID;
+                            cmd.Parameters.Add("TEXT_ID", OracleDbType.Varchar2).Value = TEXT_ID;                           
                             cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
                             cmd.Parameters.Add("LEN_ID", OracleDbType.Int32).Value = item.LENGTH;
                             cmd.Parameters.Add("ENTER_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("FILETYPE", OracleDbType.Varchar2).Value = item.IMAGE_TYPE;
                             cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
                             cmd.Parameters.Add("SEQ_ID", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
-
-
                             cmd.ExecuteReader();
                             this.SaveImage(item.IMAGE_DATA, fileName);
                         }
                     }
 
-                }*/
+                }
             }
 
             con.Dispose();

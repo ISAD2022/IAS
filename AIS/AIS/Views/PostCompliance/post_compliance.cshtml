@@ -157,9 +157,8 @@
 
             g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
             $.each(g_imgFiles, function (i, v) {
-                var ProductObject = {
-                    'OBS_ID': g_paraId,
-                    'OBS_TEXT_ID': 0,
+                var ProductObject = {                    
+                    'TEXT_ID': 0,
                     'IMAGE_NAME': v.FileName,
                     'IMAGE_DATA': v.Base64,
                     'IMAGE_TYPE': v.MimeType,
