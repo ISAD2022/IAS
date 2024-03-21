@@ -72,7 +72,6 @@
         g_oldParaId = oldParaId;
         g_prevRole = prevRole;
         g_nextRole = nextRole;
-
         $.ajax({
             url: "/ApiCalls/get_para_compliance_text",
             type: "POST",
@@ -248,6 +247,20 @@
             cache: false,
             success: function (data) {
                 $('#complianceCycleTextPanel').html(data.parA_TEXT);
+                $('#complianceCycleEvidences').empty();
+                if (data.evidences.length > 0) {
+                                        
+                    $.each(data.evidences, function (j, pp) {
+                        $('#complianceCycleEvidences').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
+                    });
+                }else{
+                    $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
+                }
+
+                lightbox.option({
+                    'resizeDuration': 200,
+                    'wrapAround': true
+                });
             },
 
             dataType: "json",
@@ -257,6 +270,29 @@
 
     }
 </script>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+<style type="text/css">
+    .square-image {
+        width: 270px; /* Set the desired width */
+        height: 270px; /* Set the desired height */
+        padding: 2px;
+        border: 1px solid;
+        object-fit: cover; /* Ensure the image covers the container */
+    }
+
+    .gallery{
+         display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px; /* Adjust the gap between images */
+
+    }
+</style>
+</head>
 
 <div class="row">
 
@@ -534,7 +570,7 @@
     <div class="modal-dialog modal-xl" role="document" style="min-width:85% !important;">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Compliance Text</h5>
+                <h5 class="modal-title">Auditee Compliance</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -542,8 +578,14 @@
             <div class="modal-body">
                 <form>
 
+                    <h5>Compliance Text</h5>
+
                     <div class="row col-md-12 mt-3">
                         <div id="complianceCycleTextPanel" class="col-md-12"></div>
+                    </div>
+                    <h5 class="mt-4">Evidences</h5>
+                    <div id="complianceCycleEvidences" class="gallery" style="display:inline-flex">                        
+                     
                     </div>
 
                 </form>

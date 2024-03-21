@@ -63,24 +63,24 @@
                     $('#errorDescField').text(data.errorMsg);
                     $('#inputPPNoField').attr('disabled', true);
                     $('#inputPassword').attr('disabled', true);
-
                 } 
                 else 
                 {
-                    //BAC GROUP ID = 37
+
+                    if(data.passwordChangeRequired){
+                        window.location.href = "/Home/Change_Password";
+                        return;
+                    }
                     if (data.userGroupID==37 ) {
                         window.location.href = "/BAC/Agenda";
                     }else{
                         if (g_retUrl != null && g_retUrl != "") {
                             window.location.href = g_retUrl;
                         }
-
                         else {
                             window.location.href = "/home";
                         }
                     }
-
-                   
                     
                 }
                 $('#submitLoginButton').attr('disabled', false);

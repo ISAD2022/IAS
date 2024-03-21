@@ -40,5 +40,6 @@ namespace AIS.Models
         public string ErrorMsg { get; set; }
         public bool isAuthenticate { get; set; }
         public bool isAlreadyLoggedIn { get; set; }
+        public bool passwordChangeRequired { get; set; }
     }
 }

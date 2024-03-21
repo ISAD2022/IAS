@@ -832,7 +832,6 @@ namespace AIS.Controllers
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_para_compliance_text(int OLD_PARA_ID = 0, int NEW_PARA_ID = 0, string INDICATOR = "")
         {
-           // return dBConnection.GetOldParasBranchComplianceText(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);
             return dBConnection.GetParaComplianceText(OLD_PARA_ID, NEW_PARA_ID, INDICATOR);
         }
         [HttpPost]
