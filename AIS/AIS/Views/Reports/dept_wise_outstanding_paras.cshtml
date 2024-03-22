@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Report ~ Para Position Analysis";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#observation_panel tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+
+
+    })
+
+    function getAuditEngagementDetials() {
+
+        if ($('#auditedByField').val() == 0) {
+            alert("Select Audited By Department");
+            return;
+        }
+
+        if ($('#auditPeriodField').val() == 0) {
+            alert("Select Audit Period");
+            return;
+        }
+
+        $('#observation_panel tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/get_audit_plan_engagement_detailed_report",
+            type: "POST",
+            data: {
+                'AUDITED_BY': $('#auditedByField').val(),
+                    'PERIOD_ID': $('#auditPeriodField').val()
+            },
+            cache: false,
+            success: function (data) {
+
+
+                $.each(data, function (i, v) {
+
+                    $('#observation_panel tbody').append('<tr><td align="center"> ' + ++i + '</td><td  align="left">' + v.enG_ID + '</td><td  align="left">' + v.reportinG_OFFICE + '</td><td align="left">' + v.entitY_NAME + '</td><td align="left">' + v.audiT_TEAM + '</td><td align="left">' + v.oP_START_DATE + '</td><td align="left">' + v.oP_END_DATE + '</td><td align="left">' + v.audiT_START_DATE + '</td><td align="left">' + v.audiT_END_DATE + '</td><td align="left">' + v.traveL_DAYS + '</td><td align="left">' + v.discussioN_DAYS + '</td><td align="left">' + v.revenuE_RECORD_DAYS + '</td><td align="left">' + v.weekenD_DAYS + '</td><td align="left">' + v.totaL_DAYS + '</td><td align="left">' + v.enG_STATUS + '</td></tr>');
+
+                });
+
+
+            },
+            dataType: "json",
+        });
+
+
+    }
+
+
+</script>
+<div class="row col-md-12">
+
+    <div class="row col-md-12 mt-1">
+
+        <h3 style="color: #45c545;">Department Wise Outstanding Paras</h3>
+
+        <div class="row mt-3 col-md-12">
+            <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+                    <tr>
+                        <th class="col-md-auto">Sr. No.</th>
+                        <th class="col-md-auto ">Department</th>                        
+                        <th class="col-md-auto ">2009</th>
+                        <th class="col-md-auto ">2010</th>
+                        <th class="col-md-auto text-center">2012</th>
+                        <th class="col-md-auto text-center">2014</th>
+                        <th class="col-md-auto text-center">2015</th>
+                        <th class="col-md-auto text-center">2017</th>
+                        <th class="col-md-auto text-center">2018</th>
+                        <th class="col-md-auto text-center">2019</th>
+                        <th class="col-md-auto text-center">2020</th>
+                        <th class="col-md-auto text-center">2021</th>
+                        <th class="col-md-auto text-center">2022</th>
+                        <th class="col-md-auto text-center">2023</th>
+                        <th class="col-md-auto text-center">2024</th>
+                        <th class="col-md-auto text-center">Grand Total</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
