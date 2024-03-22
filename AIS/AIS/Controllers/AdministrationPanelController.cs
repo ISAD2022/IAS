@@ -531,7 +531,6 @@ namespace AIS.Controllers
             }
         }
 
-
         public IActionResult compliance_flow()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
