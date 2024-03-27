@@ -1943,9 +1943,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string submit_new_team_id_for_post_changes_team_eng_reversal(int TEAM_ID, int ENG_ID)
+        public string submit_new_team_id_for_post_changes_team_eng_reversal(int TEAM_ID, int ENG_ID, int AUDITED_BY_ID, string TEAM_NAME)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitNewTeamIdForPostChangesTeamEngReversal(TEAM_ID, ENG_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitNewTeamIdForPostChangesTeamEngReversal(TEAM_ID, ENG_ID, AUDITED_BY_ID, TEAM_NAME) + "\"}";
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

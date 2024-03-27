@@ -15821,7 +15821,7 @@ namespace AIS.Controllers
 
         }
 
-        public string SubmitNewTeamIdForPostChangesTeamEngReversal(int TEAM_ID, int ENG_ID)
+        public string SubmitNewTeamIdForPostChangesTeamEngReversal(int TEAM_ID, int ENG_ID, int AUDITED_BY_ID, string TEAM_NAME)
         {
 
             sessionHandler = new SessionHandler();
@@ -15839,6 +15839,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("Teamid", OracleDbType.Int32).Value = TEAM_ID;
+                cmd.Parameters.Add("AUDID", OracleDbType.Int32).Value = AUDITED_BY_ID;
+                cmd.Parameters.Add("TeamName", OracleDbType.Varchar2).Value = TEAM_NAME;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

@@ -180,7 +180,7 @@
                         else
                             team.status = 'Inactive';
                         if (team.status == 'Active')
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td><input name="newTeamChange" class="newTeamChange" id="team_' + team.t_ID + '" type="radio" /></td></tr>');
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="tName_Col"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td><input name="newTeamChange" class="newTeamChange" id="team_' + team.t_ID + '" type="radio" /></td></tr>');
                         
                           srNo++;
                     } else {
@@ -226,7 +226,9 @@
             type: "POST",
             data: {
                 'TEAM_ID':$('.newTeamChange:checked').attr('id').split('team_')[1],
-                'ENG_ID':$('#childposting option:selected').val()
+                'TEAM_NAME':$('.newTeamChange:checked').attr('id').split('team_')[1],
+                'ENG_ID':$('#childposting option:selected').val(),
+                'AUDITED_BY_ID':$('#childposting option:selected').val()
             },
 
             cache: false,
