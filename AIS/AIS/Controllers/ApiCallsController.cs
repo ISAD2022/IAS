@@ -1929,6 +1929,24 @@ namespace AIS.Controllers
         {
             return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID, GROUP_ID);
         }
+
+        [HttpPost]
+        public List<DepttWiseOutstandingParasModel> get_outstanding_paras_for_entity_type_id(string ENTITY_TYPE_ID)
+        {
+            return dBConnection.GetOutstandingParasForEntityTypeId(ENTITY_TYPE_ID);
+        }
+
+        [HttpPost]
+        public List<AuditTeamModel> get_team_memeber_details_for_post_changes_team_eng_reversal(int AUDITED_BY_DEPT)
+        {
+            return dBConnection.GetAuditTeams(AUDITED_BY_DEPT);
+        }
+
+        [HttpPost]
+        public string submit_new_team_id_for_post_changes_team_eng_reversal(int TEAM_ID, int ENG_ID)
+        {
+            return dBConnection.SubmitNewTeamIdForPostChangesTeamEngReversal(TEAM_ID, ENG_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

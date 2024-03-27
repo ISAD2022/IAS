@@ -14,6 +14,7 @@ namespace AIS.Models
         public string OP_START_DATE { get; set; }
         public string OP_END_DATE { get; set; }
         public string ENTITY_ID { get; set; }
+        public string AUDITED_BY_ID { get; set; }
         public string STATUS_ID { get; set; }
         public string STATUS { get; set; }
       

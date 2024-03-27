@@ -153,6 +153,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
             ViewData["statusList"] = dBConnection.GetObservationReversalStatus();
+           
 
             if (!sessionHandler.IsUserLoggedIn())
             {

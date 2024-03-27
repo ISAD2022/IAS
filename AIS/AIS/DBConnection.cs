@@ -16,6 +16,7 @@ using iTextSharp.tool.xml.parser;
 using System.Globalization;
 using iText.Signatures;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.CodeAnalysis;
 
 namespace AIS.Controllers
 {
@@ -54,7 +55,7 @@ namespace AIS.Controllers
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
                 ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblais";
+                ocsb.UserID = "ztblaisdev";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -12900,6 +12901,7 @@ namespace AIS.Controllers
                     os.OP_START_DATE = rdr["OP_STARTDATE"].ToString();
                     os.OP_END_DATE = rdr["OP_ENDDATE"].ToString();
                     os.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    os.AUDITED_BY_ID = rdr["auditby_id"].ToString();
                     os.STATUS_ID = rdr["STATUS_ID"].ToString();
                     os.STATUS = rdr["STATUS"].ToString();
                     resp.Add(os);
@@ -15769,6 +15771,74 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
                 cmd.Parameters.Add("P_GROUP_ID", OracleDbType.Int32).Value = PREV_GROUP_ID;
                 cmd.Parameters.Add("N_GROUP_ID", OracleDbType.Int32).Value = NEXT_GROUP_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<DepttWiseOutstandingParasModel> GetOutstandingParasForEntityTypeId(string ENTITY_TYPE_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<DepttWiseOutstandingParasModel> resp = new List<DepttWiseOutstandingParasModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_DEPT_WISE_PARA_POSITION";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("ENT_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DepttWiseOutstandingParasModel cm = new DepttWiseOutstandingParasModel();
+
+                    cm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    cm.ENTITY_NAME = rdr["NAME"].ToString();
+                    cm.AGE = rdr["AGE"].ToString();
+                    cm.TOTAL_PARAS = rdr["TOTAL_PARAS"].ToString();
+                    resp.Add(cm);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string SubmitNewTeamIdForPostChangesTeamEngReversal(int TEAM_ID, int ENG_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_audit_team_postchanges";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("Teamid", OracleDbType.Int32).Value = TEAM_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
