@@ -3,6 +3,15 @@
     Layout = "_Layout";
 }
 
+<style type="text/css">
+
+    #observation_panel thead tr th{
+        vertical-align:middle !important;
+    }
+
+
+</style>
+
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -62,10 +71,10 @@
 
     <h3 style="color: #45c545;">Department Wise Outstanding Paras</h3>
 
-    <div class="col-md-12">
+    <div class="row col-md-12">
         <label>Entity Type</label>
     </div>
-    <div class="col-md-12">
+    <div class="row col-md-12">
         <select id="entityTypeSelectionField" onchange="entityTypeSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
             <option value="0" selected>--Select Entity Type--</option>
             @{
@@ -86,30 +95,31 @@
 
 
 
+  
+
+
     <div class="row mt-3 col-md-12">
         <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
-                    <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto ">Department</th>
-                    <th class="col-md-auto ">2009</th>
-                    <th class="col-md-auto ">2010</th>
-                    <th class="col-md-auto text-center">2012</th>
-                    <th class="col-md-auto text-center">2014</th>
-                    <th class="col-md-auto text-center">2015</th>
-                    <th class="col-md-auto text-center">2017</th>
-                    <th class="col-md-auto text-center">2018</th>
-                    <th class="col-md-auto text-center">2019</th>
-                    <th class="col-md-auto text-center">2020</th>
-                    <th class="col-md-auto text-center">2021</th>
-                    <th class="col-md-auto text-center">2022</th>
-                    <th class="col-md-auto text-center">2023</th>
-                    <th class="col-md-auto text-center">2024</th>
-                    <th class="col-md-auto text-center">Grand Total</th>
-
+                    <th rowspan="2" class="col-md-auto">Sr. No.</th>
+                    <th rowspan="2" class="col-md-auto">Entitiy Name</th>
+                    <th colspan="6" class="text-center">Outstanding Paras Count</th>
+                    <th rowspan="2" class="text-center">Grand Total</th>
+                </tr>
+                <tr>
+                  
+                    <th class="col-md-auto text-center">Current Year</th>
+                    <th class="col-md-auto text-center">Age 1 to 3 year</th>
+                    <th class="col-md-auto text-center">Age 4 to 6 year</th>
+                    <th class="col-md-auto text-center">Age 7 to 9 year</th>
+                    <th class="col-md-auto text-center">Age 10 to 12 year</th>
+                    <th class="col-md-auto text-center">Age 12+ year</th>
+                   
                 </tr>
             </thead>
             <tbody>
+                <!-- Add your table rows here -->
             </tbody>
         </table>
     </div>
