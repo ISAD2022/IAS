@@ -231,26 +231,8 @@
 
             cache: false,
             success: function (data) {
-
-                $.each(data,function(i,v){
-
-                    if (v.audiT_START_DATE!=null)
-                        v.audiT_START_DATE=v.audiT_START_DATE.split(' ')[0];
-
-                        if (v.audiT_END_DATE!=null)
-                        v.audiT_END_DATE = v.audiT_END_DATE.split(' ')[0];
-
-                    if (v.oP_START_DATE != null)
-                        v.oP_START_DATE = v.oP_START_DATE.split(' ')[0];
-
-                    if (v.oP_END_DATE != null)
-                        v.oP_END_DATE = v.oP_END_DATE.split(' ')[0];
-
-                    i = i + 1;
-
-                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td><td><a href="#" onclick="proceedToChangeInAuditTeam(' + v.auditeD_BY_ID + ');" class="text-danger text-center">Post Changes in Team</a></td><td><a href="#" onclick="proceedToChangeEndDate(' + v.enG_ID + ');" class="text-danger text-center">Change End Date</a></td></tr>');
-                })
-               
+                alert(data.Message);
+                //onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
