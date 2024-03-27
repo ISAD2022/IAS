@@ -27,6 +27,28 @@
 
     })
 
+    function entityTypeSelectionChangeEvent() {
+        $('#entity_oustanding_paras_grid tbody').empty();
+        $.ajax({
+            url: "/ApiCalls/get_compliance_flow_by_entity_type",
+            type: "POST",
+            data: {
+                "ENTITY_TYPE_ID": $('#entityTypeSelectionField').val()
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    $('#entity_oustanding_paras_grid').append('<tr><td>' + v.entitY_NAME + '</td><td>' + v.nexT_GROUP_NAME + '</td><td>' + v.preV_GROUP_NAME + '</td><td>' + v.comP_UP_STATUS_DESC + '</td><td>' + v.comP_DOWN_STATUS_DESC + '</td><td><a href="#" onclick="event.preventDefault();updateComplianceFlow(' + v.entitY_TYPE_ID + ', ' + v.grouP_ID + ');">Edit</a></td></tr>');
+                });
+
+            },
+            dataType: "json",
+        });
+    }
+
+
+
+
     function getAuditEngagementDetials() {
 
         if ($('#auditedByField').val() == 0) {
@@ -119,7 +141,7 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Add your table rows here -->
+                
             </tbody>
         </table>
     </div>
