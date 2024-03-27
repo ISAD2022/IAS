@@ -358,6 +358,26 @@
             return;
         }
     }
+
+
+    function checkBoxClicked() {
+        if ($('#resetpassword').prop('checked')) {
+            $('#passSaveField').val('ztbl1234');
+            $('#conPassSaveField').val('ztbl1234');
+            alert('checked jquery');
+        } else {
+            $('#passSaveField').val('');
+            $('#conPassSaveField').val('');
+            alert('unchecked jquery');
+        }
+
+
+
+
+    }
+
+
+
 </script>
 
 <div class="row col-md-12 mt-3">
@@ -378,7 +398,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                     {
-                        <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                     }
                 }
             }
@@ -446,7 +466,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["GroupList"]))
                         {
-                            <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
                         }
                     }
                 }
@@ -515,7 +535,7 @@
                         {
                             foreach (var item in (dynamic)(ViewData["GroupList"]))
                             {
-                                <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
+                                    <option value="@item.GROUP_CODE" id="@item.GROUP_CODE">@item.GROUP_NAME</option>
                             }
                         }
                     }
@@ -529,6 +549,14 @@
         </div>
         <div class="col-md-10">
             <input id="isActiveSaveField" type="checkbox" />
+        </div>
+    </div>
+    <div class="row col-md-12 mt-1">
+        <div class="col-md-2">
+            <label>Reset Password</label>
+        </div>
+        <div class="col-md-10">
+            <input id="resetpassword" type="checkbox" onclick="checkBoxClicked()"/>
         </div>
     </div>
 </div>
