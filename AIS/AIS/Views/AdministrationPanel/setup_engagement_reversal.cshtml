@@ -6,7 +6,9 @@
 <script type="text/javascript">
 
 
-    var g_memoStatusReversalIds=[];   
+    var g_memoStatusReversalIds = [];
+    var g_engID = 0;
+    var g_auditedByID = 0;
 
     function getrelation(parentEntityId = 0, userEntityId = 0) {
 
@@ -87,12 +89,12 @@
             cache: false,
             success: function (data) {
 
-                $.each(data,function(i,v){
+                $.each(data, function (i, v) {
 
-                    if (v.audiT_START_DATE!=null)
-                        v.audiT_START_DATE=v.audiT_START_DATE.split(' ')[0];
+                    if (v.audiT_START_DATE != null)
+                        v.audiT_START_DATE = v.audiT_START_DATE.split(' ')[0];
 
-                        if (v.audiT_END_DATE!=null)
+                    if (v.audiT_END_DATE != null)
                         v.audiT_END_DATE = v.audiT_END_DATE.split(' ')[0];
 
                     if (v.oP_START_DATE != null)
@@ -103,21 +105,21 @@
 
                     i = i + 1;
 
-                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td><td><a href="#" onclick="proceedToChangeInAuditTeam(' + v.auditeD_BY_ID + ');" class="text-danger text-center">Post Changes in Team</a></td><td><a href="#" onclick="proceedToChangeEndDate(' + v.enG_ID + ');" class="text-danger text-center">Change End Date</a></td></tr>');
+                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td><td><a href="#" onclick="proceedToChangeInAuditTeam(' + v.auditeD_BY_ID + ',' + v.enG_ID + ');" class="text-danger text-center">Post Changes in Team</a></td><td><a href="#" onclick="proceedToChangeEndDate(' + v.enG_ID + ');" class="text-danger text-center">Change End Date</a></td></tr>');
                 })
-               
+
             },
             dataType: "json",
         });
 
     }
 
-    function getObservationsForStatusReversal(engId){
+    function getObservationsForStatusReversal(engId) {
 
         $('#statusReversalModal').modal('show');
         $('#engObsListPanel tbody').empty();
 
-       $.ajax({
+        $.ajax({
             url: "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
@@ -129,11 +131,11 @@
                 $.each(data, function (i, v) {
 
                     if (v.memO_DATE != null)
-                        v.memO_DATE = v.memO_DATE.split(' ')[0];                 
+                        v.memO_DATE = v.memO_DATE.split(' ')[0];
 
-                        i=i+1;
+                    i = i + 1;
 
-                    $('#engObsListPanel').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input id="rev_checkbox_"+'+v.id+' onclick="memoIdsToStatusReversal(this,' + v.id + ');" type="checkbox" /></td></tr>');
+                    $('#engObsListPanel').append('<tr><td class="text-center">' + i + '</td><td>' + v.memO_NO + '</td><td>' + v.memO_DATE + '</td><td>' + v.assigneD_TO + '</td><td>' + v.status + '</td><td class="text-center"><input id="rev_checkbox_"+' + v.id + ' onclick="memoIdsToStatusReversal(this,' + v.id + ');" type="checkbox" /></td></tr>');
                 })
             },
             dataType: "json",
@@ -144,27 +146,28 @@
 
         $('#assignmentReversalModal').modal('show');
     }
-      
-    function memoIdsToStatusReversal(e, id){
+
+    function memoIdsToStatusReversal(e, id) {
 
         if ($('#rev_checkbox_' + id).is(":checked"))
             g_memoStatusReversalIds.push(id);
-        else{
+        else {
 
 
 
         }
     }
 
-    function proceedToChangeInAuditTeam(audById) {
-
+    function proceedToChangeInAuditTeam(audById, engId) {
+        g_auditedByID = audById;
+        g_engID = engId;
         $('#setupAuditTeam').modal('show');
         $('#listOfEmployeeTeam tbody').empty();
         $.ajax({
-            url: "/Planning/audit_team",
+            url: "/ApiCalls/get_team_memeber_details_for_post_changes_team_eng_reversal",
             type: "POST",
             data: {
-                'dept_code': $('#deptSelectionBox option:selected').val()
+                'AUDITED_BY_DEPT': audById
             },
             cache: false,
             success: function (data) {
@@ -180,9 +183,9 @@
                         else
                             team.status = 'Inactive';
                         if (team.status == 'Active')
-                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="tName_Col"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td><input name="newTeamChange" class="newTeamChange" id="team_' + team.t_ID + '" type="radio" /></td></tr>');
-                        
-                          srNo++;
+                            $('#listOfEmployeeTeam tbody').append('<tr id=teamcode_' + team.code + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="tName_Col"><p class="fw-normal mb-1">' + team.name + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + team.employeename + ' (' + team.teammembeR_ID + ') </p></td><td class="empMembers"></td><td><input name="newTeamChange" class="newTeamChange" teamName="' + team.name + '" teamCode="' + team.code + '" teamId="'+team.t_ID+'" id="team_' + team.t_ID + '" type="radio" /></td></tr>');
+
+                        srNo++;
                     } else {
                         teamMembers.push(team);
                         if (team.code != teamId) {
@@ -206,29 +209,29 @@
 
     }
 
-    function updateMemoStatuses(){        
+    function updateMemoStatuses() {
         $('#newStatusReversalModel').modal('show');
-       
-    }
-
-    function updateNewStatusRequest(){
 
     }
 
-    function publishNewTeamChanges() { 
-    
-    if($('.newTeamChange:checked').length==0){
-        alert("Please select Team to proceed");
-        return;
+    function updateNewStatusRequest() {
+
     }
-     $.ajax({
-            url: "/ApiCalls/get_engagements_details_for_status_reversal",
+
+    function publishNewTeamChanges() {
+
+        if ($('.newTeamChange:checked').length == 0) {
+            alert("Please select Team to proceed");
+            return;
+        }
+        $.ajax({
+            url: "/ApiCalls/submit_new_team_id_for_post_changes_team_eng_reversal",
             type: "POST",
             data: {
-                'TEAM_ID':$('.newTeamChange:checked').attr('id').split('team_')[1],
-                'TEAM_NAME':$('.newTeamChange:checked').attr('id').split('team_')[1],
-                'ENG_ID':$('#childposting option:selected').val(),
-                'AUDITED_BY_ID':$('#childposting option:selected').val()
+                'TEAM_ID': $('.newTeamChange:checked').attr('teamid'),
+                'TEAM_NAME': $('.newTeamChange:checked').attr('teamname'),
+                'ENG_ID': g_engID,
+                'AUDITED_BY_ID': g_auditedByID
             },
 
             cache: false,
@@ -244,7 +247,7 @@
 
 </script>
 <div class="row col-md-12 mt-3">
-<h3 style=" display:block;color: #45c545;">Setup Engagement Reversal</h3>
+    <h3 style=" display:block;color: #45c545;">Setup Engagement Reversal</h3>
 </div>
 
 
@@ -262,7 +265,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                     {
-                                <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
                     }
                 }
             }
@@ -331,12 +334,12 @@
                     <div class="row col-md-12 mt-3">
                         <table id="engObsListPanel" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
                             <thead>
-                                <tr style="background-color: rgb(181 229 117 / 93%) !important;">                                   
-                                    
+                                <tr style="background-color: rgb(181 229 117 / 93%) !important;">
+
                                     <th class="col-md-auto">Sr No.</th>
                                     <th class="col-md-auto">Memo No</th>
                                     <th class="col-md-auto">Memo Date</th>
-                                    <th class="col-md-auto">Assigned To</th>                                    
+                                    <th class="col-md-auto">Assigned To</th>
                                     <th class="col-md-auto">Status</th>
                                     <th class="col-md-auto"></th>
                                 </tr>
@@ -346,7 +349,7 @@
                     </div>
 
 
-                  
+
                 </div>
 
             </div>
@@ -394,23 +397,23 @@
             <div class="modal-body">
                 <div class="row col-md-12">
                     <div class="col-md-4">
-                            <label>New Status</label>
+                        <label>New Status</label>
                     </div>
                     <div class="col-md-8">
-                            <select class="form-control" id="newStatusReservalSelectionBox">
-                                <option value="0" id="0" selected>--Select New Status--</option>
-                                @{
-                                    if (ViewData["statusList"] != null)
+                        <select class="form-control" id="newStatusReservalSelectionBox">
+                            <option value="0" id="0" selected>--Select New Status--</option>
+                            @{
+                                if (ViewData["statusList"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["statusList"]))
                                     {
-                                        foreach (var item in (dynamic)(ViewData["statusList"]))
-                                        {
-                                                    <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
+                                            <option value="@item.STATUS_ID" id="@item.STATUS_ID">@item.STATUS_NAME</option>
 
-                                        }
                                     }
                                 }
+                            }
 
-                            </select>
+                        </select>
                     </div>
 
                 </div>
@@ -443,7 +446,7 @@
                                     <th class="col-md-auto">Sr No.</th>
                                     <th class="col-md-auto">Team Name</th>
                                     <th class="col-md-auto">Team Lead</th>
-                                    <th class="col-md-auto">Team Members</th>                                    
+                                    <th class="col-md-auto">Team Members</th>
                                     <th class="col-md-auto">Select Team</th>
                                 </tr>
                             </thead>

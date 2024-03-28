@@ -712,7 +712,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public List<AuditTeamModel> GetAuditTeams(int dept_code = 0)
+        public List<AuditTeamModel> GetAuditTeams(int dept_code = 0, int userEntId=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -727,7 +727,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("dept_code", OracleDbType.Int32).Value = dept_code;
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = userEntId!=0? userEntId: loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -12901,7 +12901,7 @@ namespace AIS.Controllers
                     os.OP_START_DATE = rdr["OP_STARTDATE"].ToString();
                     os.OP_END_DATE = rdr["OP_ENDDATE"].ToString();
                     os.ENTITY_ID = rdr["ENTITY_ID"].ToString();
-                    os.AUDITED_BY_ID = rdr["auditby_id"].ToString();
+                    os.AUDITED_BY_ID = rdr["Auditby_Id"].ToString();
                     os.STATUS_ID = rdr["STATUS_ID"].ToString();
                     os.STATUS = rdr["STATUS"].ToString();
                     resp.Add(os);

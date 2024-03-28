@@ -1939,7 +1939,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<AuditTeamModel> get_team_memeber_details_for_post_changes_team_eng_reversal(int AUDITED_BY_DEPT)
         {
-            return dBConnection.GetAuditTeams(AUDITED_BY_DEPT);
+            return dBConnection.GetAuditTeams(0, AUDITED_BY_DEPT);
         }
 
         [HttpPost]
