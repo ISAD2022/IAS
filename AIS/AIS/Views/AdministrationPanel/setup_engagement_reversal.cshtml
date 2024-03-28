@@ -105,7 +105,7 @@
 
                     i = i + 1;
 
-                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal</a></td><td><a href="#" onclick="proceedToChangeInAuditTeam(' + v.auditeD_BY_ID + ',' + v.enG_ID + ');" class="text-danger text-center">Post Changes in Team</a></td><td><a href="#" onclick="proceedToChangeEndDate(' + v.enG_ID + ');" class="text-danger text-center">Change End Date</a></td></tr>');
+                    $('#engsListPanel').append('<tr><td>' + i + '</td><td>' + v.enG_ID + '</td><td>' + v.teaM_NAME + '</td><td>' + v.audiT_START_DATE + '</td><td>' + v.audiT_END_DATE + '</td><td>' + v.oP_START_DATE + '</td><td>' + v.oP_END_DATE + '</td><td>' + v.status + '</td><td><a class="text-primary text-center" onclick="getObservationsForStatusReversal(' + v.enG_ID + ');" href="#">Status Reversal</a></td><td><a href="#" onclick="getObservationsForAssignmentReversal(' + v.enG_ID + ');" class="text-danger text-center">Assignment Reversal At Planning Stage</a></td><td><a href="#" onclick="proceedToChangeInAuditTeam(' + v.auditeD_BY_ID + ',' + v.enG_ID + ');" class="text-danger text-center">Post Changes in Team</a></td><td><a href="#" onclick="proceedToChangeEndDate(' + v.enG_ID + ');" class="text-danger text-center">Change Dates</a></td></tr>');
                 })
 
             },
@@ -215,6 +215,29 @@
     }
 
     function updateNewStatusRequest() {
+
+        if ($('#newStatusReservalSelectionBox').val() == 0) {
+            alert("Please select new Status to proceed");
+            return;
+        }
+        $.ajax({
+            url: "/ApiCalls/submit_new_team_id_for_post_changes_team_eng_reversal",
+            type: "POST",
+            data: {
+                'TEAM_ID': $('.newTeamChange:checked').attr('teamid'),
+                'TEAM_NAME': $('.newTeamChange:checked').attr('teamname'),
+                'ENG_ID': g_engID,
+                'AUDITED_BY_ID': g_auditedByID
+            },
+
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                //onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+
 
     }
 

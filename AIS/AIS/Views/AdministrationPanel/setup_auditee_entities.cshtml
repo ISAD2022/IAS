@@ -21,8 +21,7 @@
     var g_entId = 0;
     var g_entList = [];
     $(document).ready(function () {
-
-        $('#sidebar_policy').hide();
+      
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#listOfDepartment tbody tr").filter(function () {
@@ -31,14 +30,7 @@
         });
     });
 
-    function newDeptSetup() {
-        g_entId = 0;
-        $('#setupDeptModal').modal('show');
-        $('#deptCodeModalField').val('');
-        $('#deptNameModalField').val('');
-        $('#deptdivNameModalField').val('');
-    }
-
+  
     function updateAuditeeEntities(id) {
 
         g_entId = id;

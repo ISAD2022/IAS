@@ -9013,6 +9013,7 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
+                //AuditDepartmentList
                 cmd.CommandText = "pkg_rpt.P_AUDITED_BY_DEPARTMENTS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15311,12 +15312,12 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("aut_id", OracleDbType.Int32).Value = ENTITY_MODEL.AUTID;
                 cmd.Parameters.Add("e_code", OracleDbType.Int32).Value = ENTITY_MODEL.ENTITYCODE;
-                cmd.Parameters.Add("e_desc", OracleDbType.Int32).Value = ENTITY_MODEL.ENTITYTYPEDESC;
+                cmd.Parameters.Add("e_desc", OracleDbType.Varchar2).Value = ENTITY_MODEL.ENTITYTYPEDESC;
                 cmd.Parameters.Add("e_auditable", OracleDbType.Varchar2).Value = ENTITY_MODEL.AUDITABLE;
-                cmd.Parameters.Add("e_auditby_code", OracleDbType.Varchar2).Value = ENTITY_MODEL.AUDITEDBY;
-                cmd.Parameters.Add("e_auditby_id", OracleDbType.Varchar2).Value = ENTITY_MODEL.AUDITED_BY_ENTITY;
+                cmd.Parameters.Add("e_auditby_code", OracleDbType.Int32).Value = ENTITY_MODEL.AUDITEDBY;
+                cmd.Parameters.Add("e_auditby_id", OracleDbType.Int32).Value = ENTITY_MODEL.AUDITED_BY_ENTITY;
                 cmd.Parameters.Add("e_type", OracleDbType.Varchar2).Value = ENTITY_MODEL.AUDIT_TYPE;
-                cmd.Parameters.Add("e_autid", OracleDbType.Varchar2).Value = ENTITY_MODEL.E_AUTID;
+                cmd.Parameters.Add("e_autid", OracleDbType.Int32).Value = ENTITY_MODEL.E_AUTID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
