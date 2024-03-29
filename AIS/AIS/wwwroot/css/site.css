@@ -13,6 +13,10 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.modal-xxl{
+    max-width:1400px !important;
+}
+
 /* Provide sufficient contrast against white background */
 a {
   color: #0366d6;

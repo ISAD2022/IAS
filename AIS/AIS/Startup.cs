@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Http;
 using AIS;
 using AIS.Controllers;
 
-namespace IAMS
+namespace AIS
 {
     public class Startup
     {

@@ -7,6 +7,7 @@ namespace AIS.Models
     public class ObservationReversalModel
     {        
     
+        public string PLAN_ID { get; set; }
         public string ENG_ID { get; set; }
         public string TEAM_NAME { get; set; }
         public string AUDIT_START_DATE { get; set; }

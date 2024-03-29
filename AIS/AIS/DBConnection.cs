@@ -66,7 +66,7 @@ namespace AIS.Controllers
                 // con.Open();
                 return con;
             }
-            catch (Exception e) { return null; }
+            catch (Exception) { return null; }
         }
         #endregion
 
@@ -712,7 +712,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public List<AuditTeamModel> GetAuditTeams(int dept_code = 0, int userEntId=0)
+        public List<AuditTeamModel> GetAuditTeams(int dept_code = 0, int userEntId = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -727,7 +727,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("dept_code", OracleDbType.Int32).Value = dept_code;
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = userEntId!=0? userEntId: loggedInUser.UserEntityID;
+                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = userEntId != 0 ? userEntId : loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -969,22 +969,6 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return true;
-        }
-        public string GetAuditCriteriaLogLastStatus(int Id)
-        {
-            var con = this.DatabaseConnection(); con.Open();
-            string remarks = "";
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = sqlParams.GetCriteriaLatestRemarksQueryFromParams(Id);
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    remarks = rdr["remarks"].ToString();
-                }
-            }
-            con.Dispose();
-            return remarks;
         }
         public List<AuditCriteriaModel> GetPendingAuditCriterias()
         {
@@ -12895,6 +12879,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     ObservationReversalModel os = new ObservationReversalModel();
+                    os.PLAN_ID = rdr["plan_id"].ToString();
                     os.ENG_ID = rdr["ENG_ID"].ToString();
                     os.TEAM_NAME = rdr["TEAM_NAME"].ToString();
                     os.AUDIT_START_DATE = rdr["AUDIT_STARTDATE"].ToString();
@@ -12929,6 +12914,7 @@ namespace AIS.Controllers
                     os.ID = rdr["ID"].ToString();
                     os.MEMO_NO = rdr["MEMO_NO"].ToString();
                     os.MEMO_DATE = rdr["MEMO_DATE"].ToString();
+                    os.HEADING = rdr["HEADINGS"].ToString();
                     os.ASSIGNED_TO = rdr["ASSIGNED_TO"].ToString();
                     os.STATUS = rdr["STATUS"].ToString();
                     resp.Add(os);
@@ -12964,6 +12950,32 @@ namespace AIS.Controllers
 
         }
 
+        public List<ObservationStatusReversalModel> GetEngagementReversalStatus(int ENG_ID)
+        {
+
+            List<ObservationStatusReversalModel> stList = new List<ObservationStatusReversalModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_audit_engagement_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationStatusReversalModel st = new ObservationStatusReversalModel();
+                    st.STATUS_NAME = rdr["status"].ToString();
+                    st.STATUS_ID = Convert.ToInt32(rdr["id"].ToString());
+                    stList.Add(st);
+                }
+            }
+            con.Dispose();
+            return stList;
+
+        }
 
         public string GetComplianceTextAuditee(int COMPLIANCE_ID)
         {
@@ -15630,7 +15642,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;                           
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -15799,8 +15811,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_rpt.R_DEPT_WISE_PARA_POSITION";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
                 cmd.Parameters.Add("ENT_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -15849,6 +15861,163 @@ namespace AIS.Controllers
                     resp = rdr["remarks"].ToString();
                 }
             }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string AuditEngagementStatusReversal(int ENG_ID, int NEW_STATUS_ID, int PLAN_ID, string COMMENTS)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_audit_engagement_reversal";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = NEW_STATUS_ID;
+                cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PLAN_ID;
+                cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+
+            con.Dispose();
+            return resp;
+
+        }
+        public string AuditEngagementObsStatusReversal(int ENG_ID, int NEW_STATUS_ID, List<int> OBS_IDS)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            foreach (int obsId in OBS_IDS)
+            {
+                using (OracleCommand cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "pkg_ad.p_audit_observation_reversal";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                    cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = obsId;
+                    cmd.Parameters.Add("SID", OracleDbType.Int32).Value = NEW_STATUS_ID;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    OracleDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        resp = rdr["remarks"].ToString();
+                    }
+                }
+            }
+
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<ObservationNumbersModel> GetObservationNumbersForStatusReversal(int OBS_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ObservationNumbersModel> resp = new List<ObservationNumbersModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_observvation_no";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ObservationNumbersModel om = new ObservationNumbersModel();
+                    om.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
+                    om.DRAFT_PARA_NUMBER = rdr["DRAFT_PARA_NO"].ToString();
+                    om.FINAL_PARA_NUMBER = rdr["FINAL_PARA_NO"].ToString();
+                    resp.Add(om);
+                }
+            }
+
+
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateObservationNumbersForStatusReversal(ObservationNumbersModel onum)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Update_observation_no";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("M_NO", OracleDbType.Int32).Value = onum.MEMO_NUMBER;
+                cmd.Parameters.Add("D_NO", OracleDbType.Int32).Value = onum.DRAFT_PARA_NUMBER;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = onum.FINAL_PARA_NUMBER;
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = onum.OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {                   
+                  resp = rdr["remarks"].ToString();
+                }
+            }
+
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateEngagementDatesForStatusReversal(int ENG_ID, DateTime START_DATE, DateTime END_DATE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_ENG_DATE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("ST_DATE", OracleDbType.Date).Value = START_DATE;
+                cmd.Parameters.Add("ED_DATE", OracleDbType.Date).Value = END_DATE;                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+
             con.Dispose();
             return resp;
 

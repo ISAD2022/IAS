@@ -20,7 +20,7 @@ namespace AIS.Controllers
 
         private readonly SessionHandler sessionHandler;
         private readonly DBConnection dBConnection;
-        private readonly DBContext _context;
+       
         public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
         {
             _logger = logger;
@@ -213,7 +213,7 @@ namespace AIS.Controllers
                 ob.STATUS = 1;
                 responses += dBConnection.SaveAuditObservationCAU(ob);
             }
-            return "{\"success\":\" true \" , \"Message\":" + responses + "}";
+            return "{\"Status\":true,\"Message\":\"" + responses + "\"}";
         }
 
 
@@ -1389,6 +1389,12 @@ namespace AIS.Controllers
             return dBConnection.GetParaPositionParaDetails(ENTITY_ID, AUDIT_PERIOD);
         }
         [HttpPost]
+        public List<ObservationStatusReversalModel> get_engagement_status_for_reversal(int ENG_ID = 0)
+        {
+            return dBConnection.GetEngagementReversalStatus(ENG_ID);
+
+        }
+        [HttpPost]
         public List<ObservationReversalModel> get_engagements_details_for_status_reversal(int ENTITY_ID = 0)
         {
             return dBConnection.GetEngagementDetailsForStatusReversal(ENTITY_ID);
@@ -1947,6 +1953,38 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitNewTeamIdForPostChangesTeamEngReversal(TEAM_ID, ENG_ID, AUDITED_BY_ID, TEAM_NAME) + "\"}";
         }
+
+        [HttpPost]
+        public string audit_engagement_status_reversal(int ENG_ID, int NEW_STATUS_ID, int PLAN_ID, string COMMENTS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuditEngagementStatusReversal(ENG_ID, NEW_STATUS_ID, PLAN_ID, COMMENTS) + "\"}";
+        }
+        [HttpPost]
+        public string audit_engagement_obs_status_reversal(int ENG_ID, int NEW_STATUS_ID, List<int> OBS_IDS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuditEngagementObsStatusReversal(ENG_ID, NEW_STATUS_ID, OBS_IDS) + "\"}";
+        }
+
+
+        [HttpPost]
+        public List<ObservationNumbersModel> get_observation_numbers_for_status_reversal(int OBS_ID)
+        {
+            return dBConnection.GetObservationNumbersForStatusReversal(OBS_ID);
+        }
+
+        [HttpPost]
+        public string update_observation_numbers_for_status_reversal(ObservationNumbersModel onum)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateObservationNumbersForStatusReversal(onum) + "\"}";
+        }
+        [HttpPost]
+        public string update_engagement_dates_for_status_reversal(int ENG_ID, DateTime START_DATE, DateTime END_DATE)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEngagementDatesForStatusReversal(ENG_ID, START_DATE, END_DATE) + "\"}";
+        }
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
