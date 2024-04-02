@@ -1936,6 +1936,7 @@ namespace AIS.Controllers
             return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID, GROUP_ID);
         }
 
+       
         [HttpPost]
         public List<DepttWiseOutstandingParasModel> get_outstanding_paras_for_entity_type_id(string ENTITY_TYPE_ID)
         {
@@ -1982,8 +1983,23 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEngagementDatesForStatusReversal(ENG_ID, START_DATE, END_DATE) + "\"}";
         }
+        [HttpPost]
+        public List<HRDesignationWiseRoleModel> get_hr_designation_wise_roles()
+        {
+            return dBConnection.GetHRDesignationWiseRoles();
+        }
 
+        [HttpPost]
+        public string add_hr_designation_wise_role_assignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string SUB_ENTITY_NAME)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddHRDesignationWiseRoleAssignment(ASSIGNMENT_ID,DESIGNATION_ID,GROUP_ID, SUB_ENTITY_NAME) + "\"}";
+        }
 
+        [HttpPost]
+        public string update_hr_designation_wise_role_assignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string SUB_ENTITY_NAME)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateHRDesignationWiseRoleAssignment(ASSIGNMENT_ID, DESIGNATION_ID, GROUP_ID, SUB_ENTITY_NAME) + "\"}";
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -1409,7 +1409,6 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
-
         }
         public string GetUserName(string PPNUMBER)
         {
@@ -15626,6 +15625,36 @@ namespace AIS.Controllers
             con.Dispose();
             return groupList;
         }
+        public List<GroupModel> GetHRDesignation()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<GroupModel> groupList = new List<GroupModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetRoleResponsibilities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                //cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                //cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                //cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    GroupModel grp = new GroupModel();
+                    grp.GROUP_ID = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
+                    grp.GROUP_CODE = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
+                    grp.GROUP_NAME = rdr["DESCRIPTION"].ToString();
+                    groupList.Add(grp);
+                }
+            }
+            con.Dispose();
+            return groupList;
+        }
         public List<AuditeeEntitiesModel> GetEntityTypesForComplianceFlow()
         {
             sessionHandler = new SessionHandler();
@@ -16022,5 +16051,100 @@ namespace AIS.Controllers
             return resp;
 
         }
+
+        public List<HRDesignationWiseRoleModel> GetHRDesignationWiseRoles()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<HRDesignationWiseRoleModel> resp = new List<HRDesignationWiseRoleModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_HR_DESIGNATION_RIGHT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    HRDesignationWiseRoleModel cm = new HRDesignationWiseRoleModel();
+
+                    cm.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    cm.DESIGNATION_CODE = rdr["designationcode"].ToString();
+                    cm.DESCRIPTION = rdr["description"].ToString();
+                    cm.ROLE_ID = rdr["group_id"].ToString();
+                    cm.ROLE = rdr["entity_type"].ToString();
+                    cm.ENTITY_TYPE = rdr["sub_entity_type"].ToString();
+                    resp.Add(cm);
+
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddHRDesignationWiseRoleAssignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string ENTITY_TYPE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_HR_DESIGNATION_RIGHT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("HR_DES_CODE", OracleDbType.Int32).Value = DESIGNATION_ID;
+                cmd.Parameters.Add("AIS_GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
+                cmd.Parameters.Add("AIS_SUB_ENTITY_TYPE", OracleDbType.Varchar2).Value = ENTITY_TYPE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateHRDesignationWiseRoleAssignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string ENTITY_TYPE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_HR_DESIGNATION_RIGHT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = ASSIGNMENT_ID;
+                cmd.Parameters.Add("HR_DES_CODE", OracleDbType.Int32).Value = DESIGNATION_ID;
+                cmd.Parameters.Add("AIS_GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
+                cmd.Parameters.Add("AIS_SUB_ENTITY_TYPE", OracleDbType.Varchar2).Value = ENTITY_TYPE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+
+            con.Dispose();
+            return resp;
+
+        }
+
     }
 }

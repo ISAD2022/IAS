@@ -553,6 +553,27 @@ namespace AIS.Controllers
             }
         }
 
+        public IActionResult hr_design_wise_role()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["HRDesigList"] = dBConnection.GetHRDesignation();
+            ViewData["GroupList"] = dBConnection.GetRolesForComplianceFlow();
+            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForComplianceFlow();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
 
 
         [HttpPost]
