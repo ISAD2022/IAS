@@ -15687,6 +15687,39 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+
+        public List<AuditeeEntitiesModel> GetEntityTypesForHRDesignationWiseRole()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_get_ent_types_for_hr_designation";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserGroupID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<AuditeeEntitiesModel> GetComplianceStatusesForComplianceFlow()
         {
             sessionHandler = new SessionHandler();

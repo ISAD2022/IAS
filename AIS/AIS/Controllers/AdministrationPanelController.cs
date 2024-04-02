@@ -559,7 +559,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["HRDesigList"] = dBConnection.GetHRDesignation();
             ViewData["GroupList"] = dBConnection.GetRolesForComplianceFlow();
-            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForComplianceFlow();
+            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForHRDesignationWiseRole();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
