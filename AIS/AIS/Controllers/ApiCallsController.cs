@@ -1878,6 +1878,20 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntityTypes();
         }
+        public List<ManageObservationModel> get_obs_status()
+        {
+            return dBConnection.GetObervationStatus();
+        }
+        [HttpPost]
+        public string add_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public string update_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
+        }
         [HttpPost]
         public string update_entity_types(AuditEntitiesModel ENTITY_MODEL)
         {

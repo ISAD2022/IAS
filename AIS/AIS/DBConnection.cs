@@ -15306,6 +15306,113 @@ namespace AIS.Controllers
             return resp;
 
         }
+
+
+        public List<ManageObservationModel> GetObervationStatus()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageObservationModel> resp = new List<ManageObservationModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_Obs_Status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservationModel m = new ManageObservationModel();
+                    m.STATUS_ID = rdr["STATUSID"].ToString();
+                    m.STATUS_NAME = rdr["STATUSNAME"].ToString();
+                    m.IS_ACTIVE = rdr["ISACTIVE"].ToString();
+                    m.CODE = rdr["CODE"].ToString();
+                    m.SATISFIED = rdr["SATISFIED"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_Obs_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
+                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
+                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
+                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
+
+        public string UpdateManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_update_Obs_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("s_id", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_ID;
+                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
+                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
+                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
+                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
+
+
+
         public string UpdateEntityTypes(AuditEntitiesModel ENTITY_MODEL)
         {
 
