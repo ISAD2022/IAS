@@ -1882,10 +1882,24 @@ namespace AIS.Controllers
         {
             return dBConnection.GetObervationStatus();
         }
+        public List<ManageEntAuditDeptModel> get_ent_audit_dept()
+        {
+            return dBConnection.GetEntityAuditDept();
+        }
         [HttpPost]
         public string add_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public string add_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public string update_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
         }
         [HttpPost]
         public string update_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
