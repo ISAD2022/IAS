@@ -18,6 +18,7 @@
 
 <script type="text/javascript">
     var g_trId = 0;
+    var g_selectedChecklistDetailRecord = {};
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
@@ -40,17 +41,13 @@
             cache: false,
             success: function (data) {
                 var tr = data[0];
-
+                g_selectedChecklistDetailRecord = data[0];
                  $('#viewerMainProcNameModalField').val(tr.process);
                 $('#viewerSubProcNameModalField').val(tr.neW_SUB_PROCESS);
                 $('#processDetailNewField').val(tr.neW_PROCESS_DETAIL);
                
                  
-                 // $('#viewerViolationNameModalField').val(tr.neW_VIOLATION);
-                // $('#viewerControlModalField').val(tr.neW_FUNCTIONAL_RESP);
-                // $('#viewerDivModalField').val(tr.neW_ROLE_RESP);
-                // $('#viewerRiskModalField').val(tr.neW_RISK);
-                // $('#viewerAnnexModalField').val(tr.neW_ANNEXURE);
+               
 
                 $('#updatedViolationlist').val(tr.n_V_ID);
                 $('#updatedProcOwnerlist').val(tr.n_OWNER_ID);
@@ -89,13 +86,22 @@
             type: "POST",
             data: {
                 'T_ID': g_trId,
-                'COMMENTS': $('#commentAreaInCommentsBox').val()
+                'COMMENTS': $('#commentAreaInCommentsBox').val(),
+                'PROCESS_ID': g_selectedChecklistDetailRecord.process,
+                'SUB_PROCESS_ID': g_selectedChecklistDetailRecord.neW_SUB_PROCESS,
+                'PROCESS_DETAIL_ID': g_selectedChecklistDetailRecord.neW_PROCESS_DETAIL,
+                'HEADING': $('#updatedProcDetailHeading').val(),
+                'V_ID': $('#updatedViolationlist').val(),
+                'CONTROL_ID': $('#updatedProcOwnerlist').val(),
+                'ROLE_ID': $('#updatedRoleResplist').val(),
+                'RISK_ID': $('#updatedRisklist').val(),
+                'ANNEX_CODE': $('#updatedAnnexlist').val()
             },
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
-                window.location = window.location.pathname;
+                alert(data.Message);
+                onAlertCallback(reloadLocation);              
             },
             dataType: "json",
         });
@@ -106,16 +112,19 @@
             type: "POST",
             data: {
                 'T_ID': g_trId,
-                'COMMENTS': $('#commentAreaInCommentsBox').val()
+                'COMMENTS': $('#commentAreaInCommentsBox').val()              
             },
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
                 window.location = window.location.pathname;
             },
             dataType: "json",
         });
+    }
+
+    function reloadLocation(){
+        window.location = window.location.pathname;
     }
 </script>
 
@@ -144,25 +153,25 @@
                     foreach (var item in (dynamic)(ViewData["TransactionsList"]))
                     {
 
-                        <tr id="div_@item.ID">
-                            <td>
-                                <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.SUB_PROCESS_NAME</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.DESCRIPTION</p>
-                            </td>
-                            <td>
-                                <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
-                            </td>
-                            <td>
-                                <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
-                                    Details
-                                </button>
-                            </td>
-                        </tr>
+                                <tr id="div_@item.ID">
+                                    <td>
+                                        <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
+                                    </td>
+                                    <td>
+                                        <p class="fw-normal mb-1">@item.SUB_PROCESS_NAME</p>
+                                    </td>
+                                    <td>
+                                        <p class="fw-normal mb-1">@item.DESCRIPTION</p>
+                                    </td>
+                                    <td>
+                                        <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
+                                            Details
+                                        </button>
+                                    </td>
+                                </tr>
                     }
                 }
             }
@@ -255,7 +264,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ViolationsList"]))
                                             {
-                                                <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                        <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                             }
 
                                         }
@@ -276,7 +285,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
                                             {
-                                                <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                        <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
                                             }
 
                                         }
@@ -297,7 +306,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RoleRespList"]))
                                             {
-                                                <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                        <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -318,7 +327,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RiskList"]))
                                             {
-                                                <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                        <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -339,7 +348,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                             {
-                                                <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                             }
 
                                         }

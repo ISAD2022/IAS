@@ -547,9 +547,10 @@ namespace AIS.Controllers
             return dBConnection.AddRiskSubProcessTransaction(tran);
         }
         [HttpPost]
-        public bool recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS)
+        public string recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
         {
-            return dBConnection.RecommendProcessTransactionByReviewer(T_ID,COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS, PROCESS_DETAIL_ID, PROCESS_ID, SUB_PROCESS_ID, HEADING, V_ID, CONTROL_ID, ROLE_ID, RISK_ID, ANNEX_CODE) + "\"}";
+
         }
         public bool reffered_back_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
