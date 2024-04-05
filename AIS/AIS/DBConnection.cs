@@ -9,14 +9,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Data;
 using System.IO;
-using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Hosting;
-using iText.Html2pdf;
-using iTextSharp.tool.xml.parser;
-using System.Globalization;
-using iText.Signatures;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.CodeAnalysis;
+
 
 namespace AIS.Controllers
 {
@@ -3514,7 +3508,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.audit_checklist_detail";
+                cmd.CommandText = "pkg_ad.P_audit_checklist_detail";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_id", OracleDbType.Int32).Value = trans.PD_ID;
@@ -3573,27 +3567,41 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-        public bool RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS)
+        public string RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_Recommend_Checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
-                cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("DID", OracleDbType.Int32).Value = PROCESS_DETAIL_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("DESCRIPTION", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("VID", OracleDbType.Int32).Value = V_ID;
+                cmd.Parameters.Add("CONTROL_OWNER", OracleDbType.Int32).Value = CONTROL_ID;
+                cmd.Parameters.Add("ROLE", OracleDbType.Int32).Value = ROLE_ID;
+                cmd.Parameters.Add("RISK", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("ANNEXURE", OracleDbType.Varchar2).Value = ANNEX_CODE;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.ExecuteReader();
+                cmd.Parameters.Add("T_ID", OracleDbType.Int32).Value = T_ID;
+                cmd.Parameters.Add("COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
             }
             con.Dispose();
-            return true;
+            return resp;
         }
         public bool RefferedBackProcessTransactionByReviewer(int T_ID, string COMMENTS)
         {
@@ -15307,219 +15315,6 @@ namespace AIS.Controllers
 
         }
 
-
-        public List<ManageObservationModel> GetObervationStatus()
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservationModel> resp = new List<ManageObservationModel>();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_Get_Obs_Status";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ManageObservationModel m = new ManageObservationModel();
-                    m.STATUS_ID = rdr["STATUSID"].ToString();
-                    m.STATUS_NAME = rdr["STATUSNAME"].ToString();
-                    m.IS_ACTIVE = rdr["ISACTIVE"].ToString();
-                    m.CODE = rdr["CODE"].ToString();
-                    m.SATISFIED = rdr["SATISFIED"].ToString();
-                    resp.Add(m);
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-        public List<ManageEntAuditDeptModel> GetEntityAuditDept()
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_Get_Entities_Audit_Department";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    ManageEntAuditDeptModel m = new ManageEntAuditDeptModel();
-                    m.R_ID = rdr["id"].ToString();
-                    m.D_ID = rdr["deptid"].ToString();
-                    m.D_CODE = rdr["deptcode"].ToString();
-                    m.CBASE_CODE = rdr["cbas_code"].ToString();
-                    m.ENT_ID = rdr["entity_id"].ToString();
-                    m.D_NAME = rdr["deptname"].ToString();
-                    m.AUD_ID = rdr["audit_id"].ToString();
-                    m.AUDITOR = rdr["auditor"].ToString();
-                    m.STATUS = rdr["status"].ToString();
-                    resp.Add(m);
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-        public string AddManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_add_Obs_status";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
-                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
-                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
-                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
-
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp = rdr["remarks"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-        public string AddManageEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_add_Entities_Audit_Department";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("entity_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
-                cmd.Parameters.Add("deptid", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_ID;
-                cmd.Parameters.Add("deptcode", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_CODE;
-                cmd.Parameters.Add("cbas_code", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.CBASE_CODE;
-                cmd.Parameters.Add("deptname", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
-                cmd.Parameters.Add("audit_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
-                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
-                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
-
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp = rdr["remarks"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-
-
-        public string UpdateEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("entity_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
-                cmd.Parameters.Add("deptid", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_ID;
-                cmd.Parameters.Add("deptcode", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_CODE;
-                cmd.Parameters.Add("cbas_code", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.CBASE_CODE;
-                cmd.Parameters.Add("deptname", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
-                cmd.Parameters.Add("audit_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
-                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
-                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
-
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp = rdr["remarks"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-
-
-
-        public string UpdateManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
-        {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
-
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ad.P_update_Obs_status";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("s_id", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_ID;
-                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
-                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
-                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
-                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
-
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    resp = rdr["remarks"].ToString();
-                }
-            }
-            con.Dispose();
-            return resp;
-
-        }
-
-
-
-
-
-
         public string UpdateEntityTypes(AuditEntitiesModel ENTITY_MODEL)
         {
 
@@ -16260,8 +16055,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {                   
-                  resp = rdr["remarks"].ToString();
+                {
+                    resp = rdr["remarks"].ToString();
                 }
             }
 
@@ -16285,7 +16080,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("ST_DATE", OracleDbType.Date).Value = START_DATE;
-                cmd.Parameters.Add("ED_DATE", OracleDbType.Date).Value = END_DATE;                
+                cmd.Parameters.Add("ED_DATE", OracleDbType.Date).Value = END_DATE;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -16298,7 +16093,6 @@ namespace AIS.Controllers
             return resp;
 
         }
-
         public List<HRDesignationWiseRoleModel> GetHRDesignationWiseRoles()
         {
 
@@ -16388,6 +16182,207 @@ namespace AIS.Controllers
                 }
             }
 
+            con.Dispose();
+            return resp;
+
+        }
+        public List<ManageObservationModel> GetManageObservationStatus()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageObservationModel> resp = new List<ManageObservationModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_Obs_Status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservationModel m = new ManageObservationModel();
+                    m.STATUS_ID = rdr["STATUSID"].ToString();
+                    m.STATUS_NAME = rdr["STATUSNAME"].ToString();
+                    m.IS_ACTIVE = rdr["ISACTIVE"].ToString();
+                    m.CODE = rdr["CODE"].ToString();
+                    m.SATISFIED = rdr["SATISFIED"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_Obs_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
+                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
+                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
+                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_update_Obs_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("s_id", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_ID;
+                cmd.Parameters.Add("s_name", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.STATUS_NAME;
+                cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.IS_ACTIVE;
+                cmd.Parameters.Add("s_code", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.CODE;
+                cmd.Parameters.Add("satisfy", OracleDbType.Varchar2).Value = OBS_STATUS_MODEL.SATISFIED;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<ManageEntAuditDeptModel> GetManageEntityAuditDept()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Get_Entities_Audit_Department";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageEntAuditDeptModel m = new ManageEntAuditDeptModel();
+                    m.R_ID = rdr["id"].ToString();
+                    m.D_ID = rdr["deptid"].ToString();
+                    m.D_CODE = rdr["deptcode"].ToString();
+                    m.CBASE_CODE = rdr["cbas_code"].ToString();
+                    m.ENT_ID = rdr["entity_id"].ToString();
+                    m.D_NAME = rdr["deptname"].ToString();
+                    m.AUD_ID = rdr["audit_id"].ToString();
+                    m.AUDITOR = rdr["auditor"].ToString();
+                    m.STATUS = rdr["status"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddManageEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_Entities_Audit_Department";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("entity_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
+                cmd.Parameters.Add("deptid", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_ID;
+                cmd.Parameters.Add("deptcode", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_CODE;
+                cmd.Parameters.Add("cbas_code", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.CBASE_CODE;
+                cmd.Parameters.Add("deptname", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
+                cmd.Parameters.Add("audit_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
+                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
+                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("entity_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
+                cmd.Parameters.Add("deptid", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_ID;
+                cmd.Parameters.Add("deptcode", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_CODE;
+                cmd.Parameters.Add("cbas_code", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.CBASE_CODE;
+                cmd.Parameters.Add("deptname", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
+                cmd.Parameters.Add("audit_id", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
+                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
+                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
+
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
             con.Dispose();
             return resp;
 

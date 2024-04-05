@@ -20,7 +20,7 @@ namespace AIS.Controllers
 
         private readonly SessionHandler sessionHandler;
         private readonly DBConnection dBConnection;
-       
+
         public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
         {
             _logger = logger;
@@ -60,7 +60,7 @@ namespace AIS.Controllers
             return br;
         }
 
-       
+
         [HttpPost]
         public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
         {
@@ -137,9 +137,10 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public bool recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS)
+        public string recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
         {
-            return dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS, PROCESS_DETAIL_ID, PROCESS_ID, SUB_PROCESS_ID, HEADING, V_ID, CONTROL_ID, ROLE_ID, RISK_ID, ANNEX_CODE) + "\"}";
+
         }
         public bool reffered_back_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
@@ -189,7 +190,7 @@ namespace AIS.Controllers
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
                 responses += dBConnection.SaveAuditObservation(ob);
-                    
+
             }
             return "{\"Status\":true,\"Message\":\"" + responses + "\"}";
         }
@@ -223,7 +224,7 @@ namespace AIS.Controllers
             return dBConnection.ResponseAuditObservation(or);
         }
         [HttpPost]
-        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "", int RISK_ID=0, int ANNEXURE_ID=0)
+        public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "", int RISK_ID = 0, int ANNEXURE_ID = 0)
         {
             string response = "";
             response = dBConnection.UpdateAuditObservationText(OBS_ID, OBS_TEXT, PROCESS_ID, SUBPROCESS_ID, CHECKLIST_ID, OBS_TITLE, RISK_ID, ANNEXURE_ID);
@@ -243,7 +244,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
 
         }
-      
+
         [HttpPost]
         public string drop_observation(int OBS_ID)
         {
@@ -272,7 +273,7 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<ObservationTextModel> get_details_for_manage_observations_text(int OBS_ID = 0, string INDICATOR="")
+        public List<ObservationTextModel> get_details_for_manage_observations_text(int OBS_ID = 0, string INDICATOR = "")
         {
             return dBConnection.GetManagedAllObservationsText(OBS_ID, INDICATOR);
         }
@@ -878,7 +879,7 @@ namespace AIS.Controllers
         public string submit_post_audit_compliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
             string response = "";
-            response = dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS,EVIDENCE_LIST);
+            response = dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS, EVIDENCE_LIST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -1412,7 +1413,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.GetComplianceTextAuditee(COMPLIANCE_ID) + "\"}";
 
         }
-        
+
         [HttpPost]
         public List<PostComplianceHistoryModel> get_compliance_history(string COM_ID)
         {
@@ -1780,11 +1781,11 @@ namespace AIS.Controllers
         [HttpPost]
         public string Add_Working_Paper_Loan_Cases(string ENGID, string LCNUMBER, string LCAMOUNT, DateTime DISBDATE, string LCAT, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingPaperLoanCases(ENGID,LCNUMBER, LCAMOUNT, DISBDATE, LCAT, OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingPaperLoanCases(ENGID, LCNUMBER, LCAMOUNT, DISBDATE, LCAT, OBS, PARA_NO) + "\"}";
 
         }
 
-         [HttpPost]
+        [HttpPost]
         public List<VoucherCheckingDetailsModel> Get_Working_Paper_Voucher_Checking(string ENGID)
         {
             return dBConnection.GetWorkingPaperVoucherChecking(ENGID);
@@ -1794,7 +1795,7 @@ namespace AIS.Controllers
         [HttpPost]
         public string Add_Working_Paper_Voucher_Checking(string ENGID, string VNUMBER, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingVoucherChecking(ENGID,VNUMBER, OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingVoucherChecking(ENGID, VNUMBER, OBS, PARA_NO) + "\"}";
 
         }
         [HttpPost]
@@ -1805,9 +1806,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string Add_Working_Paper_Account_Opening(string ENGID,string VNUMBER, string ANATURE, string OBS, string PARA_NO)
+        public string Add_Working_Paper_Account_Opening(string ENGID, string VNUMBER, string ANATURE, string OBS, string PARA_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingAccountOpening(ENGID,VNUMBER, ANATURE,OBS, PARA_NO) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddWorkingAccountOpening(ENGID, VNUMBER, ANATURE, OBS, PARA_NO) + "\"}";
 
         }
 
@@ -1850,9 +1851,9 @@ namespace AIS.Controllers
         public string update_new_user_admin_panel(List<int> PPNOArr)
         {
             string resp = "";
-            foreach(int ppno in PPNOArr)
+            foreach (int ppno in PPNOArr)
             {
-                resp =dBConnection.UpdateNewUsersAdminPanel(ppno);
+                resp = dBConnection.UpdateNewUsersAdminPanel(ppno);
             }
 
             return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
@@ -1864,7 +1865,7 @@ namespace AIS.Controllers
             return dBConnection.GetUserDetailAdminPanel(DESIGNATION_CODE);
         }
         [HttpPost]
-        public List<ComplianceSummaryModel> get_compliance_summary(string ENTITY_ID="")
+        public List<ComplianceSummaryModel> get_compliance_summary(string ENTITY_ID = "")
         {
             return dBConnection.GetComplianceSummary(ENTITY_ID);
         }
@@ -1878,34 +1879,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetEntityTypes();
         }
-        public List<ManageObservationModel> get_obs_status()
-        {
-            return dBConnection.GetObervationStatus();
-        }
-        public List<ManageEntAuditDeptModel> get_ent_audit_dept()
-        {
-            return dBConnection.GetEntityAuditDept();
-        }
-        [HttpPost]
-        public string add_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
-        }
-        [HttpPost]
-        public string add_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
-        }
-        [HttpPost]
-        public string update_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
-        }
-        [HttpPost]
-        public string update_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
-        }
+
         [HttpPost]
         public string update_entity_types(AuditEntitiesModel ENTITY_MODEL)
         {
@@ -1932,7 +1906,7 @@ namespace AIS.Controllers
             return dBConnection.GetParentChildEntities(P_TYPE_ID, C_TYPE_ID);
         }
         [HttpPost]
-        public string submit_entity_shifting_from_admin_panel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF, DateTime CIR_DATE,string CIR)
+        public string submit_entity_shifting_from_admin_panel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF, DateTime CIR_DATE, string CIR)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitEntityShiftingFromAdminPanel(FROM_ENT_ID, TO_ENT_ID, CIR_REF, CIR_DATE, CIR) + "\"}";
         }
@@ -1946,9 +1920,9 @@ namespace AIS.Controllers
         {
             return dBConnection.GetGroupWisePages(GROUP_ID);
         }
-        
+
         [HttpPost]
-        public string add_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID,string COMP_UP_STATUS, string COMP_DOWN_STATUS)
+        public string add_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COMP_UP_STATUS, string COMP_DOWN_STATUS)
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID, COMP_UP_STATUS, COMP_DOWN_STATUS) + "\"}";
         }
@@ -1964,7 +1938,7 @@ namespace AIS.Controllers
             return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID, GROUP_ID);
         }
 
-       
+
         [HttpPost]
         public List<DepttWiseOutstandingParasModel> get_outstanding_paras_for_entity_type_id(string ENTITY_TYPE_ID)
         {
@@ -2020,7 +1994,7 @@ namespace AIS.Controllers
         [HttpPost]
         public string add_hr_designation_wise_role_assignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string SUB_ENTITY_NAME)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddHRDesignationWiseRoleAssignment(ASSIGNMENT_ID,DESIGNATION_ID,GROUP_ID, SUB_ENTITY_NAME) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddHRDesignationWiseRoleAssignment(ASSIGNMENT_ID, DESIGNATION_ID, GROUP_ID, SUB_ENTITY_NAME) + "\"}";
         }
 
         [HttpPost]
@@ -2028,6 +2002,37 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateHRDesignationWiseRoleAssignment(ASSIGNMENT_ID, DESIGNATION_ID, GROUP_ID, SUB_ENTITY_NAME) + "\"}";
         }
+
+        public List<ManageObservationModel> get_maange_obs_status()
+        {
+            return dBConnection.GetManageObservationStatus();
+        }
+
+        [HttpPost]
+        public string add_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public string update_manage_observatiton_status(ManageObservationModel OBS_STATUS_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateManageObservationStatus(OBS_STATUS_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public List<ManageEntAuditDeptModel> get_manage_ent_audit_dept()
+        {
+            return dBConnection.GetManageEntityAuditDept();
+        }
+        public string add_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddManageEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
+        }
+        [HttpPost]
+        public string update_manage_entities_audit_department(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
