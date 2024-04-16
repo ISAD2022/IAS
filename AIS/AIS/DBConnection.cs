@@ -16396,9 +16396,69 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public List<AuditeeEntitiesModel> GetLoanStatus()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
 
-        public List<PreDisbInfoModel> GetLoanDetailsReport(int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ai.p_get_loan_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["description"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["accountstatusid"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<AuditeeEntitiesModel> GetLoanGLs()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ai.p_get_loan_gl";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["glsubname"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["glsubcode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<LoanDetailReportModel> GetLoanDetailsReport(int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
         {
 
             sessionHandler = new SessionHandler();
@@ -16406,7 +16466,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<PreDisbInfoModel> resp = new List<PreDisbInfoModel>();
+            List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -16421,30 +16481,21 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    PreDisbInfoModel pdsib = new PreDisbInfoModel();
-                    pdsib.COL1 = rdr["COL1"].ToString();
-                    pdsib.COL2 = rdr["COL1"].ToString();
-                    pdsib.COL3 = rdr["COL1"].ToString();
-                    pdsib.COL4 = rdr["COL1"].ToString();
-                    pdsib.COL5 = rdr["COL1"].ToString();
-                    pdsib.COL6 = rdr["COL1"].ToString();
-                    pdsib.COL7 = rdr["COL1"].ToString();
-                    pdsib.COL8 = rdr["COL1"].ToString();
-                    pdsib.COL9 = rdr["COL1"].ToString();
-                    pdsib.COL10 = rdr["COL1"].ToString();
-                    pdsib.COL11 = rdr["COL1"].ToString();
-
-                    pdsib.VOL1 = rdr["VOL1"].ToString();
-                    pdsib.VOL2 = rdr["VOL2"].ToString();
-                    pdsib.VOL3 = rdr["VOL3"].ToString();
-                    pdsib.VOL4 = rdr["COL1"].ToString();
-                    pdsib.VOL5 = rdr["VOL5"].ToString();
-                    pdsib.VOL6 = rdr["VOL6"].ToString();
-                    pdsib.VOL7 = rdr["VOL7"].ToString();
-                    pdsib.VOL8 = rdr["VOL8"].ToString();
-                    pdsib.VOL9 = rdr["VOL9"].ToString();
-                    pdsib.VOL10 = rdr["VOL10"].ToString();
-                    pdsib.VOL11 = rdr["VOL11"].ToString();
+                    LoanDetailReportModel pdsib = new LoanDetailReportModel();
+                    pdsib.CNIC = rdr["CNIC"].ToString();
+                    pdsib.BRANCHID = rdr["BRANCHID"].ToString();
+                    pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
+                    pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
+                    pdsib.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    pdsib.LOAN_DISB_ID = rdr["LOAN_DISB_ID"].ToString();
+                    pdsib.DISB_DATE = rdr["DISB_DATE"].ToString();
+                    pdsib.LAST_TRANSACTION_DATE = rdr["LAST_TRANSACTION_DATE"].ToString();
+                    pdsib.VALID_UNTIL = rdr["VALID_UNTIL"].ToString();
+                    pdsib.LAST_RECOVERY_AMOUNT = rdr["LAST_RECOVERY_AMOUNT"].ToString();
+                    pdsib.DISB_STATUSID = rdr["DISB_STATUSID"].ToString();
+                    pdsib.PRINCIPLE = rdr["PRIN"].ToString();
+                    pdsib.MARKUP = rdr["MARKUP"].ToString();
                     resp.Add(pdsib);
                 }
             }
