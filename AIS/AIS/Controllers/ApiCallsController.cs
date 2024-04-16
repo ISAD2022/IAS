@@ -2033,8 +2033,19 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateEntityAuditDepartment(ENT_AUD_DEPT_MODEL) + "\"}";
         }
 
+        [HttpPost]
+        public List<LoanDetailReportModel> get_load_detail_report(int ENT_ID,int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
+        {
+            return dBConnection.GetLoanDetailsReport(ENT_ID,GLSUBID, STATUSID, START_DATE, END_DATE);
+        }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpPost]
+        public List<AuditeeEntitiesModel> get_region_zone_office(int RGM_ID)
+        { 
+            return dBConnection.GetRBHList(RGM_ID);
+        }
+
+            [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

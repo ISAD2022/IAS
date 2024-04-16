@@ -1197,6 +1197,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["LoanStatusList"] = dBConnection.GetLoanStatus();
             ViewData["LoanGLsList"] = dBConnection.GetLoanGLs();
+            ViewData["GMsList"] = dBConnection.GetGMsList();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

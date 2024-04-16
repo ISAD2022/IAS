@@ -6,30 +6,78 @@
 <script type="text/javascript">
 
     $('#document').ready(function () {
-        var url_string = window.location;
-        var url = new URL(url_string);
-        var gl_id = url.searchParams.get("glcode");
+
+        var currentDate = new Date();
+
+        // Set the start date to the start of the current month
+        var startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        var startOfMonthString = startOfMonth.toISOString().split('T')[0];
+        $('#loanDisbStartDate').val(startOfMonthString);
+
+        // Set the end date to today's date
+        var todayDateString = currentDate.toISOString().split('T')[0];
+        $('#loanDisbtEndDate').val(todayDateString);
+
+
+        $('#loanGLSubField').select2();
+      
+       
+    });
+
+    function getZoneOffice() {
+        $('#loanZoneField').empty();
+        $('#loanZoneField').append('<option value="0">--Select Zone Office--</option>');
+        if ($('#loanGMField').val() != 0) {
+            $.ajax({
+                url: "/ApiCalls/get_region_zone_office",
+                type: "POST",
+                data: {
+                    'RGM_ID': $('#loanGMField').val()
+                },
+                cache: false,
+                success: function (data) {
+
+                    $.each(data, function (i, v) {
+
+                        $('#loanZoneField').append('<option value="'+v.code+'">'+v.name+'</option>');
+
+                    });
+                },
+                dataType: "json",
+            });
+        }
+       
+
+    }
+
+    function getLoanDetail(){
+
+        if ($('#loanZoneField').val() == 0) {
+            alert("Select Zone Office to proceed");
+            return;
+        }
         $.ajax({
-            url: "/ApiCalls/Glhead_Sub_Details",
+            url: "/ApiCalls/get_load_detail_report",
             type: "POST",
             data: {
-                'GLTYPEID': gl_id
+                'GLSUBID': $('#loanGLSubField').val(),
+                'STATUSID': $('#loanStatusField').val(),
+                'START_DATE': $('#loanDisbStartDate').val(),
+                'END_DATE': $('#loanDisbtEndDate').val(),
+                'ENT_ID': $('#loanZoneField').val(),
             },
             cache: false,
             success: function (data) {
 
-                $.each(data.gL_SUBDETAILS, function (i, v) {
+                $.each(data, function (i, v) {
 
-                    console.log(data);
-
-                    /**/
-                    $('#gldetailtab tbody').append('<tr><td class="text-right">' + v.glsubcode + '</td><td>' + v.description + '</td><td>' + v.glsubname + '</td>  <td class="text-right">' + v.credit + '</td><td class="text-right">' + v.debit + '</td> <td class="text-right">' + v.balance + '</td></td> <td>  <a href="/Reports/glhead_transaction_details?glsubcode=' + v.glsubcode + '">Details</a></td> </tr>')
-    /**/
-});
-},
-dataType: "json",
-});
-});
+                    $('#gldetailtab tbody').append('<tr><td class="text-center">' + v.cnic + '</td><td class="text-right">' + v.loaN_CASE_NO + '</td><td>' + v.customername + '</td>  <td class="text-left">' + v.glsubname + '</td><td class="text-right">' + v.disB_DATE + '</td> <td class="text-center">' + v.lasT_TRANSACTION_DATE + '</td><td class="text-right">' + v.disB_STATUSID + '</td><td class="text-right">' + v.lasT_RECOVERY_AMOUNT + '</td><td class="text-center">' + v.principle + '</td><td class="text-center">' + v.markup + '</td></tr>')
+                    
+                });
+            },
+            dataType: "json",
+        });
+    }
 
 
 </script>
@@ -37,9 +85,116 @@ dataType: "json",
 <div class="row col-md-12 mt-3">
     <h4 style="display: block; color: #45c545;">Loan Details</h4>
 </div>
+
 <div class="row col-md-12 mt-3">
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>Region Office</h6>
+        </div>
+        <div class="col-md-8">
+            <select id="loanGMField" onchange="getZoneOffice();" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Region Office--</option>
+                @{
+                    if (ViewData["GMsList"] != null)
+                    {
 
+                        foreach (var risk in (dynamic)(ViewData["GMsList"]))
+                        {
+                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                        }
 
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>Zone Office</h6>
+        </div>
+        <div class="col-md-8">
+            <select id="loanZoneField" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--Select Zone Office--</option>
+            </select>
+        </div>
+    </div>
+
+  
+
+</div>
+
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>Disbursement Start Date</h6>
+        </div>
+        <div class="col-md-8">
+
+            <input class="form-control" type="date" id="loanDisbStartDate" />
+        </div>
+    </div>
+
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>Disbursement End Date</h6>
+        </div>
+        <div class="col-md-8">
+            <input class="form-control" type="date" id="loanDisbtEndDate" />
+        </div>
+    </div>
+
+</div>
+<div class="row col-md-12 mt-3">
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>GL Sub Code</h6>
+        </div>
+        <div class="col-md-8">
+            <select id="loanGLSubField" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--All--</option>
+                @{
+                    if (ViewData["LoanGLsList"] != null)
+                    {
+
+                        foreach (var risk in (dynamic)(ViewData["LoanGLsList"]))
+                        {
+                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                        }
+
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row col-md-6">
+        <div class="col-md-4">
+            <h6>Loan Status</h6>
+        </div>
+        <div class="col-md-8">
+            <select id="loanStatusField" class="form-select form-control" aria-label="Default select example">
+                <option value="0" id="0" selected>--All--</option>
+                @{
+                    if (ViewData["LoanStatusList"] != null)
+                    {
+
+                        foreach (var risk in (dynamic)(ViewData["LoanStatusList"]))
+                        {
+                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                        }
+
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row col-md-12 mt-3">
+
+        <button onclick="getLoanDetail();" class="btn btn-primary offset-md-9 col-md-3">Search</button>
+
+    </div>
 
 </div>
 
@@ -48,13 +203,17 @@ dataType: "json",
         <table id="gldetailtab" class="col-md-12 table table-bordered table-hover mt-1 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-auto">GL Head</th>
-                    <th class="col-md-auto">GL Description</th>
-                    <th class="col-md-auto">GL Sub-Name</th>
-                    <th class="col-md-auto">Credit</th>
-                    <th class="col-md-auto">Debit</th>
-                    <th class="col-md-auto">Balance</th>
-                    <th class="col-md-auto">Action</th> 
+                    <th class="col-md-auto">CNIC</th>
+                    <th class="col-md-auto">LC No.</th>
+                    <th class="col-md-auto">Customer Name</th>
+                    <th class="col-md-auto">GL Sub Name</th>
+                    <th class="col-md-auto">Disb Date</th>
+                    <th class="col-md-auto">Last Transaction Date</th>
+
+                    <th class="col-md-auto">Disb Status</th>
+                    <th class="col-md-auto">Last Recovery</th>
+                    <th class="col-md-auto">Principle</th>
+                    <th class="col-md-auto">Markup</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,11 +221,7 @@ dataType: "json",
 
 
         </table>
-        <div class="row col-md-12 mt-3">
 
-           <button onclick="history.back()" class="btn btn-primary" >Return</button>
 
-            </div>
-
-        </div>
     </div>
+</div>

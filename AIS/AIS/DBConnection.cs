@@ -16408,10 +16408,9 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ai.p_get_loan_status";
+                cmd.CommandText = "pkg_rpt.p_get_loan_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -16439,10 +16438,9 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ai.p_get_loan_gl";
+                cmd.CommandText = "pkg_rpt.p_get_loan_gl";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -16458,7 +16456,68 @@ namespace AIS.Controllers
 
         }
 
-        public List<LoanDetailReportModel> GetLoanDetailsReport(int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
+        public List<AuditeeEntitiesModel> GetGMsList()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_get_gm_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["name"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<AuditeeEntitiesModel> GetRBHList(int REGION_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.R_get_rbh_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("gm", OracleDbType.Int32).Value = REGION_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["name"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<LoanDetailReportModel> GetLoanDetailsReport(int ENT_ID,int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
         {
 
             sessionHandler = new SessionHandler();
@@ -16470,20 +16529,21 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
+                cmd.CommandText = "pkg_rpt.p_get_loan_to_default";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("g_id", OracleDbType.Int32).Value = GLSUBID;
                 cmd.Parameters.Add("l_status", OracleDbType.Int32).Value = STATUSID;
-                cmd.Parameters.Add("start_date", OracleDbType.Int32).Value = START_DATE;
-                cmd.Parameters.Add("end_date", OracleDbType.Varchar2).Value = END_DATE;
+                cmd.Parameters.Add("start_date", OracleDbType.Date).Value = START_DATE;
+                cmd.Parameters.Add("end_date", OracleDbType.Date).Value = END_DATE;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     LoanDetailReportModel pdsib = new LoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
-                    pdsib.BRANCHID = rdr["BRANCHID"].ToString();
+                    //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
                     pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
                     pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
                     pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
