@@ -432,12 +432,12 @@ namespace AIS.Controllers
             }
         }
 
-
-        public IActionResult glhead_yearwise_summary()
+        [HttpGet]
+        public IActionResult glhead_yearwise_summary(int engId)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["GlHeadDetailsyearly"] = dBConnection.GetGlheadDetailsyearwise();
+            ViewData["GlHeadDetailsyearly"] = dBConnection.GetGlheadDetailsyearwise(engId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -563,11 +563,13 @@ namespace AIS.Controllers
                     return View();
             }
         }
-        public IActionResult glhead_summary()
+
+        [HttpPost]
+        public IActionResult glhead_summary(int engId)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["GlHeadDetails"] = dBConnection.GetGlheadDetails();
+            ViewData["GlHeadDetails"] = dBConnection.GetGlheadDetails(engId);
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
