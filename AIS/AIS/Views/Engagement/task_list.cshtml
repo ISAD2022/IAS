@@ -27,11 +27,10 @@
 
                     <th class="col-md-auto font-weight-bold text-center">Audit Entity</th>
                     <th class="col-md-auto font-weight-bold text-center">Team Name</th>
-                    <th class="col-md-1 font-weight-bold text-center">Start Date</th>
-                    <th class="col-md-1 font-weight-bold text-center">End Date</th>
-                    <th class="col-md-2 font-weight-bold text-center">Operational Period Start</th>
-                    <th class="col-md-2 font-weight-bold text-center">Operational Period End</th>
-                    <th class="col-md-1 font-weight-bold text-center">Status</th>
+                    <th class="col-md-auto font-weight-bold text-center">Start Date</th>
+                    <th class="col-md-auto font-weight-bold text-center">End Date</th>
+                    <th class="col-md-auto font-weight-bold text-center">Status</th>
+                    <th class="col-md-auto font-weight-bold"></th>
                     <th class="col-md-auto font-weight-bold"></th>
                     <th class="col-md-auto font-weight-bold"></th>
                     <th class="col-md-auto font-weight-bold"></th>
@@ -57,8 +56,6 @@
                                 <td class="col-md-auto text-center">@item.TEAM_NAME</td>
                                 <td class="col-md-1 text-center">@sDate.Split(" ")[0]</td>
                                 <td class="col-md-1 text-center">@eDate.Split(" ")[0]</td>
-                                <td class="col-md-2 text-center">@osdate.Split(" ")[0]</td>
-                                <td class="col-md-2 text-center">@oedate.Split(" ")[0]</td>
                                 <td class="col-md-1 text-center">
                                     @{
                                         if (item.STATUS_ID == 6)
@@ -133,17 +130,32 @@
                                     }
                                 </td>
                                 <td class="col-md-1 text-center">
-                                    <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">Working Paper</a>
+                                    @{
+                                        if (item.WORKING_PAPER.Trim().Length > 0)
+                                        {
+                                            <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">@item.WORKING_PAPER</a>
+                                        }
+                                    }
+                                    
                                 </td>
 
                                 <td class="col-md-1 text-center">
                                     @{
-                                        if (item.ISCLOSE == "Z")
+                                        if (item.ISCLOSE == "Z" && item.STATUS_ID==4)
                                         {
                                             <a href="/Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
                                         }                                        
                                 }
                                 
+                                </td>
+                                <td class="col-md-1 text-center">
+                                    @{
+                                        if (item.ISCLOSE == "Z")
+                                        {
+                                            <a href="/Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
+                                        }
+                                    }
+
                                 </td>
                             </tr>
                             index++;
