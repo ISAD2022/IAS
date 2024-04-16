@@ -343,9 +343,9 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
-        public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE = "")
+        public List<LoanCaseModel> Loan_Case_Details(int Loan_case, string LOAN_TYPE = "", int ENG_ID=0)
         {
-            return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE);
+            return dBConnection.GetLoanCaseDetails(Loan_case, LOAN_TYPE, ENG_ID);
         }
         [HttpPost]
         public GlHeadSubDetailsModel Glhead_Sub_Details(int GLTYPEID)
@@ -371,9 +371,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int b_id)
+        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int b_id, int ENG_ID)
         {
-            return dBConnection.GetIncomeExpenceDetails(b_id);
+            return dBConnection.GetIncomeExpenceDetails(b_id, ENG_ID);
         }
         [HttpPost]
         public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
@@ -704,9 +704,9 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public List<LoanCasedocModel> Getloancasedocuments()
+        public List<LoanCasedocModel> Getloancasedocuments(int ENG_ID)
         {
-            return dBConnection.GetLoanCaseDocuments();
+            return dBConnection.GetLoanCaseDocuments(ENG_ID);
         }
         [HttpPost]
         public List<FunctionalResponsibilityWiseParas> get_functional_responsibility_wise_paras(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)

@@ -649,12 +649,12 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-        public IActionResult loan_scheme()
+        [HttpPost]
+        public IActionResult loan_scheme(int engId)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["GetLoanScheme"] = dBConnection.GetLoansScheme();
+            ViewData["GetLoanScheme"] = dBConnection.GetLoansScheme(engId);
 
             if (!sessionHandler.IsUserLoggedIn())
             {
@@ -670,12 +670,12 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
-        public IActionResult loan_scheme_yearly()
+        [HttpPost]
+        public IActionResult loan_scheme_yearly(int engId)
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["GetLoanScheme"] = dBConnection.GetLoansSchemeYearly();
+            ViewData["GetLoanScheme"] = dBConnection.GetLoansSchemeYearly(engId);
 
             if (!sessionHandler.IsUserLoggedIn())
             {

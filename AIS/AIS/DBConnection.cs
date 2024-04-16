@@ -3824,8 +3824,8 @@ namespace AIS.Controllers
                     tlist.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
                     tlist.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     tlist.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    //tlist.TEAMMEMBER_PPNO = Convert.ToInt32(loggedInUser.PPNumber);
                     tlist.TEAM_NAME = rdr["T_NAME"].ToString();
+                    tlist.WORKING_PAPER = rdr["WORKING_PAPER"].ToString();
                     tlist.EMP_NAME = loggedInUser.Name.ToString();
                     tlist.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"]).ToString("dd/MM/yyyy"); ;
                     tlist.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"]).ToString("dd/MM/yyyy"); ;
@@ -4106,7 +4106,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<GlHeadDetailsModel> GetGlheadDetails(int gl_code = 0)
+        public List<GlHeadDetailsModel> GetGlheadDetails(int engId=0,int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
@@ -4123,8 +4123,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.p_getglheadsummary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = engId;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                // cmd.Parameters.Add("GLSUBCODE", OracleDbType.Int32).Value = gl_code;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -4192,9 +4192,9 @@ namespace AIS.Controllers
             return GlHeadSubDetails;
 
         }
-        public List<LoanCaseModel> GetLoanCaseDetails(int lid = 0, string type = "")
+        public List<LoanCaseModel> GetLoanCaseDetails(int lid = 0, string type = "", int ENG_ID=0)
         {
-            int ENG_ID = this.GetLoggedInUserEngId();
+           
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4207,6 +4207,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.P_GetLoanCaseDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("loantype", OracleDbType.Varchar2).Value = type;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -4233,10 +4234,10 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<LoanCasedocModel> GetLoanCaseDocuments()
+        public List<LoanCasedocModel> GetLoanCaseDocuments(int ENG_ID)
         {
             List<LoanCasedocModel> list = new List<LoanCasedocModel>();
-            /*
+            
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
@@ -4249,6 +4250,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ais.P_GetLoanCaseDocuments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -4269,17 +4271,15 @@ namespace AIS.Controllers
                     list.Add(LoanCaseDetails);
                 }
             }
-           con.Dispose();*/
+           con.Dispose();
             return list;
         }
-        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0)
+        public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0, int ENG_ID=0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
             var loggedInUser = sessionHandler.GetSessionUser();
-            int ENG_ID = this.GetLoggedInUserEngId();
-
             var con = this.DatabaseConnection(); con.Open();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
@@ -4288,6 +4288,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.P_GetIncomeExpenceDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -9411,7 +9412,7 @@ namespace AIS.Controllers
             return filename;
             */
         }
-        public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int gl_code = 0)
+        public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int engId=0,int gl_code = 0)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
@@ -9428,8 +9429,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.p_getglheadsummary_Yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                // cmd.Parameters.Add("GLSUBCODE", OracleDbType.Int32).Value = gl_code;
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = engId;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -9439,12 +9439,7 @@ namespace AIS.Controllers
                     GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     GlHeadDetails.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    //GlHeadDetails.GL_TYPEID = Convert.ToInt32(rdr["GL_TYPEID"]);
-
-                    //GlHeadDetails.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-
-
-                    //GlHeadDetails.DATETIME = Convert.ToDateTime(rdr["DATETIME"]);
+                  
                     if (rdr["BALANCE_2021"].ToString() != null && rdr["BALANCE_2021"].ToString() != "")
                         GlHeadDetails.BALANCE_2021 = Convert.ToDouble(rdr["BALANCE_2021"]);
                     if (rdr["DEBIT_2021"].ToString() != null && rdr["DEBIT_2021"].ToString() != "")
@@ -9457,6 +9452,19 @@ namespace AIS.Controllers
                         GlHeadDetails.DEBIT_2022 = Convert.ToDouble(rdr["DEBIT_2022"]);
                     if (rdr["CREDIT_2022"].ToString() != null && rdr["CREDIT_2022"].ToString() != "")
                         GlHeadDetails.CREDIT_2022 = Convert.ToDouble(rdr["CREDIT_2022"]);
+
+                    GlHeadDetails.COL1 = rdr["COL1"].ToString();
+                    GlHeadDetails.COL2 = rdr["COL2"].ToString();
+                    GlHeadDetails.COL3 = rdr["COL3"].ToString();
+
+                    GlHeadDetails.LAST_CREDIT = rdr["LAST_CREDIT"].ToString();
+                     GlHeadDetails.LAST_DEBIT = rdr["LAST_DEBIT"].ToString();
+                     GlHeadDetails.LAST_BALANCE = rdr["LAST_BALANCE"].ToString();
+
+                    GlHeadDetails.CURRENT_CREDIT = rdr["CURRENT_CREDIT"].ToString();
+                    GlHeadDetails.CURRENT_DEBIT = rdr["CURRENT_DEBIT"].ToString();
+                    GlHeadDetails.CURRENT_BALANCE = rdr["CURRENT_BALANCE"].ToString();
+
                     list.Add(GlHeadDetails);
                 }
             }
@@ -9624,7 +9632,7 @@ namespace AIS.Controllers
             return periodList;
         }
 
-        public List<LoanSchemeModel> GetLoansScheme()
+        public List<LoanSchemeModel> GetLoansScheme(int engId)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
@@ -9639,6 +9647,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = engId;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
 
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -9669,7 +9678,7 @@ namespace AIS.Controllers
         }
 
 
-        public List<LoanSchemeYearlyModel> GetLoansSchemeYearly()
+        public List<LoanSchemeYearlyModel> GetLoansSchemeYearly(int engId)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
@@ -9684,6 +9693,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme_yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENG_ID", OracleDbType.Int32).Value = engId;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
 
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
