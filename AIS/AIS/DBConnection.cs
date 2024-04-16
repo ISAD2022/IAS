@@ -16397,5 +16397,60 @@ namespace AIS.Controllers
 
         }
 
+
+        public List<PreDisbInfoModel> GetLoanDetailsReport(int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<PreDisbInfoModel> resp = new List<PreDisbInfoModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("g_id", OracleDbType.Int32).Value = GLSUBID;
+                cmd.Parameters.Add("l_status", OracleDbType.Int32).Value = STATUSID;
+                cmd.Parameters.Add("start_date", OracleDbType.Int32).Value = START_DATE;
+                cmd.Parameters.Add("end_date", OracleDbType.Varchar2).Value = END_DATE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    PreDisbInfoModel pdsib = new PreDisbInfoModel();
+                    pdsib.COL1 = rdr["COL1"].ToString();
+                    pdsib.COL2 = rdr["COL1"].ToString();
+                    pdsib.COL3 = rdr["COL1"].ToString();
+                    pdsib.COL4 = rdr["COL1"].ToString();
+                    pdsib.COL5 = rdr["COL1"].ToString();
+                    pdsib.COL6 = rdr["COL1"].ToString();
+                    pdsib.COL7 = rdr["COL1"].ToString();
+                    pdsib.COL8 = rdr["COL1"].ToString();
+                    pdsib.COL9 = rdr["COL1"].ToString();
+                    pdsib.COL10 = rdr["COL1"].ToString();
+                    pdsib.COL11 = rdr["COL1"].ToString();
+
+                    pdsib.VOL1 = rdr["VOL1"].ToString();
+                    pdsib.VOL2 = rdr["VOL2"].ToString();
+                    pdsib.VOL3 = rdr["VOL3"].ToString();
+                    pdsib.VOL4 = rdr["COL1"].ToString();
+                    pdsib.VOL5 = rdr["VOL5"].ToString();
+                    pdsib.VOL6 = rdr["VOL6"].ToString();
+                    pdsib.VOL7 = rdr["VOL7"].ToString();
+                    pdsib.VOL8 = rdr["VOL8"].ToString();
+                    pdsib.VOL9 = rdr["VOL9"].ToString();
+                    pdsib.VOL10 = rdr["VOL10"].ToString();
+                    pdsib.VOL11 = rdr["VOL11"].ToString();
+                    resp.Add(pdsib);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
     }
 }

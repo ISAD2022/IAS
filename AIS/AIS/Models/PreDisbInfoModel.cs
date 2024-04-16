@@ -17,6 +17,7 @@ namespace AIS.Models
         public string COL8 { get; set; }
         public string COL9 { get; set; }
         public string COL10 { get; set; }
+        public string COL11 { get; set; }
 
         public string VOL1 { get; set; }
         public string VOL2 { get; set; }
@@ -28,6 +29,7 @@ namespace AIS.Models
         public string VOL8 { get; set; }
         public string VOL9 { get; set; }
         public string VOL10 { get; set; }
+        public string VOL11 { get; set; }
 
 
 
