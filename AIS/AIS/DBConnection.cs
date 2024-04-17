@@ -16618,7 +16618,7 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_rpt.p_get_loans_to_default_history";
+                cmd.CommandText = "pkg_rpt.p_get_loan_to_default_history";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("C_NIC", OracleDbType.Int32).Value = CNIC;
