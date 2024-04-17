@@ -16563,5 +16563,91 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public List<LoanDetailReportModel> GetCNICLoanDetailsReport(int CNIC)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_all_loans_of_cnic";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_NIC", OracleDbType.Int32).Value = CNIC;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    LoanDetailReportModel pdsib = new LoanDetailReportModel();
+                    pdsib.CNIC = rdr["CNIC"].ToString();
+                    //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
+                    pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
+                    pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
+                    pdsib.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    pdsib.LOAN_DISB_ID = rdr["LOAN_DISB_ID"].ToString();
+                    pdsib.DISB_DATE = rdr["DISB_DATE"].ToString();
+                    pdsib.LAST_TRANSACTION_DATE = rdr["LAST_TRANSACTION_DATE"].ToString();
+                    pdsib.VALID_UNTIL = rdr["VALID_UNTIL"].ToString();
+                    pdsib.LAST_RECOVERY_AMOUNT = rdr["LAST_RECOVERY_AMOUNT"].ToString();
+                    pdsib.DISB_STATUSID = rdr["DISB_STATUSID"].ToString();
+                    pdsib.PRINCIPLE = rdr["PRIN"].ToString();
+                    pdsib.MARKUP = rdr["MARKUP"].ToString();
+                    resp.Add(pdsib);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public List<LoanDetailReportModel> GetDefaultCNICLoanDetailsReport(int CNIC, int LOAN_DISB_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_get_loans_to_default_history";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_NIC", OracleDbType.Int32).Value = CNIC;
+                cmd.Parameters.Add("DIS_ID", OracleDbType.Int32).Value = LOAN_DISB_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    LoanDetailReportModel pdsib = new LoanDetailReportModel();
+                    pdsib.CNIC = rdr["CNIC"].ToString();
+                    //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
+                    pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
+                    pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
+                    pdsib.GLSUBNAME = rdr["GLSUBNAME"].ToString();
+                    pdsib.LOAN_DISB_ID = rdr["LOAN_DISB_ID"].ToString();
+                    pdsib.DISB_DATE = rdr["DISB_DATE"].ToString();
+                    pdsib.LAST_TRANSACTION_DATE = rdr["LAST_TRANSACTION_DATE"].ToString();
+                    pdsib.VALID_UNTIL = rdr["VALID_UNTIL"].ToString();
+                    pdsib.LAST_RECOVERY_AMOUNT = rdr["LAST_RECOVERY_AMOUNT"].ToString();
+                    pdsib.DISB_STATUSID = rdr["DISB_STATUSID"].ToString();
+                    pdsib.PRINCIPLE = rdr["PRIN"].ToString();
+                    pdsib.MARKUP = rdr["MARKUP"].ToString();
+                    resp.Add(pdsib);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
     }
 }

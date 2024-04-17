@@ -2034,9 +2034,20 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<LoanDetailReportModel> get_load_detail_report(int ENT_ID,int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
+        public List<LoanDetailReportModel> get_loan_detail_report(int ENT_ID,int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
         {
             return dBConnection.GetLoanDetailsReport(ENT_ID,GLSUBID, STATUSID, START_DATE, END_DATE);
+        }
+
+        [HttpPost]
+        public List<LoanDetailReportModel> get_cnic_loan_detail_report(int CNIC)
+        {
+            return dBConnection.GetCNICLoanDetailsReport(CNIC);
+        }
+        [HttpPost]
+        public List<LoanDetailReportModel> get_default_cnic_loan_detail_report(int CNIC, int LOAN_DISB_ID)
+        {
+            return dBConnection.GetDefaultCNICLoanDetailsReport(CNIC, LOAN_DISB_ID);
         }
 
         [HttpPost]

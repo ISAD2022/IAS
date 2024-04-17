@@ -50,7 +50,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/get_load_detail_report",
+            url: "/ApiCalls/get_loan_detail_report",
             type: "POST",
             data: {
                 'GLSUBID': $('#loanGLSubField').val(),
@@ -64,7 +64,7 @@
 
                 $.each(data, function (i, v) {
 
-                    $('#gldetailtab tbody').append('<tr><td class="text-center">' + v.cnic + '</td><td class="text-right">' + v.loaN_CASE_NO + '</td><td>' + v.customername + '</td>  <td class="text-left">' + v.glsubname + '</td><td class="text-right">' + v.disB_DATE + '</td> <td class="text-center">' + v.lasT_TRANSACTION_DATE + '</td><td class="text-right">' + v.disB_STATUSID + '</td><td class="text-right">' + v.lasT_RECOVERY_AMOUNT + '</td><td class="text-center">' + v.principle + '</td><td class="text-center">' + v.markup + '</td></tr>')
+                    $('#gldetailtab tbody').append('<tr><td class="text-center"><a class="text-primary" href = "/Reports/cnic_loan_report?cnic=' + v.cnic + '"> ' + v.cnic + '</a></td><td class="text-right">' + v.loaN_CASE_NO + '</td > <td>' + v.customername + ' </td>  <td class="text-left">' + v.glsubname + '</td> <td class="text-right"> ' + v.disB_DATE + ' </td> <td class="text-center">' + v.lasT_TRANSACTION_DATE + '</td> <td class="text-right" > ' + v.disB_STATUSID + ' </td><td class="text-right">' + v.lasT_RECOVERY_AMOUNT + '</td> <td class="text-center"> ' + v.principle + ' </td><td class="text-center">' + v.markup + '</td> </tr>')
                     
                 });
             },
