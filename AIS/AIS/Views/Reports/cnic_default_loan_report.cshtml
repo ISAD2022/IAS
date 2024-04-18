@@ -33,7 +33,7 @@
 
                 $.each(data, function (i, v) {
 
-                    $('#gldetailtab tbody').append('<tr><td class="text-center">' + v.cnic + '</td><td class="text-right">' + v.loaN_CASE_NO + '</td><td>' + v.customername + '</td>  <td class="text-left">' + v.glsubname + '</td><td class="text-right">' + v.disB_DATE + '</td> <td class="text-center">' + v.lasT_TRANSACTION_DATE + '</td><td class="text-right">' + v.disB_STATUSID + '</td><td class="text-right">' + v.lasT_RECOVERY_AMOUNT + '</td><td class="text-center">' + v.principle + '</td><td class="text-center">' + v.markup + '</td><td><a href="/Reports/cnic_loan_report?cnic=' + g_cnic + '&disb_id='+v.loaN_DISB_ID+'">Details</a></td></tr>')
+                    $('#gldetailtab tbody').append('<tr><td class="text-center">' + v.cnic + '</td><td class="text-right">' + v.transactioN_DATE + '</td><td>' + v.currenT_STATUS + '</td>  <td class="text-left">' + v.outstandinG_PRINCIPAL_TOTAL + '</td><td class="text-right">' + v.outstandinG_MARKUP_TOTAL + '</td> <td class="text-center">' + v.lasT_TRANSACTION_DATE + '</td><td class="text-right">' + v.defaulT_PRINCIPAL + '</td><td class="text-right">' + v.defaulT_MARKUP + '</td></tr>')
 
                 });
             },
@@ -56,16 +56,12 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">CNIC</th>
-                    <th class="col-md-auto">LC No.</th>
-                    <th class="col-md-auto">Customer Name</th>
-                    <th class="col-md-auto">GL Sub Name</th>
-                    <th class="col-md-auto">Disb Date</th>
-                    <th class="col-md-auto">Last Transaction Date</th>
-
-                    <th class="col-md-auto">Disb Status</th>
-                    <th class="col-md-auto">Last Recovery</th>
-                    <th class="col-md-auto">Principle</th>
-                    <th class="col-md-auto">Markup</th>
+                    <th class="col-md-auto">Transaction Date</th>
+                    <th class="col-md-auto">Current Status</th>
+                    <th class="col-md-auto">Outstanding Total Principle</th>
+                    <th class="col-md-auto">Outstanding Total Markup</th>
+                    <th class="col-md-auto">Default Principle</th>
+                    <th class="col-md-auto">Default Markup</th>
                     <th class="col-md-auto"></th>
                 </tr>
             </thead>
