@@ -48,8 +48,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -16563,7 +16563,7 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public List<LoanDetailReportModel> GetCNICLoanDetailsReport(int CNIC)
+        public List<LoanDetailReportModel> GetCNICLoanDetailsReport(string CNIC)
         {
 
             sessionHandler = new SessionHandler();
@@ -16585,7 +16585,6 @@ namespace AIS.Controllers
                 {
                     LoanDetailReportModel pdsib = new LoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
-                    //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
                     pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
                     pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
                     pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
@@ -16606,7 +16605,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<LoanDetailReportModel> GetDefaultCNICLoanDetailsReport(int CNIC, int LOAN_DISB_ID)
+        public List<DefaultHisotryLoanDetailReportModel> GetDefaultCNICLoanDetailsReport(string CNIC, string LOAN_DISB_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -16614,7 +16613,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
+            List<DefaultHisotryLoanDetailReportModel> resp = new List<DefaultHisotryLoanDetailReportModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -16627,21 +16626,18 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    LoanDetailReportModel pdsib = new LoanDetailReportModel();
+                    DefaultHisotryLoanDetailReportModel pdsib = new DefaultHisotryLoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
                     //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
-                    pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
-                    pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
-                    pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
-                    pdsib.GLSUBNAME = rdr["GLSUBNAME"].ToString();
-                    pdsib.LOAN_DISB_ID = rdr["LOAN_DISB_ID"].ToString();
-                    pdsib.DISB_DATE = rdr["DISB_DATE"].ToString();
-                    pdsib.LAST_TRANSACTION_DATE = rdr["LAST_TRANSACTION_DATE"].ToString();
-                    pdsib.VALID_UNTIL = rdr["VALID_UNTIL"].ToString();
-                    pdsib.LAST_RECOVERY_AMOUNT = rdr["LAST_RECOVERY_AMOUNT"].ToString();
-                    pdsib.DISB_STATUSID = rdr["DISB_STATUSID"].ToString();
-                    pdsib.PRINCIPLE = rdr["PRIN"].ToString();
-                    pdsib.MARKUP = rdr["MARKUP"].ToString();
+                    pdsib.NPL_LOAN_DISB_ID = rdr["npl_loan_disb_id"].ToString();
+                    pdsib.DEFAULT_PRINCIPAL = rdr["default_principal"].ToString();
+                    pdsib.DEFAULT_MARKUP = rdr["default_markup"].ToString();
+                    pdsib.OUTSTANDING_PRINCIPAL_TOTAL = rdr["outstanding_principal_total"].ToString();
+                    pdsib.OUTSTANDING_MARKUP_TOTAL = rdr["outstanding_markup_total"].ToString();
+                    pdsib.CURRENT_STATUS = rdr["current_status"].ToString();
+                    pdsib.TRANSACTION_DATE = rdr["transaction_date"].ToString();
+                    pdsib.CNIC = rdr["cnic"].ToString();
+                    pdsib.LOAN_DISB_ID = rdr["loan_disb_id"].ToString();
                     resp.Add(pdsib);
                 }
             }

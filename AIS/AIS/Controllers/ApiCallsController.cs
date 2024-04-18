@@ -2040,12 +2040,12 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<LoanDetailReportModel> get_cnic_loan_detail_report(int CNIC)
+        public List<LoanDetailReportModel> get_cnic_loan_detail_report(string CNIC)
         {
             return dBConnection.GetCNICLoanDetailsReport(CNIC);
         }
         [HttpPost]
-        public List<LoanDetailReportModel> get_default_cnic_loan_detail_report(int CNIC, int LOAN_DISB_ID)
+        public List<DefaultHisotryLoanDetailReportModel> get_default_cnic_loan_detail_report(string CNIC, string LOAN_DISB_ID)
         {
             return dBConnection.GetDefaultCNICLoanDetailsReport(CNIC, LOAN_DISB_ID);
         }

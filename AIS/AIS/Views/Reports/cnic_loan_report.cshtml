@@ -22,11 +22,11 @@
             url: "/ApiCalls/get_cnic_loan_detail_report",
             type: "POST",
             data: {
-                'CNIC': g_cnic,
-              
+                'CNIC': g_cnic,              
             },
             cache: false,
             success: function (data) {
+
 
                 $.each(data, function (i, v) {
 
