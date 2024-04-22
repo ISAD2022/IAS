@@ -1157,7 +1157,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForComplianceFlow();
+            ViewData["EntitiesList"] = dBConnection.GetEntityTypesForEntityWiseOutstandingObsPosition();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
