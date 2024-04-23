@@ -2056,7 +2056,32 @@ namespace AIS.Controllers
             return dBConnection.GetRBHList(RGM_ID);
         }
 
-            [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpPost]
+        public List<AuditPeriodModel> audit_periods(int dept_code)
+        {
+            return dBConnection.GetAuditPeriods(dept_code);
+        }
+
+        [HttpPost]
+        public string add_audit_period(AddAuditPeriodModel auditPeriod)
+        {
+            AuditPeriodModel apm = new AuditPeriodModel();
+            apm.STATUS_ID = 1;
+            apm.DESCRIPTION = auditPeriod.DESCRIPTION;
+            apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
+            apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditPeriod(apm) + "\"}";
+
+
+        }
+
+        [HttpPost]
+        public string update_audit_period(AuditPeriodModel auditPeriod)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditPeriod(auditPeriod) + "\"}";
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

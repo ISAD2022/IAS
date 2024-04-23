@@ -13,6 +13,10 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
 .modal-xxl{
     max-width:1400px !important;
 }

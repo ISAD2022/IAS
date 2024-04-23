@@ -2,46 +2,35 @@
     ViewData["Title"] = "Audit Period";
     Layout = "_Layout";
 }
-<style type="text/css">
-    .planDetails:hover {
-        font-size: 100%;
-        font-weight: 600;
-        cursor: pointer;
-    }
-</style>
+
 <script type="text/javascript">
+    var g_periodId = 0;
     $(document).ready(function () {
         ShowDepartmentAuditPeriods();
     });
     function ShowDepartmentAuditPeriods() {
-     
+        $.ajax({
+            url: "/ApiCalls/audit_periods",
+            type: "POST",
+            data: {
+            },
+            cache: false,
+            success: function (data) {
+                $('#listOfAuditPeriods tbody').empty();
+                //console.log(data);
+                var srNo = 1;
+                $.each(data, function (index, period) {
+                    
+                    period.starT_DATE = period.starT_DATE.split('T')[0];
+                    period.enD_DATE = period.enD_DATE.split('T')[0];
+                    $('#listOfAuditPeriods tbody').append('<tr id=teamcode_' + period.auditperiodid + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + period.description + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.starT_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.enD_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.status + ' </p></td><td><small onclick="getAuditPlan(' + period.auditperiodid + ')" class="text-danger cursor-pointer">Details</small></td><td><small onclick="updateAuditPeriod(' + period.auditperiodid + ',' + period.statuS_ID + ')" class="text-danger cursor-pointer">Update</small></td></tr>');
+                    srNo++;
+                });
 
-            $.ajax({
-                url: "/Planning/audit_periods",
-                type: "POST",
-                data: {
-                },
-                cache: false,
-                success: function (data) {
-                    $('#listOfAuditPeriods tbody').empty();
-                    //console.log(data);
-                    var srNo = 1;
-                    $.each(data, function (index, period) {
-                        var status = "";
-                        if (period.statuS_ID==1)
-                            status = 'Created';
-                        else if (period.statuS_ID == 2)
-                            status = 'Approved';
-                        period.starT_DATE = period.starT_DATE.split('T')[0];
-                        period.enD_DATE = period.enD_DATE.split('T')[0];
-                        $('#listOfAuditPeriods tbody').append('<tr id=teamcode_' + period.auditperiodid + '><td class="searchable"><p class="fw-normal mb-1">' + srNo + '</p></td><td class="searchable"><p class="fw-normal mb-1">' + period.description + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.starT_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + period.enD_DATE + ' </p></td><td class="searchable"><p class="empName fw-normal mb-1">' + status + ' </p></td><td><small onclick="getAuditPlan(' + period.auditperiodid+')" class="text-danger planDetails">Details</small></td></tr>');
-                        srNo++;
-                    });
+            },
+            dataType: "json",
+        });
 
-                },
-                dataType: "json",
-            });
-      
     }
     function setupNewAuditPeriod() {
         $('#setupAuditPeriod').modal('show');
@@ -55,12 +44,20 @@
         });
 
     }
+
+    function updateAuditPeriod(periodId, statusId) {
+        $('#updateAuditPeriodModel').modal('show');
+        $('#auditPeriodStatus_forUpdate').val(statusId);
+        g_periodId = periodId;
+
+
+    }
     function reloadLocation() {
         location.reload();
     }
     function publishNewAuditPeriodChanges() {
-        var desc=$('#periodDescriptionModalField').val();
-        var stDate=$('#periodStartModalField').val();
+        var desc = $('#periodDescriptionModalField').val();
+        var stDate = $('#periodStartModalField').val();
         var edDate = $('#periodEndModalField').val();
         var deptIds = [];
         $.each($('.deptCheckBoxes'), function (index, chkbox) {
@@ -68,7 +65,7 @@
                 deptIds.push($(chkbox).attr('dept-id'));
             }
         });
-        if (desc == "" || stDate == "" || edDate == "" ) {
+        if (desc == "" || stDate == "" || edDate == "") {
             alert("Missing Mandatory fields");
             return;
         }
@@ -85,8 +82,8 @@
         var mm = de.getMonth() + 1;
         var yy = de.getFullYear();
         var endDate = ("0" + mm).slice(-2) + "/" + ("0" + dd).slice(-2) + "/" + yy;
-         $.ajax({
-            url: "/Planning/add_audit_period",
+        $.ajax({
+            url: "/ApiCalls/add_audit_period",
             type: "POST",
             data: {
                 'DESCRIPTION': desc,
@@ -96,16 +93,37 @@
                 'DEPARTMENT_IDS': deptIds
             },
             cache: false,
-             success: function (data) {
+            success: function (data) {
 
-                 alert(data.Message);
-                 onAlertCallback(reloadLocation);
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+            },
+            dataType: "json",
+        });
+    }
+    function publishUpdateAuditPeriodChanges() {
+        if ($('#auditPeriodStatus_forUpdate').val() == 0) {
+            alert("Please select Audit Period to proceed");
+            return;
+        }     
+
+        $.ajax({
+            url: "/ApiCalls/update_audit_period",
+            type: "POST",
+            data: {
+                'AUDITPERIODID': g_periodId,
+                'STATUS_ID': $('#auditPeriodStatus_forUpdate').val(),
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
     }
     function getAuditPlan(periodId) {
-        window.location.href = "/Planning/tentative_audit_plan?dept=" + $('#deptSelectionBox option:selected').val()+"&periodId=" + periodId;
+        window.location.href = "/Planning/tentative_audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + periodId;
     }
 
 </script>
@@ -120,17 +138,18 @@
     </div>
 </div>
 <div id="listOfAuditPeriodsContainer" class="row mt-3">
-    
+
     <br />
     <table id="listOfAuditPeriods" class="table align-middle mb-0 mt-2 bg-white table-hover table-striped">
         <thead class="bg-light">
             <tr>
                 <th class="col-md-1">Sr No.</th>
-                <th class="col-md-3">Description</th>
+                <th class="col-md-4">Description</th>
                 <th class="col-md-2">Start Date</th>
                 <th class="col-md-2">End Date</th>
-                <th class="col-md-2">Status</th>
-                <th class="col-md-2"></th>
+                <th class="col-md-1">Status</th>
+                <th class="col-md-1"></th>
+                <th class="col-md-1"></th>
             </tr>
         </thead>
         <tbody>
@@ -187,6 +206,46 @@
             </div>
             <div class="modal-footer">
                 <button onclick="publishNewAuditPeriodChanges();" type="button" class="btn btn-danger">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="updateAuditPeriodModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Update Audit Period</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <label for="periodStartModalField">Status<span class="text-danger">*</span></label>
+                        <select id="auditPeriodStatus_forUpdate" class="form-control">
+                            <option value="0">--Select Period Stauts--</option>
+                            @if (ViewData["AuditPeriodStatus"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["AuditPeriodStatus"]))
+                                {
+                                    <option value="@item.STATUS_ID">@item.STATUS</option>
+                                }
+                            }
+                        </select>
+
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="publishUpdateAuditPeriodChanges();" type="button" class="btn btn-danger">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

@@ -597,6 +597,33 @@ namespace AIS.Controllers
             con.Dispose();
             return gm;
         }
+        public List<AuditPeriodModel> GetAuditPeriodStatus()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_pg.P_GET_Auditperiod_status";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditPeriodModel period = new AuditPeriodModel();           
+                    period.STATUS_ID = Convert.ToInt32(rdr["ID"]);
+                    period.STATUS= rdr["STATUS"].ToString();
+                    periodList.Add(period);
+                }
+            }
+            con.Dispose();
+            return periodList;
+        }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
         {
             sessionHandler = new SessionHandler();
@@ -624,6 +651,7 @@ namespace AIS.Controllers
                     period.START_DATE = Convert.ToDateTime(rdr["START_DATE"]);
                     period.END_DATE = Convert.ToDateTime(rdr["END_DATE"]);
                     period.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
+                    period.STATUS = rdr["STATUS"].ToString();
                     periodList.Add(period);
                 }
             }
@@ -676,6 +704,33 @@ namespace AIS.Controllers
             con.Dispose();
             return periodList;
         }
+        public string UpdateAuditPeriod(AuditPeriodModel periodModel)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_pg.P_Update_AuditPeriod";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = periodModel.AUDITPERIODID;
+                cmd.Parameters.Add("S_ID", OracleDbType.Int32).Value = periodModel.STATUS_ID;              
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+
         public string AddAuditPeriod(AuditPeriodModel periodModel)
         {
             string resp = "";
@@ -692,9 +747,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("DESCRIPTION", OracleDbType.Varchar2).Value = periodModel.DESCRIPTION;
                 cmd.Parameters.Add("STARTDATE", OracleDbType.Date).Value = periodModel.START_DATE;
                 cmd.Parameters.Add("ENDDATE", OracleDbType.Date).Value = periodModel.END_DATE;
-                //cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                //cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                //cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -14722,10 +14775,10 @@ namespace AIS.Controllers
                     eng.ENG_ID = rdr["eng_id"].ToString();
                     eng.REPORTING_OFFICE = rdr["reporting_office"].ToString();
                     eng.ENTITY_NAME = rdr["name"].ToString();
-                    eng.OP_START_DATE = rdr["t_name"].ToString();
-                    eng.OP_END_DATE = rdr["operation_startdate"].ToString();
-                    eng.AUDIT_START_DATE = rdr["operation_enddate"].ToString();
-                    eng.AUDIT_END_DATE = rdr["audit_startdate"].ToString();
+                    eng.OP_START_DATE = rdr["operation_startdate"].ToString();
+                    eng.OP_END_DATE = rdr["operation_enddate"].ToString();
+                    eng.AUDIT_START_DATE = rdr["audit_startdate"].ToString();
+                    eng.AUDIT_END_DATE = rdr["audit_enddate"].ToString();
                     eng.TRAVEL_DAYS = rdr["travel_day"].ToString();
                     eng.DISCUSSION_DAYS = rdr["discussion_day"].ToString();
                     eng.REVENUE_RECORD_DAYS = rdr["revenue_record_day"].ToString();

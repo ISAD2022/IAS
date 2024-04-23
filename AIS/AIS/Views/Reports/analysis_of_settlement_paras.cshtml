@@ -13,20 +13,25 @@
         g_cnic = url.searchParams.get("cnic");
         g_loan_disb_id = url.searchParams.get("disb_id");
         getCnicLoanDetail();
+        $("#dateSelector").datepicker({
+            format: "mm-yyyy",
+            viewMode: "months",
+            minViewMode: "months"
+        });
 
     });
 
-   
+
     function getCnicLoanDetail() {
 
-        
+
         $.ajax({
             url: "/ApiCalls/get_default_cnic_loan_detail_report",
             type: "POST",
             data: {
                 'CNIC': g_cnic,
                 'LOAN_DISB_ID': g_loan_disb_id,
-              
+
             },
             cache: false,
             success: function (data) {
@@ -49,7 +54,7 @@
 </div>
 
 <div class="col-md-4">
-    <input class="form-control" type="date" id="analysisofsettlementparasid" />
+    <input class="form-control" type="date" id="dateSelector" />
 </div>
 
 <div class="row col-md-12 mt-3">
@@ -69,7 +74,7 @@
                     <th class="col-md-auto">Paras as at</th>
                     <th class="col-md-auto">Paras added in</th>
 
-                     <th class="col-md-auto">Total Paras</th>
+                    <th class="col-md-auto">Total Paras</th>
                     <th class="col-md-auto">Total Paras Settled upto March</th>
                     <th class="col-md-auto">Balance as at</th>
                     <th class="col-md-auto">% of Sattlement</th>

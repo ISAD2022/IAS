@@ -96,6 +96,7 @@ namespace AIS.Controllers
             if (loggedInUser.UserRoleID == 1)
                 sessionCheck = false ;
             ViewData["AuditDepartments"] = dBConnection.GetDepartments(354, sessionCheck);
+            ViewData["AuditPeriodStatus"] = dBConnection.GetAuditPeriodStatus();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -426,23 +427,8 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditTeams(dept_code);
         }
-        [HttpPost]
-        public List<AuditPeriodModel> audit_periods(int dept_code)
-        {
-            return dBConnection.GetAuditPeriods(dept_code);
-        }
-        [HttpPost]
-        public string add_audit_period(AddAuditPeriodModel auditPeriod)
-        {
-            AuditPeriodModel apm = new AuditPeriodModel();
-            apm.STATUS_ID= 1;
-            apm.DESCRIPTION =auditPeriod.DESCRIPTION;
-            apm.START_DATE = DateTime.ParseExact(auditPeriod.STARTDATE, "MM/dd/yyyy", null);
-            apm.END_DATE = DateTime.ParseExact(auditPeriod.ENDDATE, "MM/dd/yyyy", null);
-            return "{\"Status\":true,\"Message\":\""+dBConnection.AddAuditPeriod(apm)+"\"}";
-           
-
-        }
+      
+     
 
         [HttpPost]
         public string generate_plan_audit_criteria(int CRITERIA_ID)
