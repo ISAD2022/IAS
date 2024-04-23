@@ -43,7 +43,7 @@
 
                 $.each(data, function (i, v) {
 
-                    $('#observation_panel tbody').append('<tr><td align="center"> ' + ++i + '</td><td  align="left">' + v.enG_ID + '</td><td  align="left">' + v.reportinG_OFFICE + '</td><td align="left">' + v.entitY_NAME + '</td><td align="left">' + v.audiT_TEAM + '</td><td align="left">' + v.oP_START_DATE.split(" ")[0] + '</td><td align="left">' + v.oP_END_DATE.split(" ")[0] + '</td><td align="left">' + v.audiT_START_DATE.split(" ")[0] + '</td><td align="left">' + v.audiT_END_DATE.split(" ")[0] + '</td><td align="left">' + v.traveL_DAYS + '</td><td align="left">' + v.discussioN_DAYS + '</td><td align="left">' + v.revenuE_RECORD_DAYS + '</td><td align="left">' + v.weekenD_DAYS + '</td><td align="left">' + v.totaL_DAYS + '</td><td align="left">' + v.enG_STATUS + '</td></tr>');
+                    $('#observation_panel tbody').append('<tr><td align="center"> ' + ++i + '</td><td  align="left">' + v.enG_ID + '</td><td  align="left">' + v.reportinG_OFFICE + '</td><td align="left">' + v.entitY_NAME + '</td><td align="left">' + v.audiT_START_DATE.split(" ")[0] + '</td><td align="left">' + v.audiT_END_DATE.split(" ")[0] + '</td><td align="left">' + v.totaL_DAYS + '</td><td align="left">' + v.enG_STATUS + '</td></tr>');
 
                 });
 
@@ -124,25 +124,19 @@
     <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
 </div>
 
-<div class="row mt-3 col-md-12">
+<div class="row mt-3 col-md-auto">
     <table id="observation_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
                 <th class="col-md-auto">Sr. No.</th>
-                <th class="col-md-auto ">ENGID</th>
+                <th class="col-md-auto ">ENG ID</th>
                 <th class="col-md-auto ">Reporting Office</th>
                 <th class="col-md-auto ">Entity Name</th>
-                <th class="col-md-auto text-center">Audit Team</th>
-                <th class="col-md-auto text-center">Operation Start Date</th>
-                <th class="col-md-auto text-center">Operation End Date</th>
                 <th class="col-md-auto text-center">Audit Start Date</th>
                 <th class="col-md-auto text-center">Audit End Date</th>
-                <th class="col-md-auto text-center">Travel Days</th>
-                <th class="col-md-auto text-center">Discussion Days</th>
-                <th class="col-md-auto text-center">Revenue Record Days</th>
-                <th class="col-md-auto text-center">Weekend Days</th>
                 <th class="col-md-auto text-center">Total Days</th>
                 <th class="col-md-auto text-center">Status</th>
+                <th class="col-md-auto"></th>
 
             </tr>
         </thead>
