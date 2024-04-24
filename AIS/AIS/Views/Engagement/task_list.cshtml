@@ -2,15 +2,15 @@
     ViewData["Title"] = "Task List";
     Layout = "_Layout";
 }
-<script type="text/javascript">
+<style type="text/css">
+    .strike-out {
+        text-decoration: line-through !important;
 
-</script>
+    }</style>
 <div>
     <div class="row" style="margin-top:20px;">
         <div class="col-md-12">
-
             <h3 style="color: #45c545;">Task List/Job Assignment</h3>
-
         </div>
 
         <div class="col-md-12 mt-3">
@@ -29,11 +29,8 @@
                     <th class="col-md-auto font-weight-bold text-center">Team Name</th>
                     <th class="col-md-auto font-weight-bold text-center">Start Date</th>
                     <th class="col-md-auto font-weight-bold text-center">End Date</th>
-                    <th class="col-md-auto font-weight-bold text-center">Status</th>
-                    <th class="col-md-auto font-weight-bold"></th>
-                    <th class="col-md-auto font-weight-bold"></th>
-                    <th class="col-md-auto font-weight-bold"></th>
-                    <th class="col-md-auto font-weight-bold"></th>
+                    <th class="col-md-auto font-weight-bold text-center">Stage</th>
+                    <th colspan="4" class="col-md-auto font-weight-bold text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -127,6 +124,10 @@
                                         {
                                             <a href="#">Meeting with Managment</a>
                                         }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
                                     }
                                 </td>
                                 <td class="col-md-1 text-center">
@@ -135,24 +136,35 @@
                                         {
                                             <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">@item.WORKING_PAPER</a>
                                         }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
                                     }
                                     
                                 </td>
 
-                                <td class="col-md-1 text-center">
-                                    @{
-                                        if (item.ISCLOSE == "Z" && item.STATUS_ID==4)
-                                        {
-                                            <a href="/Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
-                                        }                                        
-                                }
-                                
-                                </td>
+                              
                                 <td class="col-md-1 text-center">
                                     @{
                                         if (item.PRE_INFO.Trim().Length > 0)
                                         {
                                             <a href="/Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    }
+
+                                </td>
+                                <td class="col-md-1 text-center">
+                                    @{
+                                        if (item.ISCLOSE == "Z" && item.STATUS_ID == 4)
+                                        {
+                                            <a href="/Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
+                                        }else{
+                                            <span>-</span>
                                         }
                                     }
 
