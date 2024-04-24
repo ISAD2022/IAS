@@ -150,7 +150,7 @@
                                 </td>
                                 <td class="col-md-1 text-center">
                                     @{
-                                        if (item.ISCLOSE == "Z")
+                                        if (item.PRE_INFO.Trim().Length > 0)
                                         {
                                             <a href="/Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
                                         }

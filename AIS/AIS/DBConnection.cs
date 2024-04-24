@@ -3879,6 +3879,7 @@ namespace AIS.Controllers
                     tlist.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     tlist.TEAM_NAME = rdr["T_NAME"].ToString();
                     tlist.WORKING_PAPER = rdr["WORKING_PAPER"].ToString();
+                    tlist.PRE_INFO = rdr["pre_info"].ToString();
                     tlist.EMP_NAME = loggedInUser.Name.ToString();
                     tlist.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"]).ToString("dd/MM/yyyy"); ;
                     tlist.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"]).ToString("dd/MM/yyyy"); ;
@@ -14764,9 +14765,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_rpt.P_FAD_audit_Plan_Details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("AUDITED_ID", OracleDbType.Int32).Value = AUDITED_BY;
-                cmd.Parameters.Add("PERIOD_ID", OracleDbType.Int32).Value = PERIOD_ID;
-
+                cmd.Parameters.Add("AUDIT_ID", OracleDbType.Int32).Value = AUDITED_BY;
+                cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PERIOD_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
