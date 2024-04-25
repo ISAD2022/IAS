@@ -8,7 +8,7 @@
         if ($('#auditCriteriaPeriodField').val() != 0) {
 
             $.ajax({
-                url: "/ApiCalls/GetCOSORiskForDepartment",
+                url: g_asiBaseURL + "/ApiCalls/GetCOSORiskForDepartment",
                 type: "POST",
                 data: {
                     'PERIOD_ID': $('#auditCriteriaPeriodField').val()

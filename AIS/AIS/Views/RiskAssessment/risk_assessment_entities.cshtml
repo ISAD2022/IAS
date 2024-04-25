@@ -11,7 +11,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -48,7 +48,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplace",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -75,7 +75,7 @@
     function getAuditEngagementPlans() {
         $('#engagementList').empty();
         $.ajax({
-            url: "/ApiCalls/get_auditee_engagement_plan",
+            url: g_asiBaseURL + "/ApiCalls/get_auditee_engagement_plan",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val(),
@@ -96,7 +96,7 @@
     function getAuditeeRisk() {
         $('#auditeeRiskAreaPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_auditee_risk",
+            url: g_asiBaseURL + "/ApiCalls/get_auditee_risk",
             type: "POST",
             data: {
                 'ENG_ID': $('#engagementList option:selected').val()
@@ -128,7 +128,7 @@
     function getAuditeeRiskDetails() {
         $('#auditeeRiskAreaPanel_details tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_auditee_risk_details",
+            url: g_asiBaseURL + "/ApiCalls/get_auditee_risk_details",
             type: "POST",
             data: {
                 'ENG_ID': $('#engagementList option:selected').val()

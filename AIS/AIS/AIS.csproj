@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Dashboard\annex_wise_obs - Copy.cshtml">
+    <Content Update="Views\Dashboard\annex_wise_obs.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

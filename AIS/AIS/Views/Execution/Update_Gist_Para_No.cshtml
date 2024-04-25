@@ -29,7 +29,7 @@
         $('#process_detail').modal('hide');
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_gist_update",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_paras_for_gist_update",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entityReportSelectField').val()
@@ -55,7 +55,7 @@
         $('#process_detail').modal('show');
         $('#listofRespPersons tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_gist_update",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_paras_for_gist_update",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val(),
@@ -104,7 +104,7 @@
             'PARA_REF': g_paraRef
         };
         $.ajax({
-            url: "/ApiCalls/update_legacy_para_gist_paraNo",
+            url: g_asiBaseURL + "/ApiCalls/update_legacy_para_gist_paraNo",
             type: "POST",
             data: add_leg_data,
             cache: false,
@@ -127,7 +127,7 @@
             $('#entityReportSelectField').append('<option value="0">--Select Entity for Report</option>');
 
             $.ajax({
-                url: "/ApiCalls/get_legacy_report_dropdown_contents",
+                url: g_asiBaseURL + "/ApiCalls/get_legacy_report_dropdown_contents",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#entitySelectField').val()

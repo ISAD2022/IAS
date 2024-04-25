@@ -11,7 +11,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_settled_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_settled_paras",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val()
@@ -42,7 +42,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/Add_Old_Para_Change_status",
+            url: g_asiBaseURL + "/ApiCalls/Add_Old_Para_Change_status",
             type: "POST",
             data: {
                 'REFID': refp,

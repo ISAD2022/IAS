@@ -8,7 +8,7 @@
     function getAuditeeRiskForEntTypes() {
         $('#auditeeRiskAreaPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_auditee_risk_for_entity_types",
+            url: g_asiBaseURL + "/ApiCalls/get_auditee_risk_for_entity_types",
             type: "POST",
             data: {
                 'ENT_TYPE_ID': $('#entTypesList option:selected').val(),

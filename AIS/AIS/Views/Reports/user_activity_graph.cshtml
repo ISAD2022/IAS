@@ -21,7 +21,7 @@
             $('#listOfAuditPeriodsContainer').show();
 
             $.ajax({
-                url: "/Planning/audit_periods",
+                url: g_asiBaseURL + "/Planning/audit_periods",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()
@@ -85,7 +85,7 @@
         var endDate = ("0" + mm).slice(-2) + "/" + dd + "/" + yy;
         //console.log(desc, stDate, edDate, deptIds);
         $.ajax({
-            url: "/Planning/add_audit_period",
+            url: g_asiBaseURL + "/Planning/add_audit_period",
             type: "POST",
             data: {
                 'DESCRIPTION': desc,
@@ -101,7 +101,7 @@
         });
     }
     function getAuditPlan(periodId) {
-        window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val()+"&periodId=" + periodId;
+        window.location.href = g_asiBaseURL + "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + periodId;
     }
 
 </script>

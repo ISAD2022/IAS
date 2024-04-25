@@ -24,7 +24,7 @@
            var url = new URL(url_string);
            var gl_id = url.searchParams.get("GLCODE");
            $.ajax({
-               url: "/Reports/Get_Glhead_Sub_Details",
+               url: g_asiBaseURL + "/Reports/Get_Glhead_Sub_Details",
                type: "POST",
                data: {
                    'gl_code': gl_id

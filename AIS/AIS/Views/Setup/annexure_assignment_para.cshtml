@@ -18,7 +18,7 @@
 
         if ($('#zoneSelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_zone_Branches_for_Annexure_Assignment",
+                url: g_asiBaseURL + "/ApiCalls/get_zone_Branches_for_Annexure_Assignment",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#zoneSelectField option:selected').val()
@@ -42,7 +42,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#branchSelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_all_paras_for_annexure_assignment",
+                url: g_asiBaseURL + "/ApiCalls/get_all_paras_for_annexure_assignment",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#branchSelectField option:selected').val()
@@ -95,7 +95,7 @@
         }
 
         $.ajax({
-            url: "/ApiCalls/assign_annexure_with_para",
+            url: g_asiBaseURL + "/ApiCalls/assign_annexure_with_para",
             type: "POST",
             data: {
                 'REF_P': g_refP,

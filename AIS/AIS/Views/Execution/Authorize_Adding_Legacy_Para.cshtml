@@ -17,7 +17,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_add_legacy_paras_autorize",
+            url: g_asiBaseURL + "/ApiCalls/get_add_legacy_paras_autorize",
             type: "POST",
             data: {
                 
@@ -44,7 +44,7 @@
 
     function Publishchange(refp) {
         $.ajax({
-            url: "/ApiCalls/Authorize_Legacy_Para_addition",
+            url: g_asiBaseURL + "/ApiCalls/Authorize_Legacy_Para_addition",
             type: "POST",
             data: {
                 'PARA_REF': refp
@@ -60,7 +60,7 @@
     }
     function PublishchangeDelete(refp){
         $.ajax({
-            url: "/ApiCalls/Delete_Legacy_Para_addition_request",
+            url: g_asiBaseURL + "/ApiCalls/Delete_Legacy_Para_addition_request",
             type: "POST",
             data: {
                 'PARA_REF': refp

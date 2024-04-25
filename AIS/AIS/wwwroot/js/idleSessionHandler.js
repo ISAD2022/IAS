@@ -20,12 +20,12 @@ $(document).ready(function () {
     );
 });
 function routeToLogin() {
-    window.location.href = "/Login";
+    window.location.href = g_asiBaseURL + "/Login";
 }
 function terminateUserSession() {
     
     $.ajax({
-        url: "/ApiCalls/terminate_idle_session",
+        url: g_asiBaseURL + "/ApiCalls/terminate_idle_session",
         type: "POST",
         data: {
          

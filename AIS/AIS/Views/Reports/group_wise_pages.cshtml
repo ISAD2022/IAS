@@ -23,7 +23,7 @@
 
         $('#group_wise_pages_grid tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_group_wise_pages",
+            url: g_asiBaseURL + "/ApiCalls/get_group_wise_pages",
             type: "POST",
             data: {
                 "GROUP_ID":$('#groupSelectionBox').val()

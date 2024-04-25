@@ -18,7 +18,7 @@
     function getParaPosition() {
         $('#observation_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_audit_para_reconsillation",
+            url: g_asiBaseURL + "/ApiCalls/get_audit_para_reconsillation",
             type: "POST",
             data: {
 

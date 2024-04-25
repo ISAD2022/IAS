@@ -25,7 +25,7 @@
     function getFixedAssets() {
 
         $.ajax({
-            url: "/ApiCalls/Get_Working_Paper_Fixed_Assets",
+            url: g_asiBaseURL + "/ApiCalls/Get_Working_Paper_Fixed_Assets",
             type: "POST",
             data: {
                 'ENGID': g_engID
@@ -77,7 +77,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/Add_Working_Paper_Fixed_Assets",
+            url: g_asiBaseURL + "/ApiCalls/Add_Working_Paper_Fixed_Assets",
             type: "POST",
             data: {
                 'ENGID': g_engID,

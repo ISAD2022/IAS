@@ -12,6 +12,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
+    
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -28,24 +29,27 @@ namespace AIS.Controllers
         }
         public IActionResult Index()
         {
-            if (!sessionHandler.IsUserLoggedIn())
-                return RedirectToAction("Index", "Login");
-            else
-            {
-                if (!sessionHandler.HasPermissionToViewPage("home"))
-                {
-                    return RedirectToAction("Index", "PageNotFound");
-                }
-                else
-                {
-                    ViewData["TopMenu"] = tm.GetTopMenus();
-                    ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-                    return View();
-                }
-                    
-            }
-            
-           
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            return View();
+            //if (!sessionHandler.IsUserLoggedIn())
+            //    return RedirectToAction("Index", "Login");
+            //else
+            //{
+            //    if (!sessionHandler.HasPermissionToViewPage("home"))
+            //    {
+            //        return RedirectToAction("Index", "PageNotFound");
+            //    }
+            //    else
+            //    {
+            //        ViewData["TopMenu"] = tm.GetTopMenus();
+            //        ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            //        return View();
+            //    }
+
+            //}
+
+
         }
         public IActionResult Change_Password()
         {

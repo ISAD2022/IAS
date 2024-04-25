@@ -58,7 +58,7 @@
         var size =$("#SizeSelectField option:selected").attr("id");
 
         $.ajax({
-            url: "/ApiCalls/GetFADAuditPlan",
+            url: g_asiBaseURL + "/ApiCalls/GetFADAuditPlan",
             type: "POST",
             data: {
                 'ENT_ID': entityid,

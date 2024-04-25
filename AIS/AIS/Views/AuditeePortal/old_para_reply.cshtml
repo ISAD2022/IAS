@@ -22,7 +22,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_para_for_response",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_para_for_response",
             type: "POST",
             data: {
                 
@@ -62,7 +62,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_reply",
+            url: g_asiBaseURL + "/ApiCalls/add_legacy_para_reply",
             type: "POST",
             data: {
                 'ID': g_paraId,

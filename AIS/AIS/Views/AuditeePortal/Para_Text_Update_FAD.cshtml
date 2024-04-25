@@ -24,7 +24,7 @@
     function viewParaDetails(ref_p, memo_no, paraId) {
         g_paraId = ref_p;
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text_update",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_br_compliance_text_update",
             type: "POST",
             data: {
                 'REF_P': ref_p
@@ -47,7 +47,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_text_update",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_br_compliance_text_update",
             type: "POST",
             data: {
 
@@ -90,7 +90,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/add_old_para_br_compliance_reply",
+            url: g_asiBaseURL + "/ApiCalls/add_old_para_br_compliance_reply",
             type: "POST",
             data: {
                 'Para_ID': g_paraId,

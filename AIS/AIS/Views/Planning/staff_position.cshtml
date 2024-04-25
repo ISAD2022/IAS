@@ -47,7 +47,7 @@
         else {
             $('#listofEmployeesContainer').show();
             $.ajax({
-                url: "/Planning/audit_employees",
+                url: g_asiBaseURL + "/Planning/audit_employees",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()

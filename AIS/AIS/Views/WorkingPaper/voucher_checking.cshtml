@@ -24,7 +24,7 @@
     function getVoucherChecking() {
 
         $.ajax({
-            url: "/ApiCalls/Get_Working_Paper_Voucher_Checking",
+            url: g_asiBaseURL + "/ApiCalls/Get_Working_Paper_Voucher_Checking",
             type: "POST",
             data: {
                 'ENGID': g_engID
@@ -57,7 +57,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/Add_Working_Paper_Voucher_Checking",
+            url: g_asiBaseURL + "/ApiCalls/Add_Working_Paper_Voucher_Checking",
             type: "POST",
             data: {
                 'ENGID':g_engID,

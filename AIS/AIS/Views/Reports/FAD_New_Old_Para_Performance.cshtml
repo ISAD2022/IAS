@@ -18,7 +18,7 @@
         $('#zoneiwseperformance tbody').empty();
         if ($('#ZoneSelectField option:selected').val() != -1) {
             $.ajax({
-                url: "/ApiCalls/get_fad_new_old_para_performance",
+                url: g_asiBaseURL + "/ApiCalls/get_fad_new_old_para_performance",
                 type: "POST",
                 data: {
                     'AUDIT_ZONE_ID': $('#ZoneSelectField option:selected').val()

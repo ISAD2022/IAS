@@ -14,7 +14,7 @@
         $('#selectOPEndDateInputField').inputmask("dd-mm-yyyy");
 
         $.ajax({
-            url: "/Planning/audit_teams",
+            url: g_asiBaseURL + "/Planning/audit_teams",
             type: "POST",
             data: {
                 'dept_code': $('#deptSelectionBox option:selected').val()
@@ -99,7 +99,7 @@
         var se = $('#selectEndDateInputField').val().split('/')[2] + '-' + $('#selectEndDateInputField').val().split('/')[1] + '-' + $('#selectEndDateInputField').val().split('/')[0];
 
         $.ajax({
-            url: "/ApiCalls/rerecommend_engagement_plan",
+            url: g_asiBaseURL + "/ApiCalls/rerecommend_engagement_plan",
                 type: "POST",
                 data: {
                     'ENG_ID': g_engId,
@@ -124,7 +124,7 @@
     function approveEngagementPlan(engId) {
         g_engId=engId;
         $.ajax({
-            url: "/ApiCalls/approve_engagement_plan",
+            url: g_asiBaseURL + "/ApiCalls/approve_engagement_plan",
                 type: "POST",
                 data: {
                     'ENG_ID': g_engId

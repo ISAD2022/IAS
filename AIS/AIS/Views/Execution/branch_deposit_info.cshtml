@@ -41,7 +41,7 @@
         var bid = $('#b_n').val();
         if (bid != 0) {
             $.ajax({
-                url: "/ApiCalls/GetDepositAccountSubdetails",
+                url: g_asiBaseURL + "/ApiCalls/GetDepositAccountSubdetails",
                 type: "POST",
                 data: {
                     'b_name': bid

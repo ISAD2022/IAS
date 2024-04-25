@@ -18,7 +18,7 @@
             return;
 
         $.ajax({
-            url: "/ApiCalls/get_bac_analysis",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_analysis",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#BACAnalysisOptionBox option:selected').val(),
@@ -106,7 +106,7 @@
         $('#paraTextDivField').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_functional_observation_text",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_observation_text",
             type: "POST",
             data: {
                 'PARA_ID': id,
@@ -123,7 +123,7 @@
         $('#paraViewerModel').modal('show');
         $('#entitywise_panel tbody').empty();
          $.ajax({
-            url: "/ApiCalls/get_analysis_detail_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_analysis_detail_paras",
             type: "POST",
             data: {
                 'PROCESS_ID': id
@@ -148,7 +148,7 @@
         $('#paraSummaryModel').modal('show');
         $('#summarywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_analysis_summary_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_analysis_summary_paras",
             type: "POST",
             data: {
                 'PROCESS_ID': id

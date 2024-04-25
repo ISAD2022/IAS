@@ -96,7 +96,7 @@
         if (!$('#procItem_' + procId + ' >span').hasClass('caret-down')) {
 
             $.ajax({
-                url: "/Setup/process_details",
+                url: g_asiBaseURL + "/Setup/process_details",
                 type: "POST",
                 data: {
                     'ProcessId': procId
@@ -123,7 +123,7 @@
         if (!$('#procTrans_' + procDetailId + ' >span').hasClass('caret-down')) {
 
             $.ajax({
-                url: "/Setup/process_transactions",
+                url: g_asiBaseURL + "/Setup/process_transactions",
                 type: "POST",
                 data: {
                     'ProcessDetailId': procDetailId
@@ -160,7 +160,7 @@
             $('#' + $(e).attr('id')).addClass('listItems-selected');
             $('#processTransactionViewer').show();
             $.ajax({
-                url: "/Setup/process_transactions",
+                url: g_asiBaseURL + "/Setup/process_transactions",
                 type: "POST",
                 data: {
                     'transactionId': trId
@@ -196,7 +196,7 @@
         }
         $('#addNewProcess').modal('hide');
         $.ajax({
-            url: "/Setup/process_add",
+            url: g_asiBaseURL + "/Setup/process_add",
             type: "POST",
             data: {
                 'P_NAME': name,
@@ -226,7 +226,7 @@
         }
         $('#addNewSubProcess').modal('hide');
         $.ajax({
-            url: "/Setup/sub_process_add",
+            url: g_asiBaseURL + "/Setup/sub_process_add",
             type: "POST",
             data: {
                 'TITLE': title,
@@ -266,7 +266,7 @@
         }
         $('#addNewProcessTransaction').modal('hide');
         $.ajax({
-            url: "/Setup/sub_process_transaction_add",
+            url: g_asiBaseURL + "/Setup/sub_process_transaction_add",
             type: "POST",
             data: {
                 'PD_ID': g_sub_proc_id,

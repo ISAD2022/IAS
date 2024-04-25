@@ -60,7 +60,7 @@
         $('#listOfAuditZone tbody').append(row);
         $('#setupAZModal').modal('hide');
         $.ajax({
-            url: "/Setup/AuditZone_add",
+            url: g_asiBaseURL + "/Setup/AuditZone_add",
             type: "POST",
             data: {
                 'id': g_AZId,

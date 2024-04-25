@@ -10,7 +10,7 @@
         var checklist_id = url.searchParams.get("id");
         g_endId = url.searchParams.get("engId");
         $.ajax({
-            url: "/ApiCalls/sub_checklist",
+            url: g_asiBaseURL + "/ApiCalls/sub_checklist",
             type: "POST",
             data: {
                 'T_ID': checklist_id,

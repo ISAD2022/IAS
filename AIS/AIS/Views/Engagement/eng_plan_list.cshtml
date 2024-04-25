@@ -20,7 +20,7 @@
         }
         
         $.ajax({
-            url: "/ApiCalls/reject_engagement_plan",
+            url: g_asiBaseURL + "/ApiCalls/reject_engagement_plan",
                 type: "POST",
                 data: {
                     'ENG_ID': g_engId,
@@ -38,7 +38,7 @@
     function approveEngagementPlan(engId) {
         g_engId=engId;
         $.ajax({
-            url: "/ApiCalls/approve_engagement_plan",
+            url: g_asiBaseURL + "/ApiCalls/approve_engagement_plan",
                 type: "POST",
                 data: {
                     'ENG_ID': g_engId

@@ -27,7 +27,7 @@
             $('#div_activityContainer').hide();
             $('#riskSubGroupSelectBox').empty();
             $.ajax({
-                url: "/Execution/sub_voilation",
+                url: g_asiBaseURL + "/Execution/sub_voilation",
                 type: "POST",
                 data: {
                     'GR_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -51,7 +51,7 @@
             $('#div_activityContainer').show();
         $('#riskActivitiesSelectBox').empty();
         $.ajax({
-            url: "/Execution/risk_activities",
+            url: g_asiBaseURL + "/Execution/risk_activities",
             type: "POST",
             data: {
                 'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
@@ -74,7 +74,7 @@
         else {
             $('#template_box').val('').trigger('change');
             $.ajax({
-                url: "/Execution/audit_observation_template",
+                url: g_asiBaseURL + "/Execution/audit_observation_template",
                 type: "POST",
                 data: {
                     'ACTIVITY_ID': $('#riskActivitiesSelectBox option:selected').val(),
@@ -114,7 +114,7 @@
         };
         g_memoObj.push(memo);
         $.ajax({
-            url: "/ApiCalls/save_observations",
+            url: g_asiBaseURL + "/ApiCalls/save_observations",
             type: "POST",
             data: {
                 'LIST_OBS': g_memoObj,

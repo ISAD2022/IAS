@@ -17,7 +17,7 @@
             $('#div_activityContainer').hide();
             $('#riskSubGroupSelectBox').empty();
             $.ajax({
-                url: "/Setup/process_details",
+                url: g_asiBaseURL + "/Setup/process_details",
                 type: "POST",
                 data: {
                     'ProcessId': $('#riskGroupSelectBox option:selected').val(),
@@ -41,7 +41,7 @@
             $('#div_activityContainer').show();
         $('#riskActivitiesSelectBox').empty();
         $.ajax({
-            url: "/Setup/process_transactions",
+            url: g_asiBaseURL + "/Setup/process_transactions",
             type: "POST",
             data: {
                 'ProcessDetailId': $('#riskSubGroupSelectBox option:selected').val(),
@@ -61,7 +61,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_fad_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_fad_paras",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -109,7 +109,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/divisional_head_remarks_on_functional_legacy_para",
+            url: g_asiBaseURL + "/ApiCalls/divisional_head_remarks_on_functional_legacy_para",
             type: "POST",
             data: {
                 'CONCERNED_DEPT_ID': $('#concernedDeptInCommentsBox').val(),

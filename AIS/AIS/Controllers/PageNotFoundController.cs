@@ -12,6 +12,7 @@ using System.Text.Json;
 
 namespace AIS.Controllers
 {
+   
     public class PageNotFoundController : Controller
     {
         private readonly ILogger<PageNotFoundController> _logger;

@@ -35,7 +35,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_risk_base_plan_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_risk_base_plan_for_dashboard",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#riskGroupSelectBox option:selected').val()

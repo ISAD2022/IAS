@@ -42,7 +42,7 @@
         $('#authorizeMergeChecklistPanel tbody').empty();
         if (processId != 0) {
             $.ajax({
-                url: "/ApiCalls/get_duplicate_checklists",
+                url: g_asiBaseURL + "/ApiCalls/get_duplicate_checklists",
                 type: "POST",
                 data: {
                     'PROCESS_ID': processId
@@ -61,7 +61,7 @@
     function countDuplicate(){
         var processId = $('#checklistSelectField').val();
         $.ajax({
-            url: "/ApiCalls/get_duplicate_checklists_count",
+            url: g_asiBaseURL + "/ApiCalls/get_duplicate_checklists_count",
             type: "POST",
             data: {
                 'PROCESS_ID': processId
@@ -78,7 +78,7 @@
     function authorizeMergeDuplicate() {
         var processId = $('#checklistSelectField').val();
         $.ajax({
-            url: "/ApiCalls/authorize_merge_duplicate_checklists",
+            url: g_asiBaseURL + "/ApiCalls/authorize_merge_duplicate_checklists",
             type: "POST",
             data: {
                 'PROCESS_ID': processId

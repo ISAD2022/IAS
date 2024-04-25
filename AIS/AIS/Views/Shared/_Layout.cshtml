@@ -11,12 +11,12 @@
     <link rel="stylesheet" href="~/lib/rich-text-editor/richtext.min.css">
     <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <link rel="stylesheet" href="/lib/bootstrap-image-uploader/jquery.imagesloader.css" />
-    <link rel="stylesheet" href="/lib/select2/select2.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-image-uploader/jquery.imagesloader.css" />
+    <link rel="stylesheet" href="~/lib/select2/select2.min.css" />
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/lib/print-preview/print_preview.js"></script>
-    <script type="text/javascript" src="/lib/select2/select2.min.js"></script>
+    <script type="text/javascript" src="~/lib/print-preview/print_preview.js"></script>
+    <script type="text/javascript" src="~/lib/select2/select2.min.js"></script>
     <style>
         navImg .dropdown-toggle::after {
             display: none !important;
@@ -57,7 +57,7 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBarTopMenu" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#"><img height="50" src="/Images/ztbllogo.png" alt="Logo"></a>
+            <a class="navbar-brand" href="#"><img height="50" src="~/Images/ztbllogo.png" alt="Logo"></a>
 
             <div id="navBarTopMenu" class="collapse navbar-collapse" style="font-size:14px;">
 
@@ -99,110 +99,7 @@
                             }
                         }
                     }
-                    <!--  <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                            Tutorials
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a tabindex="-1" href="#">HTML</a></li>
-                            <li><a tabindex="-1" href="#">CSS</a></li>
-                            <li class="dropdown-submenu">
-                                <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
-                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
-                                    <li class="dropdown-submenu">
-                                        <a class="test" href="#">Another dropdown <span class="caret"></span></a>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="#">3rd level dropdown</a></li>
-                                            <li><a href="#">3rd level dropdown</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>                   
-                 
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navRisk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navRisk">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navPlanning" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navPlanning">
-                            <a class="dropdown-item" href="~/Planning/audit_period">Audit Period</a>
-                            <a class="dropdown-item" href="~/Planning/team_members">Team Members</a>
-                            <a class="dropdown-item" href="~/Planning/audit_criteria">Audit Criteria</a>
-                            <a class="dropdown-item" href="~/Planning/holiday_calendar">Holiday Calender</a>
-                            <a class="dropdown-item" href="~/Planning/tentative_audit_plan">Tentative Audit Plan</a>
-                            <a class="dropdown-item" href="~/Planning/submission_for_review">Submission for Review</a>
-                            <a class="dropdown-item" href="~/Planning/submission_for_approval">Submission for Approval</a>
-                            <a class="dropdown-item" href="~/Planning/plan_approvals">Plan Approvals</a>
-                            <a class="dropdown-item" href="~/Planning/post_changes_approved_plan">Post Changes in Approved Plan</a>
-                            <a class="dropdown-item" href="~/Planning/post_changes_team_members">Post Changes in Team Members</a>
-                            <a class="dropdown-item" href="~/Planning/special_assignment">Special Assignments</a>
-
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navEngagement" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Engagement
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navEngagement">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navExecution" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Execution
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navExecution">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navReports" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Reports
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navReports">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navSetup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Setup
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navSetup">
-                            <a class="dropdown-item" href="~/BranchSetup/">Branch</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item active dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navSetup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Administration Panel
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navSetup">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                        -->
+                  
                 </ul>
             </div>
             <div id="navBarTopMenu" class="collapse navbar-collapse">
@@ -264,7 +161,7 @@
     <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
     <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>
     <script type="text/javascript" src="~/lib/canvasjs/canvasjs.min.js"></script>
-    <script src="/lib/bootstrap-image-uploader/jquery.imagesloader-1.0.1.js" type="text/javascript"></script>
+    <script src="~/lib/bootstrap-image-uploader/jquery.imagesloader-1.0.1.js" type="text/javascript"></script>
 
 
     @RenderSection("Scripts", required: false)

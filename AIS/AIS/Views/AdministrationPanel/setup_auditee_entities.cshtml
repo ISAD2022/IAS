@@ -51,7 +51,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -88,7 +88,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplace",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -119,7 +119,7 @@
         var typeId = $('#entityTypeSelectField').val();
         if (typeId != 0) {
             $.ajax({
-                url: "/ApiCalls/GetAuditeeEntitiesByTypeId",
+                url: g_asiBaseURL + "/ApiCalls/GetAuditeeEntitiesByTypeId",
                 type: "POST",
                 data: {
                     'ENTITY_TYPE_ID': typeId

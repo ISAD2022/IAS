@@ -27,7 +27,7 @@
             $('.menu_page_tick').attr('checked', false);
             $('.pagesBlock').addClass('d-none');
             $.ajax({
-                url: "/AdministrationPanel/menu_pages",
+                url: g_asiBaseURL + "/AdministrationPanel/menu_pages",
                 type: "POST",
                 data: {
                     'MENU_ID': $('#menuSelectionBox option:selected').val()
@@ -58,7 +58,7 @@
         }
         
         $.ajax({
-            url: "/ApiCalls/menu_pages_updation",
+            url: g_asiBaseURL + "/ApiCalls/menu_pages_updation",
             type: "POST",
             data: {
                 'MENU_ID': $('#menuSelectionBox option:selected').val(),

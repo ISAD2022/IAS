@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace AIS.Controllers
 {
+    
     public class DBConnection : Controller
     {
         private SessionHandler sessionHandler;
@@ -48,8 +49,9 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblaisdev";
-                ocsb.UserID = "ztblaisdev";
+                ocsb.Password = "ztblais";
+                ocsb.UserID = "ztblais";
+                //ocsb.DataSource = "10.100.102.130:1521/dimisdb2"; 
                 ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -57,7 +59,6 @@ namespace AIS.Controllers
                 ocsb.Pooling = true;
                 ocsb.ConnectionTimeout = 3540;
                 con.ConnectionString = ocsb.ConnectionString;
-                // con.Open();
                 return con;
             }
             catch (Exception) { return null; }

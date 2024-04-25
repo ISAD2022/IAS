@@ -41,7 +41,7 @@
         var bid = $('#b_i').val();
         if (bid != 0) {
             $.ajax({
-                url: "/ApiCalls/GetBranchDesbursementaccountdetails",
+                url: g_asiBaseURL + "/ApiCalls/GetBranchDesbursementaccountdetails",
                 type: "POST",
                 data: {
                     'b_id': bid

@@ -14,7 +14,7 @@
             g_engId = eng_id;
 
         $.ajax({
-            url: "/ApiCalls/closing_draft_report_status",
+            url: g_asiBaseURL + "/ApiCalls/closing_draft_report_status",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -36,7 +36,7 @@
     }
     function closeDraftAudit() {
         $.ajax({
-            url: "/ApiCalls/close_draft_audit",
+            url: g_asiBaseURL + "/ApiCalls/close_draft_audit",
             type: "POST",
             data: {
                 'ENG_ID': g_engId

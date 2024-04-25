@@ -19,7 +19,7 @@
     function doKillSessionSubmit() {
         
             $.ajax({
-                url: "/ApiCalls/kill_session",
+                url: g_asiBaseURL + "/ApiCalls/kill_session",
                 type: "POST",
                 data: {
                     'PPNumber': $('#inputPPNoField').val(),
@@ -42,7 +42,7 @@
         $('#submitLoginButton').attr('disabled', true);
 
         $.ajax({
-            url: "/Login/DoLogin",
+            url: g_asiBaseURL + "/Login/DoLogin",
             type: "POST",
             data: {
                 'PPNumber': $('#inputPPNoField').val(),
@@ -68,17 +68,17 @@
                 {
 
                     if(data.passwordChangeRequired){
-                        window.location.href = "/Home/Change_Password";
+                        window.location.href = g_asiBaseURL + "/Home/Change_Password";
                         return;
                     }
                     if (data.userGroupID==37 ) {
-                        window.location.href = "/BAC/Agenda";
+                        window.location.href = g_asiBaseURL + "/BAC/Agenda";
                     }else{
                         if (g_retUrl != null && g_retUrl != "") {
                             window.location.href = g_retUrl;
                         }
                         else {
-                            window.location.href = "/home";
+                            window.location.href = g_asiBaseURL + "/home";
                         }
                     }
                     

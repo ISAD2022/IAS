@@ -44,7 +44,7 @@
       
         if (datalist.length > 0) {
             $.ajax({
-                url: "/Planning/referredBack_auditCriteria",
+                url: g_asiBaseURL + "/Planning/referredBack_auditCriteria",
                 type: "POST",
                 data: {
                     'DATALIST': datalist
@@ -71,7 +71,7 @@
        
         if (datalist.length > 0) {
             $.ajax({
-                url: "/Planning/authorize_auditCriteria",
+                url: g_asiBaseURL + "/Planning/authorize_auditCriteria",
                 type: "POST",
                 data: {
                     'DATALIST': datalist

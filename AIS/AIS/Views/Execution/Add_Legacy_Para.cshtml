@@ -11,7 +11,7 @@
         if ($('#entityTypeSelectField').val()!=0){           
             
             $.ajax({
-                url: "/ApiCalls/get_auditee_entities_by_entity_type_id",
+                url: g_asiBaseURL + "/ApiCalls/get_auditee_entities_by_entity_type_id",
                 type: "POST",
                 data: {
                     'ENTITY_TYPE_ID': $('#entityTypeSelectField').val()
@@ -46,7 +46,7 @@
 
     function addLegacyParaToDB(){
         $.ajax({
-            url: "/ApiCalls/add_new_legacy_para",
+            url: g_asiBaseURL + "/ApiCalls/add_new_legacy_para",
             type: "POST",
             data: {
                 'ENTITY_TYPE_ID': $('#entityTypeSelectField').val(),

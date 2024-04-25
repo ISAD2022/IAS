@@ -21,7 +21,7 @@
     function getCashCounters() {
 
         $.ajax({
-            url: "/ApiCalls/Get_Working_Paper_Cash_Counter",
+            url: g_asiBaseURL + "/ApiCalls/Get_Working_Paper_Cash_Counter",
             type: "POST",
             data: {
                 'ENGID': g_engID
@@ -87,7 +87,7 @@
 
          
         $.ajax({
-            url: "/ApiCalls/Add_Working_Paper_Cash_Counter",
+            url: g_asiBaseURL + "/ApiCalls/Add_Working_Paper_Cash_Counter",
             type: "POST",
             data: {
                 'ENGID': g_engID,

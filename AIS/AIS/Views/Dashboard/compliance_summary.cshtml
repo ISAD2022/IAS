@@ -13,7 +13,7 @@
     function getEntityWiseObservations(entityId) {
         $('#entitywise_panel_mainGrid tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_compliance_summary",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_summary",
             type: "POST",
             data: {
                 ENTITY_ID: entityId
@@ -53,7 +53,7 @@
 
         $('#summarywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_compliance_summary",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_summary",
             type: "POST",
             data: {
                 ENTITY_ID: id

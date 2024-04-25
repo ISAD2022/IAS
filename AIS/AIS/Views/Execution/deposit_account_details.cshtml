@@ -26,7 +26,7 @@
         var url = new URL(url_string);
         var cat_id = url.searchParams.get("acccatid");
         $.ajax({
-            url: "/ApiCalls/GetDepositAccountcatdetails",
+            url: g_asiBaseURL + "/ApiCalls/GetDepositAccountcatdetails",
             type: "POST",
             data: {
                 'catid': cat_id

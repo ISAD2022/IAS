@@ -31,7 +31,7 @@
         if ($('#entityTypeSelectionField').val() != 0) {
             $('#entity_oustanding_paras_grid tbody').empty();
             $.ajax({
-                url: "/ApiCalls/get_outstanding_paras_for_entity_type_id",
+                url: g_asiBaseURL + "/ApiCalls/get_outstanding_paras_for_entity_type_id",
                 type: "POST",
                 data: {
                     "ENTITY_TYPE_ID": $('#entityTypeSelectionField').val()

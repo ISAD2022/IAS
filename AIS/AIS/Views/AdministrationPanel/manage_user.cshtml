@@ -25,7 +25,7 @@
             $('#brSearchField').empty();
             $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>')
             $.ajax({
-                url: "/Planning/zone_branches",
+                url: g_asiBaseURL + "/Planning/zone_branches",
                 type: "POST",
                 data: {
                     'zone_code': $('#zoneSearchField option:selected').val()
@@ -47,7 +47,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -84,7 +84,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplace",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -117,7 +117,7 @@
             $('#deptSearchField').append('<option value="0" id="0">--Select Audit Department--</option>')
 
             $.ajax({
-                url: "/Planning/div_departments",
+                url: g_asiBaseURL + "/Planning/div_departments",
                 type: "POST",
                 data: {
                     'div_code': $('#divSearchField option:selected').val()
@@ -160,7 +160,7 @@
 
         $('#userListTable tbody').empty();
         $.ajax({
-            url: "/AdministrationPanel/find_users",
+            url: g_asiBaseURL + "/AdministrationPanel/find_users",
             type: "POST",
             data: {
                 'PPNUMBER': $('#ppnoSearchField').val(),
@@ -223,7 +223,7 @@
             $('#brSaveField').empty();
             $('#brSaveField').append('<option value="0" id="0">--Select Branch--</option>')
             $.ajax({
-                url: "/Planning/zone_branches",
+                url: g_asiBaseURL + "/Planning/zone_branches",
                 type: "POST",
                 data: {
                     'zone_code': $('#zoneSaveField option:selected').val()
@@ -252,7 +252,7 @@
             $('#deptSaveField').append('<option value="0" id="0">--Select Audit Department--</option>')
 
             $.ajax({
-                url: "/ApiCalls/get_departments",
+                url: g_asiBaseURL + "/ApiCalls/get_departments",
                 type: "POST",
                 data: {
                     'div_id': $('#divSaveField').val()
@@ -306,7 +306,7 @@
                 active = 'Y';
 
             $.ajax({
-                url: "/AdministrationPanel/update_user",
+                url: g_asiBaseURL + "/AdministrationPanel/update_user",
                 type: "POST",
                 data: {
                     'USER_ID': g_userId,
@@ -336,7 +336,7 @@
         if ($('#passSaveField').val() == $('#conPassSaveField').val()) {
 
             $.ajax({
-                url: "/ApiCalls/add_new_user",
+                url: g_asiBaseURL + "/ApiCalls/add_new_user",
                 type: "POST",
                 data: {
                     'USER_ID': 0,

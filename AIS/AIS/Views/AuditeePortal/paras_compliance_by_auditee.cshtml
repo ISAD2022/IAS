@@ -28,7 +28,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_paras_for_compliance_by_auditee",
+            url: g_asiBaseURL + "/ApiCalls/get_paras_for_compliance_by_auditee",
             type: "POST",
             data: {
 
@@ -83,7 +83,7 @@
         g_nextRole = nextRole;
 
         $.ajax({
-            url: "/ApiCalls/get_para_compliance_text",
+            url: g_asiBaseURL + "/ApiCalls/get_para_compliance_text",
             type: "POST",
             data: {
                 'NEW_PARA_ID': newParaId,
@@ -190,7 +190,7 @@
                
 
         $.ajax({
-            url: "/ApiCalls/submit_post_audit_compliance",
+            url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
             type: "POST",
             data: {
                 'OLD_PARA_ID': g_oldParaId,
@@ -220,7 +220,7 @@
         $('#manageComplianceHistPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_compliance_history",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_history",
             type: "POST",
             data: {
                 'REF_P': paraREF,
@@ -248,7 +248,7 @@
     function getComplianceText(comSeq) {
         $('#viewParaComplianceTextModel').modal('show');
         $.ajax({
-            url: "/ApiCalls/get_old_para_compliance_cycle_text",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
             type: "POST",
             data: {
                 'REF_P': g_paraRef,

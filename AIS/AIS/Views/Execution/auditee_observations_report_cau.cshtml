@@ -77,7 +77,7 @@
          g_engId = eng_id;
 
      $.ajax({
-         url: "/ApiCalls/get_team_details",
+         url: g_asiBaseURL + "/ApiCalls/get_team_details",
          type: "POST",
          data: {
              'ENG_ID': g_engId
@@ -91,7 +91,7 @@
              });
 
              $.ajax({
-                 url: "/ApiCalls/closing_draft_report_status",
+                 url: g_asiBaseURL + "/ApiCalls/closing_draft_report_status",
                  type: "POST",
                  data: {
                      'ENG_ID': g_engId
@@ -154,7 +154,7 @@
      $('#o_s_d').empty();
      $('#o_e_d').empty();
      $.ajax({
-         url: "/ApiCalls/get_address",
+         url: g_asiBaseURL + "/ApiCalls/get_address",
          type: "POST",
          data: {
              'ENT_ID': eng_id
@@ -191,7 +191,7 @@
         $('.conOffice').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_report_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_report_paras",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -223,7 +223,7 @@
 
         $.ajax({
 
-            url: "/ApiCalls/close_draft_audit",
+            url: g_asiBaseURL + "/ApiCalls/close_draft_audit",
             type: "POST",
             data: {
                 'ENG_ID': g_engId

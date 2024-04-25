@@ -38,7 +38,7 @@
             var lid = $('#LCN').val();
             if (lid != 0) {
                 $.ajax({
-                    url: "/ApiCalls/Loan_Case_Details",
+                    url: g_asiBaseURL + "/ApiCalls/Loan_Case_Details",
                     type: "POST",
                     data: {
                         'Loan_case': lid,

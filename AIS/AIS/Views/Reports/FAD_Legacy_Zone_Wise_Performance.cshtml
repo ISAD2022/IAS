@@ -20,7 +20,7 @@
 
         $('#zoneiwseperformance tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_zone_wise_performance",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_zone_wise_performance",
             type: "POST",
             data: {
                 'FILTER_DATE': $('#updateDateFilter').val()

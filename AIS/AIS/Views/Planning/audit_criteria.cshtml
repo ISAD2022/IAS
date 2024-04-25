@@ -89,7 +89,7 @@
            
         submitAuditCriteria();
        /*  $.ajax({
-             url: "/ApiCalls/GetAuditEntitiesCount",
+             url: g_asiBaseURL + "/ApiCalls/GetAuditEntitiesCount",
              type: "POST",
              data: {
                  'RISK_ID': $('#auditCriteriaRiskField').val(),
@@ -109,7 +109,7 @@
     function CountCriteriaRecordFromGrid(e, period, entity_type, risk, size, freq) {
 
         $.ajax({
-            url: "/ApiCalls/GetAuditEntitiesCount",
+            url: g_asiBaseURL + "/ApiCalls/GetAuditEntitiesCount",
             type: "POST",
             data: {
                 'RISK_ID': risk,
@@ -132,7 +132,7 @@
     function DeleteCriteriaRecordFromGrid(e, criteria_id) {
 
         $.ajax({
-            url: "/ApiCalls/DeletePendingCriteria",
+            url: g_asiBaseURL + "/ApiCalls/DeletePendingCriteria",
             type: "POST",
             data: {
                 'CID': criteria_id
@@ -175,7 +175,7 @@
 
         if (criteria_list.length > 0) {
             $.ajax({
-                url: "/Engagement/add_audit_criteria",
+                url: g_asiBaseURL + "/Engagement/add_audit_criteria",
                 type: "POST",
                 data: {
                     'CRITERIA_LIST': criteria_list
@@ -203,7 +203,7 @@
     }
     function FinalsubmitAuditCriteria() {
         $.ajax({
-            url: "/ApiCalls/submit_audit_criterias",
+            url: g_asiBaseURL + "/ApiCalls/submit_audit_criterias",
             type: "POST",
             data: {
                 'PERIOD_ID': 0
@@ -237,7 +237,7 @@
             isauditable = 'N';
 
         $.ajax({
-            url: "/Engagement/add_auditee_entity",
+            url: g_asiBaseURL + "/Engagement/add_auditee_entity",
             type: "POST",
             data: {
                 'ENTITYCODE': code,
@@ -282,7 +282,7 @@
         $('#auditCriteriaCADHUBField').append('<option value="0">-- Select Auditable Entity--</option>');
 
         $.ajax({
-            url: "/ApiCalls/get_entities_parent_ent_type_id",
+            url: g_asiBaseURL + "/ApiCalls/get_entities_parent_ent_type_id",
             type: "POST",
             data: {
                 'ENTITY_TYPE_ID': $('#auditCriteriaEntityField').val()

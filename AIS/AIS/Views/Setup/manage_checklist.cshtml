@@ -49,7 +49,7 @@
         }
         if (g_subProcId !=0){
             $.ajax({
-                url: "/ApiCalls/update_audit_checklist",
+                url: g_asiBaseURL + "/ApiCalls/update_audit_checklist",
                 type: "POST",
                 data: {
                     'PROCESS_ID': g_subProcId,
@@ -65,7 +65,7 @@
             });
         }else{
             $.ajax({
-                url: "/ApiCalls/add_audit_checklist",
+                url: g_asiBaseURL + "/ApiCalls/add_audit_checklist",
                 type: "POST",
                 data: {
                     'HEADING': $('#entCodeField').val(),

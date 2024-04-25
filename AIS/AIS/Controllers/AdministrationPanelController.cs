@@ -10,6 +10,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
+   
     public class AdministrationPanelController : Controller
     {
         private readonly ILogger<AdministrationPanelController> _logger;

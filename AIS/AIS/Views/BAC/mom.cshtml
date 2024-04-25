@@ -72,7 +72,7 @@
     function getBACActionablesConsolidatedSummary() {
       
         $.ajax({
-            url: "/ApiCalls/get_bac_agenda_actionables_consolidate_summary",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_agenda_actionables_consolidate_summary",
             type: "POST",
             data: {
             },
@@ -101,7 +101,7 @@
        
 
         $.ajax({
-            url: "/ApiCalls/get_bac_agenda_actionables_summary",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_agenda_actionables_summary",
             type: "POST",
             data: {
             },
@@ -154,7 +154,7 @@
             
         }, 200);
         $.ajax({
-            url: "/ApiCalls/get_bac_agenda_actionables",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_agenda_actionables",
             type: "POST",
             data: {
                STATUS:status
@@ -181,7 +181,7 @@
 
         }, 200);
         $.ajax({
-            url: "/ApiCalls/get_bac_agenda_actionables_meeting_no",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_agenda_actionables_meeting_no",
             type: "POST",
             data: {
                 STATUS: status,

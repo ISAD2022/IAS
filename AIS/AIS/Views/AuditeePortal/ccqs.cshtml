@@ -24,7 +24,7 @@
         $('#ccqs_panel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_ccqs",
+                url: g_asiBaseURL + "/ApiCalls/get_ccqs",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#entitySelectField option:selected').val()
@@ -85,7 +85,7 @@
 
         }
         $.ajax({
-            url: "/ApiCalls/update_ccq",
+            url: g_asiBaseURL + "/ApiCalls/update_ccq",
             type: "POST",
             data: {
                 'ID': g_id,

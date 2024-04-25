@@ -25,7 +25,7 @@
     function getLoanCaseFiles() {
 
         $.ajax({
-            url: "/ApiCalls/Get_Working_Paper_Loan_Cases",
+            url: g_asiBaseURL + "/ApiCalls/Get_Working_Paper_Loan_Cases",
             type: "POST",
             data: {
                 'ENGID': g_engID
@@ -75,7 +75,7 @@
         }
 
         $.ajax({
-            url: "/ApiCalls/Add_Working_Paper_Loan_Cases",
+            url: g_asiBaseURL + "/ApiCalls/Add_Working_Paper_Loan_Cases",
             type: "POST",
             data: {
                 'ENGID': g_engID,

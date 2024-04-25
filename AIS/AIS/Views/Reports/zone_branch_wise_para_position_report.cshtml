@@ -11,7 +11,7 @@
 
         if ($('#zoneSelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_zone_Branches",
+                url: g_asiBaseURL + "/ApiCalls/get_zone_Branches",
                 type: "POST",
                 data: {
                     'ZONEID': $('#zoneSelectField option:selected').val()
@@ -55,7 +55,7 @@
 
         
         $.ajax({
-                url: "/ApiCalls/get_zone_brach_para_position",
+                url: g_asiBaseURL + "/ApiCalls/get_zone_brach_para_position",
                 type: "POST",
                 data: {
                 'ENTITY_ID': EntityId
@@ -77,7 +77,7 @@
         $('#viewMemoModel').modal('show');
         $('#viewMemo_memo').html("");
         $.ajax({
-            url: "/ApiCalls/get_para_text",
+            url: g_asiBaseURL + "/ApiCalls/get_para_text",
             type: "POST",
             data: {
                 'ref_p': ref_p

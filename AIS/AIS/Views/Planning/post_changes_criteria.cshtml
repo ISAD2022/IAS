@@ -105,7 +105,7 @@
         criteria_details.push($('#commentAreaInCommentsBox').val());
 
         $.ajax({
-            url: "/Planning/post_changes_audit_criteria",
+            url: g_asiBaseURL + "/Planning/post_changes_audit_criteria",
             type: "POST",
             data: {
                 'CRITERIA_LIST': criteria_details
@@ -123,7 +123,7 @@
 
     function generatePlanAuditCriterias(id) {
         $.ajax({
-            url: "/Planning/generate_plan_audit_criteria",
+            url: g_asiBaseURL + "/Planning/generate_plan_audit_criteria",
             type: "POST",
             data: {
                 'CRITERIA_ID': id

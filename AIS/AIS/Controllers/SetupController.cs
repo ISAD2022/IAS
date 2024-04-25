@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
+   
     public class SetupController : Controller
     {
         private readonly ILogger<SetupController> _logger;

@@ -35,7 +35,7 @@
 
         getParas();
         $.ajax({
-            url: "/ApiCalls/GetTeamDetails",
+            url: g_asiBaseURL + "/ApiCalls/GetTeamDetails",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -109,7 +109,7 @@
         $('.conOffice').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_report_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_report_paras",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -147,7 +147,7 @@
 
         $.ajax({
 
-            url: "/ApiCalls/close_draft_audit",
+            url: g_asiBaseURL + "/ApiCalls/close_draft_audit",
             type: "POST",
             data: {
                 'ENG_ID': g_engId

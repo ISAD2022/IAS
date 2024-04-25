@@ -20,7 +20,7 @@
         
         $('#useriwseperformance tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_fad_ho_user_legacy_para_user_wise_performance",
+            url: g_asiBaseURL + "/ApiCalls/get_fad_ho_user_legacy_para_user_wise_performance",
             type: "POST",
             data: {
                 'FILTER_DATE': $('#updateDateFilter').val()

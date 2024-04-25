@@ -16,7 +16,7 @@
 
         $('#manageBACAgendaPanels tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_bac_agenda",
+            url: g_asiBaseURL + "/ApiCalls/get_bac_agenda",
             type: "POST",
             data: {
                 'MEETING_NO': $('#meetingNoInputBox').val(),
@@ -36,7 +36,7 @@
 
     function getBACActionables() {
 
-        window.location.href = "/BAC/MOM";
+        window.location.href = g_asiBaseURL + "/BAC/MOM";
 
     }
     function getBACSummary() {

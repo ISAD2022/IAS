@@ -18,7 +18,7 @@
         $('#updatedAnnexlist').select2();
         
         $.ajax({
-            url: "/ApiCalls/checklist_details",
+            url: g_asiBaseURL + "/ApiCalls/checklist_details",
             type: "POST",
             data: {
                 'S_ID': checklistsub_id
@@ -59,7 +59,7 @@
     }
     function saveChecklistObservations() {
         $.ajax({
-            url: "/ApiCalls/save_observations",
+            url: g_asiBaseURL + "/ApiCalls/save_observations",
             type: "POST",
             data: {
                 'LIST_OBS': g_memoObj,
@@ -194,7 +194,7 @@
         $('#matchedPPNoPanels').empty();
         g_respUser = [];
         $.ajax({
-            url: "/ApiCalls/get_employee_name_from_pp",
+            url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
             type: "POST",
             data: {
                 'PP_NO': $('#responsiblePPNoEntryField').val()
@@ -241,7 +241,7 @@
     }
     function getSubCheckListStatus() {
         $.ajax({
-            url: "/ApiCalls/get_subchecklist_status",
+            url: g_asiBaseURL + "/ApiCalls/get_subchecklist_status",
             type: "POST",
             data: {
                 'ENG_ID': g_engId,
@@ -272,7 +272,7 @@
     }
     function ObservationViewerPanel(obs_id) {
         $.ajax({
-            url: "/ApiCalls/get_observation_text_branches",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id

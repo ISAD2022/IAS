@@ -8,7 +8,7 @@
     function getActivityLog() {
 
         $.ajax({
-            url: "/ApiCalls/get_role_actuserivity_log",
+            url: g_asiBaseURL + "/ApiCalls/get_role_actuserivity_log",
             type: "POST",
             data: {
                 'ROLE_ID': $('#roleGroupField').val(),

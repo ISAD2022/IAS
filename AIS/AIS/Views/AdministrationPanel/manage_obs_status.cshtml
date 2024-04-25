@@ -32,7 +32,7 @@
 
     function getObservationStatus() {
         $.ajax({
-            url: "/ApiCalls/get_maange_obs_status",
+            url: g_asiBaseURL + "/ApiCalls/get_maange_obs_status",
             type: "POST",
             data: {
 
@@ -102,7 +102,7 @@
         }
         if (g_statusId == 0) {
             $.ajax({
-                url: "/ApiCalls/add_manage_observatiton_status",
+                url: g_asiBaseURL + "/ApiCalls/add_manage_observatiton_status",
                 type: "POST",
                 data: {
                     OBS_STATUS_MODEL: manageObservationStatusModel
@@ -117,7 +117,7 @@
             });
         } else {
             $.ajax({
-                url: "/ApiCalls/update_manage_observatiton_status",
+                url: g_asiBaseURL + "/ApiCalls/update_manage_observatiton_status",
                 type: "POST",
                 data: {
                     OBS_STATUS_MODEL: manageObservationStatusModel

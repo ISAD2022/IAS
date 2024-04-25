@@ -60,7 +60,7 @@
         $('#listOfIC tbody').append(row);
         $('#setupICModal').modal('hide');
         $.ajax({
-            url: "/Setup/Inspection_Units_add",
+            url: g_asiBaseURL + "/Setup/Inspection_Units_add",
             type: "POST",
             data: {
                 'id': g_ICId,

@@ -9,7 +9,7 @@
         $('#CurrentAuditProgressGrid tbody').empty();
         if ($('#auditDepartmentSelectBox').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_current_audit_progress",
+                url: g_asiBaseURL + "/ApiCalls/get_current_audit_progress",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#auditDepartmentSelectBox').val()

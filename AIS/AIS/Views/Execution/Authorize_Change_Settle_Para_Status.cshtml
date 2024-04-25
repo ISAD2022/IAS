@@ -22,7 +22,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_settled_paras_autorize",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_settled_paras_autorize",
             type: "POST",
             data: {
                 
@@ -57,7 +57,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/Add_Authorization_Old_Para_Change_status",
+            url: g_asiBaseURL + "/ApiCalls/Add_Authorization_Old_Para_Change_status",
             type: "POST",
             data: {
                 'REFID': refp,

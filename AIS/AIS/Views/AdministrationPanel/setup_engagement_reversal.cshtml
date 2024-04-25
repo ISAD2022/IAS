@@ -24,7 +24,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -61,7 +61,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplace",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -86,7 +86,7 @@
     function getEngagementDetails() {
         $('#engsListPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_engagements_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_engagements_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val()
@@ -125,7 +125,7 @@
         $('#engObsListPanel_changeNo tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_observation_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENG_ID': engId
@@ -150,7 +150,7 @@
     function obsChangeNumber(obsId) {
         g_obsID = obsId;
         $.ajax({
-            url: "/ApiCalls/get_observation_numbers_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_numbers_for_status_reversal",
             type: "POST",
             data: {
                 'OBS_ID': obsId
@@ -183,7 +183,7 @@
         $('#engObsListPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_observation_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENG_ID': engId
@@ -211,7 +211,7 @@
         g_engID = engId;
         g_planID = planId;
         $.ajax({
-            url: "/ApiCalls/get_engagement_status_for_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_engagement_status_for_reversal",
             type: "POST",
             data: {
                 'ENG_ID': engId
@@ -235,7 +235,7 @@
         $('#setupAuditTeam').modal('show');
         $('#listOfEmployeeTeam tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_team_memeber_details_for_post_changes_team_eng_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_team_memeber_details_for_post_changes_team_eng_reversal",
             type: "POST",
             data: {
                 'AUDITED_BY_DEPT': audById
@@ -327,7 +327,7 @@
 
         
         $.ajax({
-            url: "/ApiCalls/update_observation_numbers_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/update_observation_numbers_for_status_reversal",
             type: "POST",
             data: {
                 'OBS_ID': g_obsID,
@@ -353,7 +353,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/audit_engagement_obs_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/audit_engagement_obs_status_reversal",
             type: "POST",
             data: {
                 'NEW_STATUS_ID': $('#newStatusReservalSelectionBox').val(),
@@ -385,7 +385,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/audit_engagement_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/audit_engagement_status_reversal",
             type: "POST",
             data: {
                 'NEW_STATUS_ID': $('#engStatusReversalNewStatus').val(),
@@ -412,7 +412,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/submit_new_team_id_for_post_changes_team_eng_reversal",
+            url: g_asiBaseURL + "/ApiCalls/submit_new_team_id_for_post_changes_team_eng_reversal",
             type: "POST",
             data: {
                 'TEAM_ID': $('.newTeamChange:checked').attr('teamid'),
@@ -436,7 +436,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/update_engagement_dates_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/update_engagement_dates_for_status_reversal",
             type: "POST",
             data: {
                 'ENG_ID': g_engID,

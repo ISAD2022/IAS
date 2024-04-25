@@ -27,7 +27,7 @@
             indicator = "Y";
         }
         $.ajax({
-            url: "/ApiCalls/get_entities_mapping",
+            url: g_asiBaseURL + "/ApiCalls/get_entities_mapping",
             type: "POST",
             data: {
                 "ENT_ID": $('#entityIDDropBox').val(),
@@ -58,7 +58,7 @@
             indicator = "Y";
         }
         $.ajax({
-            url: "/ApiCalls/get_entities_mapping_reporting",
+            url: g_asiBaseURL + "/ApiCalls/get_entities_mapping_reporting",
             type: "POST",
             data: {
                 "ENT_ID": $('#entityIDDropBox').val(),
@@ -121,7 +121,7 @@
             'E_AUTID': g_entId
         }
         $.ajax({
-            url: "/ApiCalls/update_entity_types",
+            url: g_asiBaseURL + "/ApiCalls/update_entity_types",
             type: "POST",
             data: {
                 ENTITY_MODEL: entityUpdateModel
@@ -152,7 +152,7 @@
         $('#entityIDDropBox').empty();
         $('#entityIDDropBox').append('<option value=0>--Select Entity--</option>');
         $.ajax({
-            url: "/ApiCalls/get_entities_of_parent_child",
+            url: g_asiBaseURL + "/ApiCalls/get_entities_of_parent_child",
             type: "POST",
             data: {
                 'P_TYPE_ID': $('#parentTypeID').val(),

@@ -17,7 +17,7 @@
             $('#functionalGroupSelectBox').append('<option value=0>--Select Functional Owner---</option>');
 
             $.ajax({
-                url: "/ApiCalls/get_functional_owner_area_for_functional_responsibility_wise_paras_ho",
+                url: g_asiBaseURL + "/ApiCalls/get_functional_owner_area_for_functional_responsibility_wise_paras_ho",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#deptSelectBox').val()
@@ -50,7 +50,7 @@
 
 
             $.ajax({
-                url: "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras_ho",
+                url: g_asiBaseURL + "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras_ho",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val()
@@ -82,7 +82,7 @@
             $('#subprocessSelectBox').empty();
             $('#subprocessSelectBox').append('<option value=0>--Select Sub Violation Area---</option>');
             $.ajax({
-                url: "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras_ho",
+                url: g_asiBaseURL + "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras_ho",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
@@ -110,7 +110,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard_ho",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard_ho",
             type: "POST",
             data: {
                 'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),

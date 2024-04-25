@@ -19,7 +19,7 @@
       
     });
     function reloadLocationToUrl() {
-        window.location.href = "/Engagement/task_list"
+        window.location.href = g_asiBaseURL + "/Engagement/task_list"
     }
 
 
@@ -39,7 +39,7 @@
         $('#o_s_d').empty();
         $('#o_e_d').empty();
         $.ajax({
-            url: "/ApiCalls/get_address",
+            url: g_asiBaseURL + "/ApiCalls/get_address",
             type: "POST",
             data: {
                 'ENT_ID': g_engId
@@ -68,7 +68,7 @@
         });
 
           $.ajax({
-              url: "/ApiCalls/GetTeamDetails",
+              url: g_asiBaseURL + "/ApiCalls/GetTeamDetails",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -120,7 +120,7 @@
     function getreportstatus()
     {
         $.ajax({
-            url: "/ApiCalls/get_report_status",
+            url: g_asiBaseURL + "/ApiCalls/get_report_status",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
@@ -164,7 +164,7 @@
 
         $.ajax({
 
-            url: "/ApiCalls/conclude_draft_audit",
+            url: g_asiBaseURL + "/ApiCalls/conclude_draft_audit",
             type: "POST",
             data: {
                 'ENG_ID': g_engId

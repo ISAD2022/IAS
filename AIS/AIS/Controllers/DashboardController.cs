@@ -12,6 +12,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
+   
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;

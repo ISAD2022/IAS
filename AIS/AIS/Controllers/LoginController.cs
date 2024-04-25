@@ -12,6 +12,7 @@ using System.Text.Json;
 
 namespace AIS.Controllers
 {
+    
     public class LoginController : Controller
     {
         private readonly ILogger<LoginController> _logger;

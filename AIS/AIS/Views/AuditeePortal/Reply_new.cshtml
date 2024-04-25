@@ -32,7 +32,7 @@
 
     function submitAuditeeResponseofOldPara() {
         $.ajax({
-            url: "/ApiCalls/old_para_response",
+            url: g_asiBaseURL + "/ApiCalls/old_para_response",
             type: "POST",
             data: {
                 'AU_OBS_ID': g_pId,

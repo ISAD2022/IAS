@@ -67,7 +67,7 @@
         $('#listOfBranches tbody').append(row);
         $('#setupBranchModal').modal('hide');
         $.ajax({
-            url: "/Setup/branch_add",
+            url: g_asiBaseURL + "/Setup/branch_add",
             type: "POST",
             data: {
                 'BRANCHID': g_branchId,

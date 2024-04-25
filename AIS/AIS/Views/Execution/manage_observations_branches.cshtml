@@ -39,7 +39,7 @@
             $('#updateMemo_subprocess').empty();
             $('#updateMemo_violation').empty();
             $.ajax({
-                url: "/ApiCalls/sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/sub_checklist",
                 type: "POST",
                 data: {
                     'T_ID': $('#updateMemo_process option:selected').val(),
@@ -62,7 +62,7 @@
         else {
             $('#updateMemo_violation').empty();
             $.ajax({
-                url: "/ApiCalls/checklist_details",
+                url: g_asiBaseURL + "/ApiCalls/checklist_details",
                 type: "POST",
                 data: {
                     'S_ID': $('#updateMemo_subprocess option:selected').val(),
@@ -87,7 +87,7 @@
         g_riskId = risk_id;
         g_currentStatus = status_id;
         $.ajax({
-            url: "/ApiCalls/get_observation_text_branches",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -145,7 +145,7 @@
     function ObservationUpdatePanel(obs_id) {
         g_obsId = obs_id;
         $.ajax({
-            url: "/ApiCalls/get_observation_text_branches",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -174,7 +174,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/update_observation_status",
+            url: g_asiBaseURL + "/ApiCalls/update_observation_status",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -206,7 +206,7 @@
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
         $.ajax({
-            url: "/ApiCalls/drop_observation",
+            url: g_asiBaseURL + "/ApiCalls/drop_observation",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -227,7 +227,7 @@
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
         $.ajax({
-            url: "/ApiCalls/submit_observation_to_auditee",
+            url: g_asiBaseURL + "/ApiCalls/submit_observation_to_auditee",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -246,7 +246,7 @@
     function finalUpdateMemoContent(obs_id){
         g_obsId = obs_id;      
         $.ajax({
-            url: "/ApiCalls/update_observation_text",
+            url: g_asiBaseURL + "/ApiCalls/update_observation_text",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -271,7 +271,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {            
             $.ajax({
-                url: "/ApiCalls/get_observation_branches",
+                url: g_asiBaseURL + "/ApiCalls/get_observation_branches",
                 type: "POST",
                 data: {
                     'ENG_ID': $('#entitySelectField option:selected').val()

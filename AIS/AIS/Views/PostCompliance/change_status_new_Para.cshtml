@@ -11,7 +11,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_current_paras_for_status_change_request",
+            url: g_asiBaseURL + "/ApiCalls/get_current_paras_for_status_change_request",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val()
@@ -36,7 +36,7 @@
         $('#paraTextModelPanel').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_new_para_text",
+            url: g_asiBaseURL + "/ApiCalls/get_new_para_text",
             type: "POST",
             data: {
                 'OBS_ID': id
@@ -61,7 +61,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/Add_New_Para_Change_status_Request",
+            url: g_asiBaseURL + "/ApiCalls/Add_New_Para_Change_status_Request",
             type: "POST",
             data: {
                 'REFID': refp,

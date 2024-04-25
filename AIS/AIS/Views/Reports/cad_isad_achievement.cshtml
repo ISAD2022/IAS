@@ -47,7 +47,7 @@
                 $('.fieldAuditFields').addClass('d-none');
             }
             $.ajax({
-                url: "/Planning/audit_periods",
+                url: g_asiBaseURL + "/Planning/audit_periods",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()
@@ -65,7 +65,7 @@
                 dataType: "json",
             });
             $.ajax({
-                url: "/Planning/audit_teams",
+                url: g_asiBaseURL + "/Planning/audit_teams",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()
@@ -96,7 +96,7 @@
             $('#branchInfoArea').removeClass('d-none');
             $('#branchSelectionBox').append('<option value="0" id="0">--Select Audit Branch--</option>')
             $.ajax({
-                url: "/Planning/zone_branches",
+                url: g_asiBaseURL + "/Planning/zone_branches",
                 type: "POST",
                 data: {
                     'zone_code': $('#auditZoneSelectionBox option:selected').val()
@@ -125,7 +125,7 @@
         else {
             $('#divDeptSelectionBox').empty();
             $.ajax({
-                url: "/Planning/div_departments",
+                url: g_asiBaseURL + "/Planning/div_departments",
                 type: "POST",
                 data: {
                     'div_code': $('#divSelectionBox option:selected').val()
@@ -217,7 +217,7 @@
         var desc = $('#descriptionAuditPlanField').val();
 
         $.ajax({
-            url: "/Planning/add_audit_plan",
+            url: g_asiBaseURL + "/Planning/add_audit_plan",
             type: "POST",
             data: {
                 'AUDITPERIOD_ID': periodId,
@@ -237,7 +237,7 @@
             },
             cache: false,
             success: function (data) {
-                window.location.href = "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
+                window.location.href = g_asiBaseURL + "/Planning/audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + $('#periodSelectionBox option:selected').val();
             },
             dataType: "json",
         });
@@ -247,7 +247,7 @@
             $('#entitySelectionBox').empty();
             $('#entitySelectionBox').append('<option value="0" id="0" selected="selected">--Select Sub Entity--</option>');
             $.ajax({
-                url: "/Setup/get_sub_entities",
+                url: g_asiBaseURL + "/Setup/get_sub_entities",
                 type: "POST",
                 data: {
                     'div_id': $('#divSelectionBox option:selected').val(),

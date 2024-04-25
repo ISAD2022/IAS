@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
+    
     public class RiskAssessmentController : Controller
     {
         private readonly ILogger<RiskAssessmentController> _logger;

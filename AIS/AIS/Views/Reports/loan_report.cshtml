@@ -24,7 +24,7 @@
         $('#loanZoneField').append('<option value="0">--Select Zone Office--</option>');
         if ($('#loanGMField').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_region_zone_office",
+                url: g_asiBaseURL + "/ApiCalls/get_region_zone_office",
                 type: "POST",
                 data: {
                     'RGM_ID': $('#loanGMField').val()
@@ -50,7 +50,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/get_loan_detail_report",
+            url: g_asiBaseURL + "/ApiCalls/get_loan_detail_report",
             type: "POST",
             data: {
                 'GLSUBID': $('#loanGLSubField').val(),
@@ -182,7 +182,7 @@
         </div>
     </div>
 
-    <div class="row col-md-auto mt-3">
+    <div class="row col-md-12 mt-3">
 
         <button onclick="getLoanDetail();" class="btn btn-primary offset-md-9 col-md-3">Search</button>
 
@@ -191,7 +191,7 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <div class="row col-md-auto">
+    <div class="row col-md-12">
         <table id="gldetailtab" class="col-md-auto table table-bordered table-hover mt-1 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>

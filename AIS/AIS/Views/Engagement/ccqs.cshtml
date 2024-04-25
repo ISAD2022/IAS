@@ -21,7 +21,7 @@
         else {
             $('#listOfEmployeeTeam tbody').empty();
             $.ajax({
-                url: "/Planning/audit_team",
+                url: g_asiBaseURL + "/Planning/audit_team",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()
@@ -109,7 +109,7 @@
     function deleteTeam(teamCode) {
 
         $.ajax({
-            url: "/Planning/delete_audit_team",
+            url: g_asiBaseURL + "/Planning/delete_audit_team",
             type: "POST",
             data: {
                 'T_CODE': teamCode

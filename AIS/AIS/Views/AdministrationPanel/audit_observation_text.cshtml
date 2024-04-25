@@ -60,7 +60,7 @@
         $('#listOfDepartment tbody').append(row);
         $('#setupDeptModal').modal('hide');
         $.ajax({
-            url: "/Setup/department_add",
+            url: g_asiBaseURL + "/Setup/department_add",
             type: "POST",
             data: {
                 'id': g_deptId,

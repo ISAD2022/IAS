@@ -15,7 +15,7 @@
   
     function getNewUsersInAIS() {
         $.ajax({
-            url: "/ApiCalls/admin_get_new_users",
+            url: g_asiBaseURL + "/ApiCalls/admin_get_new_users",
             type: "POST",
             data: {
 
@@ -43,7 +43,7 @@
 
     function viewUserDetails(){
         $.ajax({
-            url: "/ApiCalls/admin_get_user_details",
+            url: g_asiBaseURL + "/ApiCalls/admin_get_user_details",
             type: "POST",
             data: {
 
@@ -65,7 +65,7 @@
         $('#modalDesignationName').val(name);
         $('#modalRoleName').empty();
         $.ajax({
-            url: "/ApiCalls/admin_get_user_details",
+            url: g_asiBaseURL + "/ApiCalls/admin_get_user_details",
             type: "POST",
             data: {
                 "DESIGNATION_CODE": code
@@ -91,7 +91,7 @@
     }
 
     function addNewEntityInAIS(code,name) {
-        window.location.href = "/AdministrationPanel/entity_addition?code="+code+"&name="+name;
+        window.location.href = g_asiBaseURL + "/AdministrationPanel/entity_addition?code=" + code + "&name=" + name;
     }
 
     function updateAllSelectedUsers(){
@@ -104,7 +104,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/update_new_user_admin_panel",
+            url: g_asiBaseURL + "/ApiCalls/update_new_user_admin_panel",
             type: "POST",
             data: {
                 'PPNOArr': ppNos

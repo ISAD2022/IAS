@@ -72,7 +72,7 @@
         //  return;
         if (criteria_list.length > 0) {
             $.ajax({
-                url: "/Engagement/add_audit_criteria",
+                url: g_asiBaseURL + "/Engagement/add_audit_criteria",
                 type: "POST",
                 data: {
                     'CRITERIA_LIST': criteria_list
@@ -109,7 +109,7 @@
             isauditable = 'N';
 
         $.ajax({
-            url: "/Engagement/add_auditee_entity",
+            url: g_asiBaseURL + "/Engagement/add_auditee_entity",
             type: "POST",
             data: {
                 'ENTITYCODE': code,

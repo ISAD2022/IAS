@@ -14,7 +14,7 @@
              return;
         }
         $.ajax({
-            url: "/ApiCalls/get_obs_for_pre_concluding",
+            url: g_asiBaseURL + "/ApiCalls/get_obs_for_pre_concluding",
             type: "POST",
             data: {
                 'ENG_ID': $('#entitySelectField').val()
@@ -57,7 +57,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/get_observation_text_branches",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
             type: "POST",
             data: {
                 'OBS_ID': obs_id
@@ -99,7 +99,7 @@
         }
 
         $.ajax({
-            url: "/ApiCalls/add_observation_gist_and_recommendation",
+            url: g_asiBaseURL + "/ApiCalls/add_observation_gist_and_recommendation",
             type: "POST",
             data: {
                 'OBS_ID': g_observationId,
@@ -134,7 +134,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/submit_pre_concluding",
+            url: g_asiBaseURL + "/ApiCalls/submit_pre_concluding",
             type: "POST",
             data: {
                 'ENG_ID': $('#entitySelectField').val()

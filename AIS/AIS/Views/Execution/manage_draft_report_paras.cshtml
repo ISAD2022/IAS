@@ -26,7 +26,7 @@
         $('#viewMemoModel').modal('show');
         $('#viewMemo_panel').html("");
         $.ajax({
-            url: "/ApiCalls/get_observations_draft_text",
+            url: g_asiBaseURL + "/ApiCalls/get_observations_draft_text",
             type: "POST",
             data: {
                 'OBS_ID': id
@@ -42,7 +42,7 @@
         $('#viewMemoResponseModel').modal('show');
         $('#viewMemoRes_panel').html("");
         $.ajax({
-            url: "/ApiCalls/get_observations_draft_auditee_reply",
+            url: g_asiBaseURL + "/ApiCalls/get_observations_draft_auditee_reply",
             type: "POST",
             data: {
                 'OBS_ID': id
@@ -70,7 +70,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/update_observation_status",
+            url: g_asiBaseURL + "/ApiCalls/update_observation_status",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -108,7 +108,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_observations_draft",
+                url: g_asiBaseURL + "/ApiCalls/get_observations_draft",
                 type: "POST",
                 data: {
                     'ENG_ID': $('#entitySelectField option:selected').val()

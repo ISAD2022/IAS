@@ -10,7 +10,7 @@
         var url = new URL(url_string);
         var gl_sub_id = url.searchParams.get("glsubcode");
         $.ajax({
-            url: "/ApiCalls/Glhead_Transaction_Details",
+            url: g_asiBaseURL + "/ApiCalls/Glhead_Transaction_Details",
             type: "POST",
             data: {
                 'GLTYPEID': gl_id

@@ -111,7 +111,7 @@
         var today = lastDayPrevMonth.getFullYear() + '-' + month + '-' + day;
         $('#endop_date').val(today);
         $.ajax({
-            url: "/Planning/get_operational_start_date",
+            url: g_asiBaseURL + "/Planning/get_operational_start_date",
             type: "POST",
             data: {
                 'periodId': g_periodId,
@@ -211,7 +211,7 @@
 
 
         $.ajax({
-            url: "/Planning/add_engagement_plan",
+            url: g_asiBaseURL + "/Planning/add_engagement_plan",
             type: "POST",
             data: {
                 'PERIOD_ID': g_periodId,
@@ -243,7 +243,7 @@
         });
     }
     function redirectToLocation() {
-        window.location.href = "/Planning/tentative_audit_plan";
+        window.location.href = g_asiBaseURL + "/Planning/tentative_audit_plan";
     }
 
     function previewSelectedTeaM() {
@@ -254,7 +254,7 @@
             $('#teamPreview').removeClass('d-none');
             $('#listOfEmployeeTeam tbody').empty();
             $.ajax({
-                url: "/Planning/audit_team",
+                url: g_asiBaseURL + "/Planning/audit_team",
                 type: "POST",
                 data: {
                    

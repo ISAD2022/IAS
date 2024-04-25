@@ -52,7 +52,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/add_responsibility_to_legacy_para_fad",
+            url: g_asiBaseURL + "/ApiCalls/add_responsibility_to_legacy_para_fad",
             type: "POST",
             data: {
                 'RESP_PP': resP[0],
@@ -97,7 +97,7 @@
     function DeleteConfirmAlertBox(){
        
         $.ajax({
-            url: "/ApiCalls/delete_legacy_para_responsibility",
+            url: g_asiBaseURL + "/ApiCalls/delete_legacy_para_responsibility",
             type: "POST",
             data: {
                 'PARA_REF': g_paraRef,
@@ -160,7 +160,7 @@
         $('#process_detail').modal('hide');
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_update_FAD",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_paras_for_update_FAD",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val()
@@ -187,7 +187,7 @@
         $('#listofRespPersons tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_legacy_paras_for_update_FAD",
+            url: g_asiBaseURL + "/ApiCalls/get_legacy_paras_for_update_FAD",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#entitySelectField').val(),
@@ -233,7 +233,7 @@
             $('#updateMemo_subprocess').empty();
             $('#updateMemo_violation').empty();
             $.ajax({
-                url: "/ApiCalls/sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/sub_checklist",
                 type: "POST",
                 data: {
                     'T_ID': $('#updateMemo_process option:selected').val(),
@@ -262,7 +262,7 @@
         else {
             $('#updateMemo_violation').empty();
             $.ajax({
-                url: "/ApiCalls/checklist_details",
+                url: g_asiBaseURL + "/ApiCalls/checklist_details",
                 type: "POST",
                 data: {
                     'S_ID': $('#updateMemo_subprocess option:selected').val(),
@@ -290,7 +290,7 @@
     function getEmployeeName(e, counter) {
         if (e.value != "" && e.value.length > 4 && e.value != "000000") {
             $.ajax({
-                url: "/ApiCalls/get_employee_name_from_pp",
+                url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
                 type: "POST",
                 data: {
                     'PP_NO': e.value
@@ -366,7 +366,7 @@
             'RESP_PP': resP
         };
         $.ajax({
-            url: "/ApiCalls/update_legacy_para_with_responsibilities_FAD",
+            url: g_asiBaseURL + "/ApiCalls/update_legacy_para_with_responsibilities_FAD",
             type: "POST",
             data: add_leg_data,
             cache: false,
@@ -437,7 +437,7 @@
             'RESP_PP': resP
         };
         $.ajax({
-            url: "/ApiCalls/update_legacy_para_with_responsibilities_no_changes",
+            url: g_asiBaseURL + "/ApiCalls/update_legacy_para_with_responsibilities_no_changes",
             type: "POST",
             data: add_leg_data,
             cache: false,
@@ -454,7 +454,7 @@
 
     function referBackLegacyParaUpdates(){
         $.ajax({
-            url: "/ApiCalls/refer_back_legacy_para_to_az",
+            url: g_asiBaseURL + "/ApiCalls/refer_back_legacy_para_to_az",
             type: "POST",
             data: {
                 'PARA_REF':g_paraRef,

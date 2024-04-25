@@ -62,7 +62,7 @@
         $('#listofSubEntities tbody').append(row);
         $('#setupSubEntityModal').modal('hide');
         $.ajax({
-            url: "/Setup/add_sub_entity",
+            url: g_asiBaseURL + "/Setup/add_sub_entity",
             type: "POST",
             data: {
                 'ID': g_entityId,

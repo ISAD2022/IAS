@@ -69,7 +69,7 @@
         }      
        
         $.ajax({
-            url: "/ApiCalls/CAU_OM_assignment",
+            url: g_asiBaseURL + "/ApiCalls/CAU_OM_assignment",
             type: "POST",
             data: {
                 'ID': 0,
@@ -102,7 +102,7 @@
         }
 
         $.ajax({
-            url: "/ApiCalls/CAU_OM_assignmentAIR",
+            url: g_asiBaseURL + "/ApiCalls/CAU_OM_assignmentAIR",
             type: "POST",
             data: {
                 'ID': 0,
@@ -137,7 +137,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/CAU_OM_assignmentPDP",
+            url: g_asiBaseURL + "/ApiCalls/CAU_OM_assignmentPDP",
             type: "POST",
             data: {
                 'DAC_LIST': dacP
@@ -167,7 +167,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/CAU_OM_assignmentARPSE",
+            url: g_asiBaseURL + "/ApiCalls/CAU_OM_assignmentARPSE",
             type: "POST",
             data: {
                 'PAC_LIST': dacP
@@ -219,7 +219,7 @@
         }
 
         $.ajax({
-            url: "/ApiCalls/CAU_get_Pre_Added_OM",
+            url: g_asiBaseURL + "/ApiCalls/CAU_get_Pre_Added_OM",
             type: "POST",
             data: {
                 'OM_NO': $('#omNumber_box').val(),

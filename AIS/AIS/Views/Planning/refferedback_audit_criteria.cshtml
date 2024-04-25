@@ -98,7 +98,7 @@
         criteria_details.push($('#commentAreaInCommentsBox').val());
 
         $.ajax({
-            url: "/Planning/update_audit_criteria",
+            url: g_asiBaseURL + "/Planning/update_audit_criteria",
             type: "POST",
             data: {
                 'CRITERIA_LIST': criteria_details

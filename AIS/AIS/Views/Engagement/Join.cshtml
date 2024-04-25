@@ -10,7 +10,7 @@
         var url = new URL(url_string);
         var eng_id = url.searchParams.get("engId");
         $.ajax({
-            url: "/Engagement/get_joining_details",
+            url: g_asiBaseURL + "/Engagement/get_joining_details",
             type: "POST",
             data: {
                 'engId': eng_id
@@ -42,7 +42,7 @@
 
     function publishJoinReport() {
         $.ajax({
-            url: "/Engagement/add_joining_report",
+            url: g_asiBaseURL + "/Engagement/add_joining_report",
             type: "POST",
             data: {
                 'ID': 0,

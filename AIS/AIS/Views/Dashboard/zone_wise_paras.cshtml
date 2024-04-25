@@ -10,7 +10,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrelForDashboardPanel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrelForDashboardPanel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -46,7 +46,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplaceForDashboardPanel",
+            url: g_asiBaseURL + "/ApiCalls/getpostplaceForDashboardPanel",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -71,7 +71,7 @@
     function getLegacyEntityObservation() {
         $('#observation_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_relation_legacy_observation_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_relation_legacy_observation_for_dashboard",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val(),
@@ -111,7 +111,7 @@
     function getAISEntityObservation() {
         $('#observation_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_relation_ais_observation_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_relation_ais_observation_for_dashboard",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val(),
@@ -151,7 +151,7 @@
     function getEntityObservation() {
         $('#observation_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_relation_observation_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_relation_observation_for_dashboard",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val(),

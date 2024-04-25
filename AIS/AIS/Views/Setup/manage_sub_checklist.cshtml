@@ -54,7 +54,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/get_checklist_details_for_sub_process",
+            url: g_asiBaseURL + "/ApiCalls/get_checklist_details_for_sub_process",
             type: "POST",
             data: {
                 'SUB_PROCESS_ID': g_subProcId
@@ -87,7 +87,7 @@
         if (g_subProcId != 0)
         {
             $.ajax({
-                url: "/ApiCalls/update_audit_sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/update_audit_sub_checklist",
                 type: "POST",
                 data: {
                     'OLD_PROCESS_ID': g_procId,
@@ -106,7 +106,7 @@
         }else{
 
             $.ajax({
-                url: "/ApiCalls/add_audit_sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/add_audit_sub_checklist",
                 type: "POST",
                 data: {
                     'PROCESS_ID': $('#newChecklist').val(),
@@ -127,7 +127,7 @@
     }
     function ShowSubChecklist() {
         $.ajax({
-            url: "/ApiCalls/get_audit_sub_checklist",
+            url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
             type: "POST",
             data: {
             },

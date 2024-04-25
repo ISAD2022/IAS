@@ -24,7 +24,7 @@
     function getHRDesignationWiseRole() {
         $('#hr_desig_wise_role_grid tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_hr_designation_wise_roles",
+            url: g_asiBaseURL + "/ApiCalls/get_hr_designation_wise_roles",
             type: "POST",
             data: {
             },
@@ -68,7 +68,7 @@
 
         if (g_assignmentId == 0) {
             $.ajax({
-                url: "/ApiCalls/add_hr_designation_wise_role_assignment",
+                url: g_asiBaseURL + "/ApiCalls/add_hr_designation_wise_role_assignment",
                 type: "POST",
                 data: {
                     'ASSIGNMENT_ID': g_assignmentId,
@@ -85,7 +85,7 @@
             });
         } else {
             $.ajax({
-                url: "/ApiCalls/update_hr_designation_wise_role_assignment",
+                url: g_asiBaseURL + "/ApiCalls/update_hr_designation_wise_role_assignment",
                 type: "POST",
                 data: {
                     'ASSIGNMENT_ID': g_assignmentId,

@@ -33,7 +33,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_old_para_br_compliance_recommendation",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_br_compliance_recommendation",
             type: "POST",
             data: {
 
@@ -59,7 +59,7 @@
         $('#manageComplianceHistPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_compliance_history_count",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_history_count",
             type: "POST",
             data: {
                 'REF_P': paraREF,
@@ -71,7 +71,7 @@
                 if (g_compCount > 0) {
 
                     $.ajax({
-                        url: "/ApiCalls/get_compliance_history",
+                        url: g_asiBaseURL + "/ApiCalls/get_compliance_history",
                         type: "POST",
                         data: {
                             'REF_P': paraREF,
@@ -116,7 +116,7 @@
         g_repliedDate = replyDate;
         $("#viewMemoModel").modal('show');
         $.ajax({
-            url: "/ApiCalls/get_old_para_imp_text",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_imp_text",
             type: "POST",
             data: {
                 'PID':g_paraId,
@@ -211,7 +211,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
+            url: g_asiBaseURL + "/ApiCalls/submit_old_para_br_compliance_status_partially_settle",
             type: "POST",
             data: {
                 'OBS_ID': g_auOBSID,
@@ -237,7 +237,7 @@
 
     function setParaStatusSettled() {
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            url: g_asiBaseURL + "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
             data: {
                 'OBS_ID': g_auOBSID,
@@ -261,7 +261,7 @@
     }
     function setParaStatusUnsettled() {
         $.ajax({
-            url: "/ApiCalls/submit_old_para_br_compliance_status",
+            url: g_asiBaseURL + "/ApiCalls/submit_old_para_br_compliance_status",
             type: "POST",
             data: {
                 'OBS_ID': g_auOBSID,
@@ -290,7 +290,7 @@
     function getComplianceText(comSeq) {
         $('#viewParaComplianceTextModel').modal('show');
         $.ajax({
-            url: "/ApiCalls/get_old_para_compliance_cycle_text",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
             type: "POST",
             data: {
                 'REF_P': g_paraRef,

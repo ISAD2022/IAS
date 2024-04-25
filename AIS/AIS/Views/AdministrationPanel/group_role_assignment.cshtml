@@ -38,7 +38,7 @@
             $('.pagesBlock').removeClass('d-none');
             $('#menuPagesArea').empty();
             $.ajax({
-                url: "/AdministrationPanel/menu_pages",
+                url: g_asiBaseURL + "/AdministrationPanel/menu_pages",
                 type: "POST",
                 data: {
                     'MENU_ID': $('#menuSelectionBox').val()
@@ -57,7 +57,7 @@
     }
     function getAssignedMenuPages() {
         $.ajax({
-            url: "/AdministrationPanel/assigned_menu_pages",
+            url: g_asiBaseURL + "/AdministrationPanel/assigned_menu_pages",
             type: "POST",
             data: {
                 'MENU_ID': $('#menuSelectionBox option:selected').val(),
@@ -85,7 +85,7 @@
                 unlinkMenuItemIds.push($(mItem).attr('id').replace('pageId_', ''));
         });
         $.ajax({
-            url: "/AdministrationPanel/add_group_item_assignment",
+            url: g_asiBaseURL + "/AdministrationPanel/add_group_item_assignment",
             type: "POST",
             data: {
                 'GROUP_ID': $('#groupSelectionBox option:selected').val(),

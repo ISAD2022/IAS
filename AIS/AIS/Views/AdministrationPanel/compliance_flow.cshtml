@@ -20,7 +20,7 @@
     function entityTypeSelectionChangeEvent() {
         $('#entity_compliance_flow_grid tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_compliance_flow_by_entity_type",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_flow_by_entity_type",
             type: "POST",
             data: {
                 "ENTITY_TYPE_ID": $('#entityTypeSelectionField').val()
@@ -62,7 +62,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_compliance_flow",
+            url: g_asiBaseURL + "/ApiCalls/add_compliance_flow",
             type: "POST",
             data: {
                 'GROUP_ID': $('#groupSelectionBox option:selected').val(),
@@ -103,7 +103,7 @@
         $('#addComplianceFlowEntityTypeModal .modal-title').html('Update Compliance Flow');
         $('#addComplianceFlowEntityTypeModal .btn-footer').html('Update Compliance Flow');
         $.ajax({
-            url: "/ApiCalls/get_compliance_flow_by_entity_type",
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_flow_by_entity_type",
             type: "POST",
             data: {
                 "ENTITY_TYPE_ID": g_entTypeId,

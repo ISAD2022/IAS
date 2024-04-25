@@ -10,7 +10,7 @@
     });
     function ShowDepartmentAuditPeriods() {
         $.ajax({
-            url: "/ApiCalls/audit_periods",
+            url: g_asiBaseURL + "/ApiCalls/audit_periods",
             type: "POST",
             data: {
             },
@@ -83,7 +83,7 @@
         var yy = de.getFullYear();
         var endDate = ("0" + mm).slice(-2) + "/" + ("0" + dd).slice(-2) + "/" + yy;
         $.ajax({
-            url: "/ApiCalls/add_audit_period",
+            url: g_asiBaseURL + "/ApiCalls/add_audit_period",
             type: "POST",
             data: {
                 'DESCRIPTION': desc,
@@ -108,7 +108,7 @@
         }     
 
         $.ajax({
-            url: "/ApiCalls/update_audit_period",
+            url: g_asiBaseURL + "/ApiCalls/update_audit_period",
             type: "POST",
             data: {
                 'AUDITPERIODID': g_periodId,
@@ -123,7 +123,7 @@
         });
     }
     function getAuditPlan(periodId) {
-        window.location.href = "/Planning/tentative_audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + periodId;
+        window.location.href = g_asiBaseURL + "/Planning/tentative_audit_plan?dept=" + $('#deptSelectionBox option:selected').val() + "&periodId=" + periodId;
     }
 
 </script>

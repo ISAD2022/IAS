@@ -32,7 +32,7 @@
         g_trId = id;
         $('#recommendReferProcTransactionModal').modal('show');
         $.ajax({
-            url: "/ApiCalls/get_checklist_detail_comparison_by_Id",
+            url: g_asiBaseURL + "/ApiCalls/get_checklist_detail_comparison_by_Id",
             type: "POST",
             data: {
                 'CHECKLIST_DETAIL_ID': id
@@ -75,7 +75,7 @@
     function finalRecommendProcessTransaction() {
 
         $.ajax({
-            url: "/Setup/authorize_process_transaction_by_authorizer",
+            url: g_asiBaseURL + "/Setup/authorize_process_transaction_by_authorizer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
@@ -91,7 +91,7 @@
     }
     function finalRefferedBackProcessTransaction() {
         $.ajax({
-            url: "/Setup/reffered_back_process_transaction_by_authorizer",
+            url: g_asiBaseURL + "/Setup/reffered_back_process_transaction_by_authorizer",
             type: "POST",
             data: {
                 'T_ID': g_trId,

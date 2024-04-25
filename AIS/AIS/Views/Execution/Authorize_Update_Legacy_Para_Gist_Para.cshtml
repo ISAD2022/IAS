@@ -17,7 +17,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_update_gist_paraNo_legacy_paras_autorize",
+            url: g_asiBaseURL + "/ApiCalls/get_update_gist_paraNo_legacy_paras_autorize",
             type: "POST",
             data: {
 
@@ -59,7 +59,7 @@
 
     function Publishchange() {
         $.ajax({
-            url: "/ApiCalls/Authorize_Legacy_Para_Gist_ParaNo",
+            url: g_asiBaseURL + "/ApiCalls/Authorize_Legacy_Para_Gist_ParaNo",
             type: "POST",
             data: {
                 'PARA_REF': g_paraId,

@@ -49,7 +49,7 @@
 
         $('#entity_find_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_NAME': $('#entityNameTextBar').val(),
@@ -77,7 +77,7 @@
         $('#entity_find_panel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_CODE': $('#entityCodeTextBar').val(),
@@ -104,7 +104,7 @@
     function getAISEntityDetailsByName() {
         $('#ais_entity_find_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_NAME': $('#AISentityNameTextBar').val(),
@@ -130,7 +130,7 @@
         $('#ais_entity_find_panel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_CODE': $('#AISentityCodeTextBar').val(),
@@ -171,7 +171,7 @@
     function getToEntityDetail() {
         $('#summaryPanel').removeClass('d-none');
         $.ajax({
-            url: "/ApiCalls/get_entity_shifting_details",
+            url: g_asiBaseURL + "/ApiCalls/get_entity_shifting_details",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#inputFromEntityId').val()
@@ -216,7 +216,7 @@
             dataType: "json",
         });
         $.ajax({
-            url: "/ApiCalls/get_entity_shifting_details",
+            url: g_asiBaseURL + "/ApiCalls/get_entity_shifting_details",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#inputToEntityId').val()
@@ -302,7 +302,7 @@
 
     function saveUpdateChangesInAISEntity() {
         $.ajax({
-            url: "/ApiCalls/update_ais_entity_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/update_ais_entity_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_ID': g_entIdToUpdate,
@@ -326,7 +326,7 @@
 
     function saveAddInAISEntity() {
         $.ajax({
-            url: "/ApiCalls/add_ais_entity_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/add_ais_entity_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_ID': 0,
@@ -360,7 +360,7 @@
     function getEntityExistingMapping(entId) {
         g_entIdToUpdate = entId;
         $.ajax({
-            url: "/ApiCalls/get_ais_entity_existing_mapping_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entity_existing_mapping_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_ID': entId,
@@ -393,7 +393,7 @@
 
     function getEntitiesListByTypeId(typeId, parentId) {
         $.ajax({
-            url: "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/get_ais_entities_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENT_TYPE_ID': typeId,
@@ -429,7 +429,7 @@
 
     function saveInsertAISEntityMapping() {
         $.ajax({
-            url: "/ApiCalls/add_ais_entity_mapping_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/add_ais_entity_mapping_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_ID': g_entIdToUpdate,
@@ -449,7 +449,7 @@
     }
     function saveUpdateAISEntityMapping() {
         $.ajax({
-            url: "/ApiCalls/update_ais_entity_mapping_for_admin_panel_entity_addition",
+            url: g_asiBaseURL + "/ApiCalls/update_ais_entity_mapping_for_admin_panel_entity_addition",
             type: "POST",
             data: {
                 'ENTITY_ID': g_entIdToUpdate,
@@ -474,7 +474,7 @@
     function saveInsertAISEntityShifting() {
 
         $.ajax({
-            url: "/ApiCalls/submit_entity_shifting_from_admin_panel",
+            url: g_asiBaseURL + "/ApiCalls/submit_entity_shifting_from_admin_panel",
             type: "POST",
             data: {
                 'FROM_ENT_ID': $('#inputFromEntityId').val(),

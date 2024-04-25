@@ -37,7 +37,7 @@ label.heading{
             $('#div_activityContainer').hide();
             $('#riskSubGroupSelectBox').empty();
             $.ajax({
-                url: "/ApiCalls/sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/sub_checklist",
                 type: "POST",
                 data: {
                     'T_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -61,7 +61,7 @@ label.heading{
             $('#div_activityContainer').show();
         $('#riskActivitiesSelectBox').empty();
         $.ajax({
-            url: "/ApiCalls/checklist_details",
+            url: g_asiBaseURL + "/ApiCalls/checklist_details",
             type: "POST",
             data: {
                 'S_ID': $('#riskSubGroupSelectBox option:selected').val(),
@@ -83,7 +83,7 @@ label.heading{
         else {
             $('#template_box').val('').trigger('change');
             $.ajax({
-                url: "/Execution/audit_observation_template",
+                url: g_asiBaseURL + "/Execution/audit_observation_template",
                 type: "POST",
                 data: {
                     'ACTIVITY_ID': $('#riskActivitiesSelectBox option:selected').val(),
@@ -109,7 +109,7 @@ label.heading{
             $('#brSearchField').empty();
             $('#brSearchField').append('<option value="0" id="0">--Select Branch--</option>')
             $.ajax({
-                url: "/Planning/zone_branches",
+                url: g_asiBaseURL + "/Planning/zone_branches",
                 type: "POST",
                 data: {
                     'zone_code': $('#zoneSearchField option:selected').val(),
@@ -178,7 +178,7 @@ label.heading{
         g_memoObj.push(memo);
         $('#submitCAUobBtn').attr('disabled', true);
         $.ajax({
-            url: "/ApiCalls/save_observations_cau",
+            url: g_asiBaseURL + "/ApiCalls/save_observations_cau",
             type: "POST",
             data: {
                 'LIST_OBS': g_memoObj,
@@ -213,7 +213,7 @@ label.heading{
         $('#matchedPPNoPanels').empty();
         g_respUser = [];
         $.ajax({
-            url: "/ApiCalls/get_employee_name_from_pp",
+            url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
             type: "POST",
             data: {
                 'PP_NO': $('#responsiblePPNoEntryField').val()

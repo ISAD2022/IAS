@@ -23,7 +23,7 @@
             $('#listOfAuditPeriodsContainer').show();
 
             $.ajax({
-                url: "/Planning/audit_periods",
+                url: g_asiBaseURL + "/Planning/audit_periods",
                 type: "POST",
                 data: {
                     'dept_code': $('#deptSelectionBox option:selected').val()

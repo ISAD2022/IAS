@@ -15,7 +15,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrel",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -52,7 +52,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplace",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
@@ -79,7 +79,7 @@
     function getEngagementDetails() {
         $('#engsListPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_engagements_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_engagements_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENTITY_ID': $('#childposting option:selected').val()
@@ -120,7 +120,7 @@
         $('#engObsListPanel tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_observation_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENG_ID': engId
@@ -145,7 +145,7 @@
         $('#engObsListPanel_changeNo tbody').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_observation_details_for_status_reversal",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_details_for_status_reversal",
             type: "POST",
             data: {
                 'ENG_ID': engId
@@ -185,7 +185,7 @@
         });
 
         $.ajax({
-            url: "/ApiCalls/update_observation_status_for_reversal",
+            url: g_asiBaseURL + "/ApiCalls/update_observation_status_for_reversal",
             type: "POST",
             data: {
                 'OBS_IDS': obsIds,

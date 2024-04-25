@@ -30,7 +30,7 @@
        
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_manage_legacy_para",
+            url: g_asiBaseURL + "/ApiCalls/get_manage_legacy_para",
             type: "POST",
             data: {
                 
@@ -87,7 +87,7 @@
 
     function updateObservationStatus(id, new_status) {
         $.ajax({
-            url: "/ApiCalls/set_manage_legacy_para_status",
+            url: g_asiBaseURL + "/ApiCalls/set_manage_legacy_para_status",
             type: "POST",
             data: {
                 'ID': id,
@@ -131,7 +131,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_reply",
+            url: g_asiBaseURL + "/ApiCalls/add_legacy_para_reply",
             type: "POST",
             data: {
                 'ID': g_paraId,

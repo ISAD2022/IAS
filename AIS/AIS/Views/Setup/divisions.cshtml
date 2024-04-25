@@ -59,7 +59,7 @@
         $('#listOfDivision tbody').append(row);
         $('#setupDivModal').modal('hide');
         $.ajax({
-            url: "/Setup/division_add",
+            url: g_asiBaseURL + "/Setup/division_add",
             type: "POST",
             data: {
                 'id':g_divId,

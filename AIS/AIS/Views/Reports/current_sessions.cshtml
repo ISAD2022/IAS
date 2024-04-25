@@ -13,7 +13,7 @@
         $('#CurrentActiveSessionsGrid tbody').empty();
         if ($('#auditDepartmentSelectBox').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_active_users",
+                url: g_asiBaseURL + "/ApiCalls/get_active_users",
                 type: "POST",
                 data: {
                    

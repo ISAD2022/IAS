@@ -8,7 +8,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_assigned_observation_old_paras",
+                url: g_asiBaseURL + "/ApiCalls/get_assigned_observation_old_paras",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#entitySelectField option:selected').val()

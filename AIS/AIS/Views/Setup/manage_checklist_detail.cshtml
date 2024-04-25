@@ -130,7 +130,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/update_audit_checklist_detail",
+            url: g_asiBaseURL + "/ApiCalls/update_audit_checklist_detail",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#updatedChecklist').val(),
@@ -158,7 +158,7 @@
         if (processId != 0) {
             $('#subchecklistSelectField').empty();
             $.ajax({
-                url: "/ApiCalls/get_audit_sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
                 type: "POST",
                 data: {
                     'PROCESS_ID': processId
@@ -187,7 +187,7 @@
         if (processId != 0) {
             $('#newSubChecklist').empty();
             $.ajax({
-                url: "/ApiCalls/get_audit_sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
                 type: "POST",
                 data: {
                     'PROCESS_ID': processId
@@ -219,7 +219,7 @@
         $('#auditeeEntitiesList tbody').empty();
         if (processId != 0 && subProcessId !=0) {
             $.ajax({
-                url: "/ApiCalls/get_audit_checklist_detail",
+                url: g_asiBaseURL + "/ApiCalls/get_audit_checklist_detail",
                 type: "POST",
                 data: {
                     'SUB_PROCESS_ID': subProcessId
@@ -247,7 +247,7 @@
         if (processId != 0) {
              $('#newSubChecklist').empty();
             $.ajax({
-                url: "/ApiCalls/get_audit_sub_checklist",
+                url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
                 type: "POST",
                 data: {
                     'PROCESS_ID': processId
@@ -267,7 +267,7 @@
     function getSubChecklistOfProcess() {
         $('#updatedSubChecklist').empty();
         $.ajax({
-            url: "/ApiCalls/get_audit_sub_checklist",
+            url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#checklistSelectField').val()
@@ -345,7 +345,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/add_audit_checklist_detail",
+            url: g_asiBaseURL + "/ApiCalls/add_audit_checklist_detail",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#newChecklist').val(),

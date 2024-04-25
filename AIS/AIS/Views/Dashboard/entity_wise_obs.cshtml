@@ -13,7 +13,7 @@
     function getEntityWiseObservations() {
         $('#entitywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_entity_wise_observations",
+            url: g_asiBaseURL + "/ApiCalls/get_entity_wise_observations",
             type: "POST",
             data: {
            },
@@ -49,7 +49,7 @@
     }
 
     function getDetails(id) {
-        window.location.href = "/Dashboard/entity_wise_obs_detail?entId=" + id;
+        window.location.href = g_asiBaseURL + "/Dashboard/entity_wise_obs_detail?entId=" + id;
     }
   
 </script>

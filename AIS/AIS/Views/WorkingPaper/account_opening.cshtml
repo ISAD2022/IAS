@@ -28,7 +28,7 @@
     function getAccountOpenings() {
 
         $.ajax({
-            url: "/ApiCalls/Get_Working_Paper_Account_Opening",
+            url: g_asiBaseURL + "/ApiCalls/Get_Working_Paper_Account_Opening",
             type: "POST",
             data: {
                 'ENGID':g_engID
@@ -61,7 +61,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/Add_Working_Paper_Account_Opening",
+            url: g_asiBaseURL + "/ApiCalls/Add_Working_Paper_Account_Opening",
             type: "POST",
             data: {
                 'ENGID':g_engID,

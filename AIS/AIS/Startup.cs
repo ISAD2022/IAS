@@ -45,6 +45,7 @@ namespace AIS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UsePathBase("/ZTBLAIS/");
             if (env.IsDevelopment() || env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();

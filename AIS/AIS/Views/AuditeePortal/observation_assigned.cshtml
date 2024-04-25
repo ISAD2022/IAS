@@ -49,7 +49,7 @@
         g_obsId=obs_id;
         g_obsTextId = obs_text_id;
         $.ajax({
-            url: "/ApiCalls/get_observation_text",
+            url: g_asiBaseURL + "/ApiCalls/get_observation_text",
             type: "POST",
             data: {
                 'OBS_ID': g_obsId,
@@ -139,7 +139,7 @@
         var replyTxt = ($('#viewMemo_reply').val()).length;
         if (replyTxt > 0) {
             $.ajax({
-                url: "/ApiCalls/reply_observation",
+                url: g_asiBaseURL + "/ApiCalls/reply_observation",
                 type: "POST",
                 data: {
                     'AU_OBS_ID': g_obsId,
@@ -166,7 +166,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: "/ApiCalls/get_assigned_observation",
+                url: g_asiBaseURL + "/ApiCalls/get_assigned_observation",
                 type: "POST",
                 data: {
                     'ENG_ID': $('#entitySelectField option:selected').val()

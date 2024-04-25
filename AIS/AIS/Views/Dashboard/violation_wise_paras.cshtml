@@ -11,7 +11,7 @@
         $('#riskGroupDetailSelectBox').empty();
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
         $.ajax({
-                url: "/Setup/process_details",
+                url: g_asiBaseURL + "/Setup/process_details",
                 type: "POST",
                 data: {
                     'ProcessId': $('#riskGroupSelectBox option:selected').val(),
@@ -34,7 +34,7 @@
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
 
         $.ajax({
-            url: "/Setup/process_transactions",
+            url: g_asiBaseURL + "/Setup/process_transactions",
             type: "POST",
             data: {
                 'ProcessDetailId': $('#riskSubGroupSelectBox option:selected').val(),
@@ -54,7 +54,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_violation_wise_paras_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_violation_wise_paras_for_dashboard",
             type: "POST",
             data: {
                 'PROCESS_ID': $('#riskGroupSelectBox option:selected').val(),

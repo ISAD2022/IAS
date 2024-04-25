@@ -8,7 +8,7 @@
     function getActivityLog() {
 
         $.ajax({
-            url: "/ApiCalls/get_user_activity_log",
+            url: g_asiBaseURL + "/ApiCalls/get_user_activity_log",
             type: "POST",
             data: {
                 'PP_NO': $('#ppNumField').val()

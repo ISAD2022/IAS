@@ -13,7 +13,7 @@
     function getEntityWiseObservations() {
         $('#entitywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_reporting_wise_observations",
+            url: g_asiBaseURL + "/ApiCalls/get_reporting_wise_observations",
             type: "POST",
             data: {
            },

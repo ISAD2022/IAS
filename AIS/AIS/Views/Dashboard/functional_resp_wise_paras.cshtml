@@ -20,7 +20,7 @@
 
 
             $.ajax({
-                url: "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras",
+                url: g_asiBaseURL + "/ApiCalls/get_violation_area_for_functional_responsibility_wise_paras",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val()
@@ -52,7 +52,7 @@
             $('#subprocessSelectBox').empty();
             $('#subprocessSelectBox').append('<option value=0>--Select Sub Violation Area---</option>');
             $.ajax({
-                url: "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras",
+                url: g_asiBaseURL + "/ApiCalls/get_sub_violation_area_for_functional_responsibility_wise_paras",
                 type: "POST",
                 data: {
                     'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
@@ -79,7 +79,7 @@
     function getEntityObservation() {
 
         $.ajax({
-            url: "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_responsibility_wise_paras_for_dashboard",
             type: "POST",
             data: {
                 'FUNCTIONAL_ENTITY_ID': $('#functionalGroupSelectBox option:selected').val(),
@@ -131,7 +131,7 @@
         $('#paraTextDivField').empty();
 
         $.ajax({
-            url: "/ApiCalls/get_functional_observation_text",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_observation_text",
             type: "POST",
             data: {
                 'PARA_ID': id,
@@ -148,7 +148,7 @@
         $('#paraViewerModel').modal('show');
         $('#entitywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_functional_resp_detail_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_resp_detail_paras",
             type: "POST",
             data: {
                 'PROCESS_ID': id
@@ -173,7 +173,7 @@
         $('#paraSummaryModel').modal('show');
         $('#summarywise_panel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_functional_resp_summary_paras",
+            url: g_asiBaseURL + "/ApiCalls/get_functional_resp_summary_paras",
             type: "POST",
             data: {
                 'PROCESS_ID': id

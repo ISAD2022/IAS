@@ -37,7 +37,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: "/ApiCalls/get_old_para_management",
+            url: g_asiBaseURL + "/ApiCalls/get_old_para_management",
             type: "POST",
             data: {
 
@@ -72,7 +72,7 @@
             $('#div_activityContainer').hide();
             $('#riskSubGroupSelectBox').empty();
             $.ajax({
-                url: "/Execution/sub_voilation",
+                url: g_asiBaseURL + "/Execution/sub_voilation",
                 type: "POST",
                 data: {
                     'V_ID': $('#riskGroupSelectBox option:selected').val(),
@@ -96,7 +96,7 @@
             $('#div_activityContainer').show();
         $('#riskActivitiesSelectBox').empty();
         $.ajax({
-            url: "/Execution/risk_activities",
+            url: g_asiBaseURL + "/Execution/risk_activities",
             type: "POST",
             data: {
                 'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
@@ -154,7 +154,7 @@
             return;
         }
         $.ajax({
-            url: "/ApiCalls/add_legacy_para_cad_reply",
+            url: g_asiBaseURL + "/ApiCalls/add_legacy_para_cad_reply",
             type: "POST",
             data: {
                 'ID': g_paraId,
@@ -188,7 +188,7 @@
 
         if (COMPLIANCE_LIST.length > 0) {
             $.ajax({
-                url: "/ApiCalls/add_legacy_para_cad_compliance",
+                url: g_asiBaseURL + "/ApiCalls/add_legacy_para_cad_compliance",
                 type: "POST",
                 data: {
                     'COMPLIANCE_LIST': COMPLIANCE_LIST

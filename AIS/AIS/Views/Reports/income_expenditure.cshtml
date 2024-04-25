@@ -45,7 +45,7 @@
         var bid = $('#b_i').val();
         if (bid != 0) {
             $.ajax({
-                url: "/ApiCalls/GetIncomeExpenceDetails",
+                url: g_asiBaseURL + "/ApiCalls/GetIncomeExpenceDetails",
                 type: "POST",
                 data: {
                     'b_id': bid,

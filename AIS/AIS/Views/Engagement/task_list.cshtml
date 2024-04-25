@@ -70,21 +70,21 @@
 
                                         if (item.STATUS_ID == 1)
                                         {
-                                            <a href="/Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                            <a href="./Engagement/Join?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                         }
                                         else if (item.STATUS_ID == 2)
                                         {
                                             if (item.ENTITY_TYPE == 6)
                                             {
-                                                <a href="/Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/checklist?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
                                             {
-                                                <a href="/Execution/cau_observation?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/cau_observation?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else
                                             {
-                                                <a href="/Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/audit_execution?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
 
                                         }
@@ -92,15 +92,15 @@
                                         {
                                             if (item.ENTITY_TYPE == 6)
                                             {
-                                                <a href="/Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
                                             {
-                                                <a href="/Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/manage_observations_branches?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else
                                             {
-                                                <a href="/Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Execution/manage_observations?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }                                           
 
                                         }
@@ -108,15 +108,15 @@
                                         {
                                             if (item.ENTITY_TYPE == 6)
                                             {
-                                                <a href="/Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else if (item.ENTITY_TYPE == 5 || item.ENTITY_TYPE == 7 || item.ENTITY_TYPE == 17 || item.ENTITY_TYPE == 20 || item.ENTITY_TYPE == 21 || item.ENTITY_TYPE == 22 || item.ENTITY_TYPE == 23 || item.ENTITY_TYPE == 25)
                                             {
-                                                <a href="/Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Reports/draft_audit_report_branch?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                             else
                                             {
-                                                <a href="/Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
+                                                <a href="./Reports/draft_audit_report?engId=@item.ENG_PLAN_ID">@item.ENG_NEXT_STATUS</a>
                                             }
                                           
                                         }
@@ -134,7 +134,7 @@
                                     @{
                                         if (item.WORKING_PAPER.Trim().Length > 0)
                                         {
-                                            <a href="/WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">@item.WORKING_PAPER</a>
+                                            <a href="./WorkingPaper/loan_case_file?engId=@item.ENG_PLAN_ID">@item.WORKING_PAPER</a>
                                         }
                                         else
                                         {
@@ -149,7 +149,7 @@
                                     @{
                                         if (item.PRE_INFO.Trim().Length > 0)
                                         {
-                                            <a href="/Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
+                                            <a href="./Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
                                         }
                                         else
                                         {
@@ -162,7 +162,7 @@
                                     @{
                                         if (item.ISCLOSE == "Z" && item.STATUS_ID == 4)
                                         {
-                                            <a href="/Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
+                                            <a href="./Execution/closing?engId=@item.ENG_PLAN_ID">Closing/Exit</a>
                                         }else{
                                             <span>-</span>
                                         }

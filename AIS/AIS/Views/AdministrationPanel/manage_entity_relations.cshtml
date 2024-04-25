@@ -19,7 +19,7 @@
 
     function getEntityRelations() {
         $.ajax({
-            url: "/ApiCalls/get_entity_relations",
+            url: g_asiBaseURL + "/ApiCalls/get_entity_relations",
             type: "POST",
             data: {
 
@@ -79,7 +79,7 @@
             'E_AUTID': g_entId
         }
         $.ajax({
-            url: "/ApiCalls/update_entity_types",
+            url: g_asiBaseURL + "/ApiCalls/update_entity_types",
             type: "POST",
             data: {
                 ENTITY_MODEL: entityUpdateModel
