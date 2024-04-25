@@ -2087,6 +2087,16 @@ namespace AIS.Controllers
         {
             return dBConnection.GetMenuPagesForAdminPanel(M_ID);
         }
+        [HttpPost]
+        public string add_menu_page_for_admin_panel(MenuPagesAssignmentModel mPage)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddMenuPageForAdminPanel(mPage) + "\"}";
+        }
+        [HttpPost]
+        public string update_menu_page_for_admin_panel(MenuPagesAssignmentModel mPage)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateMenuPageForAdminPanel(mPage) + "\"}";
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

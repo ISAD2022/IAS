@@ -6,8 +6,8 @@
 
 <script type="text/javascript">
     var g_pageId = 0;
-    var g_menuId = 0;
-  
+    var g_menuId = 0;  
+    var g_pageArr = [];  
     function getMenuPages() {
 
         if($('#menuDropDownField').val()==0){
@@ -26,10 +26,11 @@
             },
             cache: false,
             success: function (data) {
+                g_pageArr = data;
                 $('#listOfMenuPages tbody').empty();
                 $.each(data, function (i, v) {
-                    
-                   $('#listOfMenuPages tbody').append('<tr><td>' + ++i + '</td><td>'+v.p_NAME+'</td><td>'+v.p_PATH+'</td><td>'+v.p_ORDER+'</td><td>'+v.p_HIDE_MENU+'</td><td><a href="#" onclick="updatePageAssignment('+v.p_ID+', '+v.m_ID+');">Update</a></td></tr>');
+
+                    $('#listOfMenuPages tbody').append('<tr><td>' + ++i + '</td><td>' + v.p_NAME + '</td><td>' + v.p_PATH + '</td><td>' + v.p_ORDER + '</td><td>' + v.p_STATUS + '</td><td>' + v.p_HIDE_MENU + '</td><td><a href="#" onclick="updatePageAssignment(' + v.p_ID + ', ' + v.m_ID + ');">Update</a></td></tr>');
                    
                 });
 
@@ -38,23 +39,34 @@
         });
 
     }
-    function setupNewAuditPeriod() {
-        $('#setupAuditPeriod').modal('show');
-        $('#periodDescriptionModalField').val('');
-        $('#periodStartModalField').val('');
-        $('#periodEndModalField').val('');
-        $.each($('.deptCheckBoxes'), function (index, chkbox) {
-            if ($(chkbox).is(':checked')) {
-                $(chkbox).click();
-            }
-        });
+    function setupNewMenuPage() {
+        g_pageId = 0;
+        $('#menuPageDetailModel').modal('show');
+        $('#page_menu_field').val(0);
+        $('#page_name_field').val("");
+        $('#page_path_field').val("");
+        $('#page_order_field').val("");
+        $('#page_status_field').val("");
+        $('#page_hide_menu_field').val(0);       
 
     }
 
     function updatePageAssignment(pageId, menuId) {
-        $('#updateAuditPeriodModel').modal('show');
+        $('#menuPageDetailModel').modal('show');
         g_pageId = pageId;
         g_menuId = menuId;
+        $.each(g_pageArr,function(i,v){
+            if(v.p_ID==g_pageId){
+
+                $('#page_menu_field').val(v.m_ID);
+                $('#page_name_field').val(v.p_NAME);
+                $('#page_path_field').val(v.p_PATH);
+                $('#page_order_field').val(v.p_ORDER);
+                $('#page_status_field').val(v.p_STATUS);
+                $('#page_hide_menu_field').val(v.p_HIDE_MENU);
+
+            }
+        })
     }
     function reloadLocation() {
         location.reload();
@@ -105,31 +117,81 @@
             dataType: "json",
         });
     }
-    function publishUpdateAuditPeriodChanges() {
-        if ($('#auditPeriodStatus_forUpdate').val() == 0) {
-            alert("Please select Audit Period to proceed");
-            return;
-        }     
+    function publishUpdateMenuPageChanges() {
 
-        $.ajax({
-            url: "/ApiCalls/update_audit_period",
-            type: "POST",
-            data: {
-                'AUDITPERIODID': g_pageId,
-                'STATUS_ID': $('#auditPeriodStatus_forUpdate').val(),
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(reloadLocation);
-            },
-            dataType: "json",
-        });
+        if ($('#page_menu_field').val()==0){
+            alert("Select Menu to proceed");
+            return;
+        }
+        if ($('#page_name_field').val() == "") {
+            alert("Enter Page Name to proceed");
+            return;
+        }
+        if ($('#page_path_field').val() == "") {
+            alert("Enter Page Path to proceed");
+            return;
+        }
+        if ($('#page_order_field').val() == "") {
+            alert("Enter Page Order to proceed");
+            return;
+        }
+        if ($('#page_status_field').val() == "") {
+            alert("Enter Page Path to proceed");
+            return;
+        }
+        if(g_pageId==0){
+            $.ajax({
+                url: "/ApiCalls/add_menu_page_for_admin_panel",
+                type: "POST",
+                data: {
+                    'M_ID': $('#page_menu_field').val(),
+                    'P_ID': g_pageId,
+                    'P_NAME': $('#page_name_field').val(),
+                    'P_PATH': $('#page_path_field').val(),
+                    'P_ORDER': $('#page_order_field').val(),
+                    'P_STATUS': $('#page_status_field').val(),
+                    'P_HIDE_MENU': $('#page_hide_menu_field').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }else
+{
+            $.ajax({
+                url: "/ApiCalls/update_menu_page_for_admin_panel",
+                type: "POST",
+                data: {
+                    'M_ID': $('#page_menu_field').val(),
+                    'P_ID': g_pageId,
+                    'P_NAME': $('#page_name_field').val(),
+                    'P_PATH': $('#page_path_field').val(),
+                    'P_ORDER': $('#page_order_field').val(),
+                    'P_STATUS': $('#page_status_field').val(),
+                    'P_HIDE_MENU': $('#page_hide_menu_field').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+}       
+
+    
     }
  
 </script>
 <div class="row mt-3">
     <h2 style="color: #45c545;">Menu Page Management</h2>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <button onclick="setupNewMenuPage();" class="btn btn-primary offset-md-9 col-md-3">Add New</button>
 </div>
 
 <div class="row col-md-12 mt-3">
@@ -155,8 +217,8 @@
                 <th class="col-md-1">Sr No.</th>
                 <th class="col-md-2">Page Name</th>
                 <th class="col-md-2">Page Path</th>
-                <th class="col-md-1">Page Order</th
-                <th class="col-md-1">Status</th>
+                <th class="col-md-1">Page Order</th>
+                <th class="col-md-1">Page Status</th>
                 <th class="col-md-1">Hide Menu</th>
                 <th class="col-md-1">Action</th>
             </tr>
@@ -164,5 +226,66 @@
         <tbody>
         </tbody>
     </table>
+</div>
+
+
+
+<div id="menuPageDetailModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Menu Page Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    
+                    <div class="form-group">
+                        <label>Menu</label>
+                        <select id="page_menu_field" class="form-control">
+                            <option value="0">--Select Menu--</option>
+                            @if (ViewData["MenuList"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["MenuList"]))
+                                {
+                                    <option value="@item.Menu_Id">@item.Menu_Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Page Name</label>
+                        <input  class="form-control" id="page_name_field" />
+                    </div>
+                    <div class="form-group">
+                        <label>Page Path</label>
+                        <input class="form-control" id="page_path_field" />
+                    </div>
+                      <div class="form-group">
+                        <label>Page Order</label>
+                        <input  class="form-control" id="page_order_field" />
+                    </div>
+                    <div class="form-group">
+                        <label>Page Status</label>
+                        <input class="form-control" id="page_status_field" />
+                    </div>
+                      <div class="form-group">
+                        <label>Hide Menu</label>
+                        <select class="form-control" id="page_hide_menu_field">
+                            <option value="0">Visible</option>
+                            <option value="1">Hide</option>
+                        </select>
+                    </div>
+                  
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="publishUpdateMenuPageChanges();" class="btn btn-danger">Save Changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
