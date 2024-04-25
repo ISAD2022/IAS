@@ -2082,6 +2082,12 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditPeriod(auditPeriod) + "\"}";
         }
 
+        [HttpPost]
+        public List<MenuPagesAssignmentModel> get_menu_pages_for_admin_panel(int M_ID)
+        {
+            return dBConnection.GetMenuPagesForAdminPanel(M_ID);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

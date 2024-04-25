@@ -16734,7 +16734,7 @@ namespace AIS.Controllers
         }
 
 
-        public List<ManageEntAuditDeptModel> GetAllMenusForAdminPanel()
+        public List<MenuModel> GetAllMenusForAdminPanel()
         {
 
             sessionHandler = new SessionHandler();
@@ -16742,27 +16742,22 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
+            List<MenuModel> resp = new List<MenuModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_Get_Entities_Audit_Department";
+                cmd.CommandText = "pkg_ad.P_GET_ALL_MENU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ManageEntAuditDeptModel m = new ManageEntAuditDeptModel();
-                    m.R_ID = rdr["id"].ToString();
-                    m.D_ID = rdr["deptid"].ToString();
-                    m.D_CODE = rdr["deptcode"].ToString();
-                    m.CBAS_CODE = rdr["cbas_code"].ToString();
-                    m.ENT_ID = rdr["entity_id"].ToString();
-                    m.D_NAME = rdr["deptname"].ToString();
-                    m.AUD_ID = rdr["audit_id"].ToString();
-                    m.AUDITOR = rdr["auditor"].ToString();
-                    m.STATUS = rdr["status"].ToString();
+                    MenuModel m = new MenuModel();
+                    m.Menu_Id = Convert.ToInt32(rdr["menu_id"].ToString());
+                    m.Menu_Name= rdr["menu_name"].ToString();
+                    m.Menu_Order = rdr["menu_order"].ToString();
+                    m.Menu_Description = rdr["menu_description"].ToString();
                     resp.Add(m);
                 }
             }
@@ -16771,7 +16766,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<ManageEntAuditDeptModel> GetMenuPagesForAdminPanel()
+        public List<MenuPagesAssignmentModel> GetMenuPagesForAdminPanel(int M_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -16779,27 +16774,27 @@ namespace AIS.Controllers
             sessionHandler._session = this._session;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
+            List<MenuPagesAssignmentModel> resp = new List<MenuPagesAssignmentModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_Get_Entities_Audit_Department";
+                cmd.CommandText = "pkg_ad.P_GET_ALL_PAGES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = M_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ManageEntAuditDeptModel m = new ManageEntAuditDeptModel();
-                    m.R_ID = rdr["id"].ToString();
-                    m.D_ID = rdr["deptid"].ToString();
-                    m.D_CODE = rdr["deptcode"].ToString();
-                    m.CBAS_CODE = rdr["cbas_code"].ToString();
-                    m.ENT_ID = rdr["entity_id"].ToString();
-                    m.D_NAME = rdr["deptname"].ToString();
-                    m.AUD_ID = rdr["audit_id"].ToString();
-                    m.AUDITOR = rdr["auditor"].ToString();
-                    m.STATUS = rdr["status"].ToString();
+                    MenuPagesAssignmentModel m = new MenuPagesAssignmentModel();
+                    m.P_ID = rdr["id"].ToString();
+                    m.M_ID = rdr["menu_id"].ToString();
+                    m.P_NAME = rdr["page_name"].ToString();
+                    m.P_PATH = rdr["page_path"].ToString();
+                    m.P_ORDER = rdr["page_order"].ToString();
+                    m.P_STATUS = rdr["status"].ToString();
+                    m.P_HIDE_MENU = rdr["hide_menu"].ToString();                   
+                 
                     resp.Add(m);
                 }
             }
@@ -16810,7 +16805,7 @@ namespace AIS.Controllers
 
 
 
-        public string AddMenuPageForAdminPanel(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        public string AddMenuPageForAdminPanel(MenuPagesAssignmentModel ENT_AUD_DEPT_MODEL)
         {
 
             sessionHandler = new SessionHandler();
@@ -16825,15 +16820,15 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_add_Entities_Audit_Department";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_ID;
-                cmd.Parameters.Add("d_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_CODE;
-                cmd.Parameters.Add("d_name", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
-                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
-                cmd.Parameters.Add("cbas_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.CBAS_CODE;
-                cmd.Parameters.Add("ent_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
-                cmd.Parameters.Add("aud_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
-                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                //cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_ID;
+                //cmd.Parameters.Add("d_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_CODE;
+                //cmd.Parameters.Add("d_name", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
+                //cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
+                //cmd.Parameters.Add("cbas_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.CBAS_CODE;
+                //cmd.Parameters.Add("ent_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
+                //cmd.Parameters.Add("aud_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
+                //cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
+                //cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -16844,7 +16839,7 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public string UpdateMenuPageForAdminPanel(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
+        public string UpdateMenuPageForAdminPanel(MenuPagesAssignmentModel ENT_AUD_DEPT_MODEL)
         {
 
             sessionHandler = new SessionHandler();
@@ -16859,16 +16854,16 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("r_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.R_ID;
-                cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_ID;
-                cmd.Parameters.Add("d_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_CODE;
-                cmd.Parameters.Add("d_name", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
-                cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
-                cmd.Parameters.Add("cbas_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.CBAS_CODE;
-                cmd.Parameters.Add("ent_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
-                cmd.Parameters.Add("aud_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
-                cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                //cmd.Parameters.Add("r_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.R_ID;
+                //cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_ID;
+                //cmd.Parameters.Add("d_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.D_CODE;
+                //cmd.Parameters.Add("d_name", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.D_NAME;
+                //cmd.Parameters.Add("status", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.STATUS;
+                //cmd.Parameters.Add("cbas_code", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.CBAS_CODE;
+                //cmd.Parameters.Add("ent_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.ENT_ID;
+                //cmd.Parameters.Add("aud_id", OracleDbType.Int32).Value = ENT_AUD_DEPT_MODEL.AUD_ID;
+                //cmd.Parameters.Add("auditor", OracleDbType.Varchar2).Value = ENT_AUD_DEPT_MODEL.AUDITOR;
+                //cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {

@@ -619,6 +619,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["MenuList"] = dBConnection.GetAllMenusForAdminPanel();
 
             if (!sessionHandler.IsUserLoggedIn())
             {
