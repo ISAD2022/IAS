@@ -51,8 +51,8 @@ namespace AIS.Controllers
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
-                ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
-               // ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+               // ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
+                ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
                 ocsb.MinPoolSize = 1;
@@ -4683,47 +4683,20 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AssignedObservations chk = new AssignedObservations();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-
+                    chk.ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_TEXT_ID = Convert.ToInt32(rdr["OBS_TEXT_ID"]);
-                    chk.ASSIGNEDTO_ROLE = Convert.ToInt32(rdr["ENTITY_ID"]);
-                    chk.ASSIGNEDBY = Convert.ToInt32(rdr["ASSIGNEDBY"]);
-                    chk.ASSIGNED_DATE = Convert.ToDateTime(rdr["ASSIGNED_DATE"]);
-                    chk.IS_ACTIVE = rdr["IS_ACTIVE"].ToString();
-                    chk.REPLIED = rdr["REPLIED"].ToString();
-                    chk.REPLY_TEXT = "";
-                    chk.OBSERVATION_TEXT = "";
-                    if (rdr["RESP_ID"].ToString() != null && rdr["RESP_ID"].ToString() != "")
-                        chk.RESP_ID = Convert.ToInt32(rdr["RESP_ID"].ToString());
-
-                    if (rdr["VIOLATION"].ToString() != null && rdr["VIOLATION"].ToString() != "")
-                        chk.VIOLATION = rdr["VIOLATION"].ToString();
-
-                    if (rdr["NATURE"].ToString() != null && rdr["NATURE"].ToString() != "")
-                        chk.NATURE = rdr["NATURE"].ToString();
-
-                    if (rdr["Process"].ToString() != null && rdr["Process"].ToString() != "")
-                        chk.PROCESS = rdr["Process"].ToString();
-
-                    if (rdr["Sub_process"].ToString() != null && rdr["Sub_process"].ToString() != "")
-                        chk.SUB_PROCESS = rdr["Sub_process"].ToString();
-
-                    if (rdr["Check_List_Details"].ToString() != null && rdr["Check_List_Details"].ToString() != "")
-                        chk.CHECKLIST_DETAIL = rdr["Check_List_Details"].ToString();
-
-                    chk.STATUS = rdr["STATUS"].ToString();
-                    chk.STATUS_ID = rdr["STATUS_ID"].ToString();
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    if (rdr["CANREPLY"].ToString() != null && rdr["CANREPLY"].ToString() != "")
-                        chk.CAN_REPLY = Convert.ToInt32(rdr["CANREPLY"].ToString());
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     chk.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
                     chk.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
-                    chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]).ToString("dd/MM/yyyy");
-                    chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]).ToString("dd/MM/yyyy");
-                   // chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    chk.STATUS_ID = rdr["STATUS_ID"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.GIST = rdr["GIST"].ToString();
+                    chk.RESPONSE_ID = rdr["RESPONSE_ID"].ToString();
+                    chk.CAN_REPLY = Convert.ToInt32(rdr["CANREPLY"].ToString());
+                    chk.EDITABLE = Convert.ToInt32(rdr["EDITABLE"].ToString());
                     list.Add(chk);
                 }
             }
@@ -4811,43 +4784,52 @@ namespace AIS.Controllers
 
                 }
                 list.Add(ob_text);
-
-                cmd.CommandText = "pkg_ar.P_GetOBSERVATIONSAUDITEERESPONSE";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr2 = cmd.ExecuteReader();
-
-                while (rdr2.Read())
+                if (RESP_ID > 0)
                 {
-                    ob_resp = rdr2["REPLY"].ToString();
+                    cmd.CommandText = "pkg_ar.P_GetOBSERVATIONSAUDITEERESPONSE";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    OracleDataReader rdr2 = cmd.ExecuteReader();
+
+                    while (rdr2.Read())
+                    {
+                        ob_resp = rdr2["REPLY"].ToString();
+                    }
+                    list.Add(ob_resp);
+                    List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
+                    cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("RESP_ID", OracleDbType.Int32).Value = RESP_ID;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                    OracleDataReader rdr3 = cmd.ExecuteReader();
+                    while (rdr3.Read())
+                    {
+                        AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
+                        am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
+                        am.IMAGE_DATA = rdr3["FILE_DATA"].ToString();
+                        am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
+                        am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
+                        modellist.Add(am);
+                    }
+                    list.Add(modellist);
+
                 }
-                list.Add(ob_resp);
-                List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
-                cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("RESP_ID", OracleDbType.Int32).Value = RESP_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr3 = cmd.ExecuteReader();
-                while (rdr3.Read())
+                else
                 {
-                    AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
-                    am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
-                    am.IMAGE_DATA = rdr3["FILE_DATA"].ToString();
-                    am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
-                    am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
-                    modellist.Add(am);
+                    list.Add("");
+                    list.Add("");
                 }
-                list.Add(modellist);
             }
             con.Dispose();
-            return list;
+            return list; 
         }
+     
         public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
         {
             var con = this.DatabaseConnection(); con.Open();

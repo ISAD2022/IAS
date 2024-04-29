@@ -10,6 +10,9 @@ namespace AIS.Models
         public int? RESP_ID { get; set; }
         public int OBS_ID { get; set; }
         public int OBS_TEXT_ID { get; set; }
+        public int EDITABLE { get; set; }
+        public string RESPONSE_ID { get; set; }
+        public string GIST { get; set; }
         public int ASSIGNEDTO_ROLE { get; set; }
         public int ASSIGNEDBY { get; set; }
         public DateTime? ASSIGNED_DATE { get; set; }
