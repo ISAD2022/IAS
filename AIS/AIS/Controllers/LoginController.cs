@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AIS.Controllers;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace AIS.Controllers
 {
@@ -18,19 +19,24 @@ namespace AIS.Controllers
         private readonly ILogger<LoginController> _logger;
         private readonly SessionHandler sessionHandler;
         private readonly DBConnection dBConnection;
-        
+        private readonly IConfiguration _configuration;
 
-        public LoginController(ILogger<LoginController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
+        public LoginController(ILogger<LoginController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, IConfiguration configuration)
         {
             _logger = logger;
             sessionHandler = _sessionHandler;
             dBConnection = _dbCon;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
         {
             TempData["Message"] = "";
             TempData["SessionKill"] = "";
+            string secretValue = _configuration["SecretKey"];
+            string baseURL = _configuration["BaseURL"];
+            ViewBag.SecretValue = secretValue;
+            ViewBag.BaseURL = baseURL;
             return View();
         }
       

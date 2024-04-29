@@ -17,6 +17,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/print-preview/print_preview.js"></script>
     <script type="text/javascript" src="~/lib/select2/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         navImg .dropdown-toggle::after {
             display: none !important;
@@ -40,6 +41,9 @@
             }
     </style>
     <script type="text/javascript">
+        var g_secretKey = "@ViewBag.SecretValue";
+        var g_baseURLFORAIS = "@ViewBag.BaseURL";
+
         $(document).ready(function () {
             $(document).ajaxStart(function () {
                 $("#wait").css("display", "block");

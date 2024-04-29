@@ -3,6 +3,8 @@
 
 }
 <script type="text/javascript">
+    g_secretKey = "@ViewBag.SecretValue";
+    g_asiBaseURL = "@ViewBag.BaseURL";
     var g_reqSend = true;
     var g_retUrl = "";
     $(document).ready(function () {
@@ -88,7 +90,10 @@
             dataType: "json",
         });
     }
-     
+    function encryptPassword(password) {
+        var encrypted = CryptoJS.AES.encrypt(password, 'ZTBLAISHASHING').toString();
+        return encrypted;
+    }
 
 </script>
 

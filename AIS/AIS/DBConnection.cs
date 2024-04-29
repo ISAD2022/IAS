@@ -52,7 +52,7 @@ namespace AIS.Controllers
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
                 ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
-                //ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+               // ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
                 ocsb.MinPoolSize = 1;
@@ -4712,7 +4712,6 @@ namespace AIS.Controllers
                     if (rdr["Check_List_Details"].ToString() != null && rdr["Check_List_Details"].ToString() != "")
                         chk.CHECKLIST_DETAIL = rdr["Check_List_Details"].ToString();
 
-
                     chk.STATUS = rdr["STATUS"].ToString();
                     chk.STATUS_ID = rdr["STATUS_ID"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -4724,8 +4723,7 @@ namespace AIS.Controllers
                     chk.AUDIT_YEAR = rdr["AUDIT_YEAR"].ToString();
                     chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"]).ToString("dd/MM/yyyy");
                     chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]).ToString("dd/MM/yyyy");
-
-                    chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
+                   // chk.RESPONSIBLE_PPNOs = this.GetObservationResponsiblePPNOs(chk.ID);
                     list.Add(chk);
                 }
             }
@@ -16630,7 +16628,6 @@ namespace AIS.Controllers
                 {
                     LoanDetailReportModel pdsib = new LoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
-                    //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
                     pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
                     pdsib.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
                     pdsib.GLSUBCODE = rdr["GLSUBCODE"].ToString();
