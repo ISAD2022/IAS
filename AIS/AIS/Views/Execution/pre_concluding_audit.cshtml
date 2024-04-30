@@ -129,8 +129,35 @@
         });
 
     }
+    function submitPreConcluding() {
 
-   
+        var flag = 0;
+        $('.preconcludingStatusField').each(function (i, v) {
+
+            if ($(v).html() == "Pending")
+                flag++;
+        });
+
+        if (flag > 0) {
+            alert("Please add Audit Observation Gist and Recommendation for all observations first to proceed");
+            return;
+        }
+
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/submit_pre_concluding",
+            type: "POST",
+            data: {
+                'ENG_ID': $('#entitySelectField option:selected').val()
+
+            },
+            cache: false,
+            success: function (data) {
+
+                alert(data.Message);
+            },
+            dataType: "json",
+        });
+    }   
 </script>
 <div class="row mt-3">
     <div>
@@ -174,6 +201,10 @@
         <tbody>
         </tbody>
     </table>
+
+    <div class="row col-md-12 mt-3 d-none">
+        <button onclick="submitPreConcluding();" class="col-md-3 btn btn-success" style="margin-left:10px;">Submit Pre Concluding</button>
+    </div>
 </div>
 
 

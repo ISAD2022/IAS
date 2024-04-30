@@ -20,14 +20,15 @@ namespace AIS
     {
         private DBConnection dBConnection;
         private SessionHandler sessionHandler;
-
+        public IConfiguration _configuration;
         public ISession _session;
         public IHttpContextAccessor _httpCon;
 
-        public TopMenus(IHttpContextAccessor httpContextAccessor)
+        public TopMenus(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
+            _configuration = configuration;
         }
         public TopMenus()
         {
@@ -39,11 +40,12 @@ namespace AIS
             
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             
             dBConnection = new DBConnection(); 
             dBConnection._httpCon = this._httpCon;
             dBConnection._session = this._session;
+            dBConnection._configuration = this._configuration;
 
             List<object> menuList = new List<object>();
             if (sessionHandler.IsUserLoggedIn())
@@ -61,12 +63,13 @@ namespace AIS
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
 
             dBConnection = new DBConnection();
             dBConnection._httpCon = this._httpCon;
             dBConnection._session = this._session;
+            dBConnection._configuration = this._configuration;
 
             List<object> menuList = new List<object>();
             if (sessionHandler.IsUserLoggedIn())

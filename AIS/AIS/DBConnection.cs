@@ -23,7 +23,7 @@ namespace AIS.Controllers
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         public ISession _session;
         public IHttpContextAccessor _httpCon;
-        private readonly IConfiguration _configuration;
+        public IConfiguration _configuration;
         private readonly string CAU_KEY = "112233";
 
         [Obsolete]
@@ -49,8 +49,8 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = _configuration["ConnectionStrings:DBUserName"]; 
-                ocsb.UserID = _configuration["ConnectionStrings:DBUserPassword"];
+                ocsb.Password = _configuration["ConnectionStrings:DBUserPassword"]; 
+                ocsb.UserID = _configuration["ConnectionStrings:DBUserName"];
                 ocsb.DataSource = _configuration["ConnectionStrings:DBDataSource"];
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
@@ -95,7 +95,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;           
             var sessionUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection();
             con.Open();
@@ -118,7 +118,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var sessionUser = sessionHandler.GetSessionUser();
 
             if (PPNumber == "")
@@ -154,7 +154,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var enc_pass = getMd5Hash(DecryptPassword(login.Password));
             var con = this.DatabaseConnection();
             con.Open();
@@ -187,7 +187,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             bool isTerminate = false;
             if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
@@ -300,7 +300,7 @@ namespace AIS.Controllers
 
                     sessionHandler = new SessionHandler();
                     sessionHandler._httpCon = this._httpCon;
-                    sessionHandler._session = this._session;
+                    sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
                     if (isSessionAvailable)
                     {
                         user.isAlreadyLoggedIn = true;
@@ -339,7 +339,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection();
             con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -372,7 +372,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
@@ -408,7 +408,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<MenuModel> modelList = new List<MenuModel>();
@@ -439,7 +439,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -474,7 +474,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -510,7 +510,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -535,7 +535,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
@@ -567,7 +567,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -607,7 +607,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
@@ -634,7 +634,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
@@ -715,7 +715,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -742,7 +742,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -769,7 +769,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditTeamModel> teamList = new List<AuditTeamModel>();
@@ -809,7 +809,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -844,7 +844,7 @@ namespace AIS.Controllers
             {
                 sessionHandler = new SessionHandler();
                 sessionHandler._httpCon = this._httpCon;
-                sessionHandler._session = this._session;
+                sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
                 var con = this.DatabaseConnection(); con.Open();
                 var loggedInUser = sessionHandler.GetSessionUser();
                 using (OracleCommand cmd = con.CreateCommand())
@@ -869,7 +869,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             int maxTeamId = 1;
@@ -899,7 +899,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             bool isAlreadyAdded = true;
 
@@ -940,7 +940,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -971,7 +971,7 @@ namespace AIS.Controllers
                 REMARKS = "REFERRED BACK";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -996,7 +996,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             string REMARK = "";
@@ -1027,7 +1027,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
@@ -1075,7 +1075,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             var con = this.DatabaseConnection(); con.Open();
@@ -1122,7 +1122,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
@@ -1169,7 +1169,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
@@ -1225,7 +1225,7 @@ namespace AIS.Controllers
             string resMsg = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1253,7 +1253,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RoleRespModel> groupList = new List<RoleRespModel>();
@@ -1281,7 +1281,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RoleRespModel> groupList = new List<RoleRespModel>();
@@ -1311,7 +1311,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AnnexureModel> groupList = new List<AnnexureModel>();
@@ -1345,7 +1345,7 @@ namespace AIS.Controllers
             List<UserModel> userList = new List<UserModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1468,7 +1468,7 @@ namespace AIS.Controllers
             string userName = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1495,7 +1495,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -1528,7 +1528,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -1559,7 +1559,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -1591,7 +1591,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -1623,7 +1623,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
@@ -1659,7 +1659,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1696,7 +1696,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1730,7 +1730,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1764,7 +1764,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1799,7 +1799,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1846,7 +1846,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1881,7 +1881,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1916,7 +1916,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1991,7 +1991,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var newPassword = "";
             bool setPassword = false;
@@ -2026,7 +2026,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2101,7 +2101,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<AuditZoneModel> AZList = new List<AuditZoneModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2274,7 +2274,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
@@ -2393,7 +2393,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<DepartmentModel> deptList = new List<DepartmentModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -2638,7 +2638,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
@@ -2703,7 +2703,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
@@ -2738,7 +2738,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
@@ -2773,7 +2773,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
@@ -2812,7 +2812,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             ePlan.CREATED_ON = System.DateTime.Now;
             int placeofposting = Convert.ToInt32(loggedInUser.UserEntityID);
@@ -2879,7 +2879,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2902,7 +2902,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2936,7 +2936,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2991,7 +2991,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanModel> planList = new List<AuditPlanModel>();
@@ -3041,7 +3041,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
@@ -3070,7 +3070,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
@@ -3101,7 +3101,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
@@ -3132,7 +3132,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
@@ -3162,7 +3162,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
@@ -3440,7 +3440,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<SubProcessUpdateModelForReviewAndAuthorizeModel> pmList = new List<SubProcessUpdateModelForReviewAndAuthorizeModel>();
@@ -3478,7 +3478,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
@@ -3539,7 +3539,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3562,7 +3562,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3586,7 +3586,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3608,7 +3608,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3630,7 +3630,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -3666,7 +3666,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3688,7 +3688,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3710,7 +3710,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -3857,7 +3857,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<TaskListModel> tasklist = new List<TaskListModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -3909,7 +3909,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             JoiningModel jm = new JoiningModel();
             List<JoiningTeamModel> tjlist = new List<JoiningTeamModel>();
@@ -3955,7 +3955,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
@@ -4041,7 +4041,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistSubModel> list = new List<AuditChecklistSubModel>();
@@ -4091,7 +4091,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
@@ -4137,7 +4137,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
@@ -4173,7 +4173,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
@@ -4215,7 +4215,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             GlHeadSubDetailsModel GlHeadSubDetails = new GlHeadSubDetailsModel();
@@ -4257,7 +4257,7 @@ namespace AIS.Controllers
            
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanCaseModel> list = new List<LoanCaseModel>();
@@ -4300,7 +4300,7 @@ namespace AIS.Controllers
             
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
            
@@ -4338,7 +4338,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
@@ -4383,7 +4383,7 @@ namespace AIS.Controllers
             /*
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
            var con = this.DatabaseConnection(); con.Open();
@@ -4411,7 +4411,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
@@ -4472,7 +4472,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var loggedInUser = sessionHandler.GetSessionUser();
             int brId = Convert.ToInt32(loggedInUser.UserPostingBranch);
@@ -4516,7 +4516,7 @@ namespace AIS.Controllers
             bool proceed = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ob.ENGPLANID == 0)
@@ -4596,7 +4596,7 @@ namespace AIS.Controllers
             bool proceed = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ob.ENGPLANID == 0)
@@ -4669,7 +4669,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AssignedObservations> list = new List<AssignedObservations>();
@@ -4712,7 +4712,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -4764,7 +4764,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             string ob_text = "";
@@ -4958,7 +4958,7 @@ namespace AIS.Controllers
             int AUD_RESP_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
@@ -5020,7 +5020,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             int engId = 0;
@@ -5044,7 +5044,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -5064,7 +5064,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
@@ -5091,7 +5091,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
@@ -5182,7 +5182,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
@@ -5209,7 +5209,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationSummaryModel> list = new List<ObservationSummaryModel>();
@@ -5252,7 +5252,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationRevisedModel> list = new List<ObservationRevisedModel>();
@@ -5296,7 +5296,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -5348,7 +5348,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> list = new List<ManageObservations>();
@@ -5393,7 +5393,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationTextModel> list = new List<ObservationTextModel>();
@@ -5437,7 +5437,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -5492,7 +5492,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -5582,7 +5582,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
@@ -5632,7 +5632,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
@@ -5686,7 +5686,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
@@ -5788,7 +5788,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
@@ -5842,7 +5842,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
@@ -5985,7 +5985,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6013,7 +6013,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6042,7 +6042,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6071,7 +6071,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6102,7 +6102,7 @@ namespace AIS.Controllers
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6139,7 +6139,7 @@ namespace AIS.Controllers
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6176,7 +6176,7 @@ namespace AIS.Controllers
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6205,7 +6205,7 @@ namespace AIS.Controllers
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6242,7 +6242,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
@@ -6276,7 +6276,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
@@ -6336,7 +6336,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6362,7 +6362,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6388,7 +6388,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
@@ -6464,7 +6464,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             string Remarks = "";
             if (NEW_STATUS_ID == 4)
@@ -6529,7 +6529,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6563,7 +6563,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -6615,7 +6615,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
@@ -6692,7 +6692,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6713,7 +6713,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6767,7 +6767,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
@@ -6805,7 +6805,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
@@ -6853,7 +6853,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6915,7 +6915,7 @@ namespace AIS.Controllers
             CAUOMAssignmentResponseModel resp = new CAUOMAssignmentResponseModel();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -6970,7 +6970,7 @@ namespace AIS.Controllers
             CAUOMAssignmentResponseModel resp = new CAUOMAssignmentResponseModel();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7004,7 +7004,7 @@ namespace AIS.Controllers
             CAUOMAssignmentResponseModel resp = new CAUOMAssignmentResponseModel();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7035,7 +7035,7 @@ namespace AIS.Controllers
             CAUOMAssignmentModel resp = new CAUOMAssignmentModel();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7063,7 +7063,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -7096,7 +7096,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditCCQModel> list = new List<AuditCCQModel>();
@@ -7158,7 +7158,7 @@ namespace AIS.Controllers
             bool resp = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7184,7 +7184,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7215,7 +7215,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7272,7 +7272,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -7295,7 +7295,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -7335,7 +7335,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModelCAD> list = new List<OldParasModelCAD>();
@@ -7374,7 +7374,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7417,7 +7417,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7453,7 +7453,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7488,7 +7488,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7523,7 +7523,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7559,7 +7559,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7598,7 +7598,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<SearchChecklistDetailsModel> list = new List<SearchChecklistDetailsModel>();
@@ -7628,7 +7628,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7658,7 +7658,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7687,7 +7687,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7715,7 +7715,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7743,7 +7743,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7772,7 +7772,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -7803,7 +7803,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7863,7 +7863,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7923,7 +7923,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -7970,7 +7970,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
@@ -8030,7 +8030,7 @@ namespace AIS.Controllers
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8100,7 +8100,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8130,7 +8130,7 @@ namespace AIS.Controllers
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8164,7 +8164,7 @@ namespace AIS.Controllers
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8198,7 +8198,7 @@ namespace AIS.Controllers
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8225,7 +8225,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8261,7 +8261,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8297,7 +8297,7 @@ namespace AIS.Controllers
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8371,7 +8371,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
 
@@ -8396,7 +8396,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
 
@@ -8421,7 +8421,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -8462,7 +8462,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -8485,7 +8485,7 @@ namespace AIS.Controllers
             string response = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8515,7 +8515,7 @@ namespace AIS.Controllers
             string response = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -8545,7 +8545,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string query = "";
@@ -8581,7 +8581,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -8635,7 +8635,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8666,7 +8666,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8696,7 +8696,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8727,7 +8727,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8756,7 +8756,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8786,7 +8786,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
@@ -8815,7 +8815,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             if (e_r_id == 0)
@@ -8849,7 +8849,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             if (e_r_id == 0)
@@ -8882,7 +8882,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             if (e_r_id == 0)
@@ -8974,7 +8974,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection(); con.Open();
@@ -9007,7 +9007,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -9037,7 +9037,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -9096,7 +9096,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
@@ -9128,7 +9128,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
@@ -9159,7 +9159,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<StaffPositionModel> list = new List<StaffPositionModel>();
@@ -9197,7 +9197,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
@@ -9244,7 +9244,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
@@ -9282,7 +9282,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
@@ -9320,7 +9320,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
@@ -9356,7 +9356,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -9459,7 +9459,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<Glheadsummaryyearlymodel> list = new List<Glheadsummaryyearlymodel>();
@@ -9516,7 +9516,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
 
@@ -9558,7 +9558,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
@@ -9622,7 +9622,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
@@ -9677,7 +9677,7 @@ namespace AIS.Controllers
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanSchemeModel> list = new List<LoanSchemeModel>();
@@ -9723,7 +9723,7 @@ namespace AIS.Controllers
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<LoanSchemeYearlyModel> list = new List<LoanSchemeYearlyModel>();
@@ -9879,7 +9879,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> paras = new List<ManageObservations>();
             DraftReportSummaryModel list = new DraftReportSummaryModel();
@@ -9916,7 +9916,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
             var con = this.DatabaseConnection(); con.Open();
@@ -9944,7 +9944,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
             var con = this.DatabaseConnection(); con.Open();
@@ -9976,7 +9976,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CurrentActiveUsers> list = new List<CurrentActiveUsers>();
             var con = this.DatabaseConnection(); con.Open();
@@ -10010,7 +10010,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ParaTextModel> list = new List<ParaTextModel>();
@@ -10040,7 +10040,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
@@ -10085,7 +10085,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
@@ -10119,7 +10119,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10153,7 +10153,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel resp = new GetOldParasBranchComplianceTextModel();
@@ -10181,7 +10181,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10212,7 +10212,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10243,7 +10243,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10274,7 +10274,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10306,7 +10306,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10340,7 +10340,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
@@ -10378,7 +10378,7 @@ namespace AIS.Controllers
             Int32 TEXT_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10434,7 +10434,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForComplianceReviewer> list = new List<GetOldParasForComplianceReviewer>();
@@ -10477,7 +10477,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForComplianceReviewer> list = new List<GetOldParasForComplianceReviewer>();
@@ -10521,7 +10521,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10557,7 +10557,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
@@ -10598,7 +10598,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
@@ -10639,7 +10639,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
@@ -10680,7 +10680,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -10703,7 +10703,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForFinalSettlement> list = new List<GetOldParasForFinalSettlement>();
@@ -10746,7 +10746,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10780,7 +10780,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10845,7 +10845,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10880,7 +10880,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -10956,7 +10956,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasPpnoModel> list = new List<AuditeeOldParasPpnoModel>();
@@ -10998,7 +10998,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -11026,7 +11026,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -11055,7 +11055,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -11084,7 +11084,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -11114,7 +11114,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ZoneBranchParaStatusModel> list = new List<ZoneBranchParaStatusModel>();
@@ -11147,7 +11147,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -11171,7 +11171,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasAuthorizeModel> list = new List<OldParasAuthorizeModel>();
@@ -11214,7 +11214,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
@@ -11255,7 +11255,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
@@ -11287,7 +11287,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
@@ -11351,7 +11351,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
@@ -11402,7 +11402,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -11436,7 +11436,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditConcludingEntitiesModel> list = new List<AuditConcludingEntitiesModel>();
@@ -11470,7 +11470,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetTeamDetailsModel> list = new List<GetTeamDetailsModel>();
@@ -11507,7 +11507,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetFinalReportModel> list = new List<GetFinalReportModel>();
@@ -11556,7 +11556,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
@@ -11585,7 +11585,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
@@ -11615,7 +11615,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             if (ENG_ID == 0)
@@ -11644,7 +11644,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
@@ -11709,7 +11709,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADGetReportEntititiesModel> list = new List<FADGetReportEntititiesModel>();
@@ -11743,7 +11743,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADGetReportZonesModel> list = new List<FADGetReportZonesModel>();
@@ -11776,7 +11776,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADEntitySizeModel> list = new List<FADEntitySizeModel>();
@@ -11809,7 +11809,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADEntityRiskModel> list = new List<FADEntityRiskModel>();
@@ -11841,7 +11841,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
@@ -11872,7 +11872,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
@@ -11905,7 +11905,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewParaPerformanceModel> list = new List<FADNewParaPerformanceModel>();
@@ -11942,7 +11942,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
@@ -11979,7 +11979,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
@@ -12014,7 +12014,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
@@ -12049,7 +12049,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
@@ -12085,7 +12085,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FADLagacyParaPerformanceModel> list = new List<FADLagacyParaPerformanceModel>();
@@ -12123,7 +12123,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             UserModel um = new UserModel();
@@ -12150,7 +12150,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -12184,7 +12184,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -12219,7 +12219,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
 
@@ -12254,7 +12254,7 @@ namespace AIS.Controllers
             string resp = "Failed to delete responsibility, Please try again";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -12282,7 +12282,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12312,7 +12312,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12343,7 +12343,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12373,7 +12373,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12403,7 +12403,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12443,7 +12443,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12474,7 +12474,7 @@ namespace AIS.Controllers
             List<AddNewLegacyParaModel> list = new List<AddNewLegacyParaModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12512,7 +12512,7 @@ namespace AIS.Controllers
             List<AddNewLegacyParaModel> list = new List<AddNewLegacyParaModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12549,7 +12549,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12579,7 +12579,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12607,7 +12607,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
@@ -12638,7 +12638,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -12665,7 +12665,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -12689,7 +12689,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<NoEntitiesRiskBasePlan> list = new List<NoEntitiesRiskBasePlan>();
@@ -12722,7 +12722,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<FADAuditPerformanceModel> list = new List<FADAuditPerformanceModel>();
@@ -12755,7 +12755,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditPerformanceChartDashboardModel> list = new List<AuditPerformanceChartDashboardModel>();
@@ -12788,7 +12788,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<ParaPositionReportModel> list = new List<ParaPositionReportModel>();
@@ -12824,7 +12824,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<RepetativeParaModel> list = new List<RepetativeParaModel>();
@@ -12870,7 +12870,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ParaPositionDetailsModel> list = new List<ParaPositionDetailsModel>();
             var con = this.DatabaseConnection(); con.Open();
@@ -13144,7 +13144,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<FADNewOldParaPerformanceModel> pdetails = new List<FADNewOldParaPerformanceModel>();
@@ -13180,7 +13180,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeRiskModel> pdetails = new List<AuditeeRiskModel>();
@@ -13209,7 +13209,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RiskAssessmentEntTypeModel> pdetails = new List<RiskAssessmentEntTypeModel>();
@@ -13242,7 +13242,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeRiskModeldetails> pdetails = new List<AuditeeRiskModeldetails>();
@@ -13275,7 +13275,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
@@ -13308,7 +13308,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
@@ -13343,7 +13343,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
@@ -13371,7 +13371,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
@@ -13400,7 +13400,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
@@ -13437,7 +13437,7 @@ namespace AIS.Controllers
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
@@ -13469,7 +13469,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
@@ -13587,7 +13587,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaModel> pdetails = new List<BACAgendaModel>();
@@ -13618,7 +13618,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaModel> pdetails = new List<BACAgendaModel>();
@@ -13648,7 +13648,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
@@ -13675,7 +13675,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
@@ -13707,7 +13707,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesModel> pdetails = new List<BACAgendaActionablesModel>();
@@ -13746,7 +13746,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesModel> pdetails = new List<BACAgendaActionablesModel>();
@@ -13785,7 +13785,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13816,7 +13816,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13852,7 +13852,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13887,7 +13887,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13924,7 +13924,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13962,7 +13962,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -13991,7 +13991,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14027,7 +14027,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14062,7 +14062,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             string resp = "";
@@ -14089,7 +14089,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14123,7 +14123,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14156,7 +14156,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14190,7 +14190,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -14224,7 +14224,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             var resp = "";
@@ -14252,7 +14252,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<SettledParasMonitoringModel> list = new List<SettledParasMonitoringModel>();
@@ -14361,7 +14361,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<StatusWiseComplianceModel> respList = new List<StatusWiseComplianceModel>();
@@ -14410,7 +14410,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AdminNewUsersAIS> resp = new List<AdminNewUsersAIS>();
@@ -14447,7 +14447,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditParaReconsillation> resp = new List<AuditParaReconsillation>();
@@ -14491,7 +14491,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<HREntitiesModel> resp = new List<HREntitiesModel>();
@@ -14530,7 +14530,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AISEntitiesModel> resp = new List<AISEntitiesModel>();
@@ -14570,7 +14570,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14606,7 +14606,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14642,7 +14642,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntityMappingForEntityAddition> respOut = new List<EntityMappingForEntityAddition>();
@@ -14681,7 +14681,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14711,7 +14711,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14741,7 +14741,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditPlanEngDetailReport> resp = new List<AuditPlanEngDetailReport>();
@@ -14788,7 +14788,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<LoanCaseFileDetailsModel> resp = new List<LoanCaseFileDetailsModel>();
@@ -14828,7 +14828,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14865,7 +14865,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<VoucherCheckingDetailsModel> resp = new List<VoucherCheckingDetailsModel>();
@@ -14902,7 +14902,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -14936,7 +14936,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AccountOpeningDetailsModel> resp = new List<AccountOpeningDetailsModel>();
@@ -14974,7 +14974,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15007,7 +15007,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<FixedAssetsDetailsModel> resp = new List<FixedAssetsDetailsModel>();
@@ -15045,7 +15045,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15080,7 +15080,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CashCountDetailsModel> resp = new List<CashCountDetailsModel>();
@@ -15120,7 +15120,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15157,7 +15157,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AnnexureExerciseStatus> resp = new List<AnnexureExerciseStatus>();
@@ -15191,7 +15191,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15218,7 +15218,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<UserRoleDetailAdminPanelModel> resp = new List<UserRoleDetailAdminPanelModel>();
@@ -15249,7 +15249,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceSummaryModel> resp = new List<ComplianceSummaryModel>();
@@ -15289,7 +15289,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntitiesShiftingDetailsModel> resp = new List<EntitiesShiftingDetailsModel>();
@@ -15331,7 +15331,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditEntitiesModel> resp = new List<AuditEntitiesModel>();
@@ -15369,7 +15369,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15403,7 +15403,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditEntityRelationsModel> resp = new List<AuditEntityRelationsModel>();
@@ -15443,7 +15443,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
@@ -15486,7 +15486,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
@@ -15529,7 +15529,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
@@ -15560,7 +15560,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15594,7 +15594,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GroupWiseUsersCountModel> resp = new List<GroupWiseUsersCountModel>();
@@ -15625,7 +15625,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GroupWisePagesModel> resp = new List<GroupWisePagesModel>();
@@ -15655,7 +15655,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
@@ -15687,7 +15687,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
@@ -15717,7 +15717,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -15750,7 +15750,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -15783,7 +15783,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -15815,7 +15815,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -15845,7 +15845,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceFlowModel> resp = new List<ComplianceFlowModel>();
@@ -15891,7 +15891,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15923,7 +15923,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -15954,7 +15954,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<DepttWiseOutstandingParasModel> resp = new List<DepttWiseOutstandingParasModel>();
@@ -15992,7 +15992,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16024,7 +16024,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16055,7 +16055,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16089,7 +16089,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationNumbersModel> resp = new List<ObservationNumbersModel>();
@@ -16121,7 +16121,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16151,7 +16151,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16180,7 +16180,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<HRDesignationWiseRoleModel> resp = new List<HRDesignationWiseRoleModel>();
@@ -16215,7 +16215,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16243,7 +16243,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16273,7 +16273,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservationModel> resp = new List<ManageObservationModel>();
@@ -16305,7 +16305,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16336,7 +16336,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16368,7 +16368,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
@@ -16404,7 +16404,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16438,7 +16438,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16472,7 +16472,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -16502,7 +16502,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -16532,7 +16532,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -16562,7 +16562,7 @@ namespace AIS.Controllers
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
@@ -16594,7 +16594,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
@@ -16639,7 +16639,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
@@ -16681,7 +16681,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<DefaultHisotryLoanDetailReportModel> resp = new List<DefaultHisotryLoanDetailReportModel>();
@@ -16723,7 +16723,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuModel> resp = new List<MenuModel>();
@@ -16755,7 +16755,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuPagesAssignmentModel> resp = new List<MenuPagesAssignmentModel>();
@@ -16794,7 +16794,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
@@ -16826,7 +16826,7 @@ namespace AIS.Controllers
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";

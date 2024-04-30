@@ -41,9 +41,7 @@
             }
     </style>
     <script type="text/javascript">
-        var g_secretKey = "@ViewBag.SecretValue";
-        var g_baseURLFORAIS = "@ViewBag.BaseURL";
-
+       
         $(document).ready(function () {
             $(document).ajaxStart(function () {
                 $("#wait").css("display", "block");
@@ -143,6 +141,7 @@
 
     <div class="container-fluid">
         <main role="main" class="p-3">
+           
             @RenderBody()
         </main>
         <div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">

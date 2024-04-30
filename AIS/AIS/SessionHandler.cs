@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System;
 using AIS.Controllers;
+using Microsoft.Extensions.Configuration;
 
 namespace AIS
 {
@@ -17,15 +18,17 @@ namespace AIS
         
         public ISession _session;
         public IHttpContextAccessor _httpCon;
+        public IConfiguration _configuration;
 
         public SessionHandler()
         {
 
         }
-        public SessionHandler(IHttpContextAccessor httpContextAccessor)
+        public SessionHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
+            _configuration= configuration;
         }
        
         public SessionModel SetSessionUser(UserModel user)
@@ -71,6 +74,7 @@ namespace AIS
             dBConnection = new DBConnection();
             dBConnection._httpCon = this._httpCon;
             dBConnection._session = this._session;
+            dBConnection._configuration = this._configuration; 
            string json = _session.GetString("_sessionId");
             if (json != "" && json != null && json.Length > 0 && dBConnection.IsLoginSessionExist())
             {
@@ -86,6 +90,7 @@ namespace AIS
             dBConnection = new DBConnection();
             dBConnection._httpCon = this._httpCon;
             dBConnection._session = this._session;
+            dBConnection._configuration = this._configuration;
 
             bool permission = false;
             var pagesToView = dBConnection.GetTopMenuPages();

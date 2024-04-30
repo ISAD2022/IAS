@@ -1,13 +1,12 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿
 
-// Write your JavaScript code.
-
-var g_asiBaseURL = g_viewBagBaseURL;
-//var g_asiBaseURL = "";
-var g_secretKey = g_viewBagSecretKey;
+var g_asiBaseURL;
+var g_secretKey;
 
 $(document).ready(function () {
+    g_asiBaseURL ="/ZTBLAIS";
+    g_secretKey = "";
+
     $('body').append('<div id="alertMessagesPopup" class="modal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document">  <div class="modal-content">    <div class="modal-header">      <h5 class="modal-title">Alert</h5>      <button type="button" class="close" data-dismiss="modal" aria-label="Close">        <span aria-hidden="true">&times;</span>      </button>    </div>    <div class="modal-body">      <div id="content_alertMessagesPopup"></div>    </div>    <div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>    </div>  </div></div></div >');
     $('#alertMessagesPopup').on('hidden.bs.modal', function (e) {
         closeFuncCalled();
