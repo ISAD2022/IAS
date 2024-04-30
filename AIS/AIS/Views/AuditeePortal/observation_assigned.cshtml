@@ -42,14 +42,14 @@
                         v.memO_REPLY_DATE = v.memO_REPLY_DATE.split(' ')[0];
                         if(v.caN_REPLY==1){
                             if(v.editable==1)
-                            $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.oBS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Update Reply</a></td></tr>');
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Update Reply</a></td></tr>');
                             else
-                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.oBS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Reply</a></td></tr>');
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Reply</a></td></tr>');
                             }else{
                             if (v.editable == 1)
-                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.oBS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Update Reply</a></td></tr>');
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Update Reply</a></td></tr>');
                             else
-                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.oBS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
+                                $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
                             }                        
                     });
 
@@ -102,8 +102,8 @@
                     $('#replyButton_memoReply').removeClass('d-none');
                     $('#viewMemo_responded').parent().addClass('d-none');
                     $('#replyrichTextWrapper').removeClass('d-none');
-                    $('#viewMemo_responded').html('');
-                    $('#evidenceViewer').addClass('d-none');
+                    $('#viewMemo_reply').val(data[1]).trigger('change');
+                  //  $('#evidenceViewer').addClass('d-none');
                     $('#evidenceUploader').removeClass('d-none');               
                         
                 }
@@ -111,9 +111,9 @@
                     if (editable == 1) {
                         $('#replyButton_memoReply').removeClass('d-none');
                         $('#viewMemo_responded').parent().addClass('d-none');
-                        $('#replyrichTextWrapper').addClass('d-none');
-                        $('#replyButton_memoReply').val(data[1]).trigger('change');
-                        $('#evidenceViewer').removeClass('d-none');
+                        $('#replyrichTextWrapper').removeClass('d-none');
+                        $('#viewMemo_reply').val(data[1]).trigger('change');
+                        //$('#evidenceViewer').removeClass('d-none');
                         $('#evidenceUploader').addClass('d-none');
 
                     } else {
@@ -121,7 +121,7 @@
                         $('#viewMemo_responded').parent().removeClass('d-none');
                         $('#replyrichTextWrapper').addClass('d-none');
                         $('#viewMemo_responded').html(data[1]);
-                        $('#evidenceViewer').removeClass('d-none');
+                        //$('#evidenceViewer').removeClass('d-none');
                         $('#evidenceUploader').addClass('d-none');
                     }
                    
@@ -342,7 +342,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="evidenceViewer" class="input-field d-none">
+                    <div id="evidenceViewer" class="input-field">
                         <label class="active">Evidences</label>
                         <!--Image container -->
 

@@ -4823,7 +4823,7 @@ namespace AIS.Controllers
                 else
                 {
                     list.Add("");
-                    list.Add("");
+                    list.Add(new List<object>());
                 }
             }
             con.Dispose();
