@@ -19,7 +19,7 @@
 
 
         $.ajax({
-            url: "/ApiCalls/get_menu_pages_for_admin_panel",
+            url: g_asiBaseURL + "/ApiCalls/get_menu_pages_for_admin_panel",
             type: "POST",
             data: {
                 "M_ID":$('#menuDropDownField').val()
@@ -99,7 +99,7 @@
         var yy = de.getFullYear();
         var endDate = ("0" + mm).slice(-2) + "/" + ("0" + dd).slice(-2) + "/" + yy;
         $.ajax({
-            url: "/ApiCalls/add_audit_period",
+            url: g_asiBaseURL + "/ApiCalls/add_audit_period",
             type: "POST",
             data: {
                 'DESCRIPTION': desc,
@@ -141,7 +141,7 @@
         }
         if(g_pageId==0){
             $.ajax({
-                url: "/ApiCalls/add_menu_page_for_admin_panel",
+                url: g_asiBaseURL + "/ApiCalls/add_menu_page_for_admin_panel",
                 type: "POST",
                 data: {
                     'M_ID': $('#page_menu_field').val(),
@@ -162,7 +162,7 @@
         }else
 {
             $.ajax({
-                url: "/ApiCalls/update_menu_page_for_admin_panel",
+                url: g_asiBaseURL + "/ApiCalls/update_menu_page_for_admin_panel",
                 type: "POST",
                 data: {
                     'M_ID': $('#page_menu_field').val(),

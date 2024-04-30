@@ -3,8 +3,8 @@
 
 // Write your JavaScript code.
 
-//var g_asiBaseURL = "/ZTBLAIS";
-var g_asiBaseURL = "";
+var g_asiBaseURL = "/ZTBLAIS";
+//var g_asiBaseURL = "";
 var g_secretKey = "";
 
 $(document).ready(function () {

@@ -51,8 +51,8 @@ namespace AIS.Controllers
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
                 ocsb.Password = "ztblais";
                 ocsb.UserID = "ztblais";
-               // ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
-                ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+                ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
+               // ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
                 ocsb.MinPoolSize = 1;
