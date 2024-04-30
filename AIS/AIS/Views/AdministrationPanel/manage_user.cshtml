@@ -340,9 +340,9 @@
                 type: "POST",
                 data: {
                     'USER_ID': 0,
-                    'PPNO': $('#ppnoSaveField').val(),
-                    'ROLE_ID': $('#roleSaveField option:selected').val(),
-                    'ENTITY_ID': $('#childposting option:selected').val(),
+                    'PPNUMBER': $('#ppnoSaveField').val(),
+                    'GROUPID': $('#roleSaveField option:selected').val(),
+                    'ENTITYID': $('#childposting option:selected').val(),
                     'PASSWORD': $('#passSaveField').val()
                 },
                 cache: false,
@@ -385,7 +385,6 @@
     <div class="col-md-10">
         <select id="RelationshipField" onchange="getrelation();" class="form-control form-select">
             <option id="0" value="0" selected="selected">--Select Relationship Type--</option>
-
 
             @{
                 if (ViewData["Userrelationship"] != null)
