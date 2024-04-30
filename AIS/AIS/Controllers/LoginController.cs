@@ -10,10 +10,12 @@ using AIS.Controllers;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AIS.Controllers
 {
-    
+
     public class LoginController : Controller
     {
         private readonly ILogger<LoginController> _logger;
@@ -39,7 +41,9 @@ namespace AIS.Controllers
             ViewBag.BaseURL = baseURL;
             return View();
         }
-      
+
+     
+
         public IActionResult Logout()
         {
             dBConnection.DisposeLoginSession();
@@ -48,11 +52,13 @@ namespace AIS.Controllers
         [HttpPost]
         public UserModel DoLogin(LoginModel login)
         {
-             var user=dBConnection.AutheticateLogin(login);
+
+            var user = dBConnection.AutheticateLogin(login);
             if (user.ID != 0 && !user.isAlreadyLoggedIn && user.isAuthenticate)
             {
-                return user;                
-            }else
+                return user;
+            }
+            else
             {
                 if (user.isAuthenticate && user.isAlreadyLoggedIn)
                 {
@@ -64,7 +70,7 @@ namespace AIS.Controllers
                     user.ErrorMsg = "Incorrect UserName or Password";
                     return user;
                 }
-            }            
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

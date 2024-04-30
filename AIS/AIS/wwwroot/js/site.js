@@ -3,9 +3,9 @@
 
 // Write your JavaScript code.
 
-var g_asiBaseURL = "/ZTBLAIS";
+var g_asiBaseURL = g_viewBagBaseURL;
 //var g_asiBaseURL = "";
-var g_secretKey = "";
+var g_secretKey = g_viewBagSecretKey;
 
 $(document).ready(function () {
     $('body').append('<div id="alertMessagesPopup" class="modal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document">  <div class="modal-content">    <div class="modal-header">      <h5 class="modal-title">Alert</h5>      <button type="button" class="close" data-dismiss="modal" aria-label="Close">        <span aria-hidden="true">&times;</span>      </button>    </div>    <div class="modal-body">      <div id="content_alertMessagesPopup"></div>    </div>    <div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>    </div>  </div></div></div >');
@@ -38,8 +38,6 @@ function alert(message) {
     $('#content_alertMessagesPopup').html(message);
     $('#alertMessagesPopup').modal('show');
 }
-
-
 function extractPlainText(clobContent) {
     // Implement your logic here to extract plain text from CLOB content
     // This might involve removing HTML tags or any other formatting
@@ -55,8 +53,6 @@ function onAlertCallback(funcToCall) {
 function closeFuncCalled() {
 
 }
-
-
 function confirmAlert(message) {
     $('#content_confirmAlertMessagesPopup').empty();
     $('#content_confirmAlertMessagesPopup').html(message);
@@ -65,13 +61,10 @@ function confirmAlert(message) {
 function onconfirmAlertCallback(funcToCall) {
     onConfirmationCallback = funcToCall;
 }
-
 function onConfirmationCallback() {
 
 }
-
 function confirmAlertcloseFuncCalled() { }
-
 function setCookie(name, value, daysToLive = undefined) {
     // Encode value in order to escape semicolons, commas, and whitespace
     var cookie = name + "=" + encodeURIComponent(value);
@@ -84,7 +77,6 @@ function setCookie(name, value, daysToLive = undefined) {
 
     document.cookie = cookie;
 }
-
 function getCookie(name) {
     // Split cookie string and get all individual name=value pairs in an array
     var cookieArr = document.cookie.split(";");
@@ -104,7 +96,6 @@ function getCookie(name) {
     // Return null if not found
     return null;
 }
-
 function getBase64(file) {
     var reader = new FileReader();
     reader.readAsDataURL(file);
@@ -116,3 +107,6 @@ function getBase64(file) {
     };
 }
 
+function encryptPassword(password) {
+    return btoa(password);
+}

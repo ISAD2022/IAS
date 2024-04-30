@@ -10,11 +10,10 @@ using Microsoft.AspNetCore.Http;
 using System.Data;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
-
+using Microsoft.Extensions.Configuration;
 
 namespace AIS.Controllers
-{
-    
+{    
     public class DBConnection : Controller
     {
         private SessionHandler sessionHandler;
@@ -24,24 +23,25 @@ namespace AIS.Controllers
         private readonly CAUEncodeDecode encoderDecoder = new CAUEncodeDecode();
         public ISession _session;
         public IHttpContextAccessor _httpCon;
+        private readonly IConfiguration _configuration;
         private readonly string CAU_KEY = "112233";
 
         [Obsolete]
         private readonly IHostingEnvironment _env;
 
         [Obsolete]
-        public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env)
+        public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env, IConfiguration configuration)
         {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
             _env = env;
+            _configuration = configuration;
 
         }
         public DBConnection()
         {
 
         }
-
         #region Database Connection
         private OracleConnection DatabaseConnection()
         {
@@ -49,10 +49,9 @@ namespace AIS.Controllers
             {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
-                ocsb.Password = "ztblais";
-                ocsb.UserID = "ztblais";
-                ocsb.DataSource = "10.100.102.130:1521/dimisdb2.l1.local"; 
-               // ocsb.DataSource = "10.1.100.222:1521/devdb18c.ztbl.com.pk";
+                ocsb.Password = _configuration["ConnectionStrings:DBUserName"]; 
+                ocsb.UserID = _configuration["ConnectionStrings:DBUserPassword"];
+                ocsb.DataSource = _configuration["ConnectionStrings:DBDataSource"];
                 ocsb.IncrPoolSize = 5;
                 ocsb.MaxPoolSize = 1000;
                 ocsb.MinPoolSize = 1;
@@ -64,7 +63,11 @@ namespace AIS.Controllers
             catch (Exception) { return null; }
         }
         #endregion
-
+        private string DecryptPassword(string encryptedPassword)
+        {
+            byte[] bytes = Convert.FromBase64String(encryptedPassword);
+            return Encoding.UTF8.GetString(bytes);
+        }
         #region Session Handling
         public static string getMd5Hash(string input)
         {
@@ -145,12 +148,14 @@ namespace AIS.Controllers
 
             return isSession;
         }
+       
+
         public bool KillExistSession(LoginModel login)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session;
-            var enc_pass = getMd5Hash(login.Password);
+            var enc_pass = getMd5Hash(DecryptPassword(login.Password));
             var con = this.DatabaseConnection();
             con.Open();
             bool isSession = false;
@@ -218,7 +223,7 @@ namespace AIS.Controllers
             UserModel user = new UserModel();
             user.isAlreadyLoggedIn = false;
             user.isAuthenticate = false;
-            var enc_pass = getMd5Hash(login.Password);
+            var enc_pass = getMd5Hash(DecryptPassword(login.Password));
             using (OracleCommand cmd = con.CreateCommand())
             {
                 string _sql = "pkg_lg.p_get_user";
@@ -2025,10 +2030,10 @@ namespace AIS.Controllers
 
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            var enc_pass = getMd5Hash(Password);
+            var enc_pass = getMd5Hash(DecryptPassword(Password));
             bool correctPass = false;
             bool res = false;
-            var enc_new_pass = getMd5Hash(NewPassowrd);
+            var enc_new_pass = getMd5Hash(DecryptPassword(NewPassowrd));
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_lg.p_get_user";

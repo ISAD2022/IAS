@@ -3,8 +3,8 @@
 
 }
 <script type="text/javascript">
-    g_secretKey = "@ViewBag.SecretValue";
-    g_asiBaseURL = "@ViewBag.BaseURL";
+    g_viewBagSecretKey = "@ViewBag.SecretValue";
+    g_viewBagBaseURL = "@ViewBag.BaseURL";
     var g_reqSend = true;
     var g_retUrl = "";
     $(document).ready(function () {
@@ -19,24 +19,23 @@
         });
     })
     function doKillSessionSubmit() {
-        
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/kill_session",
-                type: "POST",
-                data: {
-                    'PPNumber': $('#inputPPNoField').val(),
-                    'Password': $('#inputPassword').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    console.log('killsession', data);
-                    if (data) {
-                        $('#submitKillSessionButton').addClass('d-none');
-                        $('#submitLoginButton').removeClass('d-none');
-                    }
-                },
-                dataType: "json",
-            });
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/kill_session",
+            type: "POST",
+            data: {
+                'PPNumber': $('#inputPPNoField').val(),
+                'Password': encryptPassword($('#inputPassword').val()),
+            },
+            cache: false,
+            success: function (data) {
+                console.log('killsession', data);
+                if (data) {
+                    $('#submitKillSessionButton').addClass('d-none');
+                    $('#submitLoginButton').removeClass('d-none');
+                }
+            },
+            dataType: "json",
+        });
     }
 
     function doLoginSubmit() {
@@ -48,10 +47,10 @@
             type: "POST",
             data: {
                 'PPNumber': $('#inputPPNoField').val(),
-                'Password': $('#inputPassword').val(),
+                'Password': encryptPassword($('#inputPassword').val())
             },
             cache: false,
-            success: function (data) {               
+            success: function (data) {
                 if (!data.isAuthenticate) {
                     $('#submitKillSessionButton').addClass('d-none');
                     $('#submitLoginButton').removeClass('d-none');
@@ -65,35 +64,21 @@
                     $('#errorDescField').text(data.errorMsg);
                     $('#inputPPNoField').attr('disabled', true);
                     $('#inputPassword').attr('disabled', true);
-                } 
-                else 
-                {
+                }
+                else {
 
-                    if(data.passwordChangeRequired){
+                    if (data.passwordChangeRequired) {
                         window.location.href = g_asiBaseURL + "/Home/Change_Password";
                         return;
                     }
-                    if (data.userGroupID==37 ) {
-                        window.location.href = g_asiBaseURL + "/BAC/Agenda";
-                    }else{
-                        if (g_retUrl != null && g_retUrl != "") {
-                            window.location.href = g_retUrl;
-                        }
-                        else {
-                            window.location.href = g_asiBaseURL + "/home";
-                        }
-                    }
-                    
+                    window.location.href = g_asiBaseURL + "/home";
                 }
                 $('#submitLoginButton').attr('disabled', false);
             },
             dataType: "json",
         });
     }
-    function encryptPassword(password) {
-        var encrypted = CryptoJS.AES.encrypt(password, 'ZTBLAISHASHING').toString();
-        return encrypted;
-    }
+   
 
 </script>
 
@@ -103,20 +88,20 @@
     {
         <script type="text/javascript">
             window.onload = function () {
-               $('#submitKillSessionButton').removeClass('d-none');
+                $('#submitKillSessionButton').removeClass('d-none');
                 $('#submitLoginButton').addClass('d-none');
                 $('#loginerrormodal').modal('show');
             };
         </script>
     }
     else if (TempData["Message"].ToString() != "")
-{
-    <script type="text/javascript">
-        window.onload = function () {
-            $('#loginerrormodal').modal('show');
-        };
-    </script>
-}
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                $('#loginerrormodal').modal('show');
+            };
+        </script>
+    }
 
     <!-- Section: Design Block -->
     <section class="text-center">
@@ -135,7 +120,7 @@
                             <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
                             <!-- Email input -->
                             <div class="form-outline mb-4">
-                                <input autocomplete="off" required type="number"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
+                                <input autocomplete="off" required type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="6" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
                             </div>
 
                             <!-- Password input -->
@@ -178,7 +163,7 @@
                 </button>
             </div>
             <div class="modal-body">
-               <p id="errorDescField"></p>
+                <p id="errorDescField"></p>
 
             </div>
             <div class="modal-footer">
