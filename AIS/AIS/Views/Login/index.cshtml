@@ -3,8 +3,7 @@
 
 }
 <script type="text/javascript">
-    var g_viewBagSecretKey = "@ViewBag.SecretValue";
-    var g_viewBagBaseURL = "@ViewBag.BaseURL";
+
     var g_reqSend = true;
     var g_retUrl = "";
     $(document).ready(function () {
@@ -77,13 +76,8 @@
             },
             dataType: "json",
         });
-    }
+    }  
    
-    window.onload = function () {
-        var script = document.createElement('script');
-        script.src = g_viewBagBaseURL+'/js/site.js';
-        document.head.appendChild(script);
-    };
 </script>
 
 <div class="text-center">
