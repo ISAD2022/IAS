@@ -17,5 +17,21 @@ namespace AIS.Models
         public string OPERATION_STARTDATE { get; set; }
         public string OPERATION_ENDDATE{ get; set; }
 
+
+        public string HIGH { get; set; }
+        public string MEDIUM { get; set; }
+        public string LOW { get; set; }
+
+
+        public string SETTLED_HIGH { get; set; }
+        public string SETTLED_MEDIUM { get; set; }
+        public string SETTLED_LOW { get; set; }
+
+
+        public string OPEN_HIGH { get; set; }
+        public string OPEN_MEDIUM { get; set; }
+        public string OPEN_LOW { get; set; }
+
+
     }
 }

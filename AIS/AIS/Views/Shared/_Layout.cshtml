@@ -13,12 +13,12 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap-image-uploader/jquery.imagesloader.css" />
     <link rel="stylesheet" href="~/lib/select2/select2.min.css" />
-    
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="~/lib/print-preview/print_preview.js"></script>
     <script type="text/javascript" src="~/lib/select2/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <style>
+    <style type="text/css">
         navImg .dropdown-toggle::after {
             display: none !important;
         }
@@ -41,7 +41,7 @@
             }
     </style>
     <script type="text/javascript">
-       
+
         $(document).ready(function () {
             $(document).ajaxStart(function () {
                 $("#wait").css("display", "block");
@@ -92,7 +92,7 @@
 
                                                 }
                                             }
-                                           
+
 
                                         </ul>
                                     }
@@ -101,7 +101,7 @@
                             }
                         }
                     }
-                  
+
                 </ul>
             </div>
             <div id="navBarTopMenu" class="collapse navbar-collapse">
@@ -141,7 +141,7 @@
 
     <div class="container-fluid">
         <main role="main" class="p-3">
-           
+
             @RenderBody()
         </main>
         <div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
@@ -159,7 +159,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/idleSessionHandler.js"></script>
     <script src="~/js/site.js"></script>
-    
+
     <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
     <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
     <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>

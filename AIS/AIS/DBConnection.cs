@@ -9960,8 +9960,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     CurrentAuditProgress ent = new CurrentAuditProgress();
-                    //e.code, e.name as auditee, d.heading as area, count(o.id) as observation
-
+                   
                     ent.CODE = rdr["code"].ToString();
                     ent.NAME = rdr["auditee"].ToString();
                     ent.AREA = rdr["area"].ToString();
@@ -11376,7 +11375,6 @@ namespace AIS.Controllers
                     chk.NAME = rdr["NAME"].ToString();
                     chk.LICENSE = rdr["LICENSE"].ToString();
                     if (rdr["DATE_OF_OPENING"].ToString() != null && rdr["DATE_OF_OPENING"].ToString() != "")
-
                         chk.DATE_OF_OPENING = Convert.ToDateTime(rdr["DATE_OF_OPENING"].ToString()).ToString("dd/MM/yyyy");
                     if (rdr["AUDIT_STARTDATE"].ToString() != null && rdr["AUDIT_STARTDATE"].ToString() != "")
                         chk.AUDIT_STARTDATE = Convert.ToDateTime(rdr["AUDIT_STARTDATE"].ToString()).ToString("dd/MM/yyyy");
@@ -11385,9 +11383,18 @@ namespace AIS.Controllers
                     if (rdr["OPERATION_STARTDATE"].ToString() != null && rdr["OPERATION_STARTDATE"].ToString() != "")
                         chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"].ToString()).ToString("dd/MM/yyyy");
                     if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
-
                         chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"].ToString()).ToString("dd/MM/yyyy");
+                    chk.HIGH = rdr["HIGH"].ToString();
+                    chk.MEDIUM = rdr["MEDIUM"].ToString();
+                    chk.LOW = rdr["LOW"].ToString();
+                    
+                    chk.SETTLED_HIGH = rdr["SETTLE_HIGH"].ToString();
+                    chk.SETTLED_MEDIUM = rdr["SETTLE_MEDIUM"].ToString();
+                    chk.SETTLED_LOW = rdr["SETTLE_LOW"].ToString();
 
+                    chk.OPEN_HIGH = rdr["OPEN_HIGH"].ToString();
+                    chk.OPEN_MEDIUM = rdr["OPEN_MEDIUM"].ToString();
+                    chk.OPEN_LOW = rdr["OPEN_LOW"].ToString();
 
 
 
@@ -11488,11 +11495,9 @@ namespace AIS.Controllers
                     GetTeamDetailsModel chk = new GetTeamDetailsModel();
 
                     chk.TEAM_NAME = rdr["TEAM_NAME"].ToString();
-
                     chk.MEMBER_PPNO = rdr["MEMBER_PPNO"].ToString();
-                    chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
+                    chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();                    
                     chk.ISTEAMLEAD = rdr["ISTEAMLEAD"].ToString();
-
                     chk.AUDIT_START_DATE = Convert.ToDateTime(rdr["AUDIT_START_DATE"].ToString()).ToString("dd/MM/yyyy");
                     chk.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"].ToString()).ToString("dd/MM/yyyy");
 

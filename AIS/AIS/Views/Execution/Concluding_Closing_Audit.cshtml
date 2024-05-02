@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Concluding_Closing_Audit";
     Layout = "_Layout";
 }
@@ -14,9 +13,6 @@
         $('#reportheading1').empty;
         $('#reportheading2').empty;
 
-      
-
-      
     });
     function reloadLocationToUrl() {
         window.location.href = g_asiBaseURL + "/Engagement/task_list"
@@ -25,9 +21,9 @@
 
 
     function getaddress() {
-        
+
         $('#auditorWiseProgessTable tbody').empty();
-        $('#joiningAuditorDetailsTable tbody').empty();
+        $('#joiningAuditorDetailsTable').empty();
         //getParas();
         g_engId = $('#entitySelectField').val();
         g_type_id = $('#entitySelectField option:selected').attr("ent_type_id");
@@ -49,7 +45,6 @@
                 $.each(data, function (i, v) {
                     console.log(v);
                     g_teamMembers.push(v.teaM_MEM_PPNO);
-                    // $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.teaM_MEM_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.joininG_DATE.split('T')[0] + '</td><td class="text-center" style="font-size:xx-small">' + (new Date().toISOString()).split("T")[0] + '</td></tr>');
                     $('#conoffice').html(v.p_NAME);
                     $('#EntN').html(v.name);
                     $('#ADD').html(v.address);
@@ -58,7 +53,17 @@
                     $('#o_s_d').html(v.operatioN_STARTDATE.split('T')[0]);
                     $('#o_e_d').html(v.operatioN_ENDDATE.split('T')[0]);
 
+                    $('#highTotalMemos').html(v.high);
+                    $('#highTotalSettledMemos').html(v.settleD_HIGH);
+                    $('#highTotalOpenMemos').html(v.opeN_HIGH);
 
+                    $('#mediumTotalMemos').html(v.medium);
+                    $('#mediumTotalSettledMemos').html(v.settleD_MEDIUM);
+                    $('#mediumTotalOpenMemos').html(v.settleD_MEDIUM);
+
+                    $('#lowTotalMemos').html(v.low);
+                    $('#lowTotalSettledMemos').html(v.settleD_LOW);
+                    $('#lowTotalOpenMemos').html(v.opeN_LOW);
 
                 });
 
@@ -67,23 +72,22 @@
             dataType: "json",
         });
 
-          $.ajax({
-              url: g_asiBaseURL + "/ApiCalls/GetTeamDetails",
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/GetTeamDetails",
             type: "POST",
             data: {
                 'ENG_ID': g_engId
             },
             cache: false,
-              success: function (data) {
-
-                  console.log(data);
+            success: function (data) {
+                console.log(data);
                 $.each(data, function (i, v) {
                     g_teamMembers.push(v.teaM_MEM_PPNO);
-                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" style="font-size:xx-small">' + v.membeR_PPNO + '</td><td class="text-center" style="font-size:xx-small">' + v.membeR_NAME + '</td><td class="text-center" style="font-size:xx-small">' + v.audiT_START_DATE + '</td><td class="text-center" style="font-size:xx-small">' + v.audiT_END_DATE + '</td></tr>');
-                 // 
+                    $('#joiningAuditorDetailsTable').append('<tr><td class="text-center" >' + v.membeR_PPNO + '</td><td class="text-center" >' + v.membeR_NAME + '</td><td class="text-center" >' + v.isteamlead + '</td><td class="text-center" >' + v.audiT_START_DATE + '</td><td class="text-center" >' + v.audiT_END_DATE + '</td></tr>');
+                  
                 });
 
-             
+
 
 
 
@@ -91,8 +95,8 @@
             dataType: "json",
         });
 
-  
-  
+
+
     }
 
     function auditeereport() {
@@ -106,19 +110,18 @@
         $('#o_s_d').html();
         $('#o_e_d').html();
 
-       // if (g_type_id == 6)
+        // if (g_type_id == 6)
         window.location.href = g_asiBaseURL + '/Execution/auditee_observations_report?engid=' + g_engId + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
-      //  else
-       //     window.location.href = '/Execution/auditee_observations_report_cau?engid=' + g_engId + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
+        //  else
+        //     window.location.href = '/Execution/auditee_observations_report_cau?engid=' + g_engId + '&conOffice=' + $('#conoffice').html() + '&entName=' + $('#EntN').html() + '&startDate=' + $('#a_s_d').html() + '&endDate=' + $('#a_e_d').html() + '&ostart=' + $('#o_s_d').html() + '&oend=' + $('#o_e_d').html();
 
 
-       
-            
+
+
 
     }
 
-    function getreportstatus()
-    {
+    function getreportstatus() {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_report_status",
             type: "POST",
@@ -128,16 +131,16 @@
             cache: false,
             success: function (data) {
                 if (data[0].reF_OUT == "0") {
-                 //   auditeereport();
-                   // onAlertCallback(auditeereport);
-                   if (g_engId == 0)
+                    //   auditeereport();
+                    // onAlertCallback(auditeereport);
+                    if (g_engId == 0)
                         alert("Audit Entity Not Selected");
 
-                  
+
                     else {
-                    alert(data[0].message);
-                    return;
-                }
+                        alert(data[0].message);
+                        return;
+                    }
                 }
                 else {
                     if (g_engId == 0)
@@ -172,7 +175,7 @@
             cache: false,
             success: function (data) {
                 alert(data.Message);
-            
+
             },
             dataType: "json",
         });
@@ -203,25 +206,25 @@
         </select>
     </div>
 </div>
-<div class="col-md-12 mt-3">
+<div class="row col-md-12 mt-3">
 
-    <div class="row col-md-6">
+    <div class="row col-md-12">
         <div>
             <h5 style="display: block; color: #45c545;">Auditee Information</h5>
         </div>
-        <table id="reportheading1" class="table table-bordered mb-0 mt-3 bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+        <table id="reportheading1" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+            <thead>
                 <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Controling Office</th>
-                    <th id="conoffice" Class="col-md-5" style="background-color:whitesmoke"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Controling Office</th>
+                    <th id="conoffice" Class="col-md-5" ></th>
                 </tr>
                 <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Entity Name</th>
-                    <th id="EntN" Class="col-md-5" style="background-color:white"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Entity Name</th>
+                    <th id="EntN" Class="col-md-5" ></th>
                 </tr>
                 <tr>
-                    <th class="col-md-aut-1" style="font-size:xx-small">Address</th>
-                    <th id="ADD" Class="col-md-5" style="background-color: whitesmoke"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-aut-1">Address</th>
+                    <th id="ADD" Class="col-md-5"></th>
                 </tr>
 
 
@@ -232,83 +235,76 @@
         </table>
     </div>
 
-    <div class="row col-md-6">
+    <div class="row col-md-12">
 
-        <table id="reportheading2" class="table table-bordered mb-0  bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+        <table id="reportheading2" class="table table-bordered mb-0  bg-white table-striped" >
+            <thead>
 
                 <tr>
 
-                    <th class="col-md-1" style="font-size:xx-small">Audit S-Date</th>
-                    <th id="a_s_d" Class="col-md-2" style="background-color:white"></th>
-                    <th class="col-md-1" style="font-size:xx-small">Audit E-Date</th>
-                    <th id="a_e_d" Class="col-md-2" style="background-color:white"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit S-Date</th>
+                    <th id="a_s_d" Class="col-md-2" ></th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit E-Date</th>
+                    <th id="a_e_d" Class="col-md-2" ></th>
                 </tr>
 
                 <tr>
-                    <th class="col-md-1" style="font-size:xx-small">Operational S-Date</th>
-                    <th id="o_s_d" Class="col-md-2" style="background-color:whitesmoke"></th>
-                    <th class="col-md-1" style="font-size:xx-small">Operational E-Date</th>
-                    <th id="o_e_d" Class="col-md-2" style="background-color:whitesmoke"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational S-Date</t>
+                    <th  id="o_s_d" Class="col-md-2" ></th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational E-Date</th>
+                    <th id="o_e_d" Class="col-md-2" ></th>
                 </tr>
-
 
             </thead>
-            <tbody>
+            <thead>
+                <tr>
+                    <th  class="col-md-auto"></th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">High</th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">Medium</th>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">Low</th>
+                </tr>
+                <tr>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Total Memos</th>
+                    <th id="highTotalMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="mediumTotalMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="lowTotalMemos" class="col-md-auto bg-transparent"></th>
+                </tr>
+                <tr>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Settled</th>
+                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
+                </tr>
+                <tr>
+                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Add to Final Report</th>
+                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
+                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <th style="background-color: rgb(181 229 117 / 93%) !important; "  colspan="4" class="col-md-auto">Joining Details</th>                  
+                </tr>
+                
+            </thead>
+            <thead>
+                <tr>
+                    <th class="col-md-auto">P.P. Number</th>
+                    <th class="col-md-auto">Name</th>
+                    <th class="col-md-auto">Team Lead</th>
+                    <th class="col-md-auto">Joining Date</th>
+                    <th class="col-md-auto">Completion Date </th>
+                </tr>
+            </thead>
+            <tbody id="joiningAuditorDetailsTable">
             </tbody>
         </table>
     </div>
 </div>
 
-<div class="row col-md-12 mt-3">
-    <div class="col-md-6">
-        <div>
-            <h5 style="display: block; color: #45c545;">Auditor Wise Memo Status</h5>
-        </div>
-        <table id="auditorWiseProgessTable" class="table table-bordered mb-0 mt-3 bg-white table-striped" style="font-size:xx-small">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
-                <tr>
-                    <th class="col-md-auto" style="font-size:xx-small">Auditor</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Team Lead</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Total Memos</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Submitted to Auditee</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Responded by Auditee</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Resolved</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Add to Draft Report</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
 
-
-    </div>
-
-    <div class=" col-md-6">
-        <div>
-            <h5 style="display: block; color: #45c545;">Joining and Closing Dates</h5>
-        </div>
-        <table id="joiningAuditorDetailsTable" class="table table-bordered mb-0 mt-3 bg-white table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto" style="font-size:xx-small">P.P. Number</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Name</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Joining Date</th>
-                    <th class="col-md-auto" style="font-size:xx-small">Completion Date </th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-       
-    </div>
-</div>
 <div class="row col-md-12 mt-3 ml-5">
-    <button onclick="closeDraftAudit();" class="col-md-3 mr-5 btn btn-danger float-right d-none">Generate Risk Rating</button>
-    <button onclick="window.location.href='../Execution/auditee_position_outlook';" class="col-md-2 mr-5 d-none  btn btn-success float-right">Auditee position/Outlook</button>
-    
-    <button onclick="getreportstatus();" class="col-md-3 mr-5  btn btn-success float-right"> Auditee observations report</button>
-        <button onclick="closeDraftAudit();" class="col-md-3 btn btn-danger float-right"> Close Audit</button>
-
+    <button onclick="closeDraftAudit();" class="col-md-3 btn btn-danger offset-md-9"> Close Audit</button>
 </div>
 
