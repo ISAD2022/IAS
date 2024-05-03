@@ -9,21 +9,15 @@
     var g_teamMembers = [];
     var g_engId = 0;
     var g_type_id = 0;
-    $(document).ready(function () {
-        $('#reportheading1').empty;
-        $('#reportheading2').empty;
-
-    });
     function reloadLocationToUrl() {
         window.location.href = g_asiBaseURL + "/Engagement/task_list"
     }
 
 
-
     function getaddress() {
 
         $('#auditorWiseProgessTable tbody').empty();
-        $('#joiningAuditorDetailsTable').empty();
+        $('#joiningAuditorDetailsTable tbody').empty();
         //getParas();
         g_engId = $('#entitySelectField').val();
         g_type_id = $('#entitySelectField option:selected').attr("ent_type_id");
@@ -83,13 +77,9 @@
                 console.log(data);
                 $.each(data, function (i, v) {
                     g_teamMembers.push(v.teaM_MEM_PPNO);
-                    $('#joiningAuditorDetailsTable').append('<tr><td class="text-center" >' + v.membeR_PPNO + '</td><td class="text-center" >' + v.membeR_NAME + '</td><td class="text-center" >' + v.isteamlead + '</td><td class="text-center" >' + v.audiT_START_DATE + '</td><td class="text-center" >' + v.audiT_END_DATE + '</td></tr>');
-                  
+                    $('#joiningAuditorDetailsTable tbody').append('<tr><td class="text-center" >' + v.membeR_PPNO + '</td><td class="text-center" >' + v.membeR_NAME + '</td><td class="text-center" >' + v.isteamlead + '</td><td class="text-center" >' + v.audiT_START_DATE + '</td><td class="text-center" >' + v.audiT_END_DATE + '</td></tr>');
+
                 });
-
-
-
-
 
             },
             dataType: "json",
@@ -164,7 +154,6 @@
 
 
     function closeDraftAudit() {
-
         $.ajax({
 
             url: g_asiBaseURL + "/ApiCalls/conclude_draft_audit",
@@ -207,104 +196,102 @@
     </div>
 </div>
 <div class="row col-md-12 mt-3">
+    <h5 style="display: block; color: #45c545;">Auditee Information</h5>
+</div>
+<div class="row col-md-12">
 
-    <div class="row col-md-12">
-        <div>
-            <h5 style="display: block; color: #45c545;">Auditee Information</h5>
-        </div>
-        <table id="reportheading1" class="table table-bordered mb-0 mt-3 bg-white table-striped">
-            <thead>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Controling Office</th>
-                    <th id="conoffice" Class="col-md-5" ></th>
-                </tr>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Entity Name</th>
-                    <th id="EntN" Class="col-md-5" ></th>
-                </tr>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-aut-1">Address</th>
-                    <th id="ADD" Class="col-md-5"></th>
-                </tr>
+    <table id="reportheading1" class="table table-bordered mb-0 mt-3 bg-white table-striped">
+        <thead>
+            <tr>
+                <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Controling Office</th>
+                <th id="conoffice" Class="col-md-5"></th>
+            </tr>
+            <tr>
+                <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-1">Entity Name</th>
+                <th id="EntN" Class="col-md-5"></th>
+            </tr>
+            <tr>
+                <th style="background-color: rgb(181 229 117 / 93%) !important;" class="col-md-aut-1">Address</th>
+                <th id="ADD" Class="col-md-5"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div class="row col-md-12">
+    <table id="reportheading2" class="table table-bordered mb-0  bg-white table-striped">
+
+        <tr>
+
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit S-Date</th>
+            <th id="a_s_d" Class="col-md-2"></th>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit E-Date</th>
+            <th id="a_e_d" Class="col-md-2"></th>
+        </tr>
+
+        <tr>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational S-Date</t>
+            <th id="o_s_d" Class="col-md-2"></th>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational E-Date</th>
+            <th id="o_e_d" Class="col-md-2"></th>
+        </tr>
+
+
+        <tr>
+            <th class="col-md-auto"></th>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">High</th>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Medium</th>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Low</th>
+        </tr>
+        <tr>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Total Memos</th>
+            <th id="highTotalMemos " class="col-md-auto bg-transparent text-center"></th>
+            <th id="mediumTotalMemos" class="col-md-auto bg-transparent text-center"></th>
+            <th id="lowTotalMemos" class="col-md-auto bg-transparent text-center"></th>
+        </tr>
+        <tr>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Settled</th>
+            <th id="highTotalSettledMemos" class="col-md-auto bg-transparent text-center"></th>
+            <th id="mediumTotalSettledMemos" class="col-md-auto bg-transparent text-center"></th>
+            <th id="lowTotalSettledMemos" class="col-md-auto bg-transparent text-center"></th>
+        </tr>
+        <tr>
+            <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Add to Final Report</th>
+            <th id="highTotalOpenMemos" class="col-md-auto bg-transparent text-center"></th>
+            <th id="mediumTotalOpenMemos" class="col-md-auto bg-transparent text-center"></th>
+            <th id="lowTotalOpenMemos" class="col-md-auto bg-transparent text-center"></th>
+        </tr>
+
+
+      
 
 
 
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="row col-md-12">
-
-        <table id="reportheading2" class="table table-bordered mb-0  bg-white table-striped" >
-            <thead>
-
-                <tr>
-
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit S-Date</th>
-                    <th id="a_s_d" Class="col-md-2" ></th>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Audit E-Date</th>
-                    <th id="a_e_d" Class="col-md-2" ></th>
-                </tr>
-
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational S-Date</t>
-                    <th  id="o_s_d" Class="col-md-2" ></th>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-1">Operational E-Date</th>
-                    <th id="o_e_d" Class="col-md-2" ></th>
-                </tr>
-
-            </thead>
-            <thead>
-                <tr>
-                    <th  class="col-md-auto"></th>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">High</th>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">Medium</th>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto text-center">Low</th>
-                </tr>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Total Memos</th>
-                    <th id="highTotalMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="mediumTotalMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="lowTotalMemos" class="col-md-auto bg-transparent"></th>
-                </tr>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Settled</th>
-                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="highTotalSettledMemos" class="col-md-auto bg-transparent"></th>
-                </tr>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%);" class="col-md-auto">Add to Final Report</th>
-                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
-                    <th id="highTotalOpenMemos" class="col-md-auto bg-transparent"></th>
-                </tr>
-            </thead>
-            <thead>
-                <tr>
-                    <th style="background-color: rgb(181 229 117 / 93%) !important; "  colspan="4" class="col-md-auto">Joining Details</th>                  
-                </tr>
-                
-            </thead>
-            <thead>
-                <tr>
-                    <th class="col-md-auto">P.P. Number</th>
-                    <th class="col-md-auto">Name</th>
-                    <th class="col-md-auto">Team Lead</th>
-                    <th class="col-md-auto">Joining Date</th>
-                    <th class="col-md-auto">Completion Date </th>
-                </tr>
-            </thead>
-            <tbody id="joiningAuditorDetailsTable">
-            </tbody>
-        </table>
-    </div>
+    </table>
+    
+</div>
+<div class="row col-md-12">
+    <table id="joiningAuditorDetailsTable" class="table table-bordered mb-0  bg-white table-striped">
+        <thead>
+            <tr>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " colspan="4" class="col-md-auto text-center">Joining Details</th>
+            </tr>
+            <tr>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " class="col-md-auto">P.P. Number</th>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " class="col-md-auto">Name</th>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " class="col-md-auto">Team Lead</th>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " class="col-md-auto">Joining Date</th>
+                <th style="background-color: rgb(181 229 117 / 93%) !important; " class="col-md-auto">Completion Date </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
 
 
-<div class="row col-md-12 mt-3 ml-5">
+<div class="row col-md-12 mt-3">
     <button onclick="closeDraftAudit();" class="col-md-3 btn btn-danger offset-md-9"> Close Audit</button>
 </div>
 

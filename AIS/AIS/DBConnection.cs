@@ -5333,6 +5333,7 @@ namespace AIS.Controllers
 
                     chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
+                    chk.HEADING = rdr["HEADING"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
@@ -6674,10 +6675,16 @@ namespace AIS.Controllers
                     if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
                         criteria_id = Convert.ToInt32(rdr["ID"]);
                 }
-                cmd.CommandText = "begin Criteria(" + criteria_id + "); end;";
-                cmd.ExecuteReader();
 
+                cmd.CommandText = "pkg_pg.P_get_Criteria_ent_count";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = criteria_id;               
+                cmd.ExecuteReader();
+                
+                cmd.Parameters.Clear();
                 cmd.CommandText = sqlParams.GetCriteriaEntitiesQueryFromParams(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
+                cmd.CommandType = CommandType.Text;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
                 {
@@ -11384,19 +11391,19 @@ namespace AIS.Controllers
                         chk.OPERATION_STARTDATE = Convert.ToDateTime(rdr["OPERATION_STARTDATE"].ToString()).ToString("dd/MM/yyyy");
                     if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
                         chk.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"].ToString()).ToString("dd/MM/yyyy");
-                    chk.HIGH = rdr["HIGH"].ToString();
-                    chk.MEDIUM = rdr["MEDIUM"].ToString();
-                    chk.LOW = rdr["LOW"].ToString();
                     
-                    chk.SETTLED_HIGH = rdr["SETTLE_HIGH"].ToString();
-                    chk.SETTLED_MEDIUM = rdr["SETTLE_MEDIUM"].ToString();
-                    chk.SETTLED_LOW = rdr["SETTLE_LOW"].ToString();
+                    
+                    chk.HIGH = rdr["HIGH"].ToString().Trim() == "" ? "0" : rdr["HIGH"].ToString();
+                    chk.MEDIUM = rdr["MEDIUM"].ToString().Trim() == "" ? "0" : rdr["MEDIUM"].ToString();
+                    chk.LOW = rdr["LOW"].ToString().Trim() == "" ? "0" : rdr["LOW"].ToString();
 
-                    chk.OPEN_HIGH = rdr["OPEN_HIGH"].ToString();
-                    chk.OPEN_MEDIUM = rdr["OPEN_MEDIUM"].ToString();
-                    chk.OPEN_LOW = rdr["OPEN_LOW"].ToString();
+                    chk.SETTLED_HIGH = rdr["SETTLE_HIGH"].ToString().Trim() == ""?"0": rdr["SETTLE_HIGH"].ToString();
+                    chk.SETTLED_MEDIUM = rdr["SETTLE_MEDIUM"].ToString().Trim() == ""? "0" : rdr["SETTLE_MEDIUM"].ToString();
+                    chk.SETTLED_LOW = rdr["SETTLE_LOW"].ToString().Trim() == ""? "0" : rdr["SETTLE_LOW"].ToString();
 
-
+                    chk.OPEN_HIGH = rdr["OPEN_HIGH"].ToString().Trim() == ""? "0" : rdr["OPEN_HIGH"].ToString();
+                    chk.OPEN_MEDIUM = rdr["OPEN_MEDIUM"].ToString().Trim() == "" ? "0" : rdr["OPEN_MEDIUM"].ToString();
+                    chk.OPEN_LOW = rdr["OPEN_LOW"].ToString().Trim() == "" ? "0" : rdr["OPEN_LOW"].ToString();
 
                     list.Add(chk);
                 }

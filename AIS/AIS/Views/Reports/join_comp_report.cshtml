@@ -6,6 +6,12 @@
 
 <script type="text/javascript">
     function FindJoiningCompletionData() {
+        $('#JoiningCompletionGrid tbody').empty();
+
+        if ($('#auditDepartmentSelectBox').val()==0) {
+            alert("Select Department/ Audit Zone to proceed");
+            return;
+        }
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_joining_completion",
             type: "POST",
@@ -56,9 +62,9 @@
 
 <div class="row col-md-12 mt-3">  
     
-        <label class="font-weight-bold"> Audit Department</label>
+        <label class="font-weight-bold"> Audit Department/ Audit Zone</label>
         <select id="auditDepartmentSelectBox" class="form-select form-control" aria-label="Default select example">
-            <option value="112215">--All--</option>
+            <option value="0">--Select Department/Audit Zone--</option>
             @{
                 if (ViewData["DepartmentList"] != null)
                 {
@@ -77,11 +83,11 @@
 
 <div class="row col-md-12 mt-3">
 
-    <div class="row col-md-6">
+    <div class="col-md-6">
         <label class="font-weight-bold">Audit Plan Start Date</label>
         <input id="auditStartDateField" class="form-select form-control" aria-label="Default select example" type="date" />
     </div>
-    <div class="row col-md-6">
+    <div class="col-md-6">
         <label class="font-weight-bold">Audit Plan End Date </label>
         <input id="auditEndDateField" class="form-select form-control" aria-label="Default select example" type="date" />
     </div>
