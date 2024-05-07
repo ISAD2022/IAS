@@ -26,7 +26,9 @@
             });
         });
     });
-
+    function reloadLocation() {
+        window.location = window.location.pathname;
+    }
 
     function recommendReferProcTransaction(id) {
         g_trId = id;
@@ -83,12 +85,15 @@
             },
             cache: false,
             success: function (data) {
-                $('#recommendReferProcTransactionModal').modal('hide');
-                window.location = window.location.pathname;
+                $('#recommendReferProcTransactionModal').modal('hide'); 
+                $('#commentsBox').modal('hide');
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
     }
+    
     function finalRefferedBackProcessTransaction() {
         $.ajax({
             url: g_asiBaseURL + "/Setup/reffered_back_process_transaction_by_authorizer",
@@ -100,8 +105,9 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
-                window.location = window.location.pathname;
+                $('#commentsBox').modal('hide');
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });

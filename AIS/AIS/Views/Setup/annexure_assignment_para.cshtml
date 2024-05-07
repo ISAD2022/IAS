@@ -68,9 +68,9 @@
 
         var callURL = "";
         if (pc == "N")
-            callURL = "/ApiCalls/get_new_para_text";
+            callURL = g_asiBaseURL + "/ApiCalls/get_new_para_text";
         else
-            callURL = "/ApiCalls/get_para_text";
+            callURL = g_asiBaseURL + "/ApiCalls/get_para_text";
         $('#viewMemoModel').modal('show');
         $('#updatedAnnexlist').val(annex_id);
         $('#viewMemo_memo').html("");

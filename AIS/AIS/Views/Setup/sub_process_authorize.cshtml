@@ -27,7 +27,9 @@
         });
     });
 
-   
+    function reloadLocation() {
+        window.location = window.location.pathname;
+    }
     function recommendReferProcTransaction(id) {
         g_trId = id;
         $('#recommendReferProcTransactionModal').modal('show');
@@ -72,8 +74,9 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
-                window.location = window.location.pathname;
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+               
             },
             dataType: "json",
         });
@@ -89,8 +92,8 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                //console.log(data);
-                window.location = window.location.pathname;
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });

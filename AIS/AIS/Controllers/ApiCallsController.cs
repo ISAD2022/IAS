@@ -127,35 +127,41 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public bool authorize_sub_process_by_authorizer(int T_ID, string COMMENTS)
+        public string authorize_sub_process_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.AuthorizeSubProcessByAuthorizer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeSubProcessByAuthorizer(T_ID, COMMENTS) + "\"}";
+            
         }
         [HttpPost]
-        public bool reffered_back_sub_process_by_authorizer(int T_ID, string COMMENTS)
+        public string reffered_back_sub_process_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RefferedBackSubProcessByAuthorizer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RefferedBackSubProcessByAuthorizer(T_ID, COMMENTS) + "\"}";
+          
         }
 
         [HttpPost]
-        public string recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
+        public string recommend_process_transaction_by_reviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS, PROCESS_DETAIL_ID, PROCESS_ID, SUB_PROCESS_ID, HEADING, V_ID, CONTROL_ID, ROLE_ID, RISK_ID, ANNEX_CODE) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RecommendProcessTransactionByReviewer(T_ID, COMMENTS, PROCESS_DETAIL_ID,  SUB_PROCESS_ID, HEADING, V_ID, CONTROL_ID, ROLE_ID, RISK_ID, ANNEX_CODE) + "\"}";
 
         }
-        public bool reffered_back_process_transaction_by_reviewer(int T_ID, string COMMENTS)
+
+        [HttpPost]
+        public string reffered_back_process_transaction_by_reviewer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RefferedBackProcessTransactionByReviewer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RefferedBackProcessTransactionByReviewer(T_ID, COMMENTS) + "\"}";
+        }
+       [HttpPost]
+        public string authorize_process_transaction_by_authorizer(int T_ID, string COMMENTS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthorizeProcessTransactionByAuthorizer(T_ID, COMMENTS) + "\"}";
+
         }
         [HttpPost]
-        public bool authorize_process_transaction_by_authorizer(int T_ID, string COMMENTS)
+        public string reffered_back_process_transaction_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.AuthorizeProcessTransactionByAuthorizer(T_ID, COMMENTS);
-        }
-        [HttpPost]
-        public bool reffered_back_process_transaction_by_authorizer(int T_ID, string COMMENTS)
-        {
-            return dBConnection.RefferedBackProcessTransactionByAuthorizer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RefferedBackProcessTransactionByAuthorizer(T_ID, COMMENTS) + "\"}";
+
         }
 
         [HttpPost]

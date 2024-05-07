@@ -18,6 +18,9 @@
 
 <script type="text/javascript">
     var g_trId = 0;
+    var g_sId = 0;
+    var g_dId = 0;
+    var g_pId = 0;
     var g_selectedChecklistDetailRecord = {};
     $(document).ready(function () {
         $("#searchTableRecord").on("keyup", function () {
@@ -41,20 +44,17 @@
             cache: false,
             success: function (data) {
                 var tr = data[0];
+                g_sId = tr.n_S_ID;
                 g_selectedChecklistDetailRecord = data[0];
                  $('#viewerMainProcNameModalField').val(tr.process);
                 $('#viewerSubProcNameModalField').val(tr.neW_SUB_PROCESS);
-                $('#processDetailNewField').val(tr.neW_PROCESS_DETAIL);
-               
-                 
-               
+                $('#processDetailNewField').val(tr.neW_PROCESS_DETAIL);  
 
                 $('#updatedViolationlist').val(tr.n_V_ID);
                 $('#updatedProcOwnerlist').val(tr.n_OWNER_ID);
                 $('#updatedRoleResplist').val(tr.n_ROLE_RESP_ID);
                 $('#updatedRisklist').val(tr.n_RISK_ID);
-                $('#updatedAnnexlist').val(tr.n_ANNEX_ID);
-    
+                $('#updatedAnnexlist').val(tr.n_ANNEX_ID);    
                 
                 $('#oldProcessLabel').val(tr.process);
                 $('#oldViolationLabel').val(tr.violation);
@@ -82,14 +82,13 @@
     function finalRecommendProcessTransaction() {
 
         $.ajax({
-            url: g_asiBaseURL + "/Setup/recommend_process_transaction_by_reviewer",
+            url: g_asiBaseURL + "/ApiCalls/recommend_process_transaction_by_reviewer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
-                'COMMENTS': $('#commentAreaInCommentsBox').val(),
-                'PROCESS_ID': g_selectedChecklistDetailRecord.process,
-                'SUB_PROCESS_ID': g_selectedChecklistDetailRecord.neW_SUB_PROCESS,
-                'PROCESS_DETAIL_ID': g_selectedChecklistDetailRecord.neW_PROCESS_DETAIL,
+                'COMMENTS': $('#commentAreaInCommentsBox').val(),               
+                'SUB_PROCESS_ID': g_sId,
+                'PROCESS_DETAIL_ID': g_selectedChecklistDetailRecord.n_D_ID,
                 'HEADING': $('#updatedProcDetailHeading').val(),
                 'V_ID': $('#updatedViolationlist').val(),
                 'CONTROL_ID': $('#updatedProcOwnerlist').val(),
@@ -100,6 +99,7 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
+                $('#commentsBox').modal('hide');
                 alert(data.Message);
                 onAlertCallback(reloadLocation);              
             },
@@ -108,7 +108,7 @@
     }
     function finalRefferedBackProcessTransaction() {
         $.ajax({
-            url: g_asiBaseURL + "/Setup/reffered_back_process_transaction_by_reviewer",
+            url: g_asiBaseURL + "/ApiCalls/reffered_back_process_transaction_by_reviewer",
             type: "POST",
             data: {
                 'T_ID': g_trId,
@@ -117,7 +117,9 @@
             cache: false,
             success: function (data) {
                 $('#recommendReferProcTransactionModal').modal('hide');
-                window.location = window.location.pathname;
+                $('#commentsBox').modal('hide');
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
             },
             dataType: "json",
         });
@@ -153,25 +155,25 @@
                     foreach (var item in (dynamic)(ViewData["TransactionsList"]))
                     {
 
-                                <tr id="div_@item.ID">
-                                    <td>
-                                        <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
-                                    </td>
-                                    <td>
-                                        <p class="fw-normal mb-1">@item.SUB_PROCESS_NAME</p>
-                                    </td>
-                                    <td>
-                                        <p class="fw-normal mb-1">@item.DESCRIPTION</p>
-                                    </td>
-                                    <td>
-                                        <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
-                                            Details
-                                        </button>
-                                    </td>
-                                </tr>
+                                        <tr id="div_@item.ID">
+                                            <td>
+                                                <p class="fw-normal mb-1">@item.PROCESS_NAME</p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">@item.SUB_PROCESS_NAME</p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">@item.DESCRIPTION</p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">@item.PROCESS_STATUS</p>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn text-danger btn-sm btn-rounded" onclick="recommendReferProcTransaction('@item.ID');">
+                                                    Details
+                                                </button>
+                                            </td>
+                                        </tr>
                     }
                 }
             }
@@ -264,7 +266,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ViolationsList"]))
                                             {
-                                                        <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                                <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                             }
 
                                         }
@@ -285,7 +287,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
                                             {
-                                                        <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                                <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
                                             }
 
                                         }
@@ -306,7 +308,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RoleRespList"]))
                                             {
-                                                        <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                                <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -327,7 +329,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RiskList"]))
                                             {
-                                                        <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                                <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -348,7 +350,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                             {
-                                                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                                                <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                             }
 
                                         }
