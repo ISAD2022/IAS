@@ -49,6 +49,7 @@
             alert("Select Zone Office to proceed");
             return;
         }
+        $('#gldetailtab tbody').empty();
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_loan_detail_report",
             type: "POST",
@@ -93,7 +94,7 @@
 
                         foreach (var risk in (dynamic)(ViewData["GMsList"]))
                         {
-                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                                            <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
                         }
 
                     }
@@ -151,7 +152,7 @@
 
                         foreach (var risk in (dynamic)(ViewData["LoanGLsList"]))
                         {
-                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                                            <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
                         }
 
                     }
@@ -173,7 +174,7 @@
 
                         foreach (var risk in (dynamic)(ViewData["LoanStatusList"]))
                         {
-                                        <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
+                                            <option id="@risk.CODE" value="@risk.CODE">@risk.NAME</option>
                         }
 
                     }
