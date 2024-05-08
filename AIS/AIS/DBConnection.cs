@@ -396,6 +396,10 @@ namespace AIS.Controllers
                     menuPage.Page_Path = rdr["PAGE_PATH"].ToString();
                     menuPage.Page_Order = Convert.ToInt32(rdr["PAGE_ORDER"]);
                     menuPage.Status = rdr["STATUS"].ToString();
+                    menuPage.Sub_Menu = rdr["Sub_Menu"].ToString();
+                    menuPage.Sub_Menu_Id = rdr["Sub_Menu_Id"].ToString();
+                    menuPage.Sub_Menu_Name = rdr["Sub_Menu_Name"].ToString();
+                    menuPage.Status = rdr["STATUS"].ToString();
                     if (rdr["HIDE_MENU"].ToString() != null && rdr["HIDE_MENU"].ToString() != "")
                         menuPage.Hide_Menu = Convert.ToInt32(rdr["HIDE_MENU"]);
                     modelList.Add(menuPage);

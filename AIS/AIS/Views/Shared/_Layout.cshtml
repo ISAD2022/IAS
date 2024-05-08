@@ -23,17 +23,16 @@
             display: none !important;
         }
 
-
-
         .dropdown-submenu {
             position: relative;
         }
-
-            .dropdown-submenu .dropdown-menu {
+        .dropdown-submenu .dropdown-menu {
                 top: 0;
                 left: 100%;
                 margin-top: -1px;
             }
+
+       
     </style>
     <script type="text/javascript">
 
@@ -45,8 +44,22 @@
                 $("#wait").css("display", "none");
             });
 
+          //  window.addEventListener('load', adjustSubmenuPosition);
+          //  window.addEventListener('resize', adjustSubmenuPosition);
 
         });
+
+        /*
+        function adjustSubmenuPosition() {
+            var submenus = $($('a.nested-menu').parent().find('ul.dropdown-menu'))[0];
+            var submenuRect = submenus.getBoundingClientRect();
+            var windowWidth = window.innerWidth;
+            if (submenuRect.left + submenuRect.width > windowWidth) {
+                $($('a.nested-menu').parent().find('ul.dropdown-menu')[0]).addClass('submenu-right');
+            } else {
+                $($('a.nested-menu').parent().find('ul.dropdown-menu')[0]).addClass('submenu-right');
+            }
+        }*/
     </script>
 
 </head>
@@ -62,6 +75,7 @@
             <div id="navBarTopMenu" class="collapse navbar-collapse">
 
                 @{
+                    List<string> SubMenuIds = new List<string>();
                     if (ViewData["TopMenu"] != null)
                     {
                         string menu_name = "";
@@ -74,32 +88,62 @@
 
                                 @if (ViewData["TopMenuPages"] != null)
                                 {
-                                   
+
                                     <ul class="dropdown-menu">
                                         @foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
                                         {
-                                           
+
                                             if (itemPage.Menu_Id != 1020304050 && itemPage.Menu_Id == item.Menu_Id && itemPage.Hide_Menu == 0)
                                             {
+                                                if (itemPage.Sub_Menu == "1")
+                                                {
+                                                    bool added = false;
+                                                    foreach (string smId in SubMenuIds)
+                                                    {
+                                                        if (smId == itemPage.Sub_Menu_Id)
+                                                        {
+                                                            added = true;
+                                                        }
 
-                                                <li>
-                                                    <a class="dropdown-item" tabindex="-1" href="~/@itemPage.Page_Path">
-                                                        @itemPage.Page_Name
-                                                    </a>
-                                                </li>
+                                                    }
+                                                    if (!added)
+                                                    {
+                                                        SubMenuIds.Add(itemPage.Sub_Menu_Id);
+                                                        <li class="dropdown-submenu">
+                                                            <a class="nested-menu dropdown-item" tabindex="-1" href="#">@itemPage.Sub_Menu_Name<span class="fa fa-caret-right ml-2"></span></a>
+                                                            <ul class="dropdown-menu">
+                                                                @foreach (var itemSubPage in (dynamic)(ViewData["TopMenuPages"]))
+                                                                {
+                                                                    if (itemSubPage.Sub_Menu_Id == itemPage.Sub_Menu_Id)
+                                                                    {
+                                                                        <li>
+                                                                            <a class="dropdown-item" tabindex="-1" href="~/@itemSubPage.Page_Path">
+                                                                                @itemSubPage.Page_Name
+                                                                            </a>
+                                                                        </li>
+
+                                                                    }
+                                                                }
+
+                                                            </ul>
+                                                        </li>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" tabindex="-1" href="~/@itemPage.Page_Path">
+                                                            @itemPage.Page_Name
+                                                        </a>
+                                                    </li>
+
+                                                }
+
+
                                             }
                                         }
-                                        @if (menu_name == "Reports")
-                                        {
-                                            <li class="dropdown-submenu">
-                                                <a class="nested-menu dropdown-item" tabindex="-1" href="#">New dropdown <span class="fa fa-caret-right"></span></a>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" tabindex="-1" href="#">2nd level dropdown</a></li>
-                                                    <li><a class="dropdown-item" tabindex="-1" href="#">2nd level dropdown</a></li>
-                                                </ul>
-                                            </li>
 
-                                        }
                                     </ul>
 
 
@@ -176,7 +220,7 @@
         $(document).ready(function () {
 
             $('.dropdown-submenu a.nested-menu').on("click", function (e) {
-                
+
                 $(this).next('ul').toggle();
                 e.stopPropagation();
                 e.preventDefault();

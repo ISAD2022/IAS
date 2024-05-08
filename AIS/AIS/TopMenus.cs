@@ -72,14 +72,16 @@ namespace AIS
             dBConnection._configuration = this._configuration;
 
             List<object> menuList = new List<object>();
+            List<object> submenuList = new List<object>();
             if (sessionHandler.IsUserLoggedIn())
             {
-                var menus = dBConnection.GetTopMenuPages();
+                var menus = dBConnection.GetTopMenuPages();                
                 foreach (var item in menus)
                 {
-                    menuList.Add(item);
+                    menuList.Add(item);                  
                    
                 }
+
             }
             var loggedInUser = sessionHandler.GetSessionUser();
             AvatarNameDisplayModel av = new AvatarNameDisplayModel();
@@ -87,6 +89,9 @@ namespace AIS
             av.Id = 11223344;
             av.PPNO = loggedInUser.PPNumber;
             av.Name = loggedInUser.Name;
+            av.Sub_Menu = "";
+            av.Sub_Menu_Id = "";
+            av.Sub_Menu_Name = "";
 
             menuList.Add(av);
             return menuList;
