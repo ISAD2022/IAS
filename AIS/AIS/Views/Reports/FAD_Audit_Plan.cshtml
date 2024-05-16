@@ -124,11 +124,11 @@
         </div>
 
         <div style=" width:135px">
-            <label for="periodEndModalField"><b>Audit Zone</b><span class="text-danger">*</span></label>
+            <label for="periodEndModalField"><b>Audit Cluster</b><span class="text-danger">*</span></label>
         </div>
         <div style=" width:535px">
             <select id="ZoneSelectField" onchange="" class="form-control form-select">
-                <option value="0" id="0">--Select Audit Zone--</option>
+                <option value="0" id="0">--Select Audit Cluster--</option>
 
                 @{
                     if (ViewData["FADZoneList"] != null)
@@ -207,7 +207,7 @@
                     <th class="col-md-auto" style="font-size: x-small" rowspan="2">Sr No</th>
                     <th class="col-md-auto" style="font-size: x-small" rowspan="2">Auditable Entity</th>
                     <th class="col-md-auto" style="font-size: x-small" rowspan="2">Branch Code</th>
-                    <th class="col-md-auto" style="font-size: x-small" rowspan="2">Audit Zone</th>
+                    <th class="col-md-auto" style="font-size: x-small" rowspan="2">Audit Cluster</th>
                     <th style="font-size: x-small; width:10px" rowspan="2">Operational Zone</th>
                     <th class="col-md-auto" style="font-size: x-small" rowspan="2">Last Audit Period End (Operational Period)</th>
 

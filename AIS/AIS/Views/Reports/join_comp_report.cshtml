@@ -9,7 +9,7 @@
         $('#JoiningCompletionGrid tbody').empty();
 
         if ($('#auditDepartmentSelectBox').val()==0) {
-            alert("Select Department/ Audit Zone to proceed");
+            alert("Select Department/ Audit Cluster to proceed");
             return;
         }
         $.ajax({
@@ -60,11 +60,11 @@
 </div>
 
 
-<div class="row col-md-12 mt-3">  
-    
-        <label class="font-weight-bold"> Audit Department/ Audit Zone</label>
+<div class="row col-md-12 mt-3">
+
+    <label class="font-weight-bold"> Audit Department/ Audit Cluster</label>
         <select id="auditDepartmentSelectBox" class="form-select form-control" aria-label="Default select example">
-            <option value="0">--Select Department/Audit Zone--</option>
+        <option value="0">--Select Department/Audit Cluster--</option>
             @{
                 if (ViewData["DepartmentList"] != null)
                 {
@@ -102,7 +102,7 @@
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
                 <th>Sr. No.</th>
-                <th>Department <br />Audit Zone</th>
+                <th>Department <br />Audit Cluster</th>
                 <th>Auditee Name</th>
                 <th>Team Name</th>
                 <th>PP No.</th>

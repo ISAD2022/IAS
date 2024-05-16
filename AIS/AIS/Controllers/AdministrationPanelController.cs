@@ -249,6 +249,47 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult audit_comp_management()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
+            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+            var loggedInUser=sessionHandler.GetSessionUser();
+            if (loggedInUser.UserRoleID == 1)
+            {
+                ViewData["AZOfficeList"] = dBConnection.GetAuditZones();
+                ViewData["ComplianceUnitsList"] = dBConnection.GetComplianceUnits();
+            }
+            else if (loggedInUser.UserRoleID == 2)
+            {
+                ViewData["AZOfficeList"] = dBConnection.GetAuditZones();
+                ViewData["ComplianceUnitsList"] = new List<AuditeeEntitiesModel>();
+            }
+            else if (loggedInUser.UserRoleID == 41)
+            {
+                ViewData["ComplianceUnitsList"] = dBConnection.GetComplianceUnits();
+                ViewData["AZOfficeList"] = new List<AuditZoneModel>();
+            }
+            else
+            {
+                ViewData["ComplianceUnitsList"] = new List<AuditeeEntitiesModel>();
+                ViewData["AZOfficeList"] = new List<AuditZoneModel>();
+            }
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult entity_relationship()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

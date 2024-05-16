@@ -302,7 +302,7 @@
         
 
             <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
-                <option value="0" id="0" selected>--Select Operational Audit Zone--</option>
+                <option value="0" id="0" selected>--Select Operational Audit Cluster--</option>
 
                 @{
                     if (ViewData["AuditZonesList"] != null)
@@ -346,7 +346,7 @@
     <table id="ZoneBranchmap" class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
         <thead>
             <tr>
-                <td width="250"><h5>Audit Zone</h5></td>
+                <td width="250"><h5>Audit Cluster</h5></td>
                 <td width="250"><h5>Zone</h5></td>
                 <td width="250"><h5>Branches</h5></td>
                 <td width="100"></td>
@@ -358,77 +358,6 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--  <div class="row col-md-6 mt-3">
-        <button type="reset" class="btn-primary" style="float:left">Clear Selection</button>
-    </div>
-</div>
-
-<div class="row w-100">
-    <table class="table table-bordered mb-0 mt-3 bg-white table-hover table-striped">
-        <thead>
-            <tr>
-                <td width="200"><h5>Audit Zone</h5></td>
-                <td width="200"><h5>Zone</h5></td>
-                <td width="200"><h5>Branches</h5></td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-</div>-->
 <div class="row col-md-12 mt-3">
     <button class="col-md-2 btn btn-danger">Submit</button>
 </div>

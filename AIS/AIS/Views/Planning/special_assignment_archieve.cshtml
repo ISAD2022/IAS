@@ -317,9 +317,9 @@ List group
         </select>
         <div class="row mt-3">
             <div class="col-md-6">
-                <h5>Select Audit Zone</h5>
+                <h5>Select Audit Cluster</h5>
                 <select id="auditZoneSelectionBox" onchange="ShowSelectedZonesBranches();" class="form-select form-control" aria-label="Default select example">
-                    <option value="0" id="0" selected>--Select Audit Zone--</option>
+                    <option value="0" id="0" selected>--Select Audit Cluster--</option>
                     @{
                         if (ViewData["AuditZonesList"] != null)
                         {
@@ -445,7 +445,7 @@ List group
                     </div>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <label><b>Division/Audit Zone</b></label>
+                            <label><b>Division/Audit Cluster</b></label>
                         </div>
                         <div class="col-md-6">
                             <label id="divzone_field"></label>

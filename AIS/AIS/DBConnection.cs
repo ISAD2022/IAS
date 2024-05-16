@@ -2101,6 +2101,7 @@ namespace AIS.Controllers
             }
             con.Dispose();
         }
+
         public List<AuditZoneModel> GetAuditZones(bool sessionCheck = true)
         {
             sessionHandler = new SessionHandler();
@@ -2126,16 +2127,16 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditZoneModel z = new AuditZoneModel();
-                    z.ID = Convert.ToInt32(rdr["ID"]);
-                    z.ZONECODE = rdr["ZONECODE"].ToString();
-                    z.ZONENAME = rdr["ZONENAME"].ToString();
+                    z.ID = Convert.ToInt32(rdr["entity_id"]);
+                    z.ZONECODE = rdr["CODE"].ToString();
+                    z.ZONENAME = rdr["NAME"].ToString();
                     z.DESCRIPTION = rdr["DESCRIPTION"].ToString();
-                    if (rdr["ISACTIVE"].ToString() == "A")
+                    if (rdr["ACTIVE"].ToString() == "A")
                         z.ISACTIVE = "Active";
-                    else if (rdr["ISACTIVE"].ToString() == "I")
+                    else if (rdr["ACTIVE"].ToString() == "I")
                         z.ISACTIVE = "InActive";
                     else
-                        z.ISACTIVE = rdr["ISACTIVE"].ToString();
+                        z.ISACTIVE = rdr["ACTIVE"].ToString();
 
                     AZList.Add(z);
                 }
@@ -9068,7 +9069,35 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+        public List<AuditeeEntitiesModel> GetComplianceUnits()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
 
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_COMPLIANCE_OFFICE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["NAME"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
         public List<UserRelationshipModel> Getrealtionshiptype()
         {
 
@@ -15407,19 +15436,18 @@ namespace AIS.Controllers
         }
         public List<AuditEntityRelationsModel> GetEntityRelations()
         {
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditEntityRelationsModel> resp = new List<AuditEntityRelationsModel>();
-
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.P_Get_Entities_Relationship";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15443,7 +15471,6 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
-
         }
         public List<EntitiesMappingModel> GetEntitiesMapping(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
         {
@@ -17027,6 +17054,34 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+        }
+        public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, int COMP_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_ENTITY_COMP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
+                cmd.Parameters.Add("AUDITOR", OracleDbType.Int32).Value = AUD_ID;
+                cmd.Parameters.Add("COMPLIANCE", OracleDbType.Int32).Value = COMP_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
         }
     }
 

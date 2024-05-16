@@ -2137,6 +2137,20 @@ namespace AIS.Controllers
         {
             return dBConnection.GetDraftDSAList();
         }
+        [HttpPost]
+        public string update_compliance_office(List<int> ENT_ID_ARR, int AUD_ID, int COMP_ID)
+        {
+            string res = "";
+            if(ENT_ID_ARR.Count > 0){
+                foreach(int ENT_ID in ENT_ID_ARR)
+                {
+                    res = dBConnection.UpdateComplianceUnit(ENT_ID, AUD_ID, COMP_ID);
+                }
+            }
+          
+            return "{\"Status\":true,\"Message\":\"" + res + "\"}";
+           
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
