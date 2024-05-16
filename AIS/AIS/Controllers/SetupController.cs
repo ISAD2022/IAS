@@ -567,7 +567,8 @@ namespace AIS.Controllers
         [HttpPost]
         public string reffered_back_process_transaction_by_authorizer(int T_ID, string COMMENTS)
         {
-            return dBConnection.RefferedBackProcessTransactionByAuthorizer(T_ID, COMMENTS);
+            return "{\"Status\":true,\"Message\":\"" +  dBConnection.RefferedBackProcessTransactionByAuthorizer(T_ID, COMMENTS) + "\"}";
+
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

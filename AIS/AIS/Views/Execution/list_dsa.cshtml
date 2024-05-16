@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "List of DSAs";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+ 
+    $(document).ready(function () {
+       
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_draft_dsa_list",
+            type: "POST",
+            data: {               
+            },
+            cache: false,
+            success: function (data) {
+                if (data.length > 0) {
+                    $.each(data, function (j, p) {
+                        var srNo = $('#dsaGuidelines tbody tr').length;
+                        srNo++;
+                        $('#dsaGuidelines tbody').append('<tr><td>' + srNo + '</td><td>' + p.particulars + '</td><td><input type="checkbox" class="dsaAgreement" /></td></tr>');
+                    });
+                }
+            },
+            dataType: "json",
+        });
+       
+        });
+    function reloadLocation() {
+        window.location.reload();
+    }
+    function createDSA() {
+        var allSigned = 0;
+        $.each($('.dsaAgreement'), function (i, v) { 
+            if( !$(v).is(":checked")){
+                allSigned++;
+            }
+        });
+
+        if (allSigned>0){
+            alert("Please check all DSA guidelines to proceed");
+            return;
+        }
+
+        var respPP = 0;
+        var respArr = [];
+        $.each($('.respList'), function (i, v) {
+            if ($(v).is(":checked")) {
+                respArr.push($(v).attr("ppno"));
+                respPP++;
+            }
+        });
+
+        if (respPP == 0) {
+            alert("Please check at least one Responsible to proceed");
+            return;
+        }
+
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/draft_dsa",
+            type: "POST",
+            data: {
+                'OBS_ID': g_obsId,
+                "RESP_LIST": respArr
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                onAlertCallback(reloadLocation);
+                
+            },
+            dataType: "json",
+        });
+
+
+    }
+</script>
+<div class="row col-md-12 mt-3">
+    <h4 style="display: block; color: #45c545;">List of DSAs</span></h4>
+</div>
+
+
+<div class="row col-md-12 mt-3">
+   
+    <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md- auto font-weight-bold">Sr.No</th>
+                <th class="col-md- auto font-weight-bold">Entity ID</th>
+                <th class="col-md- auto font-weight-bold">Audited By</th>
+                <th class="col-md- auto font-weight-bold">Loan Case</th>
+                <th class="col-md- auto font-weight-bold">LC Amount</th>
+                <th class="col-md- auto font-weight-bold">Account No.</th>
+                <th class="col-md- auto font-weight-bold">ACC Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

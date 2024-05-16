@@ -5,10 +5,9 @@
 }
 
 <script type="text/javascript">
-    var g_pageId = 0;
     var g_menuId = 0;  
     var g_subMenuId = 0;  
-    var g_pageArr = [];
+    var g_subMenuArr = [];
     function getSubMenus() {
 
         if ($('#menuDropDownField').val() == 0) {
@@ -55,7 +54,7 @@
             },
             cache: false,
             success: function (data) {
-                g_pageArr = data;
+                g_subMenuArr = data;
                 $('#listOfMenuPages tbody').empty();
                 $.each(data, function (i, v) {
                     $('#listOfMenuPages tbody').append('<tr><td>' + ++i + '</td><td>' + v.sM_NAME + '</td><td>' + v.p_NAME + '</td><td>' + v.p_PATH + '</td><td>' + v.p_ORDER + '</td><td>' + v.p_STATUS + '</td><td>' + v.p_HIDE_MENU + '</td><td><a href="#" onclick="updatePageAssignment(' + v.p_ID + ', ' + v.m_ID + ', ' + v.sM_ID + ');">Update</a></td></tr>');
@@ -84,7 +83,7 @@
         $('#menuPageDetailModel').modal('show');
         g_pageId = pageId;
         g_menuId = menuId;
-        $.each(g_pageArr,function(i,v){
+        $.each(g_subMenuArr,function(i,v){
             if(v.p_ID==g_pageId){
                 $('#page_menu_field').val(v.m_ID);
                 $('#page_menu_sub_field').val(v.sM_ID);
@@ -227,14 +226,7 @@
 
 </div>
 
-<div class="row col-md-12 mt-3">
 
-    <h5>Sub Menu </h5>
-    <select id="subMenuDropDownField" class="form-control">
-        <option value="0">--All--</option>       
-    </select>
-
-</div>
 <div class="row col-md-12 mt-3">
     <button onclick="getMenuPages();"  class="btn btn-primary offset-md-10 col-md-2">Find</button>
 </div>
@@ -243,14 +235,12 @@
     <table id="listOfMenuPages" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
-                <th class="col-md-1">Sr No.</th>
-                <th class="col-md-1">Sub Menu</th>
-                <th class="col-md-1">Page Name</th>
-                <th class="col-md-2">Page Path</th>
-                <th class="col-md-1">Page Order</th>
-                <th class="col-md-1">Page Status</th>
-                <th class="col-md-1">Hide Menu</th>
-                <th class="col-md-1">Action</th>
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">Menu</th>
+                <th class="col-md-auto">Sub Menu</th>
+                <th class="col-md-auto">Sub Menu Order</th>
+                <th class="col-md-auto">Sub Menu Status</th>
+                <th class="col-md-auto">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -285,21 +275,12 @@
                             }
                         </select>
                     </div>
+                   
                     <div class="form-group">
-                        <label>Sub Menu</label>
-                        <select id="page_sub_menu_field" class="form-control">
-                            <option value="0">--All--</option>
-                         
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Page Name</label>
+                        <label>Sub Menu Name</label>
                         <input  class="form-control" id="page_name_field" />
                     </div>
-                    <div class="form-group">
-                        <label>Page Path</label>
-                        <input class="form-control" id="page_path_field" />
-                    </div>
+                    
                       <div class="form-group">
                         <label>Page Order</label>
                         <input  class="form-control" id="page_order_field" />

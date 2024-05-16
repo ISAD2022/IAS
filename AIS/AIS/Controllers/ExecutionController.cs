@@ -64,7 +64,45 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        [HttpGet]
+        public IActionResult create_dsa(int obsId = 0)
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
 
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult list_dsa()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();          
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult Settled_Para()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -284,7 +322,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
      
         public IActionResult cau_observation()
         {

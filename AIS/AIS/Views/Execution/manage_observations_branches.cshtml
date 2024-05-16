@@ -200,6 +200,8 @@
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
         $('#commentsBox').modal('show');
+        $('#commentAreaInCommentsBox').val('');
+
     }
     function dropObservation(obs_id, new_status_id, risk_id) {
         g_obsId = obs_id;
@@ -297,6 +299,10 @@
 
         }
     }
+
+    function createDSA(obsId){
+        window.location.href = g_asiBaseURL + "/Execution/create_dsa?obsId=" + g_obsId;
+    }
 </script>
 
 <div class="row">
@@ -316,7 +322,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                                <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                                    <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
                         }
                     }
                 }
@@ -356,19 +362,19 @@
 
                         foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                                    <tr id="@item.OBS_ID">
-                                        <td class="text-center">@item.MEMO_NO</td>
-                                        <td>@item.PROCESS</td>
-                                        <td>@item.SUB_PROCESS</td>
-                                        <td>@item.Checklist_Details</td>
-                                        <td>@item.NO_OF_INSTANCES</td>
-                                        <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                        <td class="d-none period_name_field">@item.PERIOD</td>
-                                        <td>@item.OBS_RISK</td>
-                                        <td>@item.OBS_STATUS</td>
-                                        <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                        <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
-                                    </tr>
+                                        <tr id="@item.OBS_ID">
+                                            <td class="text-center">@item.MEMO_NO</td>
+                                            <td>@item.PROCESS</td>
+                                            <td>@item.SUB_PROCESS</td>
+                                            <td>@item.Checklist_Details</td>
+                                            <td>@item.NO_OF_INSTANCES</td>
+                                            <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                            <td class="d-none period_name_field">@item.PERIOD</td>
+                                            <td>@item.OBS_RISK</td>
+                                            <td>@item.OBS_STATUS</td>
+                                            <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
+                                            <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
+                                        </tr>
                         }
                     }
                 }
@@ -425,7 +431,7 @@
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                     {
-                                        <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                            <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                     }
 
                                 }
@@ -459,7 +465,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -498,6 +504,7 @@
             <div class="modal-footer">
                 <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
+                <button id="createDSAButton_memoReply" onclick="createDSA(g_obsId);" type="button" data-dismiss="modal" class="btn btn-success">Create DSA</button>
                 
                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
@@ -527,7 +534,7 @@
 
                                         foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                         {
-                                            <option id="@item.ID" value="@item.ID">@item.CODE</option>
+                                                <option id="@item.ID" value="@item.ID">@item.CODE</option>
                                         }
 
                                     }
@@ -547,7 +554,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                     {
-                                            <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                                                <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
                                     }
                                 }
                             }
@@ -585,7 +592,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }

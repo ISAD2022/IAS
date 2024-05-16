@@ -311,6 +311,11 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public List<ObservationResponsiblePPNOModel> get_observation_responsible_ppnos(int OBS_ID)
+        {
+            return dBConnection.GetObservationResponsiblePPNOs(OBS_ID);
+        }
+        [HttpPost]
         public DraftReportSummaryModel draft_report_summary(int ENG_ID)
         {
             DraftReportSummaryModel resp = new DraftReportSummaryModel();
@@ -576,11 +581,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetOldParasManagement();
         }
-        [HttpPost]
-        public List<OldParasModel> get_legacy_para_for_response()
-        {
-            return dBConnection.GetOldParasForResponse();
-        }
+       
         [HttpPost]
         public List<OldParasModel> get_legacy_settled_paras(int ENTITY_ID = 0)
         {
@@ -2088,11 +2089,15 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditPeriod(auditPeriod) + "\"}";
         }
-
         [HttpPost]
-        public List<MenuPagesAssignmentModel> get_menu_pages_for_admin_panel(int M_ID)
+        public List<SubMenuModel> get_sub_menu_for_admin_panel(int M_ID)
         {
-            return dBConnection.GetMenuPagesForAdminPanel(M_ID);
+            return dBConnection.GetSubMenusForAdminPanel(M_ID);
+        }
+        [HttpPost]
+        public List<MenuPagesAssignmentModel> get_menu_pages_for_admin_panel(int M_ID, int SM_ID)
+        {
+            return dBConnection.GetMenuPagesForAdminPanel(M_ID, SM_ID);
         }
         [HttpPost]
         public string add_menu_page_for_admin_panel(MenuPagesAssignmentModel mPage)
@@ -2105,6 +2110,33 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateMenuPageForAdminPanel(mPage) + "\"}";
         }
 
+        [HttpPost]
+        public List<DraftDSAGuidelines> get_draft_dsa_guidelines()
+        {
+            return dBConnection.GetDraftDSAGuidelines();
+        }
+        [HttpPost]
+        public string draft_dsa(int OBS_ID, List<string> RESP_LIST, List<string> GID_LIST, string DSA_CONTENT)
+        {
+            string resp = "";
+            foreach(string PPNO in RESP_LIST)
+            {
+                List<Object> outResp = new List<object>();
+                outResp=dBConnection.DraftDSA(OBS_ID, PPNO, DSA_CONTENT);
+                resp +=  "<p>" + outResp[0].ToString()+ "</p>";
+                foreach(string GID in GID_LIST)
+                {
+                   dBConnection.AddDraftDSAGuideline(outResp[1].ToString(), GID);
+                }
+
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+        }
+        [HttpPost]
+        public List<DraftDSAList> get_draft_dsa_list()
+        {
+            return dBConnection.GetDraftDSAList();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

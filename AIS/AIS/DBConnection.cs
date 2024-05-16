@@ -2213,6 +2213,11 @@ namespace AIS.Controllers
         }
         public List<BranchModel> GetZoneBranches(int zone_code = 0, bool sessionCheck = true)
         {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
             var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -2221,6 +2226,9 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Entityid", OracleDbType.Int32).Value = zone_code;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -5583,8 +5591,6 @@ namespace AIS.Controllers
                     while (rdr.Read())
                     {
                         ManageObservations chk = new ManageObservations();
-
-                        //chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                         chk.INDICATOR = "Z";
                         chk.PROCESS = rdr["PROCESS"].ToString();
                         chk.PROCESS_ID = rdr["PROCESS_ID"].ToString();
@@ -7407,49 +7413,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<OldParasModel> GetOldParasForResponse(int ENTITY_ID = 0)
-        {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<OldParasModel> list = new List<OldParasModel>();
-            using (OracleCommand cmd = con.CreateCommand())
-            {
-                cmd.CommandText = "pkg_ae.P_GetOldParasForResponse";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    OldParasModel chk = new OldParasModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-                    chk.REF_P = rdr["REF_P"].ToString();
-                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
-                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
-                    chk.TYPE_ID = rdr["TYPE_ID"].ToString();
-                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.PARA_NO = rdr["PARA_NO"].ToString();
-                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
-                    chk.ANNEXURE = rdr["ANNEXURE"].ToString();
-                    chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-                    chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
-                    chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
-                    chk.PROCESS_DES = rdr["Process_Des"].ToString();
-                    chk.SUB_PROCESS_DES = rdr["Sub_process_Des"].ToString();
-                    chk.PROCESS_DETAIL_DES = rdr["Check_List_Detail_Des"].ToString();
-                    list.Add(chk);
-                }
-            }
-            con.Dispose();
-            return list;
-        }
+      
         public List<OldParasModel> GetOldSettledParasForResponse(int ENTITY_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -7465,6 +7429,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -10168,7 +10133,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Old_id", OracleDbType.Int32).Value = OLD_PARA_ID;
                 cmd.Parameters.Add("new_id", OracleDbType.Int32).Value = NEW_PARA_ID;
-                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = OLD_PARA_ID == 0 ? "A" : "O";
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -16791,8 +16756,43 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public List<SubMenuModel> GetSubMenusForAdminPanel(int M_ID)
+        {
 
-        public List<MenuPagesAssignmentModel> GetMenuPagesForAdminPanel(int M_ID)
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<SubMenuModel> resp = new List<SubMenuModel>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_SUB_MENUS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = M_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    SubMenuModel m = new SubMenuModel();
+                    m.SUB_MENU_ID = rdr["SUB_MENU_ID"].ToString();
+                    m.MENU_ID = rdr["MENU_ID"].ToString();
+                    m.SUB_MENU_NAME = rdr["SUB_MENU_NAME"].ToString();
+                    m.SUB_MENU_ORDER = rdr["SUB_MENU_ORDER"].ToString();
+                    m.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    m.STATUS= rdr["STATUS"].ToString();
+                    resp.Add(m);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public List<MenuPagesAssignmentModel> GetMenuPagesForAdminPanel(int M_ID, int SM_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -16808,6 +16808,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = M_ID;
+                cmd.Parameters.Add("SM_ID", OracleDbType.Int32).Value = SM_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -16815,6 +16816,8 @@ namespace AIS.Controllers
                     MenuPagesAssignmentModel m = new MenuPagesAssignmentModel();
                     m.P_ID = rdr["id"].ToString();
                     m.M_ID = rdr["menu_id"].ToString();
+                    m.SM_ID = rdr["sub_menu_id"].ToString();
+                    m.SM_NAME = rdr["sub_menu_name"].ToString();
                     m.P_NAME = rdr["page_name"].ToString();
                     m.P_PATH = rdr["page_path"].ToString();
                     m.P_ORDER = rdr["page_order"].ToString();
@@ -16847,6 +16850,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = pageModel.M_ID;
+                cmd.Parameters.Add("SM_ID", OracleDbType.Int32).Value = pageModel.SM_ID;
                 cmd.Parameters.Add("P_NAME", OracleDbType.Varchar2).Value = pageModel.P_NAME;
                 cmd.Parameters.Add("P_PATH", OracleDbType.Varchar2).Value = pageModel.P_PATH;
                 cmd.Parameters.Add("P_ORDER", OracleDbType.Int32).Value = pageModel.P_ORDER;
@@ -16880,6 +16884,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = pageModel.P_ID;
                 cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = pageModel.M_ID;
+                cmd.Parameters.Add("SM_ID", OracleDbType.Int32).Value = pageModel.SM_ID;
                 cmd.Parameters.Add("P_NAME", OracleDbType.Varchar2).Value = pageModel.P_NAME;
                 cmd.Parameters.Add("P_PATH", OracleDbType.Varchar2).Value = pageModel.P_PATH;
                 cmd.Parameters.Add("P_ORDER", OracleDbType.Int32).Value = pageModel.P_ORDER;
@@ -16897,5 +16902,132 @@ namespace AIS.Controllers
 
         }
 
+        public List<DraftDSAGuidelines> GetDraftDSAGuidelines()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<DraftDSAGuidelines> resp = new List<DraftDSAGuidelines>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_get_dsa_guidline";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DraftDSAGuidelines d = new DraftDSAGuidelines();
+                    d.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    d.PARTICULARS = rdr["PATRICULARS"].ToString();
+                    d.STATUS = rdr["STATUS"].ToString();
+                    resp.Add(d);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<Object> DraftDSA(int OBS_ID, string PPNO, string DSA_CONTENT)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            int DSA_ID = 0;
+            List<Object> outRec = new List<object>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_draft_dsa";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obs", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("content", OracleDbType.Clob).Value = DSA_CONTENT;
+                cmd.Parameters.Add("RES_P_NO", OracleDbType.Int32).Value = PPNO;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                    DSA_ID = Convert.ToInt32(rdr["DSA_ID"].ToString());
+                    outRec.Add(resp);
+                    outRec.Add(DSA_ID);
+                }
+            }
+            con.Dispose();
+            return outRec;
+
+        }
+        public void AddDraftDSAGuideline(string D_ID, string G_ID)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_add_dsa_checkilist";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("d_id", OracleDbType.Int32).Value = D_ID;
+                cmd.Parameters.Add("check_list", OracleDbType.Int32).Value = G_ID;                
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.ExecuteReader();
+               
+            }
+            con.Dispose();
+
+        }
+        public List<DraftDSAList> GetDraftDSAList()
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();            
+            List<DraftDSAList> resp = new List<DraftDSAList>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ar.P_get_dsa_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+             
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    DraftDSAList dlist = new DraftDSAList();
+                    
+                    dlist.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    dlist.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    dlist.AUDITED_BY = Convert.ToInt32(rdr["AUDITED_BY"].ToString());
+                    dlist.CREATED_AT = Convert.ToDateTime(rdr["CREATED_AT"].ToString());
+                    dlist.DSA_BODY = rdr["DSA_BODY"].ToString();
+                    resp.Add(dlist);
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
     }
+
 }
