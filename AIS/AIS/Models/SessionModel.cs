@@ -28,6 +28,7 @@ namespace AIS.Models
         public int? UserParentEntityCode { get; set; }
         public string UserEntityName { get; set; }
         public string UserParentEntityName { get; set; }
+        public string UserRoleName { get; set; }
         public int? UserEntityTypeID { get; set; }
         public int? UserParentEntityTypeID { get; set; }
     }

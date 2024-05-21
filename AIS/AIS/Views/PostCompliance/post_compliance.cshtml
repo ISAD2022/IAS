@@ -2,15 +2,39 @@
     ViewData["Title"] = "Post Compliance";
     Layout = "_Layout";
 }
-<script>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+    <style type="text/css">
+        .square-image {
+            width: 270px; /* Set the desired width */
+            height: 270px; /* Set the desired height */
+            padding: 2px;
+            border: 1px solid;
+            object-fit: cover; /* Ensure the image covers the container */
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px; /* Adjust the gap between images */
+        }
+    </style>
+</head>
+<script type="text/javascript">
     var g_newParaId = 0;
     var g_oldParaId = 0;
     var g_prevRole = "";
     var g_nextRole = "";
     var g_obsList = [];
 
+    var btnClick = "own";
+
     $(document).ready(function () {
-        getLegacyPara();
+        getOwnParasForCompliance();
         $('#viewMemo_compliance').richText({
             imageUpload: false,
             fileUpload: false,
@@ -24,7 +48,35 @@
         });
     });
 
-    function getLegacyPara() {
+    function viewOwnCompliance(){
+        btnClick = "onw";
+        $('#ownCompliance').addClass("btn-danger");
+        $('#ownCompliance').removeClass("btn-outline-danger");
+
+        $('#reviewCompliance').addClass("btn-outline-danger");
+        $('#reviewCompliance').removeClass("btn-danger");
+
+
+        $('#ownCompliancePanel').removeClass("d-none");
+        $('#complianceReviewPanel').addClass("d-none");
+        getOwnParasForCompliance();
+    }
+
+    function viewReviewCompliance() {
+        btnClick = "review";
+        $('#reviewCompliance').addClass("btn-danger");
+        $('#reviewCompliance').removeClass("btn-outline-danger");
+
+
+        $('#ownCompliance').addClass("btn-outline-danger");
+        $('#ownCompliance').removeClass("btn-danger");
+
+        $('#ownCompliancePanel').addClass("d-none");
+        $('#complianceReviewPanel').removeClass("d-none");
+        getReivewParasForCompliance();
+    }
+   
+    function getOwnParasForCompliance() {
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
@@ -55,7 +107,49 @@
                         child.receiveD_FROM = "";
                     }
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.coM_ID + '\',\'' + child.indicator + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.coM_ID + '\',\'' + child.indicator + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                   
+
+                });
+
+            },
+
+            dataType: "json",
+        });
+
+    }
+
+    function getReivewParasForCompliance(){
+        $('#manageObsPanel2 tbody').empty();
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_paras_for_review_compliance_by_auditee",
+            type: "POST",
+            data: {
+
+            },
+            cache: false,
+            success: function (data) {
+                g_obsList = data;
+                var hidePrevCol = "";
+                var hideNextCol = "";
+
+                $('#entityNameField').html(data.length > 0 ? data[0].name : '');
+                $.each(data, function (index, child) {
+
+                    if (child.preV_ROLE == "N") {
+                        child.preV_ROLE = "";
+                        hidePrevCol = "d-none";
+                    }
+
+                    if (child.nexT_ROLE == "N") {
+                        child.nexT_ROLE = "";
+                        hideNextCol = "d-none";
+                    }
+                    if (child.receiveD_FROM == "N") {
+                        child.receiveD_FROM = "";
+                    }
+                    
+                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>'+ ++index +'</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td class="text-center"><a href="#" onclick="viewParaCompliance(\'' + child.coM_ID + '\',\'' + child.indicator + '\' );" class="text-hover text-danger mr-5px"><small>View</small></a></td><td class="text-center"><a href="#" onclick="viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\' );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
 
@@ -156,7 +250,7 @@
 
             g_imgFiles = g_imgLoader.data('format.imagesloader').AttachmentArray;
             $.each(g_imgFiles, function (i, v) {
-                var ProductObject = {                    
+                var ProductObject = {
                     'TEXT_ID': 0,
                     'IMAGE_NAME': v.FileName,
                     'IMAGE_DATA': v.Base64,
@@ -203,7 +297,10 @@
 
         $('#viewMemoModel').modal('hide');
         $('#viewMemoReportingModel').modal('hide');
-        getLegacyPara();
+        if(btnClick=="own")
+        getOwnParasForCompliance();
+        else
+            getReivewParasForCompliance();
     }
     function viewParaCompliance(comID, ind) {
 
@@ -229,13 +326,13 @@
                         $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
 
                 });
-             
+
             },
 
             dataType: "json",
         });
     }
-    function getComplianceText(comID,cycle) {
+    function getComplianceText(comID, cycle) {
         $('#viewParaComplianceTextModel').modal('show');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
@@ -249,11 +346,11 @@
                 $('#complianceCycleTextPanel').html(data.parA_TEXT);
                 $('#complianceCycleEvidences').empty();
                 if (data.evidences.length > 0) {
-                                        
+
                     $.each(data.evidences, function (j, pp) {
                         $('#complianceCycleEvidences').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
                     });
-                }else{
+                } else {
                     $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
                 }
 
@@ -270,38 +367,26 @@
 
     }
 </script>
-<head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
-<style type="text/css">
-    .square-image {
-        width: 270px; /* Set the desired width */
-        height: 270px; /* Set the desired height */
-        padding: 2px;
-        border: 1px solid;
-        object-fit: cover; /* Ensure the image covers the container */
-    }
-
-    .gallery{
-         display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 10px; /* Adjust the gap between images */
-
-    }
-</style>
-</head>
 
 <div class="row">
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-6">
+            <button onclick="viewOwnCompliance();" id="ownCompliance" class="btn btn-danger w-100">@ViewData["UserEntityName"] COMPLIANCE</button>
+        </div>
+        <div class="col-md-6">
+            <button onclick="viewReviewCompliance();" id="reviewCompliance" class="btn btn-outline-danger btn-default w-100">COMPLIANCE FOR REVIEW</button>
+        </div>
+
+    </div>
 
 
-    <div class="col-md-12 mt-3">
-
+    <div id="ownCompliancePanel" class="row col-md-12 mt-3">
+        <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANADING @ViewData["UserEntityName"] COMPLIANCES </h3>
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
+                    <th class="col-md-auto">Sr No.</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Title / Gist</th>
@@ -313,9 +398,27 @@
             <tbody></tbody>
 
         </table>
-
     </div>
 
+
+    <div id="complianceReviewPanel" class="row col-md-12 d-none mt-3">
+        <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANDING COMPLIANCES FOR REVIEW</h3>
+        <table id="manageObsPanel2" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-auto">Sr No.</th>
+                    <th class="col-md-auto">Audit Year</th>
+                    <th class="col-md-auto">Para No.</th>
+                    <th class="col-md-auto">Title / Gist</th>
+                    <th class="col-md-auto">Receive From</th>
+                    <th class="col-md-auto">Compliance History</th>
+                    <th class="col-md-auto">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+
+        </table>
+    </div>
 
 </div>
 
@@ -391,7 +494,7 @@
                             <div data-type="image-model" class="col-4 pl-2 pr-2 pt-2" style="max-width:200px; display:none;">
 
                                 <div class="ratio-box text-center" data-type="image-ratio-box">
-                                    <img data-type="noimage" class="btn btn-light ratio-img img-fluid p-2 image border dashed rounded" src="/images/photo-camera-gray.svg" style="cursor:pointer;">
+                                    <img data-type="noimage" class="btn btn-light ratio-img img-fluid p-2 image border dashed rounded" src="~/images/photo-camera-gray.svg" style="cursor:pointer;">
                                     <div data-type="loading" class="img-loading" style="color:#218838; display:none;">
                                         <span class="fa fa-2x fa-spin fa-spinner"></span>
                                     </div>
@@ -584,8 +687,7 @@
                         <div id="complianceCycleTextPanel" class="col-md-12"></div>
                     </div>
                     <h5 class="mt-4">Evidences</h5>
-                    <div id="complianceCycleEvidences" class="gallery" style="display:inline-flex">                        
-                     
+                    <div id="complianceCycleEvidences" class="gallery" style="display:inline-flex">
                     </div>
 
                 </form>

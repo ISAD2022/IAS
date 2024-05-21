@@ -147,9 +147,7 @@ namespace AIS.Controllers
             }
 
             return isSession;
-        }
-       
-
+        }                    
         public bool KillExistSession(LoginModel login)
         {
             sessionHandler = new SessionHandler();
@@ -241,6 +239,8 @@ namespace AIS.Controllers
                     user.ID = Convert.ToInt32(rdr["USERID"]);
                     user.Name = rdr["Employeefirstname"].ToString() + " " + rdr["employeelastname"].ToString();
                     user.Email = rdr["LOGIN_NAME"].ToString();
+                    user.UserEntityName = rdr["ENT_NAME"].ToString();
+                    user.UserRoleName = rdr["GROUP_NAME"].ToString();
                     user.PPNumber = rdr["PPNO"].ToString();
                     if (rdr["ENTITY_ID"].ToString() != null && rdr["ENTITY_ID"].ToString() != "")
                         user.UserEntityID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -7374,7 +7374,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<OldParasModelCAD> GetOldParasManagement()
         {
             sessionHandler = new SessionHandler();
@@ -7413,8 +7412,7 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return list;
-        }
-      
+        }     
         public List<OldParasModel> GetOldSettledParasForResponse(int ENTITY_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -7438,6 +7436,7 @@ namespace AIS.Controllers
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
+                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
@@ -7445,7 +7444,9 @@ namespace AIS.Controllers
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
+                    chk.VOL_I_II = "";
+                    chk.IND = rdr["IND"].ToString();
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     list.Add(chk);
                 }
             }
@@ -7770,7 +7771,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<AuditeeOldParasModel> GetSettledParasEntitiesForMonitoringFAD()
         {
             sessionHandler = new SessionHandler();
@@ -7801,7 +7801,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<OldParasModel> GetLegacyParasForUpdate(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -7968,7 +7967,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<OldParasModel> GetLegacyParasForUpdateFAD(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -8026,7 +8024,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public string UpdateLegacyParasWithResponsibility(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -8258,7 +8255,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public string UpdateLegacyParasWithResponsibilityNoChanges(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -8293,7 +8289,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public string UpdateLegacyParasWithResponsibilityFAD(AddLegacyParaModel LEGACY_PARA)
         {
             string resp = "";
@@ -8364,7 +8359,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp + "<br/>" + responseRes;
         }
-
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
         {
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
@@ -8460,7 +8454,6 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-
         public bool UpdateOldParasStatus(int ID, int NEW_STATUS)
         {
             sessionHandler = new SessionHandler();
@@ -8543,7 +8536,6 @@ namespace AIS.Controllers
             con.Dispose();
             return response;
         }
-
         public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
         {
             sessionHandler = new SessionHandler();
@@ -8664,7 +8656,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<AuditeeEntitiesModel> GetObservationEntitiesForManageObservations()
         {
             sessionHandler = new SessionHandler();
@@ -8813,7 +8804,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
         {
             sessionHandler = new SessionHandler();
@@ -9185,7 +9175,6 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
-
         public List<StaffPositionModel> GetStaffPosition()
         {
             sessionHandler = new SessionHandler();
@@ -9404,7 +9393,6 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-
         [Obsolete]
         public void SaveImage(string base64img, string outputImgFilename = "image.jpg")
         {
@@ -9415,7 +9403,6 @@ namespace AIS.Controllers
             }
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
-
         public string CreateAuditReport(int ENG_ID)
         {
             List<ManageObservations> list = new List<ManageObservations>();
@@ -9583,7 +9570,6 @@ namespace AIS.Controllers
             return list;
 
         }
-
         public List<DepositAccountCatDetailsModel> GetDepositAccountcatdetails(int catid = 0)
 
         {
@@ -9648,7 +9634,6 @@ namespace AIS.Controllers
             con.Dispose();
             return depositaccsublist;
         }
-
         public List<AuditPlanEngagementModel> GetAuditPlanEngagement(int periodid)
         {
             sessionHandler = new SessionHandler();
@@ -9702,7 +9687,6 @@ namespace AIS.Controllers
             con.Dispose();
             return periodList;
         }
-
         public List<LoanSchemeModel> GetLoansScheme(int engId)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -9747,8 +9731,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
-
         public List<LoanSchemeYearlyModel> GetLoansSchemeYearly(int engId)
         {
             int ENG_ID = this.GetLoggedInUserEngId();
@@ -9801,7 +9783,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<FadOldParaReportModel> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
         {
             List<FadOldParaReportModel> list = new List<FadOldParaReportModel>();
@@ -9836,7 +9817,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<JoiningCompletionReportModel> GetJoiningCompletion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
         {
             List<JoiningCompletionReportModel> list = new List<JoiningCompletionReportModel>();
@@ -9872,7 +9852,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<AuditPlanCompletionReportModel> GetauditplanCompletion(int DEPT_ID)
         {
             List<AuditPlanCompletionReportModel> list = new List<AuditPlanCompletionReportModel>();
@@ -9905,7 +9884,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public DraftReportSummaryModel GetDraftReportSummary(int ENG_ID = 0, int OBS_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -10035,7 +10013,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<ParaTextModel> GetReportParas(int ENG_ID)
         {
             sessionHandler = new SessionHandler();
@@ -10077,6 +10054,51 @@ namespace AIS.Controllers
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByAuditee";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.NAME = rdr["name"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.AUDIT_BY_ID = rdr["auditby_id"].ToString();
+                    chk.NEXT_R_ID = rdr["next_r_id"].ToString();
+                    chk.PREV_R_ID = rdr["per_r_id"].ToString();
+                    chk.STATUS_UP = rdr["c_status_up"].ToString();
+                    chk.STATUS_DOWN = rdr["c_status_down"].ToString();
+                    chk.PREV_ROLE = rdr["Previous_role"].ToString();
+                    chk.NEXT_ROLE = rdr["next_Role"].ToString();
+                    chk.RECEIVED_FROM = rdr["rec_from"].ToString();
+                    chk.INDICATOR = rdr["ind"].ToString();
+                    chk.COM_ID = rdr["COM_ID"].ToString();
+                    list.Add(chk);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<GetOldParasBranchComplianceModel> GetParasForReviewComplianceByAuditee()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetParasForCompliancereview";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -10178,7 +10200,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string COM_ID, string C_CYCLE)
         {
             sessionHandler = new SessionHandler();
@@ -10237,7 +10258,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZone(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
@@ -10268,7 +10288,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZoneRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
@@ -10299,7 +10318,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForImpIncharge(int PID, string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             sessionHandler = new SessionHandler();
@@ -10365,7 +10383,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForHeadAZ(int PID, string Ref_P, string OBS_ID, string PARA_CATEGORY, string REPLY_DATE)
         {
             sessionHandler = new SessionHandler();
@@ -10399,8 +10416,6 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-
-
         public string SubmitPostAuditCompliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
 
@@ -10459,7 +10474,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public List<GetOldParasForComplianceReviewer> GetOldParasForReviewer()
         {
             sessionHandler = new SessionHandler();
@@ -10502,7 +10516,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public List<GetOldParasForComplianceReviewer> GetOldParasForReviewerRef()
         {
             sessionHandler = new SessionHandler();
@@ -10545,7 +10558,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string Reply, string r_status, string OBS_ID, int PARENT_ID, string SEQUENCE, string AUDITED_BY)
         {
             string resp = "";
@@ -10582,7 +10594,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public List<GetOldParasforComplianceSettlement> GetComplianceForImpZone()
         {
             sessionHandler = new SessionHandler();
@@ -10728,7 +10739,6 @@ namespace AIS.Controllers
             con.Dispose();
             return success;
         }
-
         public List<GetOldParasForFinalSettlement> GetOldParasForFinalSettlement()
         {
             sessionHandler = new SessionHandler();
@@ -10770,7 +10780,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public string AddOldParasStatusUpdate(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, string SEQUENCE, string AUDITED_BY)
         {
             string resp = "";
@@ -10804,7 +10813,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public string AddOldParasStatusPartiallySettle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE, string AUDITED_BY, string PARA_TEXT)
         {
             string resp = "";
@@ -10869,7 +10877,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public string AddOldParasheadStatusUpdate(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID, string SEQUENCE, string AUDITED_BY, string ENTITY_ID)
         {
             string resp = "";
@@ -10905,7 +10912,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public List<AuditeeOldParasModel> GetOldParasForMonitoring(int ENTITY_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -10938,7 +10944,6 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-
         public string GetParaText(string ref_p)
         {
             string resp = "";
@@ -10959,7 +10964,6 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
         public string GetAllParaText(string REF_P, string OBS_ID, string PARA_CATEGORY)
         {
             string resp = "";
@@ -11023,7 +11027,7 @@ namespace AIS.Controllers
             return list;
         }
 
-        public string AddChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS, string REMARKS)
+        public string AddChangeStatusRequestForSettledPara(string REFID, string OBS_ID, string INDICATOR, int NEW_STATUS, string REMARKS)
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -11037,6 +11041,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
+                cmd.Parameters.Add("au_obs_id", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("ind", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("NewStatus", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("remarks", OracleDbType.Varchar2).Value = REMARKS;
@@ -11172,14 +11178,14 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS)
+        public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID, string OBS_ID, string INDICATOR)
 
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
-            bool success = false;
+            string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -11187,15 +11193,20 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("refp", OracleDbType.Varchar2).Value = REFID;
-                cmd.Parameters.Add("NEW_STATUS", OracleDbType.Int32).Value = NEW_STATUS;
+                cmd.Parameters.Add("au_obs_id", OracleDbType.Varchar2).Value = OBS_ID;
+                cmd.Parameters.Add("ind", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.ExecuteReader();
-                success = true;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["Remark"].ToString();
+                }
             }
             con.Dispose();
-            return success ? "Para Status Change Authorized Successfully" : "Failed To Authorize Para Status Change";
+            return resp;
         }
         public List<OldParasAuthorizeModel> GetOldSettledParasForResponseAuthorize()
         {
@@ -11219,6 +11230,8 @@ namespace AIS.Controllers
                 {
                     OldParasAuthorizeModel chk = new OldParasAuthorizeModel();
                     chk.REF_P = rdr["REF_P"].ToString();
+                    chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
+                    chk.IND = rdr["IND"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -15909,6 +15922,7 @@ namespace AIS.Controllers
                     cm.COMP_DOWN_STATUS_DESC = rdr["c_status_down_desc"].ToString();
                     cm.COMP_UP_STATUS = rdr["c_status_up"].ToString();
                     cm.COMP_UP_STATUS_DESC = rdr["c_status_up_desc"].ToString();
+                    cm.ID = Convert.ToInt32(rdr["id"].ToString());
 
 
                     resp.Add(cm);
@@ -15919,10 +15933,9 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public string AddComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COM_UP_STATUS
+        public string AddComplianceFlow(string ID,string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COM_UP_STATUS
             , string COM_DOWN_STATUS)
         {
-
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15935,7 +15948,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_ADD_UPDATE_COMPLIANCE_FLOW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITY_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("F_ID", OracleDbType.Int32).Value = ID;
+                cmd.Parameters.Add("TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
                 cmd.Parameters.Add("P_GROUP_ID", OracleDbType.Int32).Value = PREV_GROUP_ID;
                 cmd.Parameters.Add("N_GROUP_ID", OracleDbType.Int32).Value = NEXT_GROUP_ID;
@@ -15952,7 +15966,7 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public string UpdateComplianceFlow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
+        public string UpdateComplianceFlow(string ID,string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
         {
 
             sessionHandler = new SessionHandler();
@@ -15967,7 +15981,8 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.P_UPDATE_COMPLIANCE_FLOW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITY_TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
+                cmd.Parameters.Add("F_ID", OracleDbType.Int32).Value = ID;
+                cmd.Parameters.Add("TYPE_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("GROUP_ID", OracleDbType.Int32).Value = GROUP_ID;
                 cmd.Parameters.Add("P_GROUP_ID", OracleDbType.Int32).Value = PREV_GROUP_ID;
                 cmd.Parameters.Add("N_GROUP_ID", OracleDbType.Int32).Value = NEXT_GROUP_ID;

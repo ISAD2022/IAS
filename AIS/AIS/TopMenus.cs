@@ -88,6 +88,8 @@ namespace AIS
             av.Menu_Id = 1020304050;
             av.Id = 11223344;
             av.PPNO = loggedInUser.PPNumber;
+            av.User_Entity_Name = loggedInUser.UserEntityName;
+            av.User_Role_Name = loggedInUser.UserRoleName;
             av.Name = loggedInUser.Name;
             av.Sub_Menu = "";
             av.Sub_Menu_Id = "";

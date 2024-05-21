@@ -834,6 +834,11 @@ namespace AIS.Controllers
             return dBConnection.GetParasForComplianceByAuditee();
         }
         [HttpPost]
+        public List<GetOldParasBranchComplianceModel> get_paras_for_review_compliance_by_auditee()
+        {
+            return dBConnection.GetParasForReviewComplianceByAuditee();
+        }
+        [HttpPost]
         public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_ref()
         {
             return dBConnection.GetOldParasBranchComplianceRef();
@@ -1001,10 +1006,10 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
-        public string Add_Old_Para_Change_status(string REFID, int NEW_STATUS, string REMARKS)
+        public string Add_Old_Para_Change_status(string REFID, string OBS_ID, string INDICATOR, int NEW_STATUS, string REMARKS)
         {
             string response = "";
-            response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, NEW_STATUS, REMARKS);
+            response = dBConnection.AddChangeStatusRequestForSettledPara(REFID, OBS_ID, INDICATOR, NEW_STATUS, REMARKS);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -1037,10 +1042,10 @@ namespace AIS.Controllers
             return dBConnection.GetZoneBranchParaPositionStatus(ENTITY_ID);
         }
         [HttpPost]
-        public string Add_Authorization_Old_Para_Change_status(string REFID, int NEW_STATUS)
+        public string Add_Authorization_Old_Para_Change_status(string REFID, string OBS_ID, string INDICATOR)
         {
             string response = "";
-            response = dBConnection.AddAuthorizeChangeStatusRequestForSettledPara(REFID, NEW_STATUS);
+            response = dBConnection.AddAuthorizeChangeStatusRequestForSettledPara(REFID,OBS_ID,INDICATOR);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
@@ -1931,15 +1936,15 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string add_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COMP_UP_STATUS, string COMP_DOWN_STATUS)
+        public string add_compliance_flow(string ID,string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COMP_UP_STATUS, string COMP_DOWN_STATUS)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID, COMP_UP_STATUS, COMP_DOWN_STATUS) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddComplianceFlow(ID,ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID, COMP_UP_STATUS, COMP_DOWN_STATUS) + "\"}";
         }
 
         [HttpPost]
-        public string update_compliance_flow(string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
+        public string update_compliance_flow(string ID, string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ID,ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
         }
         [HttpPost]
         public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(string ENTITY_TYPE_ID, string GROUP_ID)

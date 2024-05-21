@@ -37,6 +37,7 @@ namespace AIS.Models
         public string UserParentEntityName { get; set; }
         public int? UserEntityTypeID { get; set; }
         public int? UserParentEntityTypeID { get; set; }
+        public string UserRoleName { get; set; }
         public string ErrorMsg { get; set; }
         public bool isAuthenticate { get; set; }
         public bool isAlreadyLoggedIn { get; set; }

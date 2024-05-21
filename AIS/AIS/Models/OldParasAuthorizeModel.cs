@@ -7,6 +7,8 @@ namespace AIS.Models
     {
         public int ID { get; set; }
         public string REF_P { get; set; }
+        public string AU_OBS_ID { get; set; }
+        public string IND { get; set; }
         public string ENTITY_CODE { get; set; }
        public string ENTITY_ID { get; set; }
         public string TYPE_ID { get; set; }

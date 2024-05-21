@@ -8,6 +8,7 @@
 
     var g_entTypeId = 0;
     var g_groupId = 0;
+    var g_Id = 0;
     $(document).ready(function () {
         $('#entityTypeSelectionField').select2();
         $('#entityTypeSelectionField').css("width", "100% !important");
@@ -28,7 +29,7 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                    $('#entity_compliance_flow_grid').append('<tr><td>' + ++i + '</td><td>' + v.entitY_TYPE_NAME + '</td><td>' + v.grouP_NAME + '</td><td>' + v.nexT_GROUP_NAME + '</td><td>' + v.preV_GROUP_NAME + '</td><td>' + v.comP_UP_STATUS_DESC + '</td><td>' + v.comP_DOWN_STATUS_DESC + '</td><td><a href="#" onclick="event.preventDefault();updateComplianceFlow(' + v.entitY_TYPE_ID + ', ' + v.grouP_ID + ');">Edit</a></td></tr>');
+                    $('#entity_compliance_flow_grid').append('<tr><td>' + ++i + '</td><td>' + v.entitY_TYPE_NAME + '</td><td>' + v.grouP_NAME + '</td><td>' + v.nexT_GROUP_NAME + '</td><td>' + v.preV_GROUP_NAME + '</td><td>' + v.comP_UP_STATUS_DESC + '</td><td>' + v.comP_DOWN_STATUS_DESC + '</td><td><a href="#" onclick="event.preventDefault();updateComplianceFlow(' + v.id + ',' + v.entitY_TYPE_ID + ', ' + v.grouP_ID + ');">Edit</a></td></tr>');
                 });
 
             },
@@ -71,6 +72,7 @@
                 'NEXT_GROUP_ID': $('#nextGroupSelectionBox option:selected').val(),
                 'COMP_UP_STATUS': $('#CompUpStatusSelectionBox option:selected').val(),
                 'COMP_DOWN_STATUS': $('#CompDownStatusSelectionBox option:selected').val(),
+                "ID": g_Id
             },
             cache: false,
             success: function (data) {
@@ -84,6 +86,7 @@
     function addComplianceFlow() {
         g_entTypeId = 0;
         g_groupId = 0;
+        g_Id = 0;
         $('#addComplianceFlowEntityTypeModal').modal('show');
         $('#addComplianceFlowEntityTypeModal .modal-title').html('Add Compliance Flow');
         $('#addComplianceFlowEntityTypeModal .btn-footer').html('Add Compliance Flow');
@@ -96,9 +99,10 @@
 
     }
 
-    function updateComplianceFlow(entId,grpId) {
+    function updateComplianceFlow(id,entId,grpId) {
         g_entTypeId = entId;
         g_groupId = grpId;
+        g_Id = id;
         $('#addComplianceFlowEntityTypeModal').modal('show');
         $('#addComplianceFlowEntityTypeModal .modal-title').html('Update Compliance Flow');
         $('#addComplianceFlowEntityTypeModal .btn-footer').html('Update Compliance Flow');
@@ -127,7 +131,7 @@
     }
 
     function reloadPage() {
-        window.location.reload();
+        entityTypeSelectionChangeEvent();
     }
 
 </script>

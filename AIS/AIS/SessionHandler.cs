@@ -37,6 +37,8 @@ namespace AIS
             smodel.Name = user.Name;
             smodel.PPNumber = user.PPNumber;
             smodel.ID = user.ID;
+            smodel.UserEntityName=user.UserEntityName;
+            smodel.UserRoleName = user.UserRoleName;
             smodel.UserPostingAuditZone = user.UserPostingAuditZone;
             smodel.UserPostingBranch = user.UserPostingBranch;
             smodel.UserPostingDept = user.UserPostingDept;
