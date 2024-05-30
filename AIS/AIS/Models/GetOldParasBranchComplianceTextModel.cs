@@ -8,6 +8,7 @@ namespace AIS.Models
     {
       
         public string PARA_TEXT { get; set; }
+        public string OBS_TEXT { get; set; }
         public string PARA_TEXT_ID { get; set; }
         public string GIST_OF_PARA { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }

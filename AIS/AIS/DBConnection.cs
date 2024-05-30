@@ -10072,6 +10072,7 @@ namespace AIS.Controllers
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
                     chk.AUDIT_BY_ID = rdr["auditby_id"].ToString();
+                    chk.AUDITOR_REMARKS = rdr["audit_reply"].ToString();
                     chk.NEXT_R_ID = rdr["next_r_id"].ToString();
                     chk.PREV_R_ID = rdr["per_r_id"].ToString();
                     chk.STATUS_UP = rdr["c_status_up"].ToString();
@@ -10120,6 +10121,7 @@ namespace AIS.Controllers
                     chk.NEXT_R_ID = rdr["next_r_id"].ToString();
                     chk.PREV_R_ID = rdr["per_r_id"].ToString();
                     chk.STATUS_UP = rdr["c_status_up"].ToString();
+                    chk.AUDITOR_REMARKS = rdr["audit_reply"].ToString();
                     chk.STATUS_DOWN = rdr["c_status_down"].ToString();
                     chk.PREV_ROLE = rdr["Previous_role"].ToString();
                     chk.NEXT_ROLE = rdr["next_Role"].ToString();
@@ -10210,7 +10212,6 @@ namespace AIS.Controllers
             GetOldParasBranchComplianceTextModel resp = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
             {
-
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceforhistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10222,6 +10223,7 @@ namespace AIS.Controllers
                 {
                     resp.PARA_TEXT = rdr["reply"].ToString();
                     resp.PARA_TEXT_ID = rdr["text_id"].ToString();
+                    resp.OBS_TEXT = rdr["para_text"].ToString();
                     resp.EVIDENCES = this.GetOldParasEvidences(resp.PARA_TEXT_ID);
                 }
             }

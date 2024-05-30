@@ -50,7 +50,7 @@
                                 $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">Update Reply</a></td></tr>');
                             else
                                 $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.obS_ID + '"><td>' + v.memO_NUMBER + '</td><td>' + v.audiT_YEAR + '</td><td>' + v.entitY_NAME + '</td><td class="text-center">' + v.memO_DATE + '</td><td class="text-center">' + v.gist + '</td><td class="text-center">' + v.memO_REPLY_DATE + '</td><td class="text-center">' + v.status + '</td><td class="text-center"><a onclick="showMemo(' + v.obS_ID + ',' + v.obS_TEXT_ID + ',' + v.responsE_ID + ');" class="text-hover font-weight-bold text-success">View</a></td></tr>');
-                            }                        
+                            }
                     });
 
                     setTimeout(function () {
@@ -96,7 +96,7 @@
 
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0]);
-                $('#viewMemo_memoNumber').val(memo_number); 
+                $('#viewMemo_memoNumber').val(memo_number);
                 $('#viewMemo_memoGist').val(gist);
                 if (canReply == 1) {
                     $('#replyButton_memoReply').removeClass('d-none');
@@ -104,8 +104,8 @@
                     $('#replyrichTextWrapper').removeClass('d-none');
                     $('#viewMemo_reply').val(data[1]).trigger('change');
                   //  $('#evidenceViewer').addClass('d-none');
-                    $('#evidenceUploader').removeClass('d-none');               
-                        
+                    $('#evidenceUploader').removeClass('d-none');
+
                 }
                 else {
                     if (editable == 1) {
@@ -124,7 +124,7 @@
                         //$('#evidenceViewer').removeClass('d-none');
                         $('#evidenceUploader').addClass('d-none');
                     }
-                   
+
                 }
 
                 var auctionImages = [];
@@ -200,7 +200,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                                <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
                         }
                     }
                 }

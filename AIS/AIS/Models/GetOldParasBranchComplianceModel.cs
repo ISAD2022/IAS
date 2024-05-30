@@ -11,6 +11,7 @@ namespace AIS.Models
         public int? NEW_PARA_ID { get; set; }
         public int? OLD_PARA_ID { get; set; }
         public string GIST_OF_PARAS { get; set; }
+        public string AUDITOR_REMARKS { get; set; }
         public string AUDIT_BY_ID { get; set; }
         public string NEXT_R_ID { get; set; }
         public string PREV_R_ID { get; set; }
