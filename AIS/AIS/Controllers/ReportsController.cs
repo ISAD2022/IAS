@@ -1232,7 +1232,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult cnic_default_loan_report()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -1271,11 +1270,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult audit_para_recon()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
 
-
-      
-
-
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

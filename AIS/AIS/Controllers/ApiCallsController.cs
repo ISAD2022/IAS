@@ -1722,9 +1722,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditParaReconsillation> get_audit_para_reconsillation()
+        public List<AuditParaReconsillation> get_audit_para_reconsillation(int ENT_ID, DateTime DATE)
         {
-            return dBConnection.GetAuditParaRensillation();
+            return dBConnection.GetAuditParaRensillation(ENT_ID,DATE);
         }
         [HttpPost]
         public List<HREntitiesModel> get_hr_entities_for_admin_panel_entity_addition(string ENTITY_NAME, string ENTITY_CODE)
@@ -2156,6 +2156,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + res + "\"}";
            
         }
+       
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

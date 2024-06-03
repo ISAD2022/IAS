@@ -11021,6 +11021,7 @@ namespace AIS.Controllers
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
+                    chk.ANNEXURE = rdr["ANNEX"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
                     list.Add(chk);
                 }
@@ -14493,7 +14494,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<AuditParaReconsillation> GetAuditParaRensillation()
+        public List<AuditParaReconsillation> GetAuditParaRensillation(int ENT_ID, DateTime DATE)
         {
 
             sessionHandler = new SessionHandler();
@@ -14506,10 +14507,9 @@ namespace AIS.Controllers
             {
                 cmd.CommandText = "pkg_rpt.P_FAD_audit_Para_Reconciliation";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Clear();                
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
+                cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = DATE;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -17073,6 +17073,35 @@ namespace AIS.Controllers
             return resp;
         }
         public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, int COMP_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_ENTITY_COMP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
+                cmd.Parameters.Add("AUDITOR", OracleDbType.Int32).Value = AUD_ID;
+                cmd.Parameters.Add("COMPLIANCE", OracleDbType.Int32).Value = COMP_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        public string Get(int ENT_ID, int AUD_ID, int COMP_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;

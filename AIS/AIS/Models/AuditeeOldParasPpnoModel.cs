@@ -15,6 +15,7 @@ namespace AIS.Models
         public string VOL_I_II { get; set; }
         public string AMOUNT_INVOLVED { get; set; }
         public string PARA_STATUS { get; set; }
+        public string ANNEXURE { get; set; }
         public string PARA_CATEGORY { get; set; }
        
       

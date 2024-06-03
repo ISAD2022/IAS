@@ -161,7 +161,7 @@
                     <!-- ml-auto will align items to the right -->
                     <li class="nav-item active dropdown">
                         <a class="nav-link" href="#" id="navImg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Welcome:
+                            <small><b>Welcome:</b></small>
                             @if (ViewData["TopMenuPages"] != null)
                             {
                                 foreach (var itemPage in (dynamic)(ViewData["TopMenuPages"]))
@@ -169,7 +169,10 @@
                                     if (itemPage.Menu_Id == 1020304050)
                                     {
                                         <span id="avatarEmpName">
-                                            @itemPage.Name (@itemPage.PPNO)
+                                            <small><b>
+                                                @itemPage.Name (@itemPage.PPNO)
+                                                </b>
+                                            </small>
                                             <img class="rounded-circle" height="18" src="~/Images/profile.png" />
                                             <br /><small style="display:block; line-height:11px;">@itemPage.User_Entity_Name</small>
                                             <small>@itemPage.User_Role_Name</small>
