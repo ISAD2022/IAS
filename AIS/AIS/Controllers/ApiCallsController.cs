@@ -2099,6 +2099,17 @@ namespace AIS.Controllers
         {
             return dBConnection.GetSubMenusForAdminPanel(M_ID);
         }
+
+        [HttpPost]
+        public string add_sub_menu_for_admin_panel(SubMenuModel sm)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddSubMenuForAdminPanel(sm) + "\"}";
+        }
+        [HttpPost]
+        public string update_sub_menu_for_admin_panel(SubMenuModel sm)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateSubMenuForAdminPanel(sm) + "\"}";
+        }
         [HttpPost]
         public List<MenuPagesAssignmentModel> get_menu_pages_for_admin_panel(int M_ID, int SM_ID)
         {
@@ -2156,7 +2167,11 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + res + "\"}";
            
         }
-       
+        [HttpPost]
+        public List<GISTWiseReportParas> get_report_para_by_gist_keyword(string GIST)
+        {
+            return dBConnection.GetAuditReportParaByGistKeyword(GIST);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

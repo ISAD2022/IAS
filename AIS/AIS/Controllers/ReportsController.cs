@@ -397,6 +397,23 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult gist_wise_report()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpGet]
         public IActionResult glhead_yearwise_summary(int engId)
         {

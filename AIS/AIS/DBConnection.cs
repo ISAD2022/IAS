@@ -16834,6 +16834,70 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public string AddSubMenuForAdminPanel(SubMenuModel sm)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_NEW_SUB_MENU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = sm.MENU_ID;
+                cmd.Parameters.Add("SM_NAME", OracleDbType.Varchar2).Value = sm.SUB_MENU_NAME;
+                cmd.Parameters.Add("SM_ORDER", OracleDbType.Int32).Value = sm.SUB_MENU_ORDER;
+                cmd.Parameters.Add("SM_STATUS", OracleDbType.Varchar2).Value = sm.STATUS;
+                cmd.Parameters.Add("SM_DESC", OracleDbType.Varchar2).Value = sm.DESCRIPTION;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string UpdateSubMenuForAdminPanel(SubMenuModel sm)
+        {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_SUB_MENU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("SM_ID", OracleDbType.Int32).Value = sm.SUB_MENU_ID;
+                cmd.Parameters.Add("M_ID", OracleDbType.Int32).Value = sm.MENU_ID;
+                cmd.Parameters.Add("SM_NAME", OracleDbType.Varchar2).Value = sm.SUB_MENU_NAME;                
+                cmd.Parameters.Add("SM_ORDER", OracleDbType.Int32).Value = sm.SUB_MENU_ORDER;
+                cmd.Parameters.Add("SM_STATUS", OracleDbType.Varchar2).Value = sm.STATUS;
+                cmd.Parameters.Add("SM_DESC", OracleDbType.Varchar2).Value = sm.DESCRIPTION;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+             
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
 
 
         public List<MenuPagesAssignmentModel> GetMenuPagesForAdminPanel(int M_ID, int SM_ID)
@@ -16876,8 +16940,7 @@ namespace AIS.Controllers
 
         }
 
-
-
+       
         public string AddMenuPageForAdminPanel(MenuPagesAssignmentModel pageModel)
         {
 
@@ -17101,33 +17164,40 @@ namespace AIS.Controllers
 
         }
 
-        public string Get(int ENT_ID, int AUD_ID, int COMP_ID)
+        public List<GISTWiseReportParas> GetAuditReportParaByGistKeyword(string GIST)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
+            List <GISTWiseReportParas> resp = new List<GISTWiseReportParas>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_UPDATE_ENTITY_COMP";
+                cmd.CommandText = "pkg_rpt.P_find_gist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
-                cmd.Parameters.Add("AUDITOR", OracleDbType.Int32).Value = AUD_ID;
-                cmd.Parameters.Add("COMPLIANCE", OracleDbType.Int32).Value = COMP_ID;
+                cmd.Parameters.Add("GST", OracleDbType.Varchar2).Value = GIST;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["remarks"].ToString();
+                    GISTWiseReportParas mp = new GISTWiseReportParas();
+                    mp.REGION = rdr["region"].ToString();
+                    mp.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
+                    mp.BRANCH = rdr["BRANCH"].ToString();
+                    mp.BRANCH_CODE = rdr["BRANCH_CODE"].ToString();
+                    mp.E_DATE = rdr["entereddate"].ToString();
+                    mp.PARA_NO = rdr["para_no"].ToString();
+                    mp.ANNEX = rdr["annex"].ToString();
+                    mp.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    mp.NO_OF_INSTANCES = rdr["no_of_instances"].ToString();
+                    mp.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
+                    resp.Add(mp);
                 }
             }
             con.Dispose();
             return resp;
-
         }
     }
 
