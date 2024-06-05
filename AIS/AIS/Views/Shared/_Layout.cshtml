@@ -95,7 +95,7 @@
 
                                             if (itemPage.Menu_Id != 1020304050 && itemPage.Menu_Id == item.Menu_Id && itemPage.Hide_Menu == 0)
                                             {
-                                                if (itemPage.Sub_Menu == "1")
+                                                if (itemPage.Sub_Menu != "")
                                                 {
                                                     bool added = false;
                                                     foreach (string smId in SubMenuIds)

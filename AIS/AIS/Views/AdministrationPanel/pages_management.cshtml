@@ -189,6 +189,8 @@
             },
             cache: false,
             success: function (data) {
+                 $('#page_menu_sub_field').empty();
+                $('#page_menu_sub_field').append('<option value="0">--All--</option>');
                 $.each(data, function (i, v) {
                     $('#page_menu_sub_field').append('<option value="' + v.suB_MENU_ID + '">' + v.suB_MENU_NAME + '</option>');
 
