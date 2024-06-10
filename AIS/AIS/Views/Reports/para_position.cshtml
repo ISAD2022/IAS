@@ -38,14 +38,16 @@
                 if (g_response.length > 0) {
                     $.each(data, function (i, v) {
 
+                        var percentage = 0;
+
                         t_opara += parseInt(v.opeN_BALANCE);
                         t_aparas += parseInt(v.added);
                         t_tparas += parseInt(v.total);
                         t_slparas += parseInt(v.settleD_LEGACY);
                         t_sparas += parseInt(v.settleD_NEW_PARA);
                         t_uparas += parseInt(v.uN_SETTLED);
-                        //  v.percentage = (((parseInt(v.settleD_LEGACY) + parseInt(v.settleD_NEW_PARA)) / parseInt(v.total)) * 100).toFixed(2);
-                        $('#observation_panel tbody').append('<tr><td align="center"> ' + sr + '</td><td class="auditZoneCol" align="left">' + v.audiT_ZONE + '</td><td class="visibCol"  align="left">' + v.entitY_TYPE_DESC + '</td><td class="visibCol" align="left">' + v.reportinG_OFFICE + '</td><td class="visibCol" align="left">' + v.entitY_NAME + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + v.percentage + '%</td></tr>');
+                        percentage = (((parseInt(v.settleD_LEGACY) + parseInt(v.settleD_NEW_PARA)) / parseInt(v.total)) * 100).toFixed(2);
+                        $('#observation_panel tbody').append('<tr><td align="center"> ' + sr + '</td><td class="auditZoneCol" align="left">' + v.audiT_ZONE + '</td><td class="visibCol"  align="left">' + v.entitY_TYPE_DESC + '</td><td class="visibCol" align="left">' + v.reportinG_OFFICE + '</td><td class="visibCol" align="left">' + v.entitY_NAME + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + percentage + '%</td></tr>');
                         sr++;
                     });
                     var colSpan = 5;

@@ -14507,9 +14507,10 @@ namespace AIS.Controllers
             {
                 cmd.CommandText = "pkg_rpt.P_FAD_audit_Para_Reconciliation";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();                
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
-                cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = DATE;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -14527,7 +14528,7 @@ namespace AIS.Controllers
                     rd.SETTLED_NEW_PARA = rdr["Settled_New_Paras"].ToString();
                     rd.UN_SETTLED = rdr["Un_Settled"].ToString();
                     rd.INDICATOR = rdr["ind"].ToString();
-                    rd.PERCENTAGE = rdr["percentage"].ToString();
+                    //rd.PERCENTAGE = rdr["percentage"].ToString();
                     resp.Add(rd);
 
                 }
