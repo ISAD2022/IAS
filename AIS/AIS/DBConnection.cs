@@ -14500,7 +14500,7 @@ namespace AIS.Controllers
 
         }
 
-        public List<AuditParaReconsillation> GetAuditParaRensillation(int ENT_ID, DateTime DATE)
+        public List<AuditParaReconsillation> GetAuditParaRensillation()
         {
 
             sessionHandler = new SessionHandler();
