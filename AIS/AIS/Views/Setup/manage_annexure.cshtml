@@ -1,0 +1,252 @@
+﻿@{
+    ViewData["Title"] = "Manage Checklist";
+    Layout = "_Layout";
+}
+<style type="text/css">
+    .container {
+        max-width: 100%;
+    }
+
+    .card-header {
+        background-color: transparent !important;
+        font-size: 20px;
+        height: 100px;
+    }
+
+    .icon-card {
+        margin: 10px;
+    }
+</style>
+<script type="text/javascript">
+    var g_procId = 0;
+    var g_annexId = 0;
+    var g_subProcList=[];
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#listOfDepartment tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+
+    
+    function openUpdateAnnexure(id, riskId, procId, heading, code) {
+        g_annexId=id;
+        $('#updateAnnexureModel').modal('show');
+        $('#annexProcField').val(procId);
+        $('#annexCodeField').val(code);
+        $('#annexRiskField').val(riskId);
+        $('#annexHeadingField').val(heading);
+        $('#annexCodeField').attr("disabled", true);
+        
+    }
+    function reloadLocation(){
+        window.location.reload();
+    }
+
+    function updateAnnexure() {
+
+       
+
+        if ($('#annexProcField').val() == "") {
+            alert("Please select Process Owner to proceed");
+            return;
+        }
+
+        if ($('#annexRiskField').val() == "0") {
+            alert("Please select Risk to proceed");
+            return;
+        }
+
+        if ($('#annexHeadingField').val() == "") {
+            alert("Please enter Heading to proceed");
+            return;
+        }
+
+        if (g_annexId !=0){
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/update_annexure",
+                type: "POST",
+                data: {
+                    'ANNEX_ID': g_annexId,
+                    'PROCESS_ID': $('#annexProcField').val(),
+                    'RISK_ID': $('#annexRiskField').val(),
+                    'HEADING': $('#annexHeadingField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }else{
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/add_annexure",
+                type: "POST",
+                data: {
+                    'ANNEX_CODE': $('#annexCodeField').val(),
+                    'PROCESS_ID': $('#annexProcField').val(),
+                    'RISK_ID': $('#annexRiskField').val(),
+                    'HEADING': $('#annexHeadingField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+        }
+      
+    }
+
+    function addNewAnnexure(id) {
+        g_annexId = id;
+        $('#updateAnnexureModel').modal('show');
+        $('#annexProcField').val('');
+        $('#annexRiskField').val(0);
+        $('#annexHeadingField').val('');
+        $('#annexCodeField').val('');
+        $('#annexCodeField').attr("disabled", false);
+    }
+</script>
+<div class="row mt-3">
+    <div class="col-md-6 text-left">
+        <h3 style=" display:block;color: #45c545;">Annexure </h3>
+    </div>
+    <div class="col-md-6 text-right" style="padding-right:45px;">
+        <button onclick="addNewAnnexure(0);"  class="btn btn-danger">Add New Annexure</button>
+    </div>
+    
+</div>
+<div class="row col-md-12 mt-3">
+    <table id="auditeeEntitiesList" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
+        <thead>
+            <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">Code</th>
+                <th class="col-md-auto">Process</th>
+                <th class="col-md-auto">Risk</th>
+                <th class="col-md-auto">Heading</th>
+                <th class="col-md-auto"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (ViewData["AnnexList"] != null)
+                {
+                    int SrNo = 1;
+
+                    foreach (var item in (dynamic)(ViewData["AnnexList"]))
+                    {
+
+                            <tr>
+                                <td class="text-center">@SrNo</td>
+                                <td class="col-md-auto">@item.CODE</td>
+                                <td class="col-md-auto">@item.PROCESS</td>
+                                <td class="col-md-auto">@item.RISK</td>
+                                <td class="col-md-auto">@item.HEADING</td>
+                                <td style="cursor:pointer;">
+                                    <a class="text-danger" onclick="openUpdateAnnexure( @item.ID, '@item.RISK_ID', '@item.PROCESS_ID', '@item.HEADING', '@item.CODE' )">Update</a>
+                                </td>
+                            </tr>
+                        SrNo= @SrNo + 1;
+
+                    }
+                    
+                }
+            }
+        </tbody>
+
+    </table>
+</div>
+
+
+<div id="updateAnnexureModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Add/Update Annexure</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Code</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="annexCodeField" class="form-control" type="text" />
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Heading</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="annexHeadingField" class="form-control" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Process Owner</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="annexProcField" class="form-select form-control">
+                                <option selected="selected" value="" id="0">--Select Process Owner--</option>
+                                @{
+                                    if (ViewData["ProcOwnerList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
+                                        {
+                                                <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Risk</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <select id="annexRiskField" class="form-select form-control">
+                                <option selected="selected" value="0" id="0">--Select Risk--</option>
+                                @{
+                                    if (ViewData["RiskList"] != null)
+                                    {
+
+                                        foreach (var item in (dynamic)(ViewData["RiskList"]))
+                                        {
+                                                <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                 
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateAnnexure();" type="button" data-dismiss="modal" class="btn btn-success">Save Changes</button>
+
+            </div>
+        </div>
+    </div>
+</div>

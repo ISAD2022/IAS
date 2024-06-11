@@ -1334,8 +1334,15 @@ namespace AIS.Controllers
                 {
                     AnnexureModel grp = new AnnexureModel();
                     grp.ID = Convert.ToInt32(rdr["ID"]);
+                    grp.ANNEX = rdr["Annex"].ToString();
                     grp.CODE = rdr["Code"].ToString();
-                    grp.HEADING = rdr["Heading"].ToString();
+                    grp.HEADING = rdr["HEADING"].ToString();
+                    
+
+                    grp.RISK = rdr["Risk"].ToString();
+                    grp.RISK_ID = rdr["Risk_ID"].ToString();
+                    grp.PROCESS = rdr["function"].ToString();
+                    grp.PROCESS_ID = rdr["function_Id"].ToString();
                     grp.VOL = rdr["Vol"].ToString();
                     grp.STATUS = rdr["Status"].ToString();
                     groupList.Add(grp);
@@ -3809,7 +3816,6 @@ namespace AIS.Controllers
                     RiskModel risk = new RiskModel();
                     if (rdr["R_ID"].ToString() != null && rdr["R_ID"].ToString() != "")
                         risk.R_ID = Convert.ToInt32(rdr["R_ID"]);
-
 
                     risk.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     if (risk.R_ID > 0)
@@ -17200,6 +17206,73 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
+
+        public string AddAnnexure(string ANNEX_CODE = "",  string HEADING = "", int PROCESS_ID = 0, int RISK_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_ANNEXURE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("CODE", OracleDbType.Varchar2).Value = ANNEX_CODE;
+                cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+        public string UpdateAnnexure(int ANNEX_ID = 0, string HEADING = "", int PROCESS_ID = 0, int RISK_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_update_annexure";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ANEXX", OracleDbType.Int32).Value = ANNEX_ID;
+                cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
     }
 
 }

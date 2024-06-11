@@ -2172,6 +2172,20 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditReportParaByGistKeyword(GIST);
         }
+
+
+        [HttpPost]
+        public string add_annexure(string ANNEX_CODE = "", int PROCESS_ID = 0, string HEADING = "", int RISK_ID = 0)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAnnexure(ANNEX_CODE, HEADING,PROCESS_ID, RISK_ID) + "\"}";
+        }
+        [HttpPost]
+        public string update_annexure(int ANNEX_ID = 0, int PROCESS_ID = 0, string HEADING = "", int RISK_ID = 0)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAnnexure(ANNEX_ID, HEADING,PROCESS_ID, RISK_ID ) + "\"}";
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
