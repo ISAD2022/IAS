@@ -13481,7 +13481,8 @@ namespace AIS.Controllers
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
                     chk.REF_P = rdr["REF_P"].ToString();
-                    chk.ANNEX_ID = rdr["ANNEX_ID"].ToString();
+                    chk.ANNEX_CODE = rdr["ANNEX_ID"].ToString();
+                    chk.ANNEX_ID = rdr["ID"].ToString();
                     chk.ANNEXURE = rdr["NAME"].ToString();
                     list.Add(chk);
                 }
@@ -17269,6 +17270,37 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+
+        }
+
+        public List<AuditeeEntitiesModel> GetEntityForAuditReconsilition()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
 
         }
 

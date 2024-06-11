@@ -54,7 +54,7 @@
 
     function getAuditEngagementDetials() {
 
-        if ($('#auditedByField').val() == 0) {
+        if ($('#auditedByField').val() == "-1") {
             alert("Select Audited By Department");
             return;
         }
@@ -103,7 +103,8 @@
     </div>
     <div class="col-md-4">
         <select id="auditedByField" class="form-control form-select">
-            <option id="0" value="0" selected="selected">--Select Audited By Department--</option>
+            <option id="-1" value="0" selected="selected">--Select Audited By Department--</option>
+            <option id="0" value="0" >All</option>
 
 
             @{

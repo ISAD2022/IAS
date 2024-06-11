@@ -352,6 +352,13 @@ namespace AIS.Controllers
             ViewData["DepartmentList"] = dBConnection.GetDepartments(0, false);
             return View();
         }
+
+        public IActionResult manage_reporting_offices()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            return View();
+        }
         [HttpPost]
         public BranchModel branch_add(BranchModel br)
         {

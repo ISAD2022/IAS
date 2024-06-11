@@ -1722,9 +1722,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<AuditParaReconsillation> get_audit_para_reconsillation(int ENT_ID, DateTime DATE)
+        public List<AuditParaReconsillation> get_audit_para_reconsillation()
         {
-            return dBConnection.GetAuditParaRensillation(ENT_ID,DATE);
+            return dBConnection.GetAuditParaRensillation();
         }
         [HttpPost]
         public List<HREntitiesModel> get_hr_entities_for_admin_panel_entity_addition(string ENTITY_NAME, string ENTITY_CODE)
