@@ -32,7 +32,7 @@
                     if (v.status.toLowerCase() == "completed")
                         $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td></td><td class="preconcludingStatusField">' + v.status + '</td></tr>');
                     else
-                        $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="ObservationViewerPanel(' + v.id + ')">View Memo</a></td><td class="preconcludingStatusField">' + v.status + '</td></tr>');
+                        $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.heading + '</td><td>' + v.oB_STATUS + '</td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="event.preventDefault();ObservationViewerPanel(' + v.id + ')">View Memo</a></td><td class="preconcludingStatusField">' + v.status + '</td></tr>');
                     sr++;
                 });
 

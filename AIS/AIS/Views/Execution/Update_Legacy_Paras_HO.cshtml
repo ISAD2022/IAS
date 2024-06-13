@@ -115,11 +115,11 @@
         cols += '<td><input type="text" class="form-control"  name="account' + counter + '"  id="account' + counter + '" value="' + acc + '" /></td>';
         cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" id="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
 
-        if (checkClass == "checked")  
-        cols += '<td><input onclick="AddRecord(this);" disabled="disabled" type="button" class="ibtnAdded btn btn-md btn-success" value="Added"></td>';
+        if (checkClass == "checked")
+            cols += '<td><input onclick="event.preventDefault();AddRecord(this);" disabled="disabled" type="button" class="ibtnAdded btn btn-md btn-success" value="Added"></td>';
         else
-            cols += '<td><input onclick="AddRecord(this);" type="button" class="ibtnAdd btn btn-md btn-success" value="Add"></td>';
-        cols += '<td><input onclick="DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+            cols += '<td><input onclick="event.preventDefault();AddRecord(this);" type="button" class="ibtnAdd btn btn-md btn-success" value="Add"></td>';
+        cols += '<td><input onclick="event.preventDefault();DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
         newRow.append(cols);
         $('#listofRespPersons tbody').append(newRow);
     }
@@ -202,7 +202,7 @@
                 $.each(data, function (index, child) {
                     child.parA_STATUS = child.parA_STATUS == 9 ? 'Settle' : 'Un-Settle';
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="event.preventDefault();updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
                 });
             },
 

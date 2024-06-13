@@ -82,9 +82,9 @@
         <select id="auditDepartmentSelectBox" class="form-select form-control" aria-label="Default select example">
             <option value="112215">--All--</option>
             @{
-                if (ViewData["EntitiesList"] != null)
+                if (ViewData["EntityList"] != null)
                 {
-                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                    foreach (var item in (dynamic)(ViewData["EntityList"]))
                     {
                         <option value="@item.CODE">@item.NAME</option>
                     }

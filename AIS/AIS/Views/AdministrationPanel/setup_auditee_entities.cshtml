@@ -130,7 +130,7 @@
                     var sr = 0;
                     $.each(data, function (i, v) {
                         sr++;
-                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
+                        $('#auditeeEntitiesList tbody').append('<tr><td>' + sr + '</td><td>' + v.entitY_ID + '</td><td>' + v.name + '</td><td><a class="text-danger" onclick="event.preventDefault();updateAuditeeEntities(' + v.entitY_ID + ')">Update</a></td></tr>');
 
                     });
                 },

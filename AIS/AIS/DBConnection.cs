@@ -17285,17 +17285,18 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
+                cmd.CommandText = "pkg_ad.P_GET_ENTITY_FOR_PARA_Reconsilation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
-                    entity.NAME = rdr["ENTITY_TYPE"].ToString();
-                    entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
+                    entity.NAME = rdr["name"].ToString();
+                    entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
                     entitiesList.Add(entity);
                 }
             }

@@ -29,7 +29,7 @@
                 $('#checklistDetailsPanel tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select id="checklistaction_' + v.id + '" class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="-1" id="-1" selected>--Please Select--</option><option value="0" id="0">No</option><option value="1" id="1">Yes</option></select></td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
+                    $('#checklistDetailsPanel tbody').append('<tr id="obs_' + v.id + '"><td>' + sr + '</td><td>' + v.s_NAME + '</td><td>' + v.v_NAME + '</td><td>' + v.heading + '</td><td><select id="checklistaction_' + v.id + '" class="checklistaction form-select form-control" onchange="showObservationArea($(this).val(),\'obs_' + v.id + '\');" aria-label="Default select example"><option value="-1" id="-1" selected>--Please Select--</option><option value="0" id="0">No</option><option value="1" id="1">Yes</option></select></td><td id="actionTd_' + v.id + '" class="text-center"><a class="text-center text-danger" onclick="event.preventDefault();viewCreatedMemo(this,\'obs_' + v.id + '\')">View Memo</a></td></tr>');
                     sr++;
                 });
                 getSubCheckListStatus();
@@ -177,7 +177,7 @@
                 $.each(tempobj.RESPONSIBLE_PPNO, function (j, pp) {
                     var srNo = $('#listofRespPersons tbody tr').length;
                     srNo++;
-                    $('#listofRespPersons tbody').append('<tr id="tr_' + pp.PP_NO + '"><td>' + srNo + '</td><td>' + pp.PP_NO + '</td><td>' + pp.EMP_NAME + '</td><td>' + pp.LOAN_CASE + '</td><td>' + pp.LC_AMOUNT + '</td><td>' + pp.ACCOUNT_NUMBER + '</td><td>' + pp.ACC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                    $('#listofRespPersons tbody').append('<tr id="tr_' + pp.PP_NO + '"><td>' + srNo + '</td><td>' + pp.PP_NO + '</td><td>' + pp.EMP_NAME + '</td><td>' + pp.LOAN_CASE + '</td><td>' + pp.LC_AMOUNT + '</td><td>' + pp.ACCOUNT_NUMBER + '</td><td>' + pp.ACC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();deleteRespRow(this);">Delete</a></td></tr>');
                 });
             }
         } else {
@@ -230,7 +230,7 @@
                 }
                 var srNo = $('#listofRespPersons tbody tr').length;
                 srNo++;
-                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="deleteRespRow(this);">Delete</a></td></tr>');
+                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();deleteRespRow(this);">Delete</a></td></tr>');
                 g_respUsersArr.push(g_respUser[0]);               
                }
             else {
