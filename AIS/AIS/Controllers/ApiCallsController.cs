@@ -2172,19 +2172,44 @@ namespace AIS.Controllers
         {
             return dBConnection.GetAuditReportParaByGistKeyword(GIST);
         }
-
-
         [HttpPost]
-        public string add_annexure(string ANNEX_CODE = "", int PROCESS_ID = 0, string HEADING = "", int RISK_ID = 0)
+        public List<AnnexureModel> get_annexures()
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAnnexure(ANNEX_CODE, HEADING,PROCESS_ID, RISK_ID) + "\"}";
-        }
-        [HttpPost]
-        public string update_annexure(int ANNEX_ID = 0, int PROCESS_ID = 0, string HEADING = "", int RISK_ID = 0)
-        {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAnnexure(ANNEX_ID, HEADING,PROCESS_ID, RISK_ID ) + "\"}";
+            return dBConnection.GetAnnexuresForChecklistDetail();
         }
 
+        [HttpPost]
+        public string add_annexure(string ANNEX_CODE = "", int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, string HEADING = "",  int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE="")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAnnexure(ANNEX_CODE, HEADING,PROCESS_ID, FUNCTION_OWNER_ID, RISK_ID, MAX_NUMBER, GRAVITY,WEIGHTAGE) + "\"}";
+        }
+        [HttpPost]
+        public string update_annexure(int ANNEX_ID = 0, int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, string HEADING = "",  int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE = "")
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAnnexure(ANNEX_ID, HEADING,PROCESS_ID,FUNCTION_OWNER_ID, RISK_ID, MAX_NUMBER, GRAVITY, WEIGHTAGE ) + "\"}";
+        }
+        [HttpPost]
+        public string generate_traditional_risk_rating_of_engagement(int ENG_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GenerateTraditionalRiskRatingofEngagement(ENG_ID) + "\"}";
+        }
+
+        [HttpPost]
+        public List<TraditionalRiskRatingModel> view_traditional_risk_rating_of_engagement(int ENG_ID)
+        {
+            return dBConnection.ViewTraditionalRiskRatingofEngagement(ENG_ID);
+        }
+        [HttpPost]
+        public string generate_annexure_risk_rating_of_engagement(int ENG_ID)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.GenerateAnnexureRiskRatingofEngagement(ENG_ID) + "\"}";
+        }
+
+        [HttpPost]
+        public List<TraditionalRiskRatingModel> view_annexure_risk_rating_of_engagement(int ENG_ID)
+        {
+            return dBConnection.ViewAnnexureRiskRatingofEngagement(ENG_ID);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

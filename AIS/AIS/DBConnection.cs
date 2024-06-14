@@ -1337,12 +1337,20 @@ namespace AIS.Controllers
                     grp.ANNEX = rdr["Annex"].ToString();
                     grp.CODE = rdr["Code"].ToString();
                     grp.HEADING = rdr["HEADING"].ToString();
-                    
 
-                    grp.RISK = rdr["Risk"].ToString();
-                    grp.RISK_ID = rdr["Risk_ID"].ToString();
-                    grp.PROCESS = rdr["function"].ToString();
-                    grp.PROCESS_ID = rdr["function_Id"].ToString();
+                    grp.RISK = rdr["Risk"].ToString();                    
+                    grp.PROCESS = rdr["process"].ToString();
+                    grp.FUNCTION_OWNER = rdr["function"].ToString();
+
+                    grp.RISK_ID = rdr["Risk_ID"].ToString(); 
+                    grp.PROCESS_ID = rdr["process_Id"].ToString();
+                    grp.FUNCTION_OWNER_ID = rdr["function_Id"].ToString();
+                    
+                    
+                    grp.MAX_NUMBER = rdr["max_number"].ToString();
+                    grp.WEIGHTAGE = rdr["weightage"].ToString();
+                    grp.GRAVITY = rdr["gravity"].ToString();
+
                     grp.VOL = rdr["Vol"].ToString();
                     grp.STATUS = rdr["Status"].ToString();
                     groupList.Add(grp);
@@ -4180,6 +4188,32 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+
+        public List<AuditChecklistModel> GetAnnexureProcess()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditChecklistModel> list = new List<AuditChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.p_get_annexure_process";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistModel chk = new AuditChecklistModel();
+                    chk.T_ID = Convert.ToInt32(rdr["ID"]);
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
         public List<AuditChecklistDetailsModel> GetEntityObservationDetails(int ENG_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -17208,7 +17242,7 @@ namespace AIS.Controllers
             return resp;
         }
 
-        public string AddAnnexure(string ANNEX_CODE = "",  string HEADING = "", int PROCESS_ID = 0, int RISK_ID = 0)
+        public string AddAnnexure(string ANNEX_CODE = "",  string HEADING = "", int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE = "")
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17227,7 +17261,11 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("CODE", OracleDbType.Varchar2).Value = ANNEX_CODE;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
-                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = FUNCTION_OWNER_ID;
+                cmd.Parameters.Add("PROCESS_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("max_num", OracleDbType.Varchar2).Value = MAX_NUMBER;
+                cmd.Parameters.Add("weightage_num", OracleDbType.Varchar2).Value = WEIGHTAGE;
+                cmd.Parameters.Add("gravity_num", OracleDbType.Varchar2).Value = GRAVITY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -17241,7 +17279,7 @@ namespace AIS.Controllers
         }
 
 
-        public string UpdateAnnexure(int ANNEX_ID = 0, string HEADING = "", int PROCESS_ID = 0, int RISK_ID = 0)
+        public string UpdateAnnexure(int ANNEX_ID = 0, string HEADING = "", int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE = "")
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17260,7 +17298,11 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ANEXX", OracleDbType.Int32).Value = ANNEX_ID;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = RISK_ID;
-                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("OWNER", OracleDbType.Int32).Value = FUNCTION_OWNER_ID;
+                cmd.Parameters.Add("PROCESS_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("max_num", OracleDbType.Varchar2).Value = MAX_NUMBER;
+                cmd.Parameters.Add("weightage_num", OracleDbType.Varchar2).Value = WEIGHTAGE;
+                cmd.Parameters.Add("gravity_num", OracleDbType.Varchar2).Value = GRAVITY;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -17305,7 +17347,122 @@ namespace AIS.Controllers
 
         }
 
+        public string GenerateTraditionalRiskRatingofEngagement(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_branch_risk_rating";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
 
+        }
+        public List<TraditionalRiskRatingModel> ViewTraditionalRiskRatingofEngagement(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<TraditionalRiskRatingModel> resp = new List<TraditionalRiskRatingModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_traditional_risk_rating";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    TraditionalRiskRatingModel r = new TraditionalRiskRatingModel();
+                    r.MAIN_PROCESS = rdr["MAIN_PROCESS"].ToString();
+                    r.MAX_NUMBER = rdr["MAX_NUMBER"].ToString();
+                    r.WEIGHTAGE_AVERAGE = rdr["WEIGHTAGE_AVERAGE"].ToString();
+                    r.WEIGHTED_AVERAGE_MARKS = rdr["WEIGHTED_AVERAGE_MARKS"].ToString();
+                    r.RISK_MODEL = rdr["RISK_MODEL"].ToString();
+                    r.GRAVITY_RISK = rdr["GRAVITY_RISK"].ToString();
+                    r.RISK_BASED_MARKS = rdr["RISK_BASED_MARKS"].ToString();
+                    resp.Add(r);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string GenerateAnnexureRiskRatingofEngagement(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_add_branch_annex_risk_rating";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public List<TraditionalRiskRatingModel> ViewAnnexureRiskRatingofEngagement(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<TraditionalRiskRatingModel> resp = new List<TraditionalRiskRatingModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_annexure_risk_rating";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    TraditionalRiskRatingModel r = new TraditionalRiskRatingModel();
+                    r.MAIN_PROCESS = rdr["MAIN_PROCESS"].ToString();
+                    r.MAX_NUMBER = rdr["MAX_NUMBER"].ToString();
+                    r.WEIGHTAGE_AVERAGE = rdr["WEIGHTAGE_AVERAGE"].ToString();
+                    r.WEIGHTED_AVERAGE_MARKS = rdr["WEIGHTED_AVERAGE_MARKS"].ToString();
+                    r.RISK_MODEL = rdr["RISK_MODEL"].ToString();
+                    r.GRAVITY_RISK = rdr["GRAVITY_RISK"].ToString();
+                    r.RISK_BASED_MARKS = rdr["RISK_BASED_MARKS"].ToString();
+                    resp.Add(r);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
     }
 
 }

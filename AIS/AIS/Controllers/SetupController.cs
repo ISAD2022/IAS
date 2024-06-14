@@ -503,9 +503,11 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcList"] = dBConnection.GetAnnexureProcess();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["ProcOwnerList"] = dBConnection.GetProcOwnerForChecklistDetail();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["RiskModelList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

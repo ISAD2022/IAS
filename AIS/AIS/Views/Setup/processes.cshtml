@@ -104,10 +104,10 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (index, child) {
-                        $('#procItem_' + procId).append('<ul class="childLevel"><li id="procTrans_' + child.id + '"><span onclick="getProcessTransactions(' + child.id + ')"  class="caret">' + child.title + '</span></li></ul>');
+                        $('#procItem_' + procId).append('<ul class="childLevel"><li id="procTrans_' + child.id + '"><span onclick="event.preventDefault();getProcessTransactions(' + child.id + ')"  class="caret">' + child.title + '</span></li></ul>');
 
                     });
-                    $('#procItem_' + procId + ' >span').after('<ul class="childLevel"><li><span onclick="addNewSubProcess(' + procId+')" class="newitemaddmenu text-success" >-- Add New Sub Process--</span></li></ul>')
+                    $('#procItem_' + procId + ' >span').after('<ul class="childLevel"><li><span onclick="event.preventDefault();addNewSubProcess(' + procId + ')" class="newitemaddmenu text-success" >-- Add New Sub Process--</span></li></ul>')
                     $('#procItem_' + procId + ' >span').addClass('caret-down');
 
                 },
@@ -133,10 +133,10 @@
 
                     console.log('tranc', data);
                     $.each(data, function (index, child) {
-                        $('#procTrans_' + procDetailId).append('<ul class="grandchildLevel"><li  class="listItems"><span id="transactionspan_' + child.id + '" onclick="showTransactionDetail(this);" class="icon">' + child.description + '</span></li></ul>');
+                        $('#procTrans_' + procDetailId).append('<ul class="grandchildLevel"><li  class="listItems"><span id="transactionspan_' + child.id + '" onclick="event.preventDefault();showTransactionDetail(this);" class="icon">' + child.description + '</span></li></ul>');
 
                     });
-                    $('#procTrans_' + procDetailId + ' >span').after('<ul class="grandchildLevel"><li><span onclick="addNewSubProcessTransaction(' + procDetailId+');" class="newitemaddmenu text-success" >-- Add New Transaction--</span></li></ul>')
+                    $('#procTrans_' + procDetailId + ' >span').after('<ul class="grandchildLevel"><li><span onclick="event.preventDefault();addNewSubProcessTransaction(' + procDetailId + ');" class="newitemaddmenu text-success" >-- Add New Transaction--</span></li></ul>')
                     $('#procTrans_' + procDetailId + ' >span').addClass('caret-down');
 
                 },
