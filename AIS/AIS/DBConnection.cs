@@ -17396,8 +17396,10 @@ namespace AIS.Controllers
                     r.WEIGHTAGE_AVERAGE = rdr["WEIGHTAGE_AVERAGE"].ToString();
                     r.WEIGHTED_AVERAGE_MARKS = rdr["WEIGHTED_AVERAGE_MARKS"].ToString();
                     r.RISK_MODEL = rdr["RISK_MODEL"].ToString();
+                    r.NO_OF_OBSERVATIONS = rdr["number_of_observations"].ToString();
                     r.GRAVITY_RISK = rdr["GRAVITY_RISK"].ToString();
                     r.RISK_BASED_MARKS = rdr["RISK_BASED_MARKS"].ToString();
+                    r.CIA_MARKS = rdr["CIA_MARKS"].ToString();
                     resp.Add(r);
                 }
             }

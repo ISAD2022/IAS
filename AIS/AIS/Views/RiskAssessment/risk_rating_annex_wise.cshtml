@@ -157,7 +157,7 @@
             cache: false,
             success: function (data) {                
                 $.each(data,function(i,v){
-                    $('#traditionalRiskRatingGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.maiN_PROCESS + '</td><td>' + v.risK_MODEL + '</td><td class="text-right">' + v.maX_NUMBER + '</td><td class="text-right">' + v.weightagE_AVERAGE + '</td><td class="text-right">' + v.gravitY_RISK + '</td><td class="text-right">' + v.risK_BASED_MARKS + '</td><td class="text-right">' + v.weighteD_AVERAGE_MARKS + '</td></tr>');
+                    $('#traditionalRiskRatingGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.maiN_PROCESS + '</td><td>' + v.risK_MODEL + '</td><td class="text-right">' + v.maX_NUMBER + '</td><td class="text-right">' + v.weightagE_AVERAGE + '</td><td class="text-right">' + v.gravitY_RISK + '</td><td class="text-right">' + v.nO_OF_OBSERVATIONS + '</td><td class="text-right">' + v.risK_BASED_MARKS + '</td><td class="text-right">' + v.weighteD_AVERAGE_MARKS + '</td><td class="text-right">' + v.ciA_MARKS + '</td></tr>');
                 })
             },
             dataType: "json",
@@ -193,7 +193,7 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                    $('#annexureRiskRatingGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.maiN_PROCESS + '</td><td>' + v.risK_MODEL + '</td><td class="text-right">' + v.maX_NUMBER + '</td><td class="text-right">' + v.weightagE_AVERAGE + '</td><td class="text-right">' + v.gravitY_RISK + '</td><td class="text-right">' + v.risK_BASED_MARKS + '</td><td class="text-right">' + v.weighteD_AVERAGE_MARKS + '</td></tr>');
+                    $('#annexureRiskRatingGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.maiN_PROCESS + '</td><td>' + v.risK_MODEL + '</td><td class="text-right">' + v.maX_NUMBER + '</td><td class="text-right">' + v.weightagE_AVERAGE + '</td><td class="text-right">' + v.gravitY_RISK + '</td><td class="text-right">' + v.nO_OF_OBSERVATIONS + '</td><td class="text-right">' + v.risK_BASED_MARKS + '</td><td class="text-right">' + v.weighteD_AVERAGE_MARKS + '</td></tr>');
                 })
             },
             dataType: "json",
@@ -202,7 +202,7 @@
 
 </script>
 <div class="row col-md-12 mt-3">
-    <h3 style=" display:block;color: #45c545;">Risk Rating Annexure Wise</h3>
+    <h3 style=" display:block;color: #45c545;">Risk Rating Model for Branches </h3>
 </div>
 
 
@@ -286,8 +286,10 @@
                     <th class="col-md-auto">Max Number</th>
                     <th class="col-md-auto">Weightage Average</th>
                     <th class="col-md-auto">Gravity Risk</th>
+                    <th class="col-md-auto">No of Observations</th>
                     <th class="col-md-auto">Risk Based Marks</th>
                     <th class="col-md-auto">Weightage Average Marks</th>
+                    <th class="col-md-auto">Our Working Marks</th>
                 </tr>
             </thead>
             <tbody></tbody>
