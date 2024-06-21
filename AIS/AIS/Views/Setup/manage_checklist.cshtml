@@ -32,10 +32,12 @@
 
 
     
-    function openUpdateSubCheclist(id, text) {
+    function openUpdateSubCheclist(id, text, seq, weight) {
         g_subProcId=id;
         $('#updateEntityModal').modal('show');
         $('#entCodeField').val(text);
+        $('#entSeqField').val(seq);
+        $('#entWeightField').val(weight);
         
     }
     function reloadLocation(){
@@ -47,6 +49,17 @@
             alert("Please enter Checklist Title");
             return;
         }
+
+        if ($('#entSeqField').val() == "") {
+            alert("Please enter Risk Sequence");
+            return;
+        }
+
+        if ($('#entWeightField').val() == "") {
+            alert("Please enter Risk Weightage");
+            return;
+        }
+      
         if (g_subProcId !=0){
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/update_audit_checklist",
@@ -54,6 +67,8 @@
                 data: {
                     'PROCESS_ID': g_subProcId,
                     'HEADING': $('#entCodeField').val(),
+                    'RISK_SEQUENCE': $('#entSeqField').val(),
+                    'RISK_WEIGHTAGE': $('#entWeightField').val(),
                     'ACTIVE': $('#entActiveField').val() 
                 },
                 cache: false,
@@ -69,7 +84,9 @@
                 type: "POST",
                 data: {
                     'HEADING': $('#entCodeField').val(),
-                    'ENTITY_TYPE_ID': 6, //Hardcoded 6 for Branch
+                    'ENTITY_TYPE_ID': 6, //Hardcoded 6 for Branch,
+                    'RISK_SEQUENCE': $('#entSeqField').val(),
+                    'RISK_WEIGHTAGE': $('#entWeightField').val(),
                     'ACTIVE': $('#entActiveField').val(),
                 },
                 cache: false,
@@ -87,6 +104,8 @@
         g_subProcId = id;
         $('#updateEntityModal').modal('show');
         $('#entCodeField').val('');
+        $('#entSeqField').val('');
+        $('#entWeightField').val('');
     }
 </script>
 <div class="row mt-3">
@@ -103,7 +122,9 @@
         <thead>
             <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <th class="col-md-auto">Sr No.</th>
-                <th class="col-md-auto">Sub Checklist</th>
+                <th class="col-md-auto">Checklist</th>
+                <th class="col-md-auto">Risk Sequence</th>
+                <th class="col-md-auto">Weightage</th>
                 <th class="col-md-auto">Action</th>
             </tr>
         </thead>
@@ -119,8 +140,10 @@
                         <tr>
                             <td class="text-center">@SrNo</td>
                             <td class="col-md-auto">@item.HEADING</td>
+                            <td class="col-md-auto">@item.RISK_SEQUENCE</td>
+                            <td class="col-md-auto">@item.RISK_WEIGHTAGE</td>
                             <td style="cursor:pointer;">
-                                <a class="text-danger" onclick="openUpdateSubCheclist( @item.T_ID, '@item.HEADING' )">Update</a>
+                                <a class="text-danger" onclick="openUpdateSubCheclist( @item.T_ID, '@item.HEADING', '@item.RISK_SEQUENCE','@item.RISK_WEIGHTAGE' )">Update</a>
                             </td>
                         </tr>
                         SrNo= @SrNo + 1;
@@ -139,7 +162,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Add/Update Process</h5>
+                <h5 class="modal-title">Add/Update Checklist</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -153,6 +176,22 @@
                         </div>
                         <div class="row col-md-8">
                             <input id="entCodeField" class="form-control" type="text" />
+                        </div>
+                    </div>
+                       <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Risk Sequence</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="entSeqField" min="0" oninput="validity.valid||(value='');" class="form-control" type="number" />
+                        </div>
+                    </div>
+                    <div class="row col-md-12 mt-3">
+                        <div class="row col-md-4">
+                            <label>Weightage</label>
+                        </div>
+                        <div class="row col-md-8">
+                            <input id="entWeightField" class="form-control" type="number" />
                         </div>
                     </div>
                     <div class="row col-md-12 mt-3">

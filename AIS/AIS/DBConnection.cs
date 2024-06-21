@@ -4056,6 +4056,8 @@ namespace AIS.Controllers
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
+                    chk.RISK_SEQUENCE = rdr["RISK_SEQUENCE"].ToString();
+                    chk.RISK_WEIGHTAGE = rdr["WEIGHT_ASSIGNED"].ToString();
                     chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
                     chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
@@ -6051,6 +6053,8 @@ namespace AIS.Controllers
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"].ToString());
                     chk.PROCESS = rdr["PROCESS"].ToString();
                     chk.HEADING = rdr["SUB_PROCESS"].ToString();
+                    chk.RISK_SEQUENCE = rdr["RISK_SEQUENCE"].ToString();
+                    chk.RISK_WEIGHTAGE = rdr["WEIGHT_ASSIGNED"].ToString();
                     chk.COMMENTS = rdr["COMMENTS"].ToString();
                     list.Add(chk);
                 }
@@ -6058,7 +6062,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public string AddAuditChecklist(string HEADING = "", int ENTITY_TYPE_ID = 0)
+        public string AddAuditChecklist(string HEADING = "", int ENTITY_TYPE_ID = 0 ,string RISK_SEQUENCE="", string RISK_WEIGHTAGE="")
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -6072,6 +6076,8 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_name", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("c_seq", OracleDbType.Int32).Value = RISK_SEQUENCE;
+                cmd.Parameters.Add("c_weight", OracleDbType.Varchar2).Value = RISK_WEIGHTAGE;
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6086,7 +6092,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public string UpdateAuditChecklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE = "")
+        public string UpdateAuditChecklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -6102,6 +6108,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("t_id", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("p_name", OracleDbType.Varchar2).Value = HEADING;
                 cmd.Parameters.Add("active", OracleDbType.Varchar2).Value = ACTIVE;
+                cmd.Parameters.Add("c_seq", OracleDbType.Int32).Value = RISK_SEQUENCE;
+                cmd.Parameters.Add("c_weight", OracleDbType.Varchar2).Value = RISK_WEIGHTAGE;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -6115,7 +6123,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public string AddAuditSubChecklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "")
+        public string AddAuditSubChecklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -6130,6 +6138,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("c_seq", OracleDbType.Int32).Value = RISK_SEQUENCE;
+                cmd.Parameters.Add("c_weight", OracleDbType.Varchar2).Value = RISK_WEIGHTAGE;
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Varchar2).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -6144,7 +6154,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public string UpdateAuditSubChecklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int ENTITY_TYPE_ID = 0)
+        public string UpdateAuditSubChecklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int ENTITY_TYPE_ID = 0, string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
         {
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -6161,6 +6171,8 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("N_TID", OracleDbType.Int32).Value = PROCESS_ID;
                 cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
                 cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = HEADING;
+                cmd.Parameters.Add("c_seq", OracleDbType.Int32).Value = RISK_SEQUENCE;
+                cmd.Parameters.Add("c_weight", OracleDbType.Varchar2).Value = RISK_WEIGHTAGE;
                 cmd.Parameters.Add("ENTITY_TYPE", OracleDbType.Int32).Value = ENTITY_TYPE_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -17465,6 +17477,56 @@ namespace AIS.Controllers
             return resp;
 
         }
+
+        public List<RiskRatingModelForBranchesWorking> GetRiskRatingModelForBranchesWorking(int ENG_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<RiskRatingModelForBranchesWorking> resp = new List<RiskRatingModelForBranchesWorking>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_new_risk_model ";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    RiskRatingModelForBranchesWorking auditChecklist = new RiskRatingModelForBranchesWorking();
+                    auditChecklist.MainProcessRiskSequence = rdr["risk_sequence"].ToString();
+                    auditChecklist.MainProcess = rdr["Main_process"].ToString();
+                    auditChecklist.MainProcessWeightAssigned = rdr["weight_assigned"].ToString();
+                    auditChecklist.SubProcessRiskSequence = rdr["risk_sequence"].ToString();
+                    auditChecklist.SubProcess = rdr["heading"].ToString();
+                    auditChecklist.SubProcessWeightAssigned = rdr["weight_assigned"].ToString();
+                    auditChecklist.High = rdr["High"].ToString();
+                    auditChecklist.Medium = rdr["medium"].ToString();
+                    auditChecklist.Low = rdr["Low"].ToString();
+                    auditChecklist.TotalNoOfTest = rdr["total_no_of_test"].ToString();
+                    auditChecklist.AvailableWeightedScore = rdr["AVAILABLE_WEIGHTED_SCORE"].ToString();
+                    auditChecklist.AvailableProcessScore = rdr["AVAILABLE_PROCESS_SCORE"].ToString();
+                    auditChecklist.TotalHigh = rdr["HIGH"].ToString();
+                    auditChecklist.TotalMedium = rdr["MEDIUM"].ToString();
+                    auditChecklist.TotalLow = rdr["LOW"].ToString();
+                    auditChecklist.TotalObservations = rdr["TOTAL_OBS"].ToString();
+                    auditChecklist.TotalScoreSubProcess = rdr["TOTAL_SCORE_SUB_PROCESS"].ToString();
+                    auditChecklist.WeightedAverageScore = rdr["WEIGHTED_AVERAGE_SCORE"].ToString();
+                    auditChecklist.TotalScoreProcess = rdr["TOTAL_SCORE_PROCESS"].ToString();
+                    auditChecklist.WeightedAverageScoreOverall = rdr["WEIGHTED_AVERAGE_SCORE_OVERALL"].ToString();
+
+                    resp.Add(auditChecklist);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+        
     }
 
 }

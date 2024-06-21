@@ -1319,14 +1319,14 @@ namespace AIS.Controllers
             return dBConnection.GetAuditSubChecklist(PROCESS_ID);
         }
         [HttpPost]
-        public string add_audit_sub_checklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "")
+        public string add_audit_sub_checklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditSubChecklist(PROCESS_ID, ENTITY_TYPE_ID, HEADING) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditSubChecklist(PROCESS_ID, ENTITY_TYPE_ID, HEADING, RISK_SEQUENCE, RISK_WEIGHTAGE) + "\"}";
         }
         [HttpPost]
-        public string update_audit_sub_checklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int ENTITY_TYPE_ID = 0)
+        public string update_audit_sub_checklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int ENTITY_TYPE_ID = 0, string RISK_SEQUENCE="", string RISK_WEIGHTAGE="")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, OLD_PROCESS_ID, SUB_PROCESS_ID, HEADING, ENTITY_TYPE_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditSubChecklist(PROCESS_ID, OLD_PROCESS_ID, SUB_PROCESS_ID, HEADING, ENTITY_TYPE_ID, RISK_SEQUENCE, RISK_WEIGHTAGE) + "\"}";
         }
 
         [HttpPost]
@@ -1381,15 +1381,15 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public string add_audit_checklist(string HEADING = "", int ENTITY_TYPE_ID = 0)
+        public string add_audit_checklist(string HEADING = "", int ENTITY_TYPE_ID = 0, string RISK_SEQUENCE="", string RISK_WEIGHTAGE = "")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditChecklist(HEADING, ENTITY_TYPE_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddAuditChecklist(HEADING, ENTITY_TYPE_ID, RISK_SEQUENCE, RISK_WEIGHTAGE) + "\"}";
         }
 
         [HttpPost]
-        public string update_audit_checklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE = "")
+        public string update_audit_checklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklist(PROCESS_ID, HEADING, ACTIVE) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateAuditChecklist(PROCESS_ID, HEADING, ACTIVE,RISK_SEQUENCE, RISK_WEIGHTAGE) + "\"}";
         }
 
         [HttpPost]
@@ -2211,6 +2211,12 @@ namespace AIS.Controllers
             return dBConnection.ViewAnnexureRiskRatingofEngagement(ENG_ID);
         }
 
+        //
+        [HttpPost]
+        public List<RiskRatingModelForBranchesWorking> get_risk_rating_model_for_branches_working(int ENG_ID)
+        {
+            return dBConnection.GetRiskRatingModelForBranchesWorking(ENG_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
