@@ -31,6 +31,7 @@
     var g_nextRole = "";
     var g_obsList = [];
 
+
     var btnClick = "own";
 
     $(document).ready(function () {
@@ -48,7 +49,7 @@
         });
     });
     function viewOwnCompliance() {
-        btnClick = "onw";
+        btnClick = "own";
         $('#ownCompliance').addClass("btn-danger");
         $('#ownCompliance').removeClass("btn-outline-danger");
 
@@ -165,8 +166,6 @@
         g_indicator = indicator;
         g_memoNo = memo_no;
 
-
-
         $('#viewParaComplianceModel').modal('show');
         $('#manageComplianceHistPanel tbody').empty();
 
@@ -178,17 +177,27 @@
             },
             cache: false,
             success: function (data) {
+                if (data.length == 0 && btnClick== "own") {
+            $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="6"><i>No previous compliance submitted yet</i></td><td><a onclick="event.preventDefault();getComplianceText(' + comID + ', 0);" href="#" class="text-danger">Submit Compliance</a></td></tr>');
+                    
+                }
+                else if (data.length == 0 && btnClick == "review") {
+                    $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="7"><i>No previous compliance submitted yet</i></td></tr>');
 
-                var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
-                $.each(data, function (i, v) {
-                    if (v.coM_CYCLE > cycle_count) {
-                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                        cycle_count++;
-                    }
-                    else
-                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
+                }
+                else {
 
-                });
+                    var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
+                    $.each(data, function (i, v) {
+                        if (v.coM_CYCLE > cycle_count) {
+                            $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                            cycle_count++;
+                        }
+                        else
+                            $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
+
+                    });
+                }
 
             },
 
@@ -263,6 +272,11 @@
 
              dataType: "json",
          }); */
+    }
+
+    function submitNewCompliance(comID){
+        alert(comID);
+    
     }
     function PublishCompliance(ind) {
 
