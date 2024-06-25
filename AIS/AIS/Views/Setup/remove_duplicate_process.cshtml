@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Merge Duplicate/Redundant Checklist Details";
+    ViewData["Title"] = "Merge Duplicate/Redundant Process";
     Layout = "_Layout";
 }
 <style type="text/css">
@@ -42,7 +42,7 @@
             if ($('#selectAllHeaderCheckbox').is(':checked')){
                 
                 $.each($('#checkListDetailsPanel tbody tr.matched'), function (i, tr) {
-                    $(tr).find('.chkbox').eq(0).prop('checked',true)
+                    $(tr).find('.chkbox').eq(0).prop('checked', true)
                 });
             }else{
                 $.each($('#checkListDetailsPanel tbody tr.matched'), function (i, tr) {
@@ -340,8 +340,8 @@
     }
 
     function mergeDuplicate(){
-        if ($('#checklistDetailSelectField').val()=="0"){
-            alert("Select Checlist Detail to proceed");
+        if ($('#checklistSelectField').val() == "0") {
+            alert("Select Process to proceed");
             return;
         }
 
@@ -355,11 +355,11 @@
 
         if(ids_arr.length>0){
             $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/merge_duplicate_checklists",
+                url: g_asiBaseURL + "/ApiCalls/merge_duplicate_process",
                 type: "POST",
                 data: {
-                    'MAIN_CHECKLIST_ID': $('#checklistDetailSelectField').val(),
-                    'MERGE_CHECKLIST_IDs': ids_arr
+                    'MAIN_PROCESS_ID': $('#checklistSelectField').val(),
+                    'MERGE_PROCESS_IDs': ids_arr
                 },
                 cache: false,
                 success: function (data) {
@@ -369,80 +369,43 @@
                 dataType: "json",
             });
         }else{
-            alert("Please select atleast one checklist detail to merge with above");
+            alert("Please select atleast one Process to merge with above selected process");
             return;
         }
        
     }
 
     function reloadLocation(){
-        window.location.reload();
+        getAuditSubChecklist();
     }
 
 
 </script>
 <div class="row text-center mt-3">
-    <h3 style=" display:block;color: #45c545;">Merge Duplicate/Redundant Checklists Details</h3>
+    <h3 style=" display:block;color: #45c545;">Merge Duplicate/Redundant Process</h3>
 </div>
-<div class="row mt-3 col-md-12">
-    <div class="col-md-12">
-        <label><b>Audit Checklist</b></label>
-    </div>
-    <div class="col-md-11">
-        <select id="checklistSelectField" onchange="getAuditSubChecklist();" class="form-select form-control">
-            <option value="0" id="0" selected>--Select Process--</option>
-            @{
-                if (ViewData["ProcessList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
-                    {
-                                                        <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
 
-                    }
+<div class="row col-md-12">
+    <label class="form-label font-weight-bold">Process</label>
+    <select id="checklistSelectField" class="form-select form-control">
+        <option value="0" id="0" selected>--Select Process--</option>
+        @{
+            if (ViewData["ProcessList"] != null)
+            {
+                foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                {
+                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+
                 }
             }
+        }
 
-        </select>
-    </div>
-    <div class="col-md-1">
-        <a onclick="openUpdateProcess();" class="text-danger text-underline">Update</a>
-    </div>
-
+    </select>
 </div>
-<div class="row mt-3 col-md-12">
-    <div class="col-md-12">
-        <label><b>Audit Sub Checklist</b></label>
-    </div>
-
-    <div class="col-md-11">
-        <select id="subchecklistSelectField" onchange="getAuditChecklistDetail();" class="form-select form-control">
-            <option value="0">--Select Sub-Checklist--</option>
-        </select>
-    </div>
-    <div class="col-md-1">
-        <a onclick="openUpdateSubCheclist();" class="text-danger text-underline">Update</a>
-    </div>
-</div>
-<div class="row mt-3 col-md-12">
-    <div class="col-md-12">
-        <label><b>Audit Checklist Detail</b></label>
-    </div>
-    <div class="col-md-11">
-        <select id="checklistDetailSelectField" class="form-select form-control">
-            <option value="0">--Select Checklist Detail--</option>
-        </select>
-    </div>
-    <div class="col-md-1">
-        <a onclick="openUpdadateCheclist();" class="text-danger text-underline">Update</a>
-    </div>
-</div>
-
-
 <div class="row col-md-12 mt-3">
-    <h5>Search Checklist Detail</h5>
+    <h5>Search Process</h5>
     <input id="searchTableRecord" type="text" class="form-control" />
 </div>
-
 
 <div class="row col-md-12 mt-1">
     <table id="checkListDetailsPanel" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
@@ -450,26 +413,24 @@
             <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <th class="col-md-1 font-weight-bold">ID</th>
                 <th class="col-md-2 font-weight-bold">Process</th>
-                <th class="col-md-4 font-weight-bold">Sub Process</th>
-                <th class="col-md-4 font-weight-bold">Process Detail</th>
-                <th class="col-md-1 font-weight-bold">Risk</th>
+                <th class="col-md-4 font-weight-bold">Risk Sequence</th>
+                <th class="col-md-4 font-weight-bold">Risk Weightage</th>
                 <th class="col-md-auto"><input id="selectAllHeaderCheckbox" type="checkbox"/></th>
             </tr>
         </thead>
         <tbody>
             @{
-                if (ViewData["checkListDetailsList"] != null)
+                if (ViewData["ProcessList"] != null)
                 {
-                   
-                    foreach (var item in (dynamic)(ViewData["checkListDetailsList"]))
+
+                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
                     {
                                                         <tr class="matched">
-                                                            <td>@item.ID</td>
-                                                            <td>@item.PROCESS</td>
-                                                            <td>@item.SUB_PROCESS</td>
-                                                            <td>@item.PROCESS_DETAIL</td>
-                                                            <td>@item.RISK</td>
-                                                            <td class="text-center"><input id="@item.ID" class="chkbox" type="checkbox" /></td>
+                                                            <td>@item.T_ID</td>
+                                                            <td>@item.HEADING</td>
+                                                            <td>@item.RISK_SEQUENCE</td>
+                                                            <td>@item.RISK_WEIGHTAGE</td>
+                                                            <td class="text-center"><input id="@item.T_ID" class="chkbox" type="checkbox" /></td>
                                                         </tr>
                        
                     }

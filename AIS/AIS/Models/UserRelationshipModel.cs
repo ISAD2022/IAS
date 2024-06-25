@@ -25,6 +25,9 @@ namespace AIS.Models
         public string C_NAME { get; set; }
         public string C_TYPE_ID { get; set; }
 
+        public string COMPLICE_BY { get; set; }
+
+        public string AUDIT_BY { get; set; }
 
         public string ACTIVE { get; set; }
 

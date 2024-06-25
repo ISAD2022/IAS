@@ -160,6 +160,44 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult remove_duplicate_process()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();            
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult remove_duplicate_sub_process()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult remove_duplicate_checklists()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -171,6 +209,44 @@ namespace AIS.Controllers
             ViewData["RoleRespList"] = dBConnection.GetRoleResponsibleForChecklistDetail();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult authorize_remove_duplicate_process()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult authorize_remove_duplicate_sub_process()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -273,8 +349,7 @@ namespace AIS.Controllers
                 else
                     return View();
             }
-        }
-     
+        }     
         public IActionResult sub_process_authorize()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -293,8 +368,7 @@ namespace AIS.Controllers
                 else
                     return View();
             }
-        }
-             
+        }             
         public IActionResult process_detail_review()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

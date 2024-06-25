@@ -1662,6 +1662,31 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public string merge_duplicate_process(string MAIN_PROCESS_ID, List<string> MERGE_PROCESS_IDs)
+        {
+            string resp = "";
+            foreach (string ID in MERGE_PROCESS_IDs)
+            {
+                resp +=dBConnection.MergeDuplicateProcesses(MAIN_PROCESS_ID, ID) +"</br>";
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+
+        }
+
+        [HttpPost]
+        public string merge_duplicate_sub_process(string MAIN_PROCESS_ID, string MAIN_SUB_PROCESS_ID, List<string> MERGE_SUB_PROCESS_IDs)
+        {
+            string resp = "";
+            foreach (string ID in MERGE_SUB_PROCESS_IDs)
+            {
+                resp += dBConnection.MergeDuplicateSubProcesses(MAIN_PROCESS_ID, MAIN_SUB_PROCESS_ID, ID) + "</br>";
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+
+        }
+
+
+        [HttpPost]
         public string merge_duplicate_checklists(string MAIN_CHECKLIST_ID, List<string> MERGE_CHECKLIST_IDs)
         {
             foreach (string ID in MERGE_CHECKLIST_IDs)
@@ -1671,6 +1696,19 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"Duplicates merged successfully\"}";
 
         }
+
+        [HttpPost]
+        public List<MergeDuplicateProcessModel> get_duplicate_Processes(int PROCESS_ID)
+        {
+            return dBConnection.GetDuplicateProcesses(PROCESS_ID);
+        }
+        [HttpPost]
+        public List<MergeDuplicateProcessModel> get_duplicate_Sub_Processes(int PROCESS_ID)
+        {
+            return dBConnection.GetDuplicateSubProcesses(PROCESS_ID);
+        }
+
+
         [HttpPost]
         public List<MergeDuplicateChecklistModel> get_duplicate_checklists(int PROCESS_ID)
         {
@@ -1680,6 +1718,17 @@ namespace AIS.Controllers
         public MergeDuplicateChecklistModel get_duplicate_checklists_count(int PROCESS_ID)
         {
             return dBConnection.GetDuplicateChecklistsCount(PROCESS_ID);
+        }
+        [HttpPost]
+        public string authorize_merge_duplicate_process(int PROCESS_ID, List<int> AUTH_P_IDS)
+        {
+            string resp = "";
+            foreach (int ID in AUTH_P_IDS)
+            {
+                resp += dBConnection.AuthorizeMergeDuplicateProcesses(PROCESS_ID, ID) + "</br>";
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+          
         }
         [HttpPost]
         public string authorize_merge_duplicate_checklists(int PROCESS_ID)

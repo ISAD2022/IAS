@@ -8883,6 +8883,8 @@ namespace AIS.Controllers
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
                     entity.C_TYPE_ID = rdr["TYPEID"].ToString();
+                    entity.COMPLICE_BY = rdr["COMPLICE_BY"].ToString();
+                    entity.AUDIT_BY = rdr["AUDIT_BY"].ToString();
                     entitiesList.Add(entity);
                 }
             }
@@ -13570,6 +13572,62 @@ namespace AIS.Controllers
             return resp;
         }
 
+        public string MergeDuplicateProcesses(string PROCESS_ID, string M_PROC_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_merge_checklist";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CID", OracleDbType.Varchar2).Value = PROCESS_ID;
+                cmd.Parameters.Add("mcid", OracleDbType.Varchar2).Value = M_PROC_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+
+                }
+
+            }
+            con.Dispose();
+            return resp;
+        }
+
+        public string MergeDuplicateSubProcesses(string PROCESS_ID, string SUB_PROCESS_ID, string M_SUB_PROC_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_merge_sub_checklist";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("SID", OracleDbType.Varchar2).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("msid", OracleDbType.Varchar2).Value = M_SUB_PROC_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+
+                }
+
+            }
+            con.Dispose();
+            return resp;
+        }
+
         public bool MergeDuplicateChecklists(string CHECKLIST_ID, string M_CHECKLIST_ID)
         {
             sessionHandler = new SessionHandler();
@@ -13609,6 +13667,72 @@ namespace AIS.Controllers
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["ID"]);
                     chk.HEADING = rdr["Main_checklist"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<MergeDuplicateProcessModel> GetDuplicateProcesses(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<MergeDuplicateProcessModel> list = new List<MergeDuplicateProcessModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.p_Get_Checklist_MERGER_FOR_REVIEW";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = PROCESS_ID;                
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    MergeDuplicateProcessModel chk = new MergeDuplicateProcessModel();
+                    chk.ID = Convert.ToInt32(rdr["cid"]);
+                    chk.M_ID = Convert.ToInt32(rdr["m_cid"]);
+                    chk.HEADING = rdr["for_merger"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public List<MergeDuplicateProcessModel> GetDuplicateSubProcesses(int PROCESS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<MergeDuplicateProcessModel> list = new List<MergeDuplicateProcessModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.p_Get_sub_Checklist_MERGER_FOR_REVIEW";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("S_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    MergeDuplicateProcessModel chk = new MergeDuplicateProcessModel();
+                    chk.ID = Convert.ToInt32(rdr["sid"]);
+                    chk.M_ID = Convert.ToInt32(rdr["m_sid"]);
+                    chk.HEADING = rdr["for_merger"].ToString();
                     list.Add(chk);
                 }
             }
@@ -13664,6 +13788,32 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
+
+        public string AuthorizeMergeDuplicateProcesses(int PROCESS_ID, int AUTH_P_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("M_CID", OracleDbType.Int32).Value = AUTH_P_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+        
         public string AuthorizeMergeDuplicateChecklists(int PROCESS_ID)
         {
             string resp = "";
