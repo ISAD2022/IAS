@@ -375,10 +375,27 @@
        
     }
 
+    function removeSelectedProcFromGrid() {
+        var selProc = $('#checklistSelectField').val();
+        $('#checkListDetailsPanel tbody tr td.prIdCol').each(function (i, tr) {
+
+            if ($(tr).attr('id') == selProc) {
+                $(tr).parent().hide();
+                $(tr).parent().find('.chkbox').eq(0).prop("checked", false);
+                $(tr).parent().removeClass("matched");
+            } else {
+                $(tr).parent().show();
+                $(tr).parent().addClass("matched");
+            }
+            
+        });
+
+
+    }
+
     function reloadLocation(){
         getAuditSubChecklist();
     }
-
 
 </script>
 <div class="row text-center mt-3">
@@ -386,15 +403,15 @@
 </div>
 
 <div class="row col-md-12">
-    <label class="form-label font-weight-bold">Process</label>
-    <select id="checklistSelectField" class="form-select form-control">
+    <label class="form-label font-weight-bold">Please select the Main process in which you want to merge into</label>
+    <select id="checklistSelectField" onchange="removeSelectedProcFromGrid();" class="form-select form-control">
         <option value="0" id="0" selected>--Select Process--</option>
         @{
             if (ViewData["ProcessList"] != null)
             {
                 foreach (var item in (dynamic)(ViewData["ProcessList"]))
                 {
-                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+                                    <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
 
                 }
             }
@@ -402,12 +419,10 @@
 
     </select>
 </div>
-<div class="row col-md-12 mt-3">
-    <h5>Search Process</h5>
-    <input id="searchTableRecord" type="text" class="form-control" />
-</div>
+
 
 <div class="row col-md-12 mt-1">
+    <label class="form-label font-weight-bold">Please select Main Processes from below table you want to merge</label>
     <table id="checkListDetailsPanel" class="table table-bordered table mb-0 mt-3 bg-white table-hover table-striped">
         <thead>
             <tr style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -425,13 +440,13 @@
 
                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                     {
-                                                        <tr class="matched">
-                                                            <td>@item.T_ID</td>
-                                                            <td>@item.HEADING</td>
-                                                            <td>@item.RISK_SEQUENCE</td>
-                                                            <td>@item.RISK_WEIGHTAGE</td>
-                                                            <td class="text-center"><input id="@item.T_ID" class="chkbox" type="checkbox" /></td>
-                                                        </tr>
+                                                                        <tr class="matched">
+                                                                            <td class="prIdCol" id="@item.T_ID">@item.T_ID</td>
+                                                                            <td>@item.HEADING</td>
+                                                                            <td>@item.RISK_SEQUENCE</td>
+                                                                            <td>@item.RISK_WEIGHTAGE</td>
+                                                                            <td class="text-center"><input id="@item.T_ID" class="chkbox" type="checkbox" /></td>
+                                                                        </tr>
                        
                     }
                 }
@@ -514,7 +529,7 @@
                                     {
                                         foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                         {
-                                                                        <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+                                                                                        <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
 
                                         }
                                     }
@@ -627,7 +642,7 @@
                                         {
                                             foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                             {
-                                                                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
+                                                                                            <option value="@item.T_ID" id="@item.T_ID">@item.HEADING</option>
 
                                             }
                                         }
@@ -665,7 +680,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ViolationsList"]))
                                             {
-                                                                            <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                                                            <option max-number="@item.MAX_NUMBER" id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                             }
 
                                         }
@@ -686,7 +701,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["ProcOwnerList"]))
                                             {
-                                                                            <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
+                                                                                            <option id="@item.ENTITY_ID" value="@item.ENTITY_ID">@item.NAME</option>
                                             }
 
                                         }
@@ -707,7 +722,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RoleRespList"]))
                                             {
-                                                                            <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
+                                                                                            <option id="@item.DESIGNATIONCODE" value="@item.DESIGNATIONCODE">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -728,7 +743,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["RiskList"]))
                                             {
-                                                                            <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
+                                                                                            <option id="@item.R_ID" value="@item.R_ID">@item.DESCRIPTION</option>
                                             }
 
                                         }
@@ -749,7 +764,7 @@
 
                                             foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                             {
-                                                <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                                                <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                             }
 
                                         }

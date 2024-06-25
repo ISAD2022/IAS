@@ -13706,7 +13706,7 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<MergeDuplicateProcessModel> GetDuplicateSubProcesses(int PROCESS_ID)
+        public List<MergeDuplicateProcessModel> GetDuplicateSubProcesses(int SUB_PROCESS_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13720,7 +13720,7 @@ namespace AIS.Controllers
                 cmd.CommandText = "pkg_ad.p_Get_sub_Checklist_MERGER_FOR_REVIEW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("S_ID", OracleDbType.Int32).Value = PROCESS_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Varchar2).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Varchar2).Value = loggedInUser.UserRoleID;
@@ -13813,7 +13813,30 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        
+        public string AuthorizeMergeDuplicateSubProcesses(int SUB_PROCESS_ID, int AUTH_S_P_ID)
+        {
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("M_SID", OracleDbType.Int32).Value = AUTH_S_P_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
         public string AuthorizeMergeDuplicateChecklists(int PROCESS_ID)
         {
             string resp = "";
@@ -16093,7 +16116,7 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
-        public List<ComplianceFlowModel> GetComplianceFlowByEntityType(string ENTITY_TYPE_ID, string GROUP_ID)
+        public List<ComplianceFlowModel> GetComplianceFlowByEntityType(int ENTITY_TYPE_ID=0, int GROUP_ID=0)
         {
 
             sessionHandler = new SessionHandler();

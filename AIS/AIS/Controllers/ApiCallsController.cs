@@ -1703,9 +1703,9 @@ namespace AIS.Controllers
             return dBConnection.GetDuplicateProcesses(PROCESS_ID);
         }
         [HttpPost]
-        public List<MergeDuplicateProcessModel> get_duplicate_Sub_Processes(int PROCESS_ID)
+        public List<MergeDuplicateProcessModel> get_duplicate_Sub_Processes(int SUB_PROCESS_ID)
         {
-            return dBConnection.GetDuplicateSubProcesses(PROCESS_ID);
+            return dBConnection.GetDuplicateSubProcesses(SUB_PROCESS_ID);
         }
 
 
@@ -1729,6 +1729,17 @@ namespace AIS.Controllers
             }
             return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
           
+        }
+        [HttpPost]
+        public string authorize_merge_duplicate_sub_process(int SUB_PROCESS_ID, List<int> AUTH_S_P_IDS)
+        {
+            string resp = "";
+            foreach (int ID in AUTH_S_P_IDS)
+            {
+                resp += dBConnection.AuthorizeMergeDuplicateProcesses(SUB_PROCESS_ID, ID) + "</br>";
+            }
+            return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
+
         }
         [HttpPost]
         public string authorize_merge_duplicate_checklists(int PROCESS_ID)
@@ -1996,7 +2007,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceFlow(ID,ENTITY_TYPE_ID, GROUP_ID, PREV_GROUP_ID, NEXT_GROUP_ID) + "\"}";
         }
         [HttpPost]
-        public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(string ENTITY_TYPE_ID, string GROUP_ID)
+        public List<ComplianceFlowModel> get_compliance_flow_by_entity_type(int ENTITY_TYPE_ID=0, int GROUP_ID=0)
         {
             return dBConnection.GetComplianceFlowByEntityType(ENTITY_TYPE_ID, GROUP_ID);
         }
