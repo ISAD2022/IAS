@@ -596,7 +596,24 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
+        public IActionResult compliance_hierarchy()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         [HttpPost]
         public ControlViolationsModel add_control_violation(ControlViolationsModel cv)
         {
