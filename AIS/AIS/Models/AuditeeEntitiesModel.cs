@@ -19,5 +19,7 @@ namespace AIS.Models
         public int? INSPECTEDBY_ID { get; set; }
         public string COST_CENTER { get; set; }
         public int? ENG_ID { get; set; }
+
+        public string COM_BY { get; set; }
     }
 }

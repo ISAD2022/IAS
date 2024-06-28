@@ -9134,6 +9134,36 @@ namespace AIS.Controllers
                 {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["NAME"].ToString();
+                    entity.COM_BY = rdr["ENTITY_ID"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+
+        public List<AuditeeEntitiesModel> GetComplianceOfficer()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_GET_COMPLIANCE_OFFICE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.NAME = rdr["NAME"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     entitiesList.Add(entity);
                 }
@@ -17362,7 +17392,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-        public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, int COMP_ID)
+        public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, string COMP_ID)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17378,7 +17408,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENT_ID;
                 cmd.Parameters.Add("AUDITOR", OracleDbType.Int32).Value = AUD_ID;
-                cmd.Parameters.Add("COMPLIANCE", OracleDbType.Int32).Value = COMP_ID;
+                cmd.Parameters.Add("COMPLIANCE", OracleDbType.Varchar2).Value = COMP_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())

@@ -2214,7 +2214,7 @@ namespace AIS.Controllers
             return dBConnection.GetDraftDSAList();
         }
         [HttpPost]
-        public string update_compliance_office(List<int> ENT_ID_ARR, int AUD_ID, int COMP_ID)
+        public string update_compliance_office(List<int> ENT_ID_ARR, int AUD_ID, string COMP_ID)
         {
             string res = "";
             if(ENT_ID_ARR.Count > 0){
