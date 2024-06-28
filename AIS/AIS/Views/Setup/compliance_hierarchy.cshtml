@@ -1,13 +1,38 @@
 ﻿@{
-    ViewData["Title"] = "Compliance Unit";
+    ViewData["Title"] = "Compliance Hierarchy";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
     var g_periodId = 0;
     $(document).ready(function () {
-       
+        getComplianceHierarchy();
     });
+
+    function getComplianceHierarchy() {
+        $('#listOfComplianceHierarchy tbody').empty();
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_hierarchy",
+            type: "POST",
+            data: {
+               
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    $('#listOfComplianceHierarchy tbody').append('<tr><td>' + ++i + '</td><td>' + v.compliancE_UNIT + '</td><td>' + v.revieweR_NAME + ' ( ' + v.revieweR_PPNO + ')</td><td>' + v.approveR_NAME + ' ( ' + v.approveR_PPNO + ')</td><td><a href="#" onclick="event.preventDefault();updateComplianceHierarchy(' + v.entitY_ID + ', ' + v.revieweR_PPNO + ', ' + v.approveR_PPNO + ');">Update</a></td></tr>');
+                    
+                });
+
+            },
+            dataType: "json",
+        });
+
+    }
+
+    function updateComplianceHierarchy(){
+        $('#complianceUnit').modal('show');
+    }
 
 
 
@@ -20,24 +45,21 @@
         </div>
     </div>
 </div>
-<div id="listOfAuditPeriodsContainer" class="row mt-3">
+<div id="listOfComplianceHierarchyContainer" class="row mt-3">
 
     <br />
-    <table id="listOfAuditPeriods" class="table table-hover table-bordered table-hover mt-3 table-striped">
+    <table id="listOfComplianceHierarchy" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
                 <th class="col-md-1">Sr No.</th>
                 <th class="col-md-4">Compliance Unit</th>
                 <th class="col-md-2">Incharge Unit</th>
                 <th class="col-md-2">Settelement Officer</th>
-                <th class="col-md-1">Status</th>
                 <th class="col-md-1"></th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td><a href"#" onclick="$('#complianceUnit').modal('show');">Open Modal</a></td>
-            </tr>
+           
         </tbody>
     </table>
 </div>

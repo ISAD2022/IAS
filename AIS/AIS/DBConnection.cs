@@ -17729,11 +17729,6 @@ namespace AIS.Controllers
 
         }
 
-
-
-
-
-
         public List<ComplianceHierarchyModel> GetComplianceHierarchies()
         {
             sessionHandler = new SessionHandler();
@@ -17758,7 +17753,6 @@ namespace AIS.Controllers
                     complianceHierarchyModel.APPROVER_NAME = rdr["APPROVER_NAME"].ToString();
                     complianceHierarchyModel.REVIEWER_PPNO = rdr["REVIEWER_PPNO"].ToString();
                     complianceHierarchyModel.REVIEWER_NAME = rdr["REVIEWER_NAME"].ToString();
-
                     resp.Add(complianceHierarchyModel);
                 }
             }
