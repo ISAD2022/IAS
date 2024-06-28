@@ -2277,6 +2277,15 @@ namespace AIS.Controllers
         {
             return dBConnection.GetRiskRatingModelForBranchesWorking(ENG_ID);
         }
+        [HttpPost]
+        public List<ComplianceHierarchyModel> compliance_hierarchy()
+        {
+            return dBConnection.GetComplianceHierarchies();
+        }
+
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

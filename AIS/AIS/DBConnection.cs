@@ -17729,7 +17729,48 @@ namespace AIS.Controllers
 
         }
 
-        
+
+
+
+
+
+        public List<ComplianceHierarchyModel> GetComplianceHierarchies()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceHierarchyModel> resp = new List<ComplianceHierarchyModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.p_get_compliance_hierarchy ";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceHierarchyModel complianceHierarchyModel = new ComplianceHierarchyModel();
+                    complianceHierarchyModel.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    complianceHierarchyModel.COMPLIANCE_UNIT = rdr["COMPLIANCE_UNIT"].ToString();
+                    complianceHierarchyModel.APPROVER_PPNO = rdr["APPROVER_PPNO"].ToString();
+                    complianceHierarchyModel.APPROVER_NAME = rdr["APPROVER_NAME"].ToString();
+                    complianceHierarchyModel.REVIEWER_PPNO = rdr["REVIEWER_PPNO"].ToString();
+                    complianceHierarchyModel.REVIEWER_NAME = rdr["REVIEWER_NAME"].ToString();
+
+                    resp.Add(complianceHierarchyModel);
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+
+
+
+
+
     }
 
 }
