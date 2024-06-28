@@ -13850,7 +13850,7 @@ namespace AIS.Controllers
             using (OracleCommand cmd = con.CreateCommand())
             {
 
-                cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST";
+                cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST_SUB";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SUB_PROCESS_ID;

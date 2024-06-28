@@ -1736,7 +1736,7 @@ namespace AIS.Controllers
             string resp = "";
             foreach (int ID in AUTH_S_P_IDS)
             {
-                resp += dBConnection.AuthorizeMergeDuplicateProcesses(SUB_PROCESS_ID, ID) + "</br>";
+                resp += dBConnection.AuthorizeMergeDuplicateSubProcesses(SUB_PROCESS_ID, ID) + "</br>";
             }
             return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
 
