@@ -34,14 +34,14 @@
         $('#complianceUnit').modal('show');
     }
 
-    function getMatchedPP() {
+    function getMatchedPP(ppno) {
         $('#matchedPPNoPanels').empty();
         g_respUser = [];
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
             type: "POST",
             data: {
-                'PP_NO': $('#responsiblePPNoEntryField').val()
+                'PP_NO': ppno
             },
             cache: false,
             success: function (data) {
@@ -113,7 +113,7 @@
                     </div>
                     <div class="col-md-6">
                    
-                        <button id="searchbtn" onclick="getMatchedPP();"  class="btn btn-danger col-md-2" style="margin-left:auto;">Search</button>
+                        <button id="searchbtn" onclick="getMatchedPP($('#ppnoSearchField').val());" class="btn btn-danger col-md-2" style="margin-left:auto;">Search</button>
                     </div>
                 </div>
 
@@ -141,7 +141,7 @@
                     </div>
                     <div class="col-md-6">
                        
-                        <button id="searchbtn" onclick="getMatchedPP();" class="btn btn-danger col-md-2" style="margin-left:auto;">Search</button>
+                        <button id="searchbtn" onclick="getMatchedPP($('#ppnoSearch').val());" class="btn btn-danger col-md-2" style="margin-left:auto;">Search</button>
                     </div>
 
                     <div class="row col-md-12 mt-2">
