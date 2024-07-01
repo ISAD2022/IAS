@@ -4067,6 +4067,38 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+
+
+        public List<AuditChecklistModel> GetAuthorizeMergeSubChecklist()
+        {
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditChecklistModel> list = new List<AuditChecklistModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ad.P_GET_SUBCHECKILIST";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditChecklistModel chk = new AuditChecklistModel();
+                    chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.RISK_SEQUENCE = rdr["RISK_SEQUENCE"].ToString();
+                    chk.RISK_WEIGHTAGE = rdr["WEIGHT_ASSIGNED"].ToString();
+                    chk.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                   // chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
+                    chk.STATUS = rdr["STATUS"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
         public List<AuditChecklistModel> GetAuditChecklistCAD()
         {
             var con = this.DatabaseConnection(); con.Open();

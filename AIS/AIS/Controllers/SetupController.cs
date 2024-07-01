@@ -246,7 +246,8 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            //ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            ViewData["ProcessList"] = dBConnection.GetAuthorizeMergeSubChecklist();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
