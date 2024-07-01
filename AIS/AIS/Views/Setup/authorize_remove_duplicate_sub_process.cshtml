@@ -33,32 +33,10 @@
 
             });
         });
-
-        getAuditSubChecklist();
        
     });
 
-    function getAuditSubChecklist() {
-        $('#subchecklistSelectField').empty();
-        $('#checkListDetailsPanel tbody').empty();
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_audit_sub_checklist",
-            type: "POST",
-            data: {
-            },
-            cache: false,
-            success: function (data) {
-                g_subProcList = data;
-                $('#subchecklistSelectField').append('<option value="0">--Select Audit Sub-Checklist--</option>');
-                $.each(data, function (i, v) {
-                    $('#subchecklistSelectField').append('<option value="' + v.s_ID + '">' + v.heading + '</option>');
-                    $('#checkListDetailsPanel tbody').append('<tr class="matched"><td>' + ++i + '</td><td>' + v.heading + '</td><td>' + v.risK_SEQUENCE + '</td><td>' + v.risK_WEIGHTAGE + '</td><td class="text-center"><input id="' + v.s_ID + '" class="chkbox" type="checkbox" /></td></tr>');
-                });
-            },
-            dataType: "json",
-        });
-
-    }
+  
 
     function getProcessesForMergeDuplicate() {
         g_subprocMergeIds = [];
@@ -116,6 +94,17 @@
     <label class="form-label font-weight-bold">Sub Process</label>
     <select onchange="getProcessesForMergeDuplicate();" id="subchecklistSelectField" class="form-select form-control">
         <option value="0">--Select Sub-Checklist--</option>
+        @{
+            if (ViewData["ProcessList"] != null)
+            {
+
+                foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                {
+                    <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                }
+
+            }
+        }
     </select>
 
 

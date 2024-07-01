@@ -4085,7 +4085,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditChecklistModel chk = new AuditChecklistModel();
-                    chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
+                    chk.T_ID = Convert.ToInt32(rdr["S_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
                     chk.RISK_SEQUENCE = rdr["RISK_SEQUENCE"].ToString();
                     chk.RISK_WEIGHTAGE = rdr["WEIGHT_ASSIGNED"].ToString();
