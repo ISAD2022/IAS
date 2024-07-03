@@ -2282,6 +2282,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetComplianceHierarchies();
         }
+        [HttpPost]
+        public List<ComplianceProgressReportModel> get_compliance_progress_report(string ROLE_TYPE)
+        {
+            return dBConnection.GetComplianceProgressReport(ROLE_TYPE);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

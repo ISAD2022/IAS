@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Report ~ Compliance Progress Report";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#searchTableRecord").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#progressReport_panel tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    })
+
+    function getComplianceProgressReport() {
+        $('#progressReport_panel tbody').empty();
+        if($('#roleSelectionField').val()=="0"){
+            return false;
+        }        
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_progress_report",
+            type: "POST",
+            data: {
+                "ROLE_TYPE": $('#roleSelectionField').val()
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                        $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.pP_NO + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td></tr>');
+                    
+                    });
+            },
+            dataType: "json",
+        });
+    }
+
+
+</script>
+
+<div class="row col-md-12 mt-3">
+
+    <h3 style="color: #45c545;">Compliance Progress Report</h3>
+
+    <div class="row col-md-12">
+        <label class="font-weight-bold">Select Role</label>
+        <select id="roleSelectionField" class="form-control" onchange="getComplianceProgressReport();">
+
+            <option value="0">--Select Role--</option>
+            <option value="R">Reviewer</option>
+            <option value="A">Authorizer</option>
+        </select>
+    </div>
+    <div class="row mt-3 col-md-12">
+        <div class="row col-md-12 mt-3">
+            <input class="form-control" id="searchTableRecord" type="text" placeholder="Search..">
+        </div>
+        <table id="progressReport_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+                <tr>
+                    <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto ">PP No.</th>
+                    <th class="col-md-auto ">Total Compliances</th>
+                    <th class="col-md-auto ">Referred Back</th>
+                    <th class="col-md-auto ">Recommended</th>                    
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -17793,7 +17793,37 @@ namespace AIS.Controllers
 
         }
 
+        public List<ComplianceProgressReportModel> GetComplianceProgressReport(string ROLE_TYPE)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceProgressReportModel> resp = new List<ComplianceProgressReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_COM_PROGREE_REPORT ";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("R_TYPE", OracleDbType.Varchar2).Value = ROLE_TYPE;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceProgressReportModel cp = new ComplianceProgressReportModel();
+                    cp.PPNO = rdr["PP_NO"].ToString();
+                    cp.NAME = rdr["Name"].ToString();
+                    cp.TOTAL = rdr["Total"].ToString();
+                    cp.REFERRED_BACK= rdr["Referred_Back"].ToString();
+                    cp.RECOMMENDED = rdr["Recommended"].ToString();
+                    resp.Add(cp);
+                }
+            }
+            con.Dispose();
+            return resp;
 
+        }
 
 
 
