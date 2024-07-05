@@ -7565,7 +7565,8 @@ namespace AIS.Controllers
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.GIST_OF_PARAS = rdr["gist_of_para"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
-                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
+                    chk.VOL_I_II ="";
+                    chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     list.Add(chk);
                 }
             }
