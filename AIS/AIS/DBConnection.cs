@@ -17785,6 +17785,7 @@ namespace AIS.Controllers
                     complianceHierarchyModel.APPROVER_NAME = rdr["APPROVER_NAME"].ToString();
                     complianceHierarchyModel.REVIEWER_PPNO = rdr["REVIEWER_PPNO"].ToString();
                     complianceHierarchyModel.REVIEWER_NAME = rdr["REVIEWER_NAME"].ToString();
+                    complianceHierarchyModel.COM_KEY = rdr["COM_KEY"].ToString();
                     resp.Add(complianceHierarchyModel);
                 }
             }
@@ -17824,8 +17825,100 @@ namespace AIS.Controllers
             return resp;
 
         }
+        public List<ComplianceProgressReportDetailModel> GetComplianceProgressReportDetails(string ROLE_TYPE, string PP_NO)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceProgressReportDetailModel> resp = new List<ComplianceProgressReportDetailModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_COM_PROGREE_REPORT_DETAIL ";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("R_TYPE", OracleDbType.Varchar2).Value = ROLE_TYPE;
+                cmd.Parameters.Add("P_NO", OracleDbType.Varchar2).Value = PP_NO;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceProgressReportDetailModel cp = new ComplianceProgressReportDetailModel();
+                    cp.COMPLIANCE_UNIT = rdr["Compliance_Unit"].ToString();
+                    cp.PARENT_ID = rdr["parent_id"].ToString();
+                    cp.PARENT_NAME = rdr["p_name"].ToString();
+                    cp.ENTITY_ID = rdr["entity_id"].ToString();
+                    cp.ENTITY_NAME = rdr["name"].ToString();
+                    cp.COM_KEY = rdr["COM_KEY"].ToString();                    
+                    cp.PP_NO = rdr["PP_NO"].ToString();
+                    cp.EMP_NAME = rdr["emp_name"].ToString();
+                    cp.TOTAL = rdr["Total"].ToString();
+                    cp.REFERRED_BACK = rdr["Refered_back"].ToString();
+                    cp.RECOMMENDED = rdr["Satisfied"].ToString();
+                    resp.Add(cp);
+                }
+            }
+            con.Dispose();
+            return resp;
 
+        }
 
+        public string UpdateComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP, string COMPLIANCE_KEY)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_UPDATE_COM_OFFICER";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("AP_P_NO", OracleDbType.Int32).Value = AUTHORIZER_PP;
+                cmd.Parameters.Add("RE_P_NO", OracleDbType.Int32).Value = REVIEWER_PP;
+                cmd.Parameters.Add("E_COM_KEY", OracleDbType.Varchar2).Value = COMPLIANCE_KEY;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
+        public string AddComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_COM_OFFICER";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("AP_P_NO", OracleDbType.Int32).Value = AUTHORIZER_PP;
+                cmd.Parameters.Add("RE_P_NO", OracleDbType.Int32).Value = REVIEWER_PP;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+
+        }
 
     }
 

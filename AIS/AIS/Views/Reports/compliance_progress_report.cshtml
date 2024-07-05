@@ -28,12 +28,34 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                        $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.pP_NO + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td></tr>');
+                    $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.ppno + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();getComplianceProgressDetails(' + v.ppno + ');">Details</a></td></tr>');
                     
                     });
             },
             dataType: "json",
         });
+    }
+
+    function getComplianceProgressDetails(ppno){
+        $('#complianceProgressReportDetailModel').modal('show');
+        $('#progressReportdetails_panel tbody').empty();
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_compliance_progress_report_details",
+            type: "POST",
+            data: {
+                "ROLE_TYPE": $('#roleSelectionField').val(),
+                    "PP_NO": ppno
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (i, v) {
+                    $('#progressReportdetails_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.coM_KEY + '</td><td class="text-left">' + v.parenT_NAME + '</td><td class="text-left">' + v.compliancE_UNIT + '</td><td class="text-center" >' + v.pP_NO + '</td><td class="text-left" >' + v.emP_NAME + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td></tr>');
+
+                });
+            },
+            dataType: "json",
+        });
+
     }
 
 
@@ -60,14 +82,56 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
                     <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto ">PP No.</th>
-                    <th class="col-md-auto ">Total Compliances</th>
-                    <th class="col-md-auto ">Referred Back</th>
-                    <th class="col-md-auto ">Recommended</th>                    
+                    <th class="col-md-auto">PP No.</th>
+                    <th class="col-md-auto">Employee Name</th>
+                    <th class="col-md-auto">Total Compliances</th>
+                    <th class="col-md-auto">Referred Back</th>
+                    <th class="col-md-auto">Recommended</th>                    
+                    <th class="col-md-auto"></th>                    
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div id="complianceProgressReportDetailModel" class="modal" tabindex="-1" role="dialog">
+    <div style="width:90% !important" class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Compliance Unit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row col-md-12 mt-3">
+                    <table id="progressReportdetails_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                        <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+                            <tr>
+                                <th class="col-md-auto">Sr. No.</th>
+                                <th class="col-md-auto">Compliance Key</th>
+                                <th class="col-md-auto">Reporting Office</th>
+                                <th class="col-md-auto">Compliance Unit</th>
+                                <th class="col-md-auto">Employee PPNO</th>
+                                <th class="col-md-auto">Employee Name</th>
+                                <th class="col-md-auto">Total Compliances</th>
+                                <th class="col-md-auto">Referred Back</th>
+                                <th class="col-md-auto">Recommended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+               
+
+                <div class="modal-footer mt-2">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

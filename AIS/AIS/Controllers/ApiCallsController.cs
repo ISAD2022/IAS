@@ -2270,8 +2270,6 @@ namespace AIS.Controllers
         {
             return dBConnection.ViewAnnexureRiskRatingofEngagement(ENG_ID);
         }
-
-        //
         [HttpPost]
         public List<RiskRatingModelForBranchesWorking> get_risk_rating_model_for_branches_working(int ENG_ID)
         {
@@ -2287,7 +2285,21 @@ namespace AIS.Controllers
         {
             return dBConnection.GetComplianceProgressReport(ROLE_TYPE);
         }
-
+        [HttpPost]
+        public List<ComplianceProgressReportDetailModel> get_compliance_progress_report_details(string ROLE_TYPE, string PP_NO)
+        {
+            return dBConnection.GetComplianceProgressReportDetails(ROLE_TYPE,PP_NO);
+        }
+        [HttpPost]
+        public string add_compliance_hierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddComplianceHierarchy(ENTITY_ID, REVIEWER_PP, AUTHORIZER_PP) + "\"}";
+        }
+        [HttpPost]
+        public string update_compliance_hierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP, string COMPLIANCE_KEY)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceHierarchy(ENTITY_ID,REVIEWER_PP,AUTHORIZER_PP,COMPLIANCE_KEY) + "\"}";
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

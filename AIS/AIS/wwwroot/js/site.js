@@ -4,7 +4,9 @@ var g_asiBaseURL ="/ZTBLAIS";
 var g_secretKey="";
 
 $(document).ready(function () {
-  
+    // Override default options for all modals
+    $.fn.modal.Constructor.Default.backdrop = 'static';
+    $.fn.modal.Constructor.Default.keyboard = false;
 
     $('body').append('<div id="alertMessagesPopup" class="modal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document">  <div class="modal-content">    <div class="modal-header">      <h5 class="modal-title">Alert</h5>      <button type="button" class="close" data-dismiss="modal" aria-label="Close">        <span aria-hidden="true">&times;</span>      </button>    </div>    <div class="modal-body">      <div id="content_alertMessagesPopup"></div>    </div>    <div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>    </div>  </div></div></div >');
     $('#alertMessagesPopup').on('hidden.bs.modal', function (e) {
@@ -21,6 +23,25 @@ $(document).ready(function () {
             $('body').addClass('modal-open'); // if open mean length is 1 then add a bootstrap css class to body of the page
         }
     });
+
+    $('.modal').on('show.bs.modal', function (e) {
+        if (!($('.modal.in').length)) {
+            $('.modal-dialog').css({
+                top: 0,
+                left: 0
+            });
+        }
+        $('.modal-dialog').draggable();      
+    });
+
+
+    $('.modal').on('shown.bs.modal', function (e) {
+        $(this).modal({
+            backdrop: 'static',
+            keyboard: true
+        });
+    });
+
 
 
 
@@ -108,3 +129,8 @@ function getBase64(file) {
 function encryptPassword(password) {
     return btoa(password);
 }
+
+
+
+
+
