@@ -31,20 +31,13 @@ $(document).ready(function () {
                 left: 0
             });
         }
-        $('.modal-dialog').draggable();      
-    });
-
-
-    $('.modal').on('shown.bs.modal', function (e) {
-        $(this).modal({
-            backdrop: 'static',
-            keyboard: true
+        $('.modal-dialog').draggable();   
+        $('.richText-editor').on('mousedown', function (event) {
+            event.stopPropagation();
         });
     });
 
-
-
-
+   
     //$.ajaxSetup({
     //    beforeSend: function (xhr, settings) {
     //        // Append the directory to the start of the URL

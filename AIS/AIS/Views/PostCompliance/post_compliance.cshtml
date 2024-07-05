@@ -395,7 +395,7 @@
                         success: function (data) {
                             $('#complianceCycleTextPanel').html(data.parA_TEXT);
                             $('#complianceCycleEvidences').empty();
-                            if (data.evidences.length > 0) {
+                            if (data.evidences && data.evidences.length > 0) {
 
                                 $.each(data.evidences, function (j, pp) {
                                     $('#complianceCycleEvidences').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');

@@ -12,6 +12,7 @@ namespace AIS.Models
         public string PARENT_NAME { get; set; }
         public string ENTITY_ID { get; set; }
         public string ENTITY_NAME { get; set; }
+        public string ENTITY_CODE { get; set; }
         public string COM_KEY { get; set; }
         public string PP_NO { get; set; }
         public string EMP_NAME { get; set; }

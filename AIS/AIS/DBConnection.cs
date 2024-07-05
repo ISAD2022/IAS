@@ -17850,6 +17850,7 @@ namespace AIS.Controllers
                     cp.PARENT_NAME = rdr["p_name"].ToString();
                     cp.ENTITY_ID = rdr["entity_id"].ToString();
                     cp.ENTITY_NAME = rdr["name"].ToString();
+                    cp.ENTITY_CODE = rdr["code"].ToString();
                     cp.COM_KEY = rdr["COM_KEY"].ToString();                    
                     cp.PP_NO = rdr["PP_NO"].ToString();
                     cp.EMP_NAME = rdr["emp_name"].ToString();

@@ -28,7 +28,8 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                    $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.ppno + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();getComplianceProgressDetails(' + v.ppno + ');">Details</a></td></tr>');
+                    var pending = parseInt(v.total) - (parseInt(v.referreD_BACK) + parseInt(v.recommended));
+                    $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.ppno + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-right">' + pending + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();getComplianceProgressDetails(' + v.ppno + ');">Details</a></td></tr>');
                     
                     });
             },
@@ -49,7 +50,9 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (i, v) {
-                    $('#progressReportdetails_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.coM_KEY + '</td><td class="text-left">' + v.parenT_NAME + '</td><td class="text-left">' + v.compliancE_UNIT + '</td><td class="text-center" >' + v.pP_NO + '</td><td class="text-left" >' + v.emP_NAME + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td></tr>');
+
+                    var pending = parseInt(v.total) - (parseInt(v.referreD_BACK) + parseInt(v.recommended));
+                    $('#progressReportdetails_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-left">' + v.parenT_NAME + '</td><td class="text-center">' + v.entitY_CODE + '</td><td class="text-left">' + v.entitY_NAME + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-right">' + pending + '</td></tr>');
 
                 });
             },
@@ -86,7 +89,8 @@
                     <th class="col-md-auto">Employee Name</th>
                     <th class="col-md-auto">Total Compliances</th>
                     <th class="col-md-auto">Referred Back</th>
-                    <th class="col-md-auto">Recommended</th>                    
+                    <th class="col-md-auto">Recommended</th>
+                    <th class="col-md-auto">Pending</th>
                     <th class="col-md-auto"></th>                    
                 </tr>
             </thead>
@@ -97,7 +101,7 @@
 </div>
 
 <div id="complianceProgressReportDetailModel" class="modal" tabindex="-1" role="dialog">
-    <div style="width:90% !important" class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+    <div style="max-width:90% !important" class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Compliance Unit</h5>
@@ -112,14 +116,13 @@
                         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                             <tr>
                                 <th class="col-md-auto">Sr. No.</th>
-                                <th class="col-md-auto">Compliance Key</th>
                                 <th class="col-md-auto">Reporting Office</th>
-                                <th class="col-md-auto">Compliance Unit</th>
-                                <th class="col-md-auto">Employee PPNO</th>
-                                <th class="col-md-auto">Employee Name</th>
-                                <th class="col-md-auto">Total Compliances</th>
+                                <th class="col-md-auto">Entity Code</th>
+                                <th class="col-md-auto">Entity Name</th>                                
+                                <th class="col-md-auto">Total Compliances Received</th>
                                 <th class="col-md-auto">Referred Back</th>
-                                <th class="col-md-auto">Recommended</th>
+                                <th class="col-md-auto">Found Satisfactory</th>
+                                <th class="col-md-auto">Pending</th>
                             </tr>
                         </thead>
                         <tbody>
