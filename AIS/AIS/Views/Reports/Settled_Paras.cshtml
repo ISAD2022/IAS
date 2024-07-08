@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Settled Paras";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+
+     
+
+        getSettledParas();
+     
+    }); 
+
+    function getSettledParas() {
+
+        $('#settled_paras tbody').empty();
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/Report/settled_paras",
+            type: "POST",
+            data: {
+               
+            },
+            cache: false,
+            success: function (data) {
+
+                var srNo = 1;
+                $.each(data, function (index, row) {
+                  
+                    $('#settled_paras tbody').append('<tr><td>' + srNo + '</td><td>' + row.reportinG_OFFICE + '</td><td>' + row.placE_OF_POSTING + '</td> <td>' + row.audiT_PERIOD + '</td><td>' + row.parA_NO + '</td><td>' + row.status + '</td></tr>');
+                    srNo++;
+                });
+
+            },
+            dataType: "json",
+        });
+
+
+    }
+</script>
+
+<div class="mt-3 mb-4">
+    <h3 style="color: #45c545;">Settled Paras</h3>
+</div>
+
+<div class="mt-3">
+
+
+    <br>
+    <table id="settled_paras" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th>Sr. No.</th>
+                <th>Reporting Office</th>
+                <th>Place of Posting</th>
+                <th>Period</th>
+                 <th>Para No</th>
+                <th>Station</th>
+              
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
