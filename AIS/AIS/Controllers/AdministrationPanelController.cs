@@ -699,6 +699,28 @@ namespace AIS.Controllers
                     return View();
             }
         }
+
+        public IActionResult manage_public_holidays()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+
+
         [HttpPost]
         public List<MenuPagesModel> menu_pages(int MENU_ID=0)
         {

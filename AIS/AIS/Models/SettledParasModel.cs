@@ -10,8 +10,7 @@ namespace AIS.Models
         public string PLACE_OF_POSTING { get; set; }
         public string AUDIT_PERIOD { get; set; }
         public string PARA_NO { get; set; }
-        public string STATUS { get; set; }
-     
+        public string STATUS { get; set; }    
 
     }
 }
