@@ -249,7 +249,7 @@ function drawRotated(img, degree) {
         , maxSize: 5000 * 1024 // Kb
         , minSelect: 1
         , imagesToLoad: null
-        , filesType: ["image/jpeg", "image/png", "image/gif"]
+        , filesType: ["image/jpeg", "image/png", "image/gif", "application/pdf", "text/csv"]
         , maxWidth: 1280 // pixel
         , maxHeight: 1024
         , imgType: "image/jpeg"

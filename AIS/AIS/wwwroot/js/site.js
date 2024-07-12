@@ -31,13 +31,15 @@ $(document).ready(function () {
                 left: 0
             });
         }
-        $('.modal-dialog').draggable();   
+        $('.modal-dialog').draggable({
+            handle: ".modal-header, .modal-footer"
+        });
+        //$('.modal-dialog').draggable();   
         $('.richText-editor').on('mousedown', function (event) {
             event.stopPropagation();
         });
     });
-
-   
+  
     //$.ajaxSetup({
     //    beforeSend: function (xhr, settings) {
     //        // Append the directory to the start of the URL

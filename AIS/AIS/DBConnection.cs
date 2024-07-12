@@ -5122,10 +5122,9 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
                             cmd.Parameters.Add("TEXT_ID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
                             cmd.ExecuteReader();
-                            this.SaveImage(item.IMAGE_DATA, fileName);
+                           // this.SaveImage(item.IMAGE_DATA, fileName);
                         }
                     }
-
                 }
             }
             con.Dispose();
@@ -9520,6 +9519,15 @@ namespace AIS.Controllers
             }
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
         }
+        [Obsolete]
+        public void DeleteImage(string Filename = "image.jpg")
+        {
+            var filePath = System.IO.Path.Combine(_env.WebRootPath, "Auditee_Evidences", Filename);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
         public string CreateAuditReport(int ENG_ID)
         {
             List<ManageObservations> list = new List<ManageObservations>();
@@ -10572,7 +10580,7 @@ namespace AIS.Controllers
                     {
                         foreach (var item in EVIDENCE_LIST)
                         {
-                            string fileName = TEXT_ID + "_" + item.IMAGE_NAME;
+                            string fileName =  item.FILE_NAME;
                             cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_Evidence";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
@@ -10584,7 +10592,7 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
                             cmd.Parameters.Add("SEQ_ID", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
                             cmd.ExecuteReader();
-                            this.SaveImage(item.IMAGE_DATA, fileName);
+                            //this.SaveImage(item.IMAGE_DATA, fileName);
                         }
                     }
                 }
@@ -17863,6 +17871,32 @@ namespace AIS.Controllers
             }
             con.Dispose();
             return resp;
+        }       
+        public string AddComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_ADD_COM_OFFICER";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("AP_P_NO", OracleDbType.Int32).Value = AUTHORIZER_PP;
+                cmd.Parameters.Add("RE_P_NO", OracleDbType.Int32).Value = REVIEWER_PP;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
 
         }
 
@@ -17894,32 +17928,41 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public string AddComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP)
+        public List<SettledParasModel> GetSettledParasForComplianceReport()
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            string resp = "";
+            List<SettledParasModel> resp = new List<SettledParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_ADD_COM_OFFICER";
+                cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_REPORT ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
-                cmd.Parameters.Add("AP_P_NO", OracleDbType.Int32).Value = AUTHORIZER_PP;
-                cmd.Parameters.Add("RE_P_NO", OracleDbType.Int32).Value = REVIEWER_PP;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    resp = rdr["remarks"].ToString();
+                    SettledParasModel cp = new SettledParasModel();
+                    cp.ENTITY_ID = rdr["entity_id"].ToString();
+                    cp.PARENT_ID = rdr["parent_id"].ToString();
+                    cp.REPORTING_OFFICE = rdr["p_name"].ToString();
+                    cp.PLACE_OF_POSTING = rdr["c_name"].ToString();
+                    cp.AUDIT_PERIOD = rdr["period"].ToString();
+                    cp.PARA_NO = rdr["para_no"].ToString();
+                    cp.GIST = rdr["Gist"].ToString();
+                    cp.SETTLED_ON = rdr["stelled_on"].ToString();
+                    cp.AUDITED_BY = rdr["auditedby"].ToString();
+                    resp.Add(cp);
                 }
             }
             con.Dispose();
             return resp;
-
         }
 
     }

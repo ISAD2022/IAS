@@ -2300,6 +2300,12 @@ namespace AIS.Controllers
         {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateComplianceHierarchy(ENTITY_ID,REVIEWER_PP,AUTHORIZER_PP,COMPLIANCE_KEY) + "\"}";
         }
+
+        [HttpPost]
+        public List<SettledParasModel> get_settled_paras_for_compliance_report()
+        {
+            return dBConnection.GetSettledParasForComplianceReport();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
