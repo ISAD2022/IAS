@@ -5404,6 +5404,52 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<ManageObservations> GetObservationsForMangeAuditParas(int ENTITY_ID = 0, int OBS_ID = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ManageObservations> list = new List<ManageObservations>();                     
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_GetManagedObservations";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ManageObservations chk = new ManageObservations();
+
+                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
+                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
+                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
+                    if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
+                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
+
+
+                    chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
+                    chk.VIOLATION = rdr["VIOLATION"].ToString();
+                    chk.HEADING = rdr["HEADING"].ToString();
+                    chk.NATURE = rdr["NATURE"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
+                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
+                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public List<ManageObservations> GetManagedObservations(int ENG_ID = 0, int OBS_ID = 0)
         {
             sessionHandler = new SessionHandler();
@@ -8750,20 +8796,20 @@ namespace AIS.Controllers
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ar.p_GetObservationEntities";
+                cmd.CommandText = "pkg_ar.p_GetManageAuditParasEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
-                    chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
                     chk.NAME = rdr["entity_name"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
-                    chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
-                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
+                   
                     list.Add(chk);
                 }
             }

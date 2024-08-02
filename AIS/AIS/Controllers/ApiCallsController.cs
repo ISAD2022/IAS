@@ -269,6 +269,11 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
+        public List<ManageObservations> get_observations_for_manage_paras(int ENTITY_ID = 0, int OBS_ID = 0)
+        {
+            return dBConnection.GetObservationsForMangeAuditParas(ENTITY_ID, OBS_ID);
+        }
+        [HttpPost]
         public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);

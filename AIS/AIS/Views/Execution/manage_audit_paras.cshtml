@@ -149,7 +149,7 @@
         $('#manageObsPanel tbody').empty();
         if ($('#entitySelectField option:selected').val() != 0) {            
             $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/get_observations",
+                url: g_asiBaseURL + "/ApiCalls/get_observations_for_manage_paras",
                 type: "POST",
                 data: {
                     'ENG_ID': $('#entitySelectField option:selected').val()
@@ -235,7 +235,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                         }
                     }
                 }
