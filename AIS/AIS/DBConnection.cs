@@ -5487,7 +5487,6 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     ManageObservations chk = new ManageObservations();
-
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
@@ -5496,6 +5495,7 @@ namespace AIS.Controllers
                         chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+
                     list.Add(chk);
                 }
             }
@@ -8740,6 +8740,36 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<AuditeeEntitiesModel> GetEntitiesForManageAuditParas()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.p_GetObservationEntities";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ppno", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
+                    chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
+                    chk.NAME = rdr["entity_name"].ToString();
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
+                    chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
         public List<AuditeeEntitiesModel> GetObservationEntitiesForManageObservations()
         {
             sessionHandler = new SessionHandler();
@@ -10207,6 +10237,10 @@ namespace AIS.Controllers
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();
+                    chk.AUDIT_START_DATE = rdr["audit_start_date"].ToString();
+                    chk.AUDIT_END_DATE = rdr["audit_end_date"].ToString();
+                    chk.OP_START_DATE = rdr["op_start_date"].ToString();
+                    chk.OP_END_DATE = rdr["op_end_date"].ToString();
                     list.Add(chk);
 
                 }
@@ -10253,6 +10287,10 @@ namespace AIS.Controllers
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();
+                    chk.AUDIT_START_DATE = rdr["audit_start_date"].ToString();
+                    chk.AUDIT_END_DATE = rdr["audit_end_date"].ToString();
+                    chk.OP_START_DATE = rdr["op_start_date"].ToString();
+                    chk.OP_END_DATE = rdr["op_end_date"].ToString();
                     list.Add(chk);
 
                 }

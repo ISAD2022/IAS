@@ -3,24 +3,16 @@
     Layout = "_Layout";
 }
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <style type="text/css">
-        .square-image {
-            width: 270px; /* Set the desired width */
-            height: 270px; /* Set the desired height */
-            padding: 2px;
-            border: 1px solid;
-            object-fit: cover; /* Ensure the image covers the container */
+        .evidence-link {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 10px; /* Adjust the gap between images */
+        .evidence-icon {
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -31,6 +23,8 @@
     var g_nextRole = "";
     var g_obsList = [];
     var g_allAttachedImages = [];
+    var g_allowedFormats = ["pdf", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"]; // allowed file formats
+
 
 
     var btnClick = "own";
@@ -46,9 +40,9 @@
 
         $("aks-file-upload").aksFileUpload({
             fileUpload: "#uploadfile", // With target [input]file or [type]json you can save the data of loaded items
-            fileType: ["pdf", "docx", "rtf", "jpg", "jpeg", "png", "ppt", "doc", "pptx", "jpg", "zip", "csv"], // allowed file formats
+            fileType: ["pdf", "zip", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"], // allowed file formats
             dragDrop: true, // drag & drop upload
-            maxSize: "10 MB", // maximum uploaded file size
+            maxSize: "2.5 MB", // maximum uploaded file size
             multiple: true, // multiple file upload
             maxFile: 100, // maximum number of uploaded files
             maxFileError: "File exceeds upload limit. - Max limit:", // error text
@@ -59,7 +53,7 @@
         });
 
         document.getElementById('aksfileupload').addEventListener('change', function () {
-            
+
             var g_imgFiles = this.files;
 
             function readFileAsDataURL(file) {
@@ -75,13 +69,18 @@
                 const productImagesArr = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
+                    if (file.size > 2621440)
+                        continue;
+                    var ext = getFileExtension(file);
+                    if (!g_allowedFormats.includes(ext))
+                        continue;
                     try {
                         const base64Data = await readFileAsDataURL(file);
                         var fileNameGen = generateUniqueTimestamp();
                         var extension = getFileExtension(file);
                         const ProductObject = {
                             'TEXT_ID': g_comId,
-                            'IMAGE_NAME':file.name,
+                            'IMAGE_NAME': file.name,
                             'FILE_NAME': fileNameGen + "." + extension,
                             'IMAGE_DATA': base64Data,
                             'IMAGE_TYPE': extension,
@@ -98,6 +97,20 @@
             }
 
             function uploadFiles(productImagesArr) {
+
+                $.each($(".aks-file-upload .aks-file-upload-delete"), function (i, v) {
+                    var filename = $(v).attr("data-delete");
+                    for (var i = 0; i < g_allAttachedImages.length; i++) {
+                        if (g_allAttachedImages[i].IMAGE_NAME == filename) {
+                            $(v).attr("file-name", g_allAttachedImages[i].FILE_NAME);
+                        }
+                    }
+                });
+                $(".aks-file-upload .aks-file-upload-delete").on("click", function (e) {
+                    var filename = $(this).attr("file-name");
+                    deleteFileFromServer(filename);
+                });
+                /*
                 $.ajax({
                     url: g_asiBaseURL + "/UploadFile/UploadFiles",
                     type: 'POST',
@@ -107,36 +120,45 @@
                     },
                     success: function (response) {
 
-                        $.each($(".aks-file-upload .aks-file-upload-delete"), function (i, v) {
-                            var filename=$(v).attr("data-delete");
-                            for (var i = 0; i < g_allAttachedImages.length; i++){
-                                if (g_allAttachedImages[i].IMAGE_NAME == filename){
-                                    $(v).attr("file-name", g_allAttachedImages[i].FILE_NAME);
-                                }
-                            }
-                        });
-                        $(".aks-file-upload .aks-file-upload-delete").on("click", function (e) {
-                            var filename = $(this).attr("file-name");
-                            deleteFileFromServer(filename);
-                        });
 
                     },
                     error: function (error) {
 
                     }
-                });
+                });   */
             }
-
-
             processFiles(g_imgFiles);
         });
 
-       
+
     });
     function getFileExtension(file) {
         var fileName = file.name;
         var extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
         return extension;
+    }
+    function getIconClass(extension) {
+        switch (extension) {
+            case 'pdf': return 'fa fa-file-pdf';
+            case 'zip': return 'fa fa-file-archive';
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'bmp': return 'fa fa-file-image';
+            case 'doc':
+            case 'docx': return 'fa fa-file-word';
+            default: return 'fa fa-file';
+        }
+    }
+    function getContentType(extension) {
+        switch (extension) {
+            case 'pdf': return 'application/pdf';
+            case 'zip': return 'application/zip';
+            case 'png': return 'image/png';
+            case 'doc': return 'application/msword';
+            case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            default: return 'application/octet-stream';
+        }
     }
     function generateUniqueTimestamp() {
         var date = new Date();
@@ -157,22 +179,29 @@
             g_allAttachedImages.splice(index, 1);
         }
     }
+    function base64ToBlob(base64, contentType) {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
 
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType });
+        return blob;
+    }
     function deleteFileFromServer(fileName) {
         deleteImageObjectByFileName(fileName);
-        $.ajax({
-            url: g_asiBaseURL + "/UploadFile/DeleteFile",
-            type: 'POST',
-            data: { "fileName": fileName },
-            dataType: 'json',
-            success: function (response) {
-
-            },
-            error: function (error) {
-
-            }
-        });
     }
+
     function viewOwnCompliance() {
         btnClick = "own";
         $('#ownCompliance').addClass("btn-danger");
@@ -229,8 +258,17 @@
                     if (child.receiveD_FROM == "N") {
                         child.receiveD_FROM = "";
                     }
+                    if (child.audiT_START_DATE != "")
+                        child.audiT_START_DATE = child.audiT_START_DATE.split(' ')[0];
+                    if (child.audiT_END_DATE != "")
+                        child.audiT_END_DATE = child.audiT_END_DATE.split(' ')[0];
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    if (child.oP_START_DATE != "")
+                        child.oP_START_DATE = child.oP_START_DATE.split(' ')[0];
+                    if (child.oP_END_DATE != "")
+                        child.oP_END_DATE = child.oP_END_DATE.split(' ')[0];
+
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.oP_START_DATE + ' - ' + child.oP_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_START_DATE + ' - ' + child.audiT_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
 
                 });
@@ -270,8 +308,18 @@
                     if (child.receiveD_FROM == "N") {
                         child.receiveD_FROM = "";
                     }
+                    if (child.audiT_START_DATE != "")
+                        child.audiT_START_DATE = child.audiT_START_DATE.split(' ')[0];
+                    if (child.audiT_END_DATE != "")
+                        child.audiT_END_DATE = child.audiT_END_DATE.split(' ')[0];
 
-                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\');" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    if (child.oP_START_DATE != "")
+                        child.oP_START_DATE = child.oP_START_DATE.split(' ')[0];
+                    if (child.oP_END_DATE != "")
+                        child.oP_END_DATE = child.oP_END_DATE.split(' ')[0];
+
+
+                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.oP_START_DATE + ' - ' + child.oP_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_START_DATE + ' - ' + child.audiT_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\');" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
 
@@ -279,8 +327,8 @@
 
             dataType: "json",
         });
-
     }
+
     function viewParaDetails(newParaId = 0, oldParaId = 0, indicator = '', memo_no = '', prevRole, nextRole, comID) {
 
         g_newParaId = newParaId;
@@ -293,7 +341,6 @@
 
         $('#viewParaComplianceModel').modal('show');
         $('#manageComplianceHistPanel tbody').empty();
-
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_compliance_history",
             type: "POST",
@@ -302,9 +349,9 @@
             },
             cache: false,
             success: function (data) {
-                if (data.length == 0 && btnClick== "own") {
-            $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="6"><i>No previous compliance submitted yet</i></td><td><a onclick="event.preventDefault();getComplianceText(' + comID + ', 0);" href="#" class="text-danger">Submit Compliance</a></td></tr>');
-                    
+                if (data.length == 0 && btnClick == "own") {
+                    $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="6"><i>No previous compliance submitted yet</i></td><td><a onclick="event.preventDefault();getComplianceText(' + comID + ', 0);" href="#" class="text-danger">Submit Compliance</a></td></tr>');
+
                 }
                 else if (data.length == 0 && btnClick == "review") {
                     $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="7"><i>No previous compliance submitted yet</i></td></tr>');
@@ -328,78 +375,8 @@
 
             dataType: "json",
         });
-
-        /* $.ajax({
-             url: g_asiBaseURL + "/ApiCalls/get_para_compliance_text",
-             type: "POST",
-             data: {
-                 'NEW_PARA_ID': newParaId,
-                 'OLD_PARA_ID': oldParaId,
-                 'INDICATOR': indicator
-             },
-             cache: false,
-             success: function (data) {
-
-                 if (prevRole == "") {
-                     $('#viewMemoModel').modal('show');
-                     $('#viewMemo_memoNumber').val(memo_no);
-                     $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
-                     $('#viewMemo_memo').html(data.parA_TEXT);
-                     $('#viewMemo_compliance').val('').trigger('change');
-                     if (prevRole == "")
-                         $('#prevRoleButtonHandler').remove();
-                     else
-                         $('#prevRoleButtonHandler').html(prevRole);
-
-                     if (nextRole == "")
-                         $('#nextRoleButtonHandler').remove();
-                     else
-                         $('#nextRoleButtonHandler').html(nextRole);
-
-                     $('#listofRespPersons tbody').empty();
-                     if (data.responsiblE_PPs.length > 0) {
-                         $.each(data.responsiblE_PPs, function (j, pp) {
-                             var srNo = $('#listofRespPersons tbody tr').length;
-                             srNo++;
-                             $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                         });
-                     }
-
-                 } else {
-                     $('#viewMemoReportingModel').modal('show');
-                     $('#viewMemo_memoNumber_rep').val(memo_no);
-                     $('#viewMemo_paraGist_rep').val(data.gisT_OF_PARA);
-                     $('#viewMemo_memo_rep').html(data.parA_TEXT);
-                     $('#viewMemo_compliance_rep').val('');
-                     if (prevRole == "")
-                         $('#prevRoleButtonHandler_rep').remove();
-                     else
-                         $('#prevRoleButtonHandler_rep').html(prevRole);
-
-                     if (nextRole == "")
-                         $('#nextRoleButtonHandler_rep').remove();
-                     else
-                         $('#nextRoleButtonHandler_rep').html(nextRole);
-
-                     $('#listofRespPersons_rep tbody').empty();
-                     if (data.responsiblE_PPs.length > 0) {
-                         $.each(data.responsiblE_PPs, function (j, pp) {
-                             var srNo = $('#listofRespPersons_rep tbody tr').length;
-                             srNo++;
-                             $('#listofRespPersons_rep tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                         });
-                     }
-
-                 }
-
-
-             },
-
-             dataType: "json",
-         }); */
     }
 
-   
     function PublishCompliance(ind) {
 
         var complianceRemarks = "";
@@ -411,10 +388,7 @@
                 alert("Please provide Compliance to proceed");
                 return;
             }
-
-
             complianceRemarks = $('.richText-editor').html();
-
         }
         else {
             if ($('#viewMemo_compliance_rep').val() == "") {
@@ -423,7 +397,6 @@
             }
             commentsRemarks = $('#viewMemo_compliance_rep').val();
         }
-
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
@@ -454,9 +427,12 @@
         else
             getReivewParasForCompliance();
     }
-
+    function clearEvidencesLog() {
+        $('.aks-file-upload-delete').click();
+        $('.aks-file-upload-error').remove();
+        document.getElementById('aksfileupload').value = '';
+    }
     function getComplianceText(comID, cycle) {
-
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_para_compliance_text",
             type: "POST",
@@ -470,6 +446,10 @@
 
                 if (g_prevRole == "") {
                     $('#viewMemoModel').modal('show');
+                    $('.aks-file-upload-delete').click();
+                    $('.aks-file-upload-error').remove();
+                    document.getElementById('aksfileupload').value = '';
+
                     $('#viewMemo_memoNumber').val(g_memoNo);
                     $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
                     $('#viewMemo_memo').html(data.parA_TEXT);
@@ -507,16 +487,25 @@
                             if (data.evidences && data.evidences.length > 0) {
 
                                 $.each(data.evidences, function (j, pp) {
-                                    $('#complianceCycleEvidences').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
+                                    var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
+                                    const blob = base64ToBlob(pp.imagE_DATA, getContentType(extension));
+                                    const link = document.createElement('a');
+                                    link.href = URL.createObjectURL(blob);
+                                    link.download = pp.imagE_NAME;
+                                    link.innerText = "Download " + pp.imagE_NAME; // Set the text inside the hyperlink
+                                    const icon = document.createElement('i');
+                                    icon.className = getIconClass(extension) + ' evidence-icon';
+
+                                    const container = document.createElement('div');
+                                    container.className = 'evidence-link';
+                                    container.appendChild(icon);
+                                    container.appendChild(link);
+
+                                    $('#complianceCycleEvidences').append(container);
                                 });
                             } else {
                                 $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
                             }
-
-                            lightbox.option({
-                                'resizeDuration': 200,
-                                'wrapAround': true
-                            });
                         },
 
                         dataType: "json",
@@ -561,16 +550,28 @@
                             if (data.evidences.length > 0) {
 
                                 $.each(data.evidences, function (j, pp) {
-                                    $('#complianceCycleEvidences_rep').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
+                                    var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
+                                    const blob = base64ToBlob(pp.imagE_DATA, getContentType(extension));
+                                    const link = document.createElement('a');
+                                    link.href = URL.createObjectURL(blob);
+                                    link.download = pp.imagE_NAME;
+                                    link.innerText = "Download " + pp.imagE_NAME; // Set the text inside the hyperlink
+                                    const icon = document.createElement('i');
+                                    icon.className = getIconClass(extension) + ' evidence-icon';
+
+                                    const container = document.createElement('div');
+                                    container.className = 'evidence-link';
+                                    container.appendChild(icon);
+                                    container.appendChild(link);
+
+                                    $('#complianceCycleEvidences_rep').append(container);
+                                    //$('#complianceCycleEvidences_rep').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
                                 });
                             } else {
                                 $('#complianceCycleEvidences_rep').append("<i>No evidence is attached </i>");
                             }
 
-                            lightbox.option({
-                                'resizeDuration': 200,
-                                'wrapAround': true
-                            });
+
                         },
 
                         dataType: "json",
@@ -580,9 +581,6 @@
 
             dataType: "json",
         });
-
-
-
     }
 </script>
 
@@ -607,6 +605,8 @@
                     <th class="col-md-auto">Sr No.</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
+                    <th class="col-md-auto">Audit Period Date</th>
+                    <th class="col-md-auto">Audit Execution Date</th>
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Receive From</th>
                     <th class="col-md-auto">Auditor Remarks</th>
@@ -627,6 +627,8 @@
                     <th class="col-md-auto">Sr No.</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
+                    <th class="col-md-auto">Audit Period Date</th>
+                    <th class="col-md-auto">Audit Execution Date</th>
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Receive From</th>
                     <th class="col-md-auto">Auditor Remarks</th>
@@ -732,7 +734,7 @@
                     <div class="form-group mt-3">
                         <label class="font-weight-bold">Evidences</label>
                         <div class="row col-md-12 mt-3 mb-3">
-                            <div id="complianceCycleEvidences" class="gallery" style="display:inline-flex">
+                            <div id="complianceCycleEvidences">
                             </div>
                         </div>
                     </div>
@@ -745,6 +747,14 @@
                     <div id="evidenceUploader" class="input-field">
                         <label class="active">Evidences</label>
                         <aks-file-upload></aks-file-upload>
+                        <div class="row col-md-12 mt-1">
+                            <div class="row col-md-8">
+                                <i class="text-danger">Maximum Upload File Size allowed 2.5MB</i>
+                            </div>
+                            <div class="row col-md-4">
+                                <button class="btn btn-secondary offset-md-8 col-md-4" onclick="event.preventDefault();clearEvidencesLog();">Clear</button>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -814,7 +824,7 @@
                     <div class="form-group mt-3">
                         <label>Evidences</label>
                         <div class="row col-md-12 mt-3 mb-3">
-                            <div id="complianceCycleEvidences_rep" class="gallery" style="display:inline-flex">
+                            <div id="complianceCycleEvidences_rep">
                             </div>
                         </div>
                     </div>

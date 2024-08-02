@@ -18,7 +18,12 @@
         $('#progressReport_panel tbody').empty();
         if($('#roleSelectionField').val()=="0"){
             return false;
-        }        
+        }  
+        if ($('#roleSelectionField').val() == "R") {
+            $('#theadTitle').html("Recommended for Settlement");
+        } else if ($('#roleSelectionField').val() == "A") {
+            $('#theadTitle').html("Settled");
+        }
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_compliance_progress_report",
             type: "POST",
@@ -73,8 +78,8 @@
         <select id="roleSelectionField" class="form-control" onchange="getComplianceProgressReport();">
 
             <option value="0">--Select Role--</option>
-            <option value="R">Reviewer</option>
-            <option value="A">Authorizer</option>
+            <option value="R">Reviewer (Settlement Officer)</option>
+            <option value="A">Authorizer (Unit Head Compliance)</option>
         </select>
     </div>
     <div class="row mt-3 col-md-12">
@@ -89,7 +94,7 @@
                     <th class="col-md-auto">Employee Name</th>
                     <th class="col-md-auto">Total Compliances</th>
                     <th class="col-md-auto">Referred Back</th>
-                    <th class="col-md-auto">Recommended</th>
+                    <th id="theadTitle" class="col-md-auto">Recommended for Settlement</th>
                     <th class="col-md-auto">Pending</th>
                     <th class="col-md-auto"></th>                    
                 </tr>

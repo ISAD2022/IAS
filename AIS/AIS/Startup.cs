@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Http;
 using AIS;
 using AIS.Controllers;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace AIS
 {
@@ -40,6 +41,11 @@ namespace AIS
             services.AddScoped<TopMenus>();
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
+            // Configure form options globally
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 104857600; // 100 MB
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +72,12 @@ namespace AIS
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Login}/{action=Index}/{id?}");
+            });
+            // Configure request size limit for the entire app or specific middleware
+            app.Use((context, next) =>
+            {
+                context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 104857600; // 100 MB
+                return next();
             });
 
         }

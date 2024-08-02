@@ -152,7 +152,9 @@
 
     }
 
-
+    function reloadLocation(){
+        window.location.reload();
+    }
     function closeDraftAudit() {
         $.ajax({
 
@@ -164,6 +166,7 @@
             cache: false,
             success: function (data) {
                 alert(data.Message);
+                onAlertCallback(reloadLocation);
 
             },
             dataType: "json",

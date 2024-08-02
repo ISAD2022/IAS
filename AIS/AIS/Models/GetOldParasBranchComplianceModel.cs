@@ -22,6 +22,10 @@ namespace AIS.Models
         public string NEXT_ROLE { get; set; }
         public string RECEIVED_FROM { get; set; }
         public string COM_ID { get; set; }
-     
+        public string AUDIT_START_DATE { get; set; }
+        public string AUDIT_END_DATE { get; set; }
+        public string OP_START_DATE { get; set; }
+        public string OP_END_DATE { get; set; }
+
     }
 }
