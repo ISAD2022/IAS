@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 
-
 namespace AIS.Controllers
 {
    
@@ -398,6 +397,23 @@ namespace AIS.Controllers
             }
         }
         public IActionResult gist_wise_report()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult post_compliance_settlement_report()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -1328,6 +1344,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
+            ViewData["EntitiesList"] = dBConnection.GetEntitiesForSettlementReport();            
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

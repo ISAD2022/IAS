@@ -43,7 +43,7 @@
                 cache: false,
                 success: function (data) {
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="event.preventDefault();viewParaText(\'' + v.reF_P + '\',\'' + v.obS_ID + '\',\'' + v.parA_CATEGORY + '\')"> View Para</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + ++i + '</td><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="event.preventDefault();viewParaText(\'' + v.reF_P + '\',\'' + v.obS_ID + '\',\'' + v.parA_CATEGORY + '\')"> View Para</a></td></tr>');
 
                     });
                 },
@@ -112,10 +112,11 @@
     <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
+                <th class="col-md-1">Sr. No.</th>
                 <th class="col-md-2">Entity Name</th>
                 <th class="col-md-1">Audit Year</th>
                 <th class="col-md-1">Para Number</th>
-                <th class="col-md-6">Heading</th>
+                <th class="col-md-5">Heading</th>
                 <th class="col-md-2 text-center"></th>
             </tr>
         </thead>

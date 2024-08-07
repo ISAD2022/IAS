@@ -269,10 +269,19 @@ namespace AIS.Controllers
 
         }
         [HttpPost]
-        public List<ManageObservations> get_observations_for_manage_paras(int ENTITY_ID = 0, int OBS_ID = 0)
+        public List<ManageAuditParasModel> get_observations_for_manage_paras(int ENTITY_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetObservationsForMangeAuditParas(ENTITY_ID, OBS_ID);
         }
+
+        [HttpPost]
+        public string update_para_for_manage_audit_paras(ManageAuditParasModel pm)
+        {
+            string response = "";
+            response = dBConnection.UpdateAuditObservationStatus(pm);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
         [HttpPost]
         public List<ManageObservations> get_observation(int ENG_ID = 0, int OBS_ID = 0)
         {
@@ -2307,9 +2316,14 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<SettledParasModel> get_settled_paras_for_compliance_report()
+        public List<SettledParasModel> get_settled_paras_for_compliance_report(int ENTITY_ID, DateTime? DATE_FROM, DateTime? DATE_TO)
         {
-            return dBConnection.GetSettledParasForComplianceReport();
+            return dBConnection.GetSettledParasForComplianceReport(ENTITY_ID,DATE_FROM,DATE_TO);
+        }
+        [HttpPost]
+        public List<SettledParasModel> get_post_compliance_settlement_report()
+        {
+            return new List<SettledParasModel>(); //dBConnection.GetSettledParasForComplianceReport();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

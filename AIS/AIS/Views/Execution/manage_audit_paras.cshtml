@@ -1,226 +1,126 @@
 ﻿@{
-    ViewData["Title"] = "Manage Audit Paras";
+    ViewData["Title"] = "Update Audit Paras";
     Layout = "_Layout";
 }
 <script type="text/javascript">
-    var g_obsId = 0;
-    var g_newStatusId = 0;
-    var g_riskId = 0;
-    var g_currentStatus = 0;
+    var g_np_id = 0;
+    var g_op_id = 0;
+    var g_ind = "";
+    var g_allObs = [];
     $(document).ready(function () {
         $('#entitySelectField').select2();
-        var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
-        $('#entityNameField').val(entName);
-        var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
-        $('#auditPeriodNameField').val(periodName);
-
-        $('#updateMemoContent').richText({
-            imageUpload: false,
-            fileUpload: false,
-            videoEmbed: false,
-            urls: false
-        });
+        const currentYear = new Date().getFullYear();
+        // Set the max attribute to the current year
+        document.getElementById('auditPara_Period').setAttribute('max', currentYear);
     });
     function reloadLocation() {
         getEntityObservation();
     }
-
-    function ObservationViewerPanel(obs_id, status_id, risk_id) {
-        g_obsId = obs_id;
-        g_riskId = risk_id;
-        g_currentStatus = status_id;
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_dept_observation_text",
-            type: "POST",
-            data: {
-                'OBS_ID': obs_id
-            },
-            cache: false,
-            success: function (data) {
-                console.log(data);
-                $('#viewMemoModel').modal('show');
-                $('#viewMemo_memo').html(data[0].obS_TEXT);
-                $('#viewMemo_heading').html(data[0].heading);
-                $('#viewMemo_risk').val(data[0].obS_RISK_ID);
-                $('#viewMemo_response').html(data[0].obS_REPLY);
-                $('#viewMemo_subprocess').html(data[0].nature);
-                $('#viewMemo_violation').html(data[0].violation);
-
-                if (g_currentStatus == 1) {
-                    $('#dropButton_memoReply').removeClass('d-none');
-                    $('#submitAuditeeButton_memoReply').removeClass('d-none');
-
-                } else if (g_currentStatus == 3) {
-                    if (g_riskId == 3) {
-                        $('#dropButton_memoReply').addClass('d-none');
-                        $('#submitAuditeeButton_memoReply').addClass('d-none');
-
-                    } else {
-                        $('#dropButton_memoReply').addClass('d-none');
-                        $('#submitAuditeeButton_memoReply').addClass('d-none');
-
-                    }
-
-                } else {
-                    $('#dropButton_memoReply').addClass('d-none');
-                    $('#submitAuditeeButton_memoReply').addClass('d-none');
-
-                }
-
-            },
-            dataType: "json",
-        });
-
-    }
-    function finalCommentsButtonSave() {
-        if ($('#commentAreaInCommentsBox').val() == "") {
-            alert("Auditor Comments are Mandatory");
-            return;
-        }
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/update_observation_status",
-            type: "POST",
-            data: {
-                'OBS_ID': g_obsId,
-                'NEW_STATUS_ID': g_newStatusId,
-                'RISK_ID': g_riskId,
-                'AUDITOR_COMMENT': $('#commentAreaInCommentsBox').val()
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(reloadLocation);
-            },
-            dataType: "json",
-        });
-    }
-    function updateObservationStatus(obs_id, new_status_id, risk_id) {
-        g_obsId = obs_id;
-        g_newStatusId = new_status_id;
-        g_riskId = risk_id;
-        $('#commentsBox').modal('show');
-        $('#commentAreaInCommentsBox').val('');
-    }
-    function dropObservation(obs_id, new_status_id, risk_id) {
-        g_obsId = obs_id;
-        g_newStatusId = new_status_id;
-        g_riskId = risk_id;
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/drop_observation",
-            type: "POST",
-            data: {
-                'OBS_ID': g_obsId,
-                'NEW_STATUS_ID': g_newStatusId,
-                'RISK_ID': g_riskId
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(reloadLocation);               
-            },
-            dataType: "json",
-        });
-    }
-    function submitObservationToAuditee(obs_id, new_status_id, risk_id) {
-        $('#' + $('#auditeeEvidences').find('input[type="file"]').attr('id'))
-
-
-        g_obsId = obs_id;
-        g_newStatusId = new_status_id;
-        g_riskId = risk_id;
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/submit_observation_to_auditee",
-            type: "POST",
-            data: {
-                'OBS_ID': g_obsId,
-                'NEW_STATUS_ID': g_newStatusId,
-                'RISK_ID': g_riskId
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(reloadLocation);
-            },
-            dataType: "json",
-        });
-    }
-
     function getEntityObservation() {
         $('#manageObsPanel tbody').empty();
-        if ($('#entitySelectField option:selected').val() != 0) {            
+        if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_observations_for_manage_paras",
                 type: "POST",
                 data: {
-                    'ENG_ID': $('#entitySelectField option:selected').val()
+                    'ENTITY_ID': $('#entitySelectField option:selected').val()
                 },
                 cache: false,
                 success: function (data) {
+                    g_allObs = data;
                     $.each(data, function (i, v) {
-                        $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.heading + '</td><td>' + v.violation + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td class="text-center"><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Edit Memo</a></td></tr>');
+                        $('#manageObsPanel tbody').append(' <tr><td class="text-center">' + ++i + '</td><td class="text-center">' + v.audiT_PERIOD + '</td><td>' + v.parA_NO + '</td><td>' + v.annex + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_GIST + '</td><td>' + v.updateD_BY + '</td><td>' + v.updateD_ON + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.indicator + '\')" href="#" class="text-hover">Update Para</a></td>');
                     });
-                    setTimeout(function () {
-                        if (g_obsId != 0) {
-                            var rowpos = $('#manageObsPanel tbody tr#' + g_obsId).position();
-                            $('html').scrollTop(rowpos.top);
-                        }
-                    },200)
-                   
-
                 },
                 dataType: "json",
             });
-
         }
     }
+    function ObservationViewerPanel(np_id,op_id,ind) {
+        $('#viewMemoModel').modal('show');
+        g_np_id = np_id;
+        g_op_id = op_id;
+        g_ind = ind;
+        $.each(g_allObs, function (i, v) {
+            if (g_ind == "N") {
+                if(v.neW_PARA_ID==g_np_id){
+                    
+                    const yearMatch = v.audiT_PERIOD.match(/\d{4}/);
+                    $('#auditPara_Period').val(yearMatch);
+                    $('#auditPara_ParaNO').val(v.parA_NO);
+                    $('#auditPara_Gist').val(v.obS_GIST);
+                    $('#auditPara_Risk').val(v.obS_RISK_ID);
+                    $('#auditPara_Annex').val(v.anneX_ID);
 
-    function ObservationUpdatePanel(obs_id) {
-        g_obsId = obs_id;
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_dept_observation_text",
-            type: "POST",
-            data: {
-                'OBS_ID': obs_id
-            },
-            cache: false,
-            success: function (data) {
-                $('#updateMemoModel').modal('show');
-                $('#updateMemoContent').val(data[0].obS_TEXT).trigger('change');
-                $('#updateMemo_heading').val(data[0].heading);
-                $('#updateMemo_risk').val(data[0].obS_RISK_ID);
-            },
-            dataType: "json",
+                }
+            }else{
+                if (v.olD_PARA_ID == g_op_id) {
+                    const yearMatch = v.audiT_PERIOD.match(/\d{4}/);
+                    $('#auditPara_Period').val(yearMatch);
+                    $('#auditPara_ParaNO').val(v.parA_NO);
+                    $('#auditPara_Gist').val(v.obS_GIST);
+                    $('#auditPara_Risk').val(v.obS_RISK_ID);
+                    $('#auditPara_Annex').val(v.anneX_ID);
+                }
+            }           
         });
-
     }
-
-    function finalUpdateMemoContent(obs_id) {
-        g_obsId = obs_id;
+    function updateObservationStatus() {
+       
+        if ($('#auditPara_Period').val()=="")
+        {
+            alert("Please enter Audit Period");
+            return false;
+        }
+        if ($('#auditPara_Risk').val() == "0") {
+            alert("Please select Audit Risk");
+            return false;
+        }
+        if ($('#auditPara_Annex').val() == "") {
+            alert("Please select Annexure");
+            return false;
+        }
+        if ($('#auditPara_ParaNO').val() == "") {
+            alert("Please enter Para No");
+            return false;
+        }
+        if ($('#auditPara_Gist').val() == "") {
+            alert("Please enter Para Gist");
+            return false;
+        }
+       
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/update_observation_text",
+            url: g_asiBaseURL + "/ApiCalls/update_para_for_manage_audit_paras",
             type: "POST",
             data: {
-                'OBS_ID': g_obsId,
-                'OBS_TITLE': $('#updateMemo_heading').val(),
-                'RISK_ID': $('#updateMemo_risk').val(),
-                'OBS_TEXT': $('.richText-editor').html()              
+                'NEW_PARA_ID': g_np_id,
+                'OLD_PARA_ID': g_op_id,
+                'INDICATOR': g_ind,
+                'AUDIT_PERIOD': $('#auditPara_Period').val(),
+                'OBS_GIST': $('#auditPara_Gist').val(),
+                'OBS_RISK_ID': $('#auditPara_Risk').val(),
+                'PARA_NO': $('#auditPara_ParaNO').val(),
+                'ANNEX_ID': $('#auditPara_Annex').val()
             },
             cache: false,
             success: function (data) {
+                $('#viewMemoModel').modal('hide');
                 alert(data.Message);
-                onAlertCallback(reloadLocation);
+                onAlertCallback(getEntityObservation);
             },
             dataType: "json",
         });
 
     }
+   
+   
 
+  
 </script>
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Manage Audit Observations</h3>
+        <h3 style=" display:block;color: #45c545;">Update Audit Paras</h3>
     </div>
     <div class="row col-md-12 mt-3">
         <div class="col-md-2">
@@ -235,7 +135,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                                                    <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                         }
                     }
                 }
@@ -243,25 +143,20 @@
             </select>
         </div>
     </div>
-    <div class="row col-md-12 mt-3">
-        <div class="col-md-2">
-            <label><b>Audit Period:</b></label>
-        </div>
-        <div class="col-md-10 ">
-            <input id="auditPeriodNameField" disabled="disabled" class="form-control ml-1" type="text" />
-        </div>
-    </div>
+   
     <div class="row col-md-12 mt-3">
         <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-auto">Memo No.</th>
-                    <th class="col-md-auto">Title</th>                    
-                    <th class="col-md-auto">Violation</th>                    
-                    <th class="col-md-auto">Risk Category</th>
-                    <th class="col-md-auto">Status</th>                   
-                    <th class="col-md-auto text-center">Action</th>
-                    <th class="col-md-auto text-center">Action</th>
+                    <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto">Audit Period</th>
+                    <th class="col-md-auto">Para No.</th>
+                    <th class="col-md-auto">Annexure</th>
+                    <th class="col-md-auto">Risk Category</th>                    
+                    <th class="col-md-auto">Gist of Para</th>                                                            
+                    <th class="col-md-auto">Last Updated By</th>                                                            
+                    <th class="col-md-auto">Last Updated Date</th>                                                            
+                    <th class="col-md-auto text-center">Action</th>                    
                 </tr>
             </thead>
             <tbody>
@@ -272,37 +167,11 @@
     </div>
 
 </div>
-<div id="commentsBox" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Auditor Comments</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="commentAreaInCommentsBox">Comments</label>
-                        <textarea class="form-control" rows="4" id="commentAreaInCommentsBox" placeholder="Enter Comments here.."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="finalCommentsButtonSave();" id="finalCommentsButtonSave" type="button" class="btn btn-danger">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Observation</h5>
+                <h5 class="modal-title">Update Audit Para</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -310,80 +179,35 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_violation" class="font-weight-bold">Violation</label>
-                        <div id="viewMemo_violation" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="auditPara_Period" class="font-weight-bold">Audit Period</label>
+                        <input id="auditPara_Period" class="form-control" type="number" max="" />
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_subprocess" class="font-weight-bold">Nature</label>
-                        <div id="viewMemo_subprocess" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
+                        <label for="auditPara_ParaNO" class="font-weight-bold">Para No</label>
+                        <input id="auditPara_ParaNO" class="form-control" type="text" />
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_heading" class="font-weight-bold">Heading</label>
-                        <div id="viewMemo_heading" disabled="disabled" style="max-height: 100px; height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="viewMemo_risk">Risk</label>
-                        <select id="viewMemo_risk" class="form-select form-control" aria-label="Default select example">
-                            <option value="0" id="0" selected>--Select Risk Category--</option>
+                        <label for="auditPara_Annex" class="font-weight-bold">Annexure</label>
+                        <select id="auditPara_Annex" class="form-select form-control">
+                            <option selected="selected" value="" id="">--Select Annexure--</option>
                             @{
-                                if (ViewData["RiskList"] != null)
+                                if (ViewData["AnnexList"] != null)
                                 {
 
-                                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                                    foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                     {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                     }
 
                                 }
                             }
+
                         </select>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="viewMemo_memo" class="font-weight-bold">Memo</label>
-                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                   
-                    <div class="form-group">
-                        <label for="viewMemo_response" class="font-weight-bold">Auditee Response</label>
-                        <div id="viewMemo_response" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
-                <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
-               
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="updateMemoModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Update Observation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                   
-                    <div class="form-group">
-                        <label for="updateMemo_heading" class="font-weight-bold">Title / Heading</label>
-                        <input id="updateMemo_heading" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="updateMemoContent" class="font-weight-bold">Memo</label>
-                        <textarea id="updateMemoContent" rows="5" class="form-control">
-
-                        </textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="updateMemo_risk">Risk</label>
-                        <select id="updateMemo_risk" class="form-select form-control" aria-label="Default select example">
+                        <label for="auditPara_Risk" class="font-weight-bold">Risk</label>
+                        <select id="auditPara_Risk" class="form-control">
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
@@ -399,13 +223,15 @@
                         </select>
                     </div>
 
-
+                    <div class="form-group">
+                        <label for="auditPara_Gist" class="font-weight-bold">Gist of Para</label>
+                        <textarea id="auditPara_Gist" class="form-control"></textarea>
+                    </div>
+                  
                 </form>
             </div>
             <div class="modal-footer">
-
-                <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger">Update Memo Text</button>
-
+                <button id="updateParaStatus" onclick="updateObservationStatus();" type="button" data-dismiss="modal" class="btn btn-danger">Update</button>               
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

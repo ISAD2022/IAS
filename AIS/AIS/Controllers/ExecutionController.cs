@@ -351,6 +351,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["EntitiesList"] = dBConnection.GetEntitiesForManageAuditParas();
            
             if (!sessionHandler.IsUserLoggedIn())

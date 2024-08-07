@@ -5404,22 +5404,21 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<ManageObservations> GetObservationsForMangeAuditParas(int ENTITY_ID = 0, int OBS_ID = 0)
+        public List<ManageAuditParasModel> GetObservationsForMangeAuditParas(int ENTITY_ID = 0, int OBS_ID = 0)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();                     
+            List<ManageAuditParasModel> list = new List<ManageAuditParasModel>();                     
 
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ar.P_GetObservationsForManageAuditParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENTITY_ID;
-                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("S_ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;                
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -5427,28 +5426,62 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    ManageObservations chk = new ManageObservations();
-
-                    chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
-                    chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
-                    chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
-                    if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
-                        chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
-
-
-                    chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
-                    chk.VIOLATION = rdr["VIOLATION"].ToString();
-                    chk.HEADING = rdr["HEADING"].ToString();
-                    chk.NATURE = rdr["NATURE"].ToString();
-                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
-                    chk.OBS_RISK = rdr["OBS_RISK"].ToString();
-                    chk.PERIOD = rdr["PERIOD"].ToString();
+                    ManageAuditParasModel chk = new ManageAuditParasModel();
+                    chk.NEW_PARA_ID = rdr["new_paraid"].ToString();
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString();
+                    chk.OBS_RISK = rdr["risk"].ToString();
+                    chk.OBS_RISK_ID = rdr["risk_id"].ToString();
+                    chk.OBS_GIST = rdr["gist_of_para"].ToString();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.INDICATOR = rdr["ind"].ToString();
+                    chk.ANNEX = rdr["annex"].ToString();
+                    chk.ANNEX_ID = rdr["annex_id"].ToString();
+                    chk.UPDATED_ON = rdr["UPDATED_ON"].ToString();
+                    chk.UPDATED_BY = rdr["UPDATED_BY"].ToString();
                     list.Add(chk);
                 }
             }
             con.Dispose();
             return list;
+        }
+        public string UpdateAuditObservationStatus(ManageAuditParasModel pm)
+        {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();        
+
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+
+                cmd.CommandText = "pkg_ar.P_UpdateParaForManageAuditParas";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("N_PARA_ID", OracleDbType.Int32).Value = pm.NEW_PARA_ID;
+                cmd.Parameters.Add("O_PARA_ID", OracleDbType.Int32).Value = pm.OLD_PARA_ID;
+                cmd.Parameters.Add("D_PARA_NO", OracleDbType.Varchar2).Value = pm.PARA_NO;
+                cmd.Parameters.Add("D_AUDIT_PERIOD", OracleDbType.Varchar2).Value = pm.AUDIT_PERIOD;
+                cmd.Parameters.Add("D_GIST", OracleDbType.Varchar2).Value = pm.OBS_GIST;
+                cmd.Parameters.Add("D_RISK", OracleDbType.Varchar2).Value = pm.OBS_RISK_ID;
+                cmd.Parameters.Add("D_ANNEX", OracleDbType.Varchar2).Value = pm.ANNEX_ID;
+                cmd.Parameters.Add("D_IND", OracleDbType.Varchar2).Value = pm.INDICATOR;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["REMARKS"].ToString();
+                }
+
+               
+            }
+            con.Dispose();
+            return resp;
         }
         public List<ManageObservations> GetManagedObservations(int ENG_ID = 0, int OBS_ID = 0)
         {
@@ -8807,7 +8840,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
-                    chk.NAME = rdr["entity_name"].ToString();
+                    chk.NAME = rdr["name"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                    
                     list.Add(chk);
@@ -18012,7 +18045,42 @@ namespace AIS.Controllers
             return resp;
 
         }
-        public List<SettledParasModel> GetSettledParasForComplianceReport()
+
+        public List<AuditeeEntitiesModel> GetEntitiesForSettlementReport()
+        {
+           
+           
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_ENTITIES_FOR_COMPLIANCE_REPORT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID; 
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.NAME = rdr["NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<SettledParasModel> GetSettledParasForComplianceReport(int ENTITY_ID, DateTime? DATE_FROM, DateTime? DATE_TO)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18022,10 +18090,13 @@ namespace AIS.Controllers
             List<SettledParasModel> resp = new List<SettledParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_REPORT ";
+                cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_REPORT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("S_ENT_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("S_DATE_FROM", OracleDbType.Date).Value = DATE_FROM;
+                cmd.Parameters.Add("S_DATE_TO", OracleDbType.Date).Value = DATE_TO;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
