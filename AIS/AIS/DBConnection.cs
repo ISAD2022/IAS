@@ -3936,6 +3936,7 @@ namespace AIS.Controllers
                     tlist.TEAMMEMBER_PPNO = Convert.ToInt32(rdr["TEAMMEMBER_PPNO"]);
                     tlist.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     tlist.ENTITY_TYPE = Convert.ToInt32(rdr["ENTITY_TYPE"]);
+                    tlist.ENTITY_TYPE_DESC = rdr["ENTITY_TYPE_DESC"].ToString();
                     tlist.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
                     tlist.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     tlist.TEAM_NAME = rdr["T_NAME"].ToString();

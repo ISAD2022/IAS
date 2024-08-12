@@ -24,7 +24,7 @@
                 <tr>
                     <th class="font-weight-bold text-center" width="5%">Sr. No</th>
                     <th class="col-md-2 font-weight-bold text-center">Audit Period</th>
-
+                    <th class="col-md-auto font-weight-bold text-center">Entity Type</th>
                     <th class="col-md-auto font-weight-bold text-center">Audit Entity</th>
                     <th class="col-md-auto font-weight-bold text-center">Team Name</th>
                     <th class="col-md-auto font-weight-bold text-center">Start Date</th>
@@ -49,6 +49,7 @@
                             <tr>
                                 <td class="text-center" style="width:50px">@index</td>
                                 <td class="col-md-auto text-center">@item.AUDIT_YEAR</td>
+                                <td class="col-md-auto text-center">@item.ENTITY_TYPE_DESC</td>
                                 <td class="col-md-auto text-center">@item.ENTITY_NAME</td>
                                 <td class="col-md-auto text-center">@item.TEAM_NAME</td>
                                 <td class="col-md-1 text-center">@sDate.Split(" ")[0]</td>
