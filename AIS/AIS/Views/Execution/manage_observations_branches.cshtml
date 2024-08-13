@@ -18,7 +18,7 @@
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
 
-        
+
         $('#updateMemoContent').richText({
             imageUpload: false,
             fileUpload: false,
@@ -78,8 +78,8 @@
                 dataType: "json",
             });
         }
-           
-      
+
+
     }
 
     function ObservationViewerPanel(obs_id, status_id, risk_id) {
@@ -94,7 +94,6 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
                 $('#viewMemoModel').modal('show');
                 $('#viewMemo_memo').html(data[0].obS_TEXT);
                 $('#viewMemo_response').html(data[0].obS_REPLY);
@@ -158,7 +157,7 @@
                 $('#updateMemo_process').val(data[0].procesS_ID);
                 $('#updateMemo_risk').val(data[0].obS_RISK_ID);
                 $('#updateMemo_annex').val(data[0].annexurE_ID);
-                 $('#updateMemo_subprocess').empty();
+                $('#updateMemo_subprocess').empty();
                 $('#updateMemo_subprocess').append('<option value="0">' + data[0].suB_PROCESS + '</option>');
                 $('#updateMemo_violation').empty();
                 $('#updateMemo_violation').append('<option value="0">' + data[0].checklist_Details + '</option>');
@@ -167,7 +166,7 @@
         });
 
     }
-    
+
     function finalCommentsButtonSave() {
         if ($('#commentAreaInCommentsBox').val() == "") {
             alert("Auditor Comments are Mandatory");
@@ -184,7 +183,7 @@
             },
             cache: false,
             success: function (data) {
-                if (data.Status==true) {
+                if (data.Status == true) {
                     alert(data.Message);
                     onAlertCallback(reloadLocation);
                 } else {
@@ -245,8 +244,8 @@
             dataType: "json",
         });
     }
-    function finalUpdateMemoContent(obs_id){
-        g_obsId = obs_id;      
+    function finalUpdateMemoContent(obs_id) {
+        g_obsId = obs_id;
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/update_observation_text",
             type: "POST",
@@ -271,7 +270,7 @@
     }
     function getEntityObservation() {
         $('#manageObsPanel tbody').empty();
-        if ($('#entitySelectField option:selected').val() != 0) {            
+        if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_observation_branches",
                 type: "POST",
@@ -284,7 +283,7 @@
                     $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
                         $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.heading + '</td><td>' + v.nO_OF_INSTANCES + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
-                       });
+                    });
 
                     setTimeout(function () {
                         if (g_obsId != 0) {
@@ -300,7 +299,7 @@
         }
     }
 
-    function createDSA(obsId){
+    function createDSA(obsId) {
         window.location.href = g_asiBaseURL + "/Execution/create_dsa?obsId=" + g_obsId;
     }
 </script>
@@ -322,7 +321,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                                    <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
+                            <option value="@item.ENG_ID" id="@item.ENG_ID">@item.NAME</option>
                         }
                     }
                 }
@@ -362,19 +361,19 @@
 
                         foreach (var item in (dynamic)(ViewData["ManageObservations"]))
                         {
-                                        <tr id="@item.OBS_ID">
-                                            <td class="text-center">@item.MEMO_NO</td>
-                                            <td>@item.PROCESS</td>
-                                            <td>@item.SUB_PROCESS</td>
-                                            <td>@item.Checklist_Details</td>
-                                            <td>@item.NO_OF_INSTANCES</td>
-                                            <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                            <td class="d-none period_name_field">@item.PERIOD</td>
-                                            <td>@item.OBS_RISK</td>
-                                            <td>@item.OBS_STATUS</td>
-                                            <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                            <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
-                                        </tr>
+                            <tr id="@item.OBS_ID">
+                                <td class="text-center">@item.MEMO_NO</td>
+                                <td>@item.PROCESS</td>
+                                <td>@item.SUB_PROCESS</td>
+                                <td>@item.Checklist_Details</td>
+                                <td>@item.NO_OF_INSTANCES</td>
+                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
+                                <td class="d-none period_name_field">@item.PERIOD</td>
+                                <td>@item.OBS_RISK</td>
+                                <td>@item.OBS_STATUS</td>
+                                <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
+                                <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
+                            </tr>
                         }
                     }
                 }
@@ -431,7 +430,7 @@
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                     {
-                                            <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                     }
 
                                 }
@@ -465,7 +464,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -486,7 +485,7 @@
                                         <th class="col-md- auto font-weight-bold">Loan Case</th>
                                         <th class="col-md- auto font-weight-bold">LC Amount</th>
                                         <th class="col-md- auto font-weight-bold">Account No.</th>
-                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>                                        
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -494,7 +493,7 @@
                             </table>
                         </div>
                     </div>
-                  
+
                     <div class="form-group">
                         <label for="viewMemo_response" class="font-weight-bold">Auditee Response</label>
                         <div id="viewMemo_response" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
@@ -504,9 +503,9 @@
             <div class="modal-footer">
                 <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
-               @*  <button id="createDSAButton_memoReply" onclick="createDSA(g_obsId);" type="button" data-dismiss="modal" class="btn btn-success">Create DSA</button> *@
-                
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                @*  <button id="createDSAButton_memoReply" onclick="createDSA(g_obsId);" type="button" data-dismiss="modal" class="btn btn-success">Create DSA</button> *@
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -534,7 +533,7 @@
 
                                         foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                         {
-                                                <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                            <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                         }
 
                                     }
@@ -554,7 +553,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                     {
-                                                <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
+                                        <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
                                     }
                                 }
                             }
@@ -563,9 +562,8 @@
                     <div class="form-group">
                         <label for="updateMemo_subprocess" class="font-weight-bold">Sub Process</label>
                         <select id="updateMemo_subprocess" onchange="getSubProcessViolationList();" class="form-select form-control" aria-label="Default select example">
-                          
                         </select>
-                        
+
                     </div>
                     <div class="form-group">
                         <label for="updateMemo_violation" class="font-weight-bold">Checklist Details</label>
@@ -574,7 +572,7 @@
                     </div>
                     <div class="form-group">
                         <label for="updateMemo_heading" class="font-weight-bold">Title / Heading</label>
-                        <input id="updateMemo_heading" class="form-control" />                      
+                        <input id="updateMemo_heading" class="form-control" />
                     </div>
                     <div class="form-group">
                         <label for="updateMemoContent" class="font-weight-bold">Memo</label>
@@ -592,7 +590,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                            <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -603,9 +601,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-               
+
                 <button id="updateMemoContent_submit" onclick="finalUpdateMemoContent(g_obsId);" type="button" data-dismiss="modal" class="btn btn-danger">Update Memo Text</button>
-                
+
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

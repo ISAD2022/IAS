@@ -53,7 +53,7 @@ namespace AIS.Controllers
                 ocsb.UserID = _configuration["ConnectionStrings:DBUserName"];
                 ocsb.DataSource = _configuration["ConnectionStrings:DBDataSource"];
                 ocsb.IncrPoolSize = 5;
-                ocsb.MaxPoolSize = 1000;
+                ocsb.MaxPoolSize = 5000;
                 ocsb.MinPoolSize = 1;
                 ocsb.Pooling = true;
                 ocsb.ConnectionTimeout = 3540;
@@ -10665,7 +10665,7 @@ namespace AIS.Controllers
         {
 
             string resp = "";
-            Int32 TEXT_ID = 0;
+            int TEXT_ID = 0;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
