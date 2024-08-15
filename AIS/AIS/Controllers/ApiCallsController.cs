@@ -911,6 +911,14 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
         [HttpPost]
+        public string submit_post_audit_compliance_review(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        {
+            string response = "";
+            response = dBConnection.SubmitPostAuditComplianceReview(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS, EVIDENCE_LIST);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+        }
+
+        [HttpPost]
         public List<GetOldParasForComplianceReviewer> get_branch_comp_review()
         {
             return dBConnection.GetOldParasForReviewer();

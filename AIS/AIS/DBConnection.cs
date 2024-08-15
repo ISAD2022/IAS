@@ -10716,6 +10716,41 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
+
+        public string SubmitPostAuditComplianceReview(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        {
+
+            string resp = "";
+            int TEXT_ID = 0;
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_review";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Old_id", OracleDbType.Int32).Value = OLD_PARA_ID;
+                cmd.Parameters.Add("new_id", OracleDbType.Int32).Value = NEW_PARA_ID;
+                cmd.Parameters.Add("Ent_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;                
+                cmd.Parameters.Add("A_COMMENTS", OracleDbType.Varchar2).Value = COMMENTS;
+                cmd.Parameters.Add("P_IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+
+                }               
+            }
+
+            con.Dispose();
+            return resp;
+        }
         public List<GetOldParasForComplianceReviewer> GetOldParasForReviewer()
         {
             sessionHandler = new SessionHandler();
@@ -13397,7 +13432,7 @@ namespace AIS.Controllers
                     st.COM_STATUS = rdr["COM_STATUS"].ToString();
                     st.COMMENT_BY_ROLE = rdr["COMMENT_BY_ROLE"].ToString();
                     st.NAME = rdr["NAME"].ToString();
-                    st.DESIGNATION = rdr["DESIGNATION"].ToString();
+                    st.DESIGNATION = "";
                     st.PP_NO = rdr["PP_NO"].ToString();
                     st.COMMENT_ON = rdr["COMMENT_ON"].ToString();
                     st.COMMENTS = rdr["COMMENTS"].ToString();

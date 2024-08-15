@@ -276,27 +276,17 @@
             },
             cache: false,
             success: function (data) {
-                if (data.length == 0 && btnClick == "own") {
-                    $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="6"><i>No previous compliance submitted yet</i></td><td><a onclick="event.preventDefault();getComplianceText(' + comID + ', 0);" href="#" class="text-danger">Submit Compliance</a></td></tr>');
-
-                }
-                else if (data.length == 0 && btnClick == "review") {
-                    $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="7"><i>No previous compliance submitted yet</i></td></tr>');
-
-                }
-                else {
-
+               
                     var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
                     $.each(data, function (i, v) {
                         if (v.coM_CYCLE > cycle_count) {
-                            $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                            $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
                             cycle_count++;
                         }
                         else
-                            $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.designation + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
+                            $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
 
                     });
-                }
 
             },
 
@@ -306,35 +296,23 @@
 
     function PublishCompliance(ind) {
 
-        var complianceRemarks = "";
+       
         var commentsRemarks = "";
-        var productImagesArr = [];
-
-        if (g_prevRole == "") {
-            if ($('.richText-editor').html() == "") {
-                alert("Please provide Compliance to proceed");
-                return;
-            }
-            complianceRemarks = $('.richText-editor').html();
-        }
-        else {
-            if ($('#viewMemo_compliance_rep').val() == "") {
+        if ($('#viewMemo_compliance_rep').val() == "") {
                 alert("Please provide Remarks to proceed");
                 return;
             }
             commentsRemarks = $('#viewMemo_compliance_rep').val();
-        }
+        
 
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
+            url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance_review",
             type: "POST",
             data: {
                 'OLD_PARA_ID': g_oldParaId,
                 'NEW_PARA_ID': g_newParaId,
                 'INDICATOR': ind,
-                'COMPLIANCE': complianceRemarks,
                 'COMMENTS': commentsRemarks,
-                'EVIDENCE_LIST': g_allAttachedImages
             },
             cache: false,
             success: function (data) {
@@ -552,7 +530,6 @@
                                 <tr>
                                     <th class="col-md-auto">Compliance Cycle</th>
                                     <th class="col-md-auto">PP Number</th>
-                                    <th class="col-md-auto">Designation</th>
                                     <th class="col-md-auto">Name</th>
                                     <th class="col-md-auto">Remarks Role</th>
                                     <th class="col-md-auto">Remarks</th>
