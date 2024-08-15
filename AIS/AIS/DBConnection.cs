@@ -10311,16 +10311,13 @@ namespace AIS.Controllers
                     chk.NEXT_R_ID = rdr["next_r_id"].ToString();
                     chk.PREV_R_ID = rdr["per_r_id"].ToString();
                     chk.STATUS_UP = rdr["c_status_up"].ToString();
-                    chk.STATUS_DOWN = rdr["c_status_down"].ToString();
-                    chk.PREV_ROLE = rdr["Previous_role"].ToString();
-                    chk.NEXT_ROLE = rdr["next_Role"].ToString();
-                    chk.RECEIVED_FROM = rdr["rec_from"].ToString();
+                    chk.STATUS_DOWN = rdr["c_status_down"].ToString();                    
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();
-                    chk.AUDIT_START_DATE = rdr["audit_start_date"].ToString();
-                    chk.AUDIT_END_DATE = rdr["audit_end_date"].ToString();
-                    chk.OP_START_DATE = rdr["op_start_date"].ToString();
-                    chk.OP_END_DATE = rdr["op_end_date"].ToString();
+                    chk.AUDIT_DATE = rdr["audit_date"].ToString();
+                    chk.RECEIVED_FROM = rdr["rec_from"].ToString();
+                    chk.PREV_ROLE = "";
+                    chk.NEXT_ROLE = "SUBMIT COMPLIANCE";
                     list.Add(chk);
 
                 }
@@ -10367,10 +10364,7 @@ namespace AIS.Controllers
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();
-                    chk.AUDIT_START_DATE = rdr["audit_start_date"].ToString();
-                    chk.AUDIT_END_DATE = rdr["audit_end_date"].ToString();
-                    chk.OP_START_DATE = rdr["op_start_date"].ToString();
-                    chk.OP_END_DATE = rdr["op_end_date"].ToString();
+                   
                     list.Add(chk);
 
                 }
