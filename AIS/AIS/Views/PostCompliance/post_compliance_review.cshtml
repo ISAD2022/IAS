@@ -27,10 +27,10 @@
 
 
 
-    var btnClick = "own";
+    var btnClick = "review";
 
     $(document).ready(function () {
-        getOwnParasForCompliance();
+        getReivewParasForCompliance();
         $('#viewMemo_compliance').richText({
             imageUpload: false,
             fileUpload: false,
@@ -130,6 +130,7 @@
             processFiles(g_imgFiles);
         });
 
+
     });
     function getFileExtension(file) {
         var fileName = file.name;
@@ -200,13 +201,11 @@
     function deleteFileFromServer(fileName) {
         deleteImageObjectByFileName(fileName);
     }
-      
-  
-    function getOwnParasForCompliance() {
-
-        $('#manageObsPanel tbody').empty();
+   
+    function getReivewParasForCompliance() {
+        $('#manageObsPanel2 tbody').empty();
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_paras_for_compliance_by_auditee",
+            url: g_asiBaseURL + "/ApiCalls/get_paras_for_review_compliance_by_auditee",
             type: "POST",
             data: {
 
@@ -242,8 +241,8 @@
                     if (child.oP_END_DATE != "")
                         child.oP_END_DATE = child.oP_END_DATE.split(' ')[0];
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.oP_START_DATE + ' - ' + child.oP_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_START_DATE + ' - ' + child.audiT_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
+                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.oP_START_DATE + ' - ' + child.oP_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_START_DATE + ' - ' + child.audiT_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\');" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
 
                 });
 
@@ -251,9 +250,8 @@
 
             dataType: "json",
         });
-
     }
-   
+
     function viewParaDetails(newParaId = 0, oldParaId = 0, indicator = '', memo_no = '', prevRole, nextRole, comID) {
 
         g_newParaId = newParaId;
@@ -346,8 +344,8 @@
 
         $('#viewParaComplianceModel').modal('hide');
         $('#viewMemoModel').modal('hide');
-        $('#viewMemoReportingModel').modal('hide');   
-        getOwnParasForCompliance();
+        $('#viewMemoReportingModel').modal('hide');
+        getReivewParasForCompliance();
     }
     function clearEvidencesLog() {
         $('.aks-file-upload-delete').click();
@@ -508,10 +506,14 @@
 
 
 <div class="row">
+    
+
+
   
-    <div id="ownCompliancePanel" class="row col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANADING @ViewData["UserEntityName"] COMPLIANCES </h3>
-        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+
+    <div id="complianceReviewPanel" class="row col-md-12 d-none mt-3">
+        <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANDING COMPLIANCES FOR REVIEW</h3>
+        <table id="manageObsPanel2" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr No.</th>
@@ -529,6 +531,7 @@
 
         </table>
     </div>
+
 </div>
 
 <div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">

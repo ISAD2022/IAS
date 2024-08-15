@@ -40,9 +40,7 @@ namespace AIS.Controllers
             ViewBag.SecretValue = secretValue;
             ViewBag.BaseURL = baseURL;
             return View();
-        }
-
-     
+        }            
 
         public IActionResult Logout()
         {

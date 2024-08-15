@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
-   
+
     public class PostComplianceController : Controller
     {
         private readonly ILogger<PostComplianceController> _logger;
@@ -47,7 +47,23 @@ namespace AIS.Controllers
             }
         }
 
-
+        public IActionResult post_compliance_review()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["UserEntityName"] = sessionHandler.GetSessionUser().UserEntityName;
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult compliance_submitted_by_auditee()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -65,7 +81,7 @@ namespace AIS.Controllers
                     return View();
             }
         }
-         public IActionResult compliance_submitted_by_auditee_ref()
+        public IActionResult compliance_submitted_by_auditee_ref()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
