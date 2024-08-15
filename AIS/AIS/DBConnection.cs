@@ -188,7 +188,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             bool isTerminate = false;
-            if (loggedInUser.PPNumber != null && loggedInUser.PPNumber != "")
+            if (!string.IsNullOrEmpty(loggedInUser.PPNumber))
             {
                 var con = this.DatabaseConnection();
                 con.Open();
@@ -218,9 +218,11 @@ namespace AIS.Controllers
         {
             var con = this.DatabaseConnection();
             con.Open();
-            UserModel user = new UserModel();
-            user.isAlreadyLoggedIn = false;
-            user.isAuthenticate = false;
+            UserModel user = new UserModel
+            {
+                isAlreadyLoggedIn = false,
+                isAuthenticate = false
+            };
             var enc_pass = getMd5Hash(DecryptPassword(login.Password));
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -235,7 +237,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     user.isAuthenticate = true;
-                    user.passwordChangeRequired = enc_pass == getMd5Hash("ztbl1234") ? true : false;
+                    user.passwordChangeRequired = enc_pass == getMd5Hash("ztbl1234");
                     user.ID = Convert.ToInt32(rdr["USERID"]);
                     user.Name = rdr["Employeefirstname"].ToString() + " " + rdr["employeelastname"].ToString();
                     user.Email = rdr["LOGIN_NAME"].ToString();
@@ -10350,6 +10352,7 @@ namespace AIS.Controllers
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.PARA_RISK = rdr["rsk"].ToString();
                     chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
@@ -10359,8 +10362,8 @@ namespace AIS.Controllers
                     chk.STATUS_UP = rdr["c_status_up"].ToString();
                     chk.AUDITOR_REMARKS = rdr["audit_reply"].ToString();
                     chk.STATUS_DOWN = rdr["c_status_down"].ToString();
-                    chk.PREV_ROLE = rdr["Previous_role"].ToString();
-                    chk.NEXT_ROLE = rdr["next_Role"].ToString();
+                    chk.PREV_ROLE = "Referred Back";
+                    chk.NEXT_ROLE = loggedInUser.UserRoleID==44?"Settle":"Recommend";
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();

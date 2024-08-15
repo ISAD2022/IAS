@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Post Compliance";
+    ViewData["Title"] = "Post Compliances";
     Layout = "_Layout";
 }
 <head>
@@ -217,7 +217,7 @@
               
                 $.each(data, function (index, child) {
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.auditoR_REMARKS + '</td><td>' + child.receiveD_FROM + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.receiveD_FROM + '</td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
                 });
 
                 $('#manageObsPanel').DataTable({
@@ -225,7 +225,7 @@
                     buttons: [
                         {
                             extend: 'excelHtml5',
-                            text: 'Export to EXCEL',
+                            text: 'Export to Excel',
                             className: 'btn btn-success',
                             exportOptions: {
                                 columns: function (idx, data, node) {
@@ -351,7 +351,10 @@
 
         $('#viewParaComplianceModel').modal('hide');
         $('#viewMemoModel').modal('hide');
-        $('#viewMemoReportingModel').modal('hide');   
+        $('#viewMemoReportingModel').modal('hide');  
+        if ($.fn.DataTable.isDataTable('#manageObsPanel')) {
+            $('#manageObsPanel').DataTable().destroy();
+        }
         getOwnParasForCompliance();
     }
     function clearEvidencesLog() {
@@ -524,8 +527,8 @@
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Audit Execution Date</th>                    
                     <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Auditor Remarks</th>
                     <th class="col-md-auto">Received From</th>
+                    <th class="col-md-auto">Auditor Remarks</th>                    
                     <th class="col-md-auto hide-export">Compliance History</th>
                 </tr>
             </thead>
@@ -637,10 +640,8 @@
 
                 </form>
             </div>
-            <div class="modal-footer">
-                <button id="prevRoleButtonHandler" onclick="PublishCompliance('D')" type="button" class="btn btn-danger"></button>
-                <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <div class="modal-footer">             
+                <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>                
             </div>
         </div>
     </div>
@@ -711,9 +712,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="prevRoleButtonHandler_rep" onclick="PublishCompliance('D')" type="button" class="btn btn-danger"></button>
                 <button id="nextRoleButtonHandler_rep" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Post Compliance";
+    ViewData["Title"] = "Post Compliances for Review";
     Layout = "_Layout";
 }
 <head>
@@ -212,39 +212,43 @@
             },
             cache: false,
             success: function (data) {
-                g_obsList = data;
-                var hidePrevCol = "";
-                var hideNextCol = "";
-
-                $('#entityNameField').html(data.length > 0 ? data[0].name : '');
+                g_obsList = data;           
                 $.each(data, function (index, child) {
+                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.parA_RISK + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.receiveD_FROM + '</td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
+                   });
 
-                    if (child.preV_ROLE == "N") {
-                        child.preV_ROLE = "";
-                        hidePrevCol = "d-none";
-                    }
-
-                    if (child.nexT_ROLE == "N") {
-                        child.nexT_ROLE = "";
-                        hideNextCol = "d-none";
-                    }
-                    if (child.receiveD_FROM == "N") {
-                        child.receiveD_FROM = "";
-                    }
-                    if (child.audiT_START_DATE != "")
-                        child.audiT_START_DATE = child.audiT_START_DATE.split(' ')[0];
-                    if (child.audiT_END_DATE != "")
-                        child.audiT_END_DATE = child.audiT_END_DATE.split(' ')[0];
-
-                    if (child.oP_START_DATE != "")
-                        child.oP_START_DATE = child.oP_START_DATE.split(' ')[0];
-                    if (child.oP_END_DATE != "")
-                        child.oP_END_DATE = child.oP_END_DATE.split(' ')[0];
-
-
-                    $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.oP_START_DATE + ' - ' + child.oP_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_START_DATE + ' - ' + child.audiT_END_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p class="fw-normal mb-1">' + child.receiveD_FROM + '</p></td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\');" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-
+                  $('#manageObsPanel2').DataTable({
+                    dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            text: 'Export to Excel',
+                            className: 'btn btn-success',
+                            exportOptions: {
+                                columns: function (idx, data, node) {
+                                    // Exclude columns with the class 'hide-export'
+                                    return !$(node).hasClass('hide-export');
+                                }
+                            }
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'Export To PDF',
+                            className: 'btn btn-danger',
+                            exportOptions: {
+                                columns: function (idx, data, node) {
+                                    // Exclude columns with the class 'hide-export'
+                                    return !$(node).hasClass('hide-export');
+                                }
+                            }
+                        }
+                    ],
+                    lengthMenu: [
+                        [10, 50, 100, -1],
+                        [10, 50, 100, "All"]
+                    ]
                 });
+
 
             },
 
@@ -345,6 +349,9 @@
         $('#viewParaComplianceModel').modal('hide');
         $('#viewMemoModel').modal('hide');
         $('#viewMemoReportingModel').modal('hide');
+        if ($.fn.DataTable.isDataTable('#manageObsPanel2')) {
+            $('#manageObsPanel2').DataTable().destroy();
+        }
         getReivewParasForCompliance();
     }
     function clearEvidencesLog() {
@@ -506,12 +513,7 @@
 
 
 <div class="row">
-    
-
-
-  
-
-    <div id="complianceReviewPanel" class="row col-md-12 d-none mt-3">
+    <div id="complianceReviewPanel" class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANDING COMPLIANCES FOR REVIEW</h3>
         <table id="manageObsPanel2" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -519,19 +521,17 @@
                     <th class="col-md-auto">Sr No.</th>
                     <th class="col-md-auto">Audit Year</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Audit Period Date</th>
-                    <th class="col-md-auto">Audit Execution Date</th>
+                    <th class="col-md-auto">Risk</th>
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Receive From</th>
                     <th class="col-md-auto">Auditor Remarks</th>
-                    <th class="col-md-auto">Compliance History</th>
+                    <th class="col-md-auto hide-export">Compliance History</th>
                 </tr>
             </thead>
             <tbody></tbody>
 
         </table>
     </div>
-
 </div>
 
 <div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
@@ -656,7 +656,7 @@
             <div class="modal-footer">
                 <button id="prevRoleButtonHandler" onclick="PublishCompliance('D')" type="button" class="btn btn-danger"></button>
                 <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success"></button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
             </div>
         </div>
     </div>

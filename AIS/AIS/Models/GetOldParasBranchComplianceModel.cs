@@ -7,6 +7,7 @@ namespace AIS.Models
     {
         public string AUDIT_PERIOD { get; set; }
         public string AUDIT_DATE { get; set; }
+        public string PARA_RISK { get; set; }
         public string NAME { get; set; }
         public string PARA_NO { get; set; }
         public int? NEW_PARA_ID { get; set; }
