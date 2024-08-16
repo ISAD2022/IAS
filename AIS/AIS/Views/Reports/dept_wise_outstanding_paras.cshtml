@@ -41,6 +41,7 @@
                     if (data.length > 0) {
                         var entityId = data[0].entitY_ID;
                         var totalParasCount = parseInt(0);
+                        var sr = 1;
                         $.each(data, function (i, v) {
                             
                             if (i > 0) {
@@ -53,12 +54,15 @@
                                     totalParasCount = parseInt(0);
                                     totalParasCount += parseInt(v.totaL_PARAS);
                                     entityId = v.entitY_ID;
-                                    $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + ++i + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                    $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + sr + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                    sr++;
                                 }
                             } else {
                                 totalParasCount += parseInt(v.totaL_PARAS);
-                                $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + ++i + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + sr + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                sr++;
                             }
+                           
                         });
                         $('#TOTAL_' + entityId).html(totalParasCount);
                     }
@@ -89,7 +93,7 @@
                 {
                     foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
-                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                            <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                     }
                 }
             }

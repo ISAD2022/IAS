@@ -1,6 +1,21 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
+.container-clob {
+    width: 100% !important;
+    margin: 10px auto !important;
+    padding: 20px !important; /* Adjust padding */
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    background-color: #f9f9f9 !important;
+    overflow: auto !important;
+    height: auto !important;
+    max-height: 500px !important;
+    box-sizing: border-box !important; /* Include padding and border in width and height */
+}
 
+.container-clob table {
+    margin-left: 0px !important;
+}
 .dt-container {
     width: 100% !important;
 }

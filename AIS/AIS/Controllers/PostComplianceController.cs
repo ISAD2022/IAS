@@ -27,8 +27,6 @@ namespace AIS.Controllers
             tm = _tpMenu;
         }
 
-
-
         public IActionResult post_compliance()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -46,8 +44,24 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult post_compliance_review()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["UserEntityName"] = sessionHandler.GetSessionUser().UserEntityName;
+            if (!sessionHandler.IsUserLoggedIn())
+                return RedirectToAction("Index", "Login");
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage("home"))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult post_compliance_ho_monitoring()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
@@ -98,7 +112,6 @@ namespace AIS.Controllers
                     return View();
             }
         }
-
         public IActionResult compliance_for_settlement()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

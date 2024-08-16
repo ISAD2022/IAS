@@ -1344,7 +1344,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
-            ViewData["EntitiesList"] = dBConnection.GetEntitiesForSettlementReport();            
+            ViewData["EntityTypesList"] = dBConnection.GetEntityTypesForSettlementReport();            
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

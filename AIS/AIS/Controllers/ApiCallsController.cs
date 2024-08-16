@@ -852,6 +852,12 @@ namespace AIS.Controllers
         {
             return dBConnection.GetParasForReviewComplianceByAuditee();
         }
+
+        [HttpPost]
+        public List<SettledPostCompliancesModel> get_settled_post_compliances_for_monitoring()
+        {
+            return dBConnection.GetSettledPostCompliancesForMonitoring();
+        }
         [HttpPost]
         public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_ref()
         {
@@ -2324,9 +2330,9 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
-        public List<SettledParasModel> get_settled_paras_for_compliance_report(int ENTITY_ID, DateTime? DATE_FROM, DateTime? DATE_TO)
+        public List<SettledParasModel> get_settled_paras_for_compliance_report(int ENTITY_TYPE_ID, DateTime? DATE_FROM, DateTime? DATE_TO)
         {
-            return dBConnection.GetSettledParasForComplianceReport(ENTITY_ID,DATE_FROM,DATE_TO);
+            return dBConnection.GetSettledParasForComplianceReport(ENTITY_TYPE_ID,DATE_FROM,DATE_TO);
         }
         [HttpPost]
         public List<SettledParasModel> get_post_compliance_settlement_report()

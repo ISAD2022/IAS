@@ -337,7 +337,7 @@
 
         $('#viewParaComplianceModel').modal('hide');
         $('#viewMemoModel').modal('hide');
-        $('#viewMemoReportingModel').modal('hide');  
+        $('#submitComplianceMemoModel').modal('hide');
         if ($.fn.DataTable.isDataTable('#manageObsPanel')) {
             $('#manageObsPanel').DataTable().destroy();
         }
@@ -528,7 +528,7 @@
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Para</label>
-                        <div id="viewMemo_memo" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                        <div id="viewMemo_memo" disabled="disabled" class="form-control container-clob"></div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_respPP" class="font-weight-bold">Responsible Personals</label>
@@ -598,7 +598,7 @@
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Para</label>
-                        <div id="viewMemo_memo_sc" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                        <div id="viewMemo_memo_sc" disabled="disabled" class="form-control container-clob"></div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="viewMemo_respPP_sc" class="font-weight-bold">Responsible Personals</label>
