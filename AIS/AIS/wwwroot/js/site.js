@@ -47,6 +47,21 @@ $(document).ready(function () {
     //    }
     //});
 });
+
+
+function compressBase64(base64String) {
+    var binaryString = atob(base64String);
+    var charArray = binaryString.split('').map(function (char) {
+        return char.charCodeAt(0);
+    });
+    var byteArray = new Uint8Array(charArray);
+
+    var compressedData = pako.gzip(byteArray);
+
+    var compressedBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(compressedData)));
+
+    return compressedBase64;
+}
 function alert(message) {
     $('#content_alertMessagesPopup').empty();
     $('#content_alertMessagesPopup').html(message);

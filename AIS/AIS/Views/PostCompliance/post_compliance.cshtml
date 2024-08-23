@@ -42,7 +42,7 @@
             fileUpload: "#uploadfile", // With target [input]file or [type]json you can save the data of loaded items
             fileType: ["pdf", "zip", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"], // allowed file formats
             dragDrop: true, // drag & drop upload
-            maxSize: "2.5 MB", // maximum uploaded file size
+            maxSize: "100 MB", // maximum uploaded file size
             multiple: true, // multiple file upload
             maxFile: 100, // maximum number of uploaded files
             maxFileError: "File exceeds upload limit. - Max limit:", // error text
@@ -69,20 +69,20 @@
                 const productImagesArr = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
-                    if (file.size > 2621440)
-                        continue;
+                   
                     var ext = getFileExtension(file);
                     if (!g_allowedFormats.includes(ext))
                         continue;
                     try {
                         const base64Data = await readFileAsDataURL(file);
+                        var compbase64=compressBase64(base64Data);
                         var fileNameGen = generateUniqueTimestamp();
                         var extension = getFileExtension(file);
                         const ProductObject = {
                             'TEXT_ID': g_comId,
                             'IMAGE_NAME': file.name,
                             'FILE_NAME': fileNameGen + "." + extension,
-                            'IMAGE_DATA': base64Data,
+                            'IMAGE_DATA': compbase64,
                             'IMAGE_TYPE': extension,
                             'LENGTH': file.size,
                             'SEQUENCE': i
@@ -315,6 +315,8 @@
                 return;
             }
             complianceRemarks = $('.richText-editor').html();
+
+   
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
             type: "POST",
@@ -325,6 +327,8 @@
                 'COMPLIANCE': complianceRemarks,
                 'EVIDENCE_LIST': g_allAttachedImages
             },
+            processData: false,
+            contentType: false,
             cache: false,
             success: function (data) {
                 alert(data.Message);

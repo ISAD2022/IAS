@@ -18208,6 +18208,45 @@ namespace AIS.Controllers
             return resp;
         }
 
+
+        public List<ComplianceOSParasModel> GetParasForComplianceSummaryReport()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ComplianceOSParasModel> resp = new List<ComplianceOSParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.P_GET_PARA_POSITION_SUM";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;             
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    ComplianceOSParasModel cp = new ComplianceOSParasModel();
+                    cp.ENTITY_ID = rdr["entity_id"].ToString();
+                    cp.PARENT_ID = rdr["parent_id"].ToString();
+                    cp.ENTITY_NAME = rdr["ent_name"].ToString();
+                    cp.ENTITY_TYPE = rdr["ent_type"].ToString();
+                    cp.REPORTING_OFFICE = rdr["p_name"].ToString();
+                    cp.TOTAL_PARAS = rdr["t_paras"].ToString();
+                    cp.TOTAL_SETTLED_PARAS = rdr["t_s_paras"].ToString();
+                    cp.TOTAL_OUTSTANDING_PARAS = rdr["t_os_paras"].ToString();
+
+                    cp.COMPLIANCE_PENDING_OS_PARAS = "0";//rdr["cos_paras"].ToString();
+                    cp.ZERO_COMPLIANCE_PARAS = rdr["z_cos_paras"].ToString();
+                    resp.Add(cp);
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
     }
 
 }

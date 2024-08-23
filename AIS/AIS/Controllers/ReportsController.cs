@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace AIS.Controllers
 {
-   
+
     public class ReportsController : Controller
     {
         private readonly ILogger<ReportsController> _logger;
@@ -1250,7 +1250,7 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-         
+
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -1343,8 +1343,26 @@ namespace AIS.Controllers
         public IActionResult settled_paras_report()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();            
-            ViewData["EntityTypesList"] = dBConnection.GetEntityTypesForSettlementReport();            
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntityTypesList"] = dBConnection.GetEntityTypesForSettlementReport();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
+        public IActionResult paras_compliance_summary_report()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

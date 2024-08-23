@@ -378,7 +378,7 @@
                             $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                         });
                     }
-
+                    $('#complianceCycleEvidences').empty();
                     $.ajax({
                         url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
                         type: "POST",
@@ -447,6 +447,7 @@
                         }
 
                     $('#listofRespPersons_rep tbody').empty();
+
                     if (data.responsiblE_PPs.length > 0) {
                         $.each(data.responsiblE_PPs, function (j, pp) {
                             var srNo = $('#listofRespPersons_rep tbody tr').length;
@@ -454,7 +455,7 @@
                             $('#listofRespPersons_rep tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                         });
                     }
-
+                    $('#complianceCycleEvidences_rep').empty();
                     $.ajax({
                         url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
                         type: "POST",

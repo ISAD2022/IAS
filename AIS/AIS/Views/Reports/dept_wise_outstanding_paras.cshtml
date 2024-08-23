@@ -65,7 +65,46 @@
                            
                         });
                         $('#TOTAL_' + entityId).html(totalParasCount);
+
+                        if ($.fn.DataTable.isDataTable('#entity_oustanding_paras_grid')) {
+                            $('#entity_oustanding_paras_grid').DataTable().destroy();
+                        }
+
+                        $('#entity_oustanding_paras_grid').DataTable({
+                            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+                            buttons: [
+                                {
+                                    extend: 'excelHtml5',
+                                    text: 'Export to Excel',
+                                    className: 'btn btn-success',
+                                    exportOptions: {
+                                        columns: function (idx, data, node) {
+                                            // Exclude columns with the class 'hide-export'
+                                            return !$(node).hasClass('hide-export');
+                                        }
+                                    }
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    text: 'Export To PDF',
+                                    className: 'btn btn-danger',
+                                    exportOptions: {
+                                        columns: function (idx, data, node) {
+                                            // Exclude columns with the class 'hide-export'
+                                            return !$(node).hasClass('hide-export');
+                                        }
+                                    }
+                                }
+                            ],
+                            lengthMenu: [
+                                [10, 50, 100, -1],
+                                [10, 50, 100, "All"]
+                            ]
+                        });
                     }
+
+                  
+
 
 
                 },

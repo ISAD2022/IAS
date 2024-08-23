@@ -10,6 +10,9 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Runtime.ConstrainedExecution;
+using System.IO;
+using System.IO.Compression;
+using Microsoft.AspNetCore.Http;
 
 
 namespace AIS.Controllers
@@ -27,6 +30,20 @@ namespace AIS.Controllers
             _logger = logger;
             sessionHandler = _sessionHandler;
             dBConnection = _dbCon;
+        }
+
+        private string DecompressBase64(string compressedBase64String)
+        {
+            byte[] compressedBytes = Convert.FromBase64String(compressedBase64String);
+
+            using (var memoryStream = new MemoryStream(compressedBytes))
+            using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+            using (var outputStream = new MemoryStream())
+            {
+                gzipStream.CopyTo(outputStream);
+                byte[] decompressedBytes = outputStream.ToArray();
+                return Convert.ToBase64String(decompressedBytes);
+            }
         }
         [HttpPost]
         public bool kill_session(LoginModel user)
@@ -912,10 +929,16 @@ namespace AIS.Controllers
         [HttpPost]
         public string submit_post_audit_compliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
+            foreach (AuditeeResponseEvidenceModel v in EVIDENCE_LIST)
+            {
+                v.IMAGE_DATA = this.DecompressBase64(v.IMAGE_DATA);
+            }
+
             string response = "";
             response = dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS, EVIDENCE_LIST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
+
         [HttpPost]
         public string submit_post_audit_compliance_review(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
         {
@@ -2339,6 +2362,14 @@ namespace AIS.Controllers
         {
             return new List<SettledParasModel>(); //dBConnection.GetSettledParasForComplianceReport();
         }
+
+        [HttpPost]
+        public List<ComplianceOSParasModel> get_paras_for_compliance_summary_report()
+        {
+            return dBConnection.GetParasForComplianceSummaryReport();
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
