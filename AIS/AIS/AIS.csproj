@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\PostCompliance_Evidences\" />
     <Folder Include="wwwroot\Audit_Reports\" />
   </ItemGroup>
 

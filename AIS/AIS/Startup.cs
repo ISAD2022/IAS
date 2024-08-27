@@ -75,18 +75,6 @@ namespace AIS
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-
-            // Configure request size limit for the entire app or specific middleware
-            app.Use((context, next) =>
-            {
-                var maxRequestBodySizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
-                if (maxRequestBodySizeFeature != null)
-                {
-                    maxRequestBodySizeFeature.MaxRequestBodySize = 104857600; // 100 MB
-                }
-                return next();
-            });
-
             app.UseRouting();
             app.UseAuthorization();
 

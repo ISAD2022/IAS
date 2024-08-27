@@ -11,6 +11,7 @@ using System.Data;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace AIS.Controllers
 {    
@@ -336,6 +337,54 @@ namespace AIS.Controllers
             return user;
         }
         #endregion
+
+        public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedFilesFromDirectory(string subfolder)
+        {
+            try
+            {
+                var _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                var folderPath = Path.Combine(_uploadPath, subfolder);
+                if (!Directory.Exists(folderPath))
+                {
+                    return filesData;
+                }
+
+
+                var files = Directory.GetFiles(folderPath);
+
+                foreach (var filePath in files)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                            {
+                                FILE_NAME = fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = fileType,
+                                IMAGE_DATA = base64String
+                            });
+                        }
+                    }
+                }
+
+                return filesData;
+            }
+            catch (Exception ex)
+            {
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                return filesData;
+            }
+        }
         #region MenuPage
         public List<MenuModel> GetTopMenus()
         {
@@ -5055,6 +5104,7 @@ namespace AIS.Controllers
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("TEXT_ID", OracleDbType.Varchar2).Value = TEXT_ID;
+                cmd.FetchSize = 10000; 
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -10716,7 +10766,7 @@ namespace AIS.Controllers
             con.Dispose();
             return chk;
         }
-        public string SubmitPostAuditCompliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
+        public async Task<string> SubmitPostAuditCompliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST, string SUBFOLDER)
         {
 
             string resp = "";
@@ -10747,6 +10797,9 @@ namespace AIS.Controllers
                     TEXT_ID = Convert.ToInt32(rdr["text_id"].ToString());
 
                 }
+
+                EVIDENCE_LIST = await this.GetAttachedFilesFromDirectory(SUBFOLDER);
+                int index = 1;
                 if (EVIDENCE_LIST != null)
                 {
                     if (EVIDENCE_LIST.Count > 0)
@@ -10759,12 +10812,13 @@ namespace AIS.Controllers
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("TEXT_ID", OracleDbType.Varchar2).Value = TEXT_ID;
                             cmd.Parameters.Add("FILENAME", OracleDbType.Varchar2).Value = fileName;
-                            cmd.Parameters.Add("LEN_ID", OracleDbType.Int32).Value = item.LENGTH;
+                            cmd.Parameters.Add("LEN_ID", OracleDbType.Int32).Value = item.IMAGE_LENGTH;
                             cmd.Parameters.Add("ENTER_BY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("FILETYPE", OracleDbType.Varchar2).Value = item.IMAGE_TYPE;
                             cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
-                            cmd.Parameters.Add("SEQ_ID", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
+                            cmd.Parameters.Add("SEQ_ID", OracleDbType.Int32).Value = (index);
                             cmd.ExecuteReader();
+                            index++;
                             //this.SaveImage(item.IMAGE_DATA, fileName);
                         }
                     }

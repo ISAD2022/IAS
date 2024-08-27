@@ -13,6 +13,7 @@ using System.Runtime.ConstrainedExecution;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace AIS.Controllers
@@ -24,27 +25,46 @@ namespace AIS.Controllers
 
         private readonly SessionHandler sessionHandler;
         private readonly DBConnection dBConnection;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon)
+        public ApiCallsController(ILogger<ApiCallsController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             sessionHandler = _sessionHandler;
             dBConnection = _dbCon;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        private string DecompressBase64(string compressedBase64String)
+        [HttpPost]
+        public async Task<IActionResult> upload_post_compliance_evidences(List<IFormFile> files)
         {
-            byte[] compressedBytes = Convert.FromBase64String(compressedBase64String);
+            // Directory path where files will be stored
+            var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Audit_Evidences");
 
-            using (var memoryStream = new MemoryStream(compressedBytes))
-            using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-            using (var outputStream = new MemoryStream())
+            // Ensure the directory exists
+            if (!Directory.Exists(uploadPath))
             {
-                gzipStream.CopyTo(outputStream);
-                byte[] decompressedBytes = outputStream.ToArray();
-                return Convert.ToBase64String(decompressedBytes);
+                Directory.CreateDirectory(uploadPath);
             }
+
+            foreach (var file in files)
+            {
+                if (file.Length > 0)
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var filePath = Path.Combine(uploadPath, fileName);
+
+                    // Save the file to the specified directory
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                }
+            }
+
+            return Ok(new { Message = "Files uploaded successfully!" });
         }
+
         [HttpPost]
         public bool kill_session(LoginModel user)
         {
@@ -927,15 +947,8 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public string submit_post_audit_compliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
-        {
-            foreach (AuditeeResponseEvidenceModel v in EVIDENCE_LIST)
-            {
-                v.IMAGE_DATA = this.DecompressBase64(v.IMAGE_DATA);
-            }
-
-            string response = "";
-            response = dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS, EVIDENCE_LIST);
+        public async Task<string> submit_post_audit_compliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST, string SUBFOLDER)
+        {string response = await dBConnection.SubmitPostAuditCompliance(OLD_PARA_ID, NEW_PARA_ID, INDICATOR, COMPLIANCE, COMMENTS, EVIDENCE_LIST, SUBFOLDER);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
         }
 

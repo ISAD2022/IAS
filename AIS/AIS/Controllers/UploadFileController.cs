@@ -1,69 +1,137 @@
-﻿using AIS.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using AIS.Controllers;
-using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Hosting.Server;
+using AIS.Models;
+using System.Diagnostics;
 
 namespace AIS.Controllers
 {
-
     public class UploadFileController : Controller
     {
         private readonly ILogger<UploadFileController> _logger;
-        private readonly SessionHandler sessionHandler;
-        private readonly DBConnection dBConnection;
         private readonly IConfiguration _configuration;
+        private readonly string _uploadPath;
 
-        public UploadFileController(ILogger<UploadFileController> logger, SessionHandler _sessionHandler, DBConnection _dbCon, IConfiguration configuration)
+        public UploadFileController(ILogger<UploadFileController> logger, IConfiguration configuration)
         {
             _logger = logger;
-            sessionHandler = _sessionHandler;
-            dBConnection = _dbCon;
             _configuration = configuration;
+            // Set the directory path where files will be uploaded
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
         }
 
         [HttpPost]
-        [Obsolete]
-        public ActionResult UploadFiles(List<ProductImage> files)
+        public async Task<IActionResult> UploadFiles([FromForm] List<IFormFile> files)
         {
             try
             {
+                var subfolder = Request.Form["subfolder"];
+                var uploadPath = Path.Combine(_uploadPath, subfolder);
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
                 foreach (var file in files)
                 {
-                    dBConnection.SaveImage(file.IMAGE_DATA, file.FILE_NAME);
-                    
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }
                 }
+
                 return Json(new { success = true, message = "Files uploaded successfully" });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error uploading files");
                 return Json(new { success = false, message = ex.Message });
             }
         }
 
         [HttpPost]
-        [Obsolete]
-        public ActionResult DeleteFile(string fileName)
+        public IActionResult DeleteFile(string subFolder,string fileName)
         {
             try
             {
-                dBConnection.DeleteImage(fileName);
-                return Json(new { success = true, message = "File deleted successfully." });
+                var uploadPath = Path.Combine(_uploadPath, subFolder);
+                var filePath = Path.Combine(uploadPath, fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    // Optionally, delete file metadata from the database
+                    // Example: dBConnection.DeleteFileMetadata(fileName);
+                    return Json(new { success = true, Message = "File deleted successfully." });
+                }
+                else
+                {
+                    return Json(new { success = false, Message = "File not found." });
+                }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error deleting file");
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<List<AuditeeResponseEvidenceModel>> GetFilesData(string subfolder)
+        {
+            try
+            {
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                var folderPath = Path.Combine(_uploadPath, subfolder);
+                if (!Directory.Exists(folderPath))
+                {
+                    return filesData;
+                }
+
+             
+                var files = Directory.GetFiles(folderPath);
+
+                foreach (var filePath in files)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                            {
+                                FILE_NAME = fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = fileType,
+                                IMAGE_DATA = base64String
+                            });
+                        }
+                    }
+                }
+
+                return filesData;
+            }
+            catch (Exception ex)
+            {
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                _logger.LogError(ex, "Error retrieving file data");
+                return filesData;
             }
         }
 
@@ -73,15 +141,4 @@ namespace AIS.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-}
-public class ProductImage
-{
-    public string OBS_ID { get; set; }
-    public string OBS_TEXT_ID { get; set; }
-    public string IMAGE_NAME { get; set; }
-    public string FILE_NAME { get; set; }
-    public string IMAGE_DATA { get; set; }
-    public string IMAGE_TYPE { get; set; }
-    public int LENGTH { get; set; }
-    public int SEQUENCE { get; set; }
 }

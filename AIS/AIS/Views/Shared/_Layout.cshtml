@@ -50,34 +50,7 @@
 
        
     </style>
-    <script type="text/javascript">
-
-        $(document).ready(function () {
-            $(document).ajaxStart(function () {
-                $("#wait").css("display", "block");
-            });
-            $(document).ajaxComplete(function () {
-                $("#wait").css("display", "none");
-            });
-
-          //  window.addEventListener('load', adjustSubmenuPosition);
-          //  window.addEventListener('resize', adjustSubmenuPosition);
-
-        });
-
-        /*
-        function adjustSubmenuPosition() {
-            var submenus = $($('a.nested-menu').parent().find('ul.dropdown-menu'))[0];
-            var submenuRect = submenus.getBoundingClientRect();
-            var windowWidth = window.innerWidth;
-            if (submenuRect.left + submenuRect.width > windowWidth) {
-                $($('a.nested-menu').parent().find('ul.dropdown-menu')[0]).addClass('submenu-right');
-            } else {
-                $($('a.nested-menu').parent().find('ul.dropdown-menu')[0]).addClass('submenu-right');
-            }
-        }*/
-    </script>
-
+  
 </head>
 <body>
     <header>
@@ -214,9 +187,7 @@
 
             @RenderBody()
         </main>
-        <div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
-            <img src='~/Images/ajax_loader.gif' width="64" height="64" /><br>Loading..
-        </div>
+      
     </div>
 
     <footer class="border-top footer text-muted">
@@ -228,10 +199,12 @@
         </div>
        
     </footer>
-
+    <div id="wait" style="display:none;width:69px;height:89px;position:fixed;top:50%;left:50%;padding:2px;z-index:1060;">
+        <img src='~/Images/ajax_loader.gif' width="64" height="64" /><br>Loading..
+    </div>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/idleSessionHandler.js"></script>
-    <script src="~/js/site.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/lib/rich-text-editor/jquery.richtext.js"></script>
     <script type="text/javascript" src="~/lib/word-export/FileSaver.js"></script>
     <script type="text/javascript" src="~/lib/word-export/jquery.wordexport.js"></script>

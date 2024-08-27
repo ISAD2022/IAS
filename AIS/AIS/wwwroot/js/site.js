@@ -2,12 +2,12 @@
 
 var g_asiBaseURL ="/ZTBLAIS";
 var g_secretKey="";
-
+var activeRequests = 0;
 $(document).ready(function () {
     // Override default options for all modals
     $.fn.modal.Constructor.Default.backdrop = 'static';
     $.fn.modal.Constructor.Default.keyboard = false;
-
+    
     $('body').append('<div id="alertMessagesPopup" class="modal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document">  <div class="modal-content">    <div class="modal-header">      <h5 class="modal-title">Alert</h5>      <button type="button" class="close" data-dismiss="modal" aria-label="Close">        <span aria-hidden="true">&times;</span>      </button>    </div>    <div class="modal-body">      <div id="content_alertMessagesPopup"></div>    </div>    <div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>    </div>  </div></div></div >');
     $('#alertMessagesPopup').on('hidden.bs.modal', function (e) {
         closeFuncCalled();
@@ -40,28 +40,34 @@ $(document).ready(function () {
         });
     });
   
-    //$.ajaxSetup({
-    //    beforeSend: function (xhr, settings) {
-    //        // Append the directory to the start of the URL
-    //        settings.url = g_asiBaseURL+  settings.url;
-    //    }
-    //});
+    var activeRequests = 0;
+
+    $(document).ajaxStart(function () {
+        if (activeRequests <1) {
+            $("#wait").css("display", "block");
+        }
+        activeRequests++;
+    });
+
+    $(document).ajaxStop(function () {
+        activeRequests--;
+        activeRequests=activeRequests < 0? 0: activeRequests;
+        if (activeRequests <1) {
+            $("#wait").css("display", "none");
+        }
+    });
+
+    $(document).ajaxError(function () {
+        activeRequests--;
+        activeRequests = activeRequests < 0 ? 0 : activeRequests;
+        if (activeRequests < 1) {
+            $("#wait").css("display", "none");
+        }
+    });
 });
 
 
-function compressBase64(base64String) {
-    var binaryString = atob(base64String);
-    var charArray = binaryString.split('').map(function (char) {
-        return char.charCodeAt(0);
-    });
-    var byteArray = new Uint8Array(charArray);
 
-    var compressedData = pako.gzip(byteArray);
-
-    var compressedBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(compressedData)));
-
-    return compressedBase64;
-}
 function alert(message) {
     $('#content_alertMessagesPopup').empty();
     $('#content_alertMessagesPopup').html(message);

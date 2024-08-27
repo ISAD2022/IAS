@@ -9,6 +9,7 @@ namespace AIS.Models
         public int? COM_ID { get; set; }
         public int? SEQUENCE { get; set; }
         public int LENGTH { get; set; }
+        public long IMAGE_LENGTH { get; set; }
         public string IMAGE_TYPE { get; set; }
         public string IMAGE_DATA { get; set; }
         public string IMAGE_NAME { get; set; }

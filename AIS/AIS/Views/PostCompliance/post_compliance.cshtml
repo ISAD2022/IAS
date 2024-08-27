@@ -18,16 +18,19 @@
 </head>
 <script type="text/javascript">
     var g_newParaId = 0;
+    var g_comId = 0;
     var g_oldParaId = 0;
     var g_prevRole = "";
     var g_nextRole = "";
     var g_obsList = [];
+    var fileInput = null;
     var g_allAttachedImages = [];
     var g_allowedFormats = ["pdf", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"]; // allowed file formats
 
 
 
     var btnClick = "own";
+    var g_allowLimit = '100'; // Maximum file size in MB
 
     $(document).ready(function () {
         getOwnParasForCompliance();
@@ -39,98 +42,67 @@
         });
 
         $("aks-file-upload").aksFileUpload({
-            fileUpload: "#uploadfile", // With target [input]file or [type]json you can save the data of loaded items
-            fileType: ["pdf", "zip", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"], // allowed file formats
-            dragDrop: true, // drag & drop upload
-            maxSize: "100 MB", // maximum uploaded file size
-            multiple: true, // multiple file upload
-            maxFile: 100, // maximum number of uploaded files
-            maxFileError: "File exceeds upload limit. - Max limit:", // error text
-            maxSizeError: "File exceeds size. - Max limit:", // error text
-            fileTypeError: "Disallowed file format.", // error text
-            label: "Drag & Drop your files or Browse" // label text
+            fileUpload: "#aksfileupload", // With target [input]file or [type]json you can save the data of loaded items
+            fileType: ["pdf", "zip", "jpg", "jpeg", "png", "doc", "docx", "csv", "xls", "xlsx"], // Allowed file formats
+            dragDrop: true, // Enable drag & drop upload
+            maxSize: g_allowLimit + " MB", // Maximum uploaded file size
+            multiple: true, // Allow multiple file uploads
+            maxFile: 100, // Maximum number of uploaded files
+            maxFileError: "File exceeds upload limit. - Max limit:", // Error message for exceeding file count
+            maxSizeError: "File exceeds size. - Max limit:", // Error message for exceeding file size
+            fileTypeError: "Disallowed file format.", // Error message for disallowed file format
+            label: "Drag & Drop your files or Browse", // Label text for the file input
 
+           
         });
 
-        document.getElementById('aksfileupload').addEventListener('change', function () {
+        var fileInput = document.getElementById('aksfileupload');
 
-            var g_imgFiles = this.files;
-
-            function readFileAsDataURL(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]); // get Base64 string without prefix
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
+        fileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                $("#wait").css("display", "block"); // Show loader
+                processFiles(this.files).finally(() => {
+                    $("#wait").css("display", "none"); // Hide loader
                 });
+            } else {
+                $("#wait").css("display", "none"); // Hide loader if no files
             }
+        });
 
-            async function processFiles(files) {
-                const productImagesArr = [];
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                   
-                    var ext = getFileExtension(file);
-                    if (!g_allowedFormats.includes(ext))
-                        continue;
-                    try {
-                        const base64Data = await readFileAsDataURL(file);
-                        var compbase64=compressBase64(base64Data);
-                        var fileNameGen = generateUniqueTimestamp();
-                        var extension = getFileExtension(file);
-                        const ProductObject = {
-                            'TEXT_ID': g_comId,
-                            'IMAGE_NAME': file.name,
-                            'FILE_NAME': fileNameGen + "." + extension,
-                            'IMAGE_DATA': compbase64,
-                            'IMAGE_TYPE': extension,
-                            'LENGTH': file.size,
-                            'SEQUENCE': i
-                        };
-                        productImagesArr.push(ProductObject);
-                        g_allAttachedImages.push(ProductObject);
-                    } catch (error) {
+        async function processFiles(files) {
+            const formData = new FormData();
+            formData.append('subfolder', g_comId);
+            let errorString = "";
 
-                    }
-                }
-                uploadFiles(productImagesArr);
-            }
+            Array.from(files).forEach((file, index) => {
+                formData.append('files', file);
+            });
+            await uploadFiles(formData); 
+        }
 
-            function uploadFiles(productImagesArr) {
-
-                $.each($(".aks-file-upload .aks-file-upload-delete"), function (i, v) {
-                    var filename = $(v).attr("data-delete");
-                    for (var i = 0; i < g_allAttachedImages.length; i++) {
-                        if (g_allAttachedImages[i].IMAGE_NAME == filename) {
-                            $(v).attr("file-name", g_allAttachedImages[i].FILE_NAME);
-                        }
-                    }
-                });
-                $(".aks-file-upload .aks-file-upload-delete").on("click", function (e) {
-                    var filename = $(this).attr("file-name");
-                    deleteFileFromServer(filename);
-                });
-                /*
-                $.ajax({
+        async function uploadFiles(formData) {
+            try {
+                const response = await $.ajax({
                     url: g_asiBaseURL + "/UploadFile/UploadFiles",
                     type: 'POST',
-                    dataType: "json",
-                    data: {
-                        "files": productImagesArr
-                    },
-                    success: function (response) {
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                });
+                alert("Files uploaded successfully!");
 
-
-                    },
-                    error: function (error) {
-
-                    }
-                });   */
+               
+                $(".aks-file-upload .aks-file-upload-delete").on("click", function (e) {
+                    var filename = $(this).attr("data-delete");
+                    deleteFileFromServer(filename);
+                });
+            } catch (error) {
+                console.error("Error uploading files:", error);
+                alert("Error uploading files. Please try again."); // Use custom alert
             }
-            processFiles(g_imgFiles);
-        });
-
+        }
     });
+
     function getFileExtension(file) {
         var fileName = file.name;
         var extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
@@ -172,12 +144,7 @@
         var timestamp = year + month + day + '_' + hours + minutes + seconds + milliseconds;
         return timestamp;
     }
-    function deleteImageObjectByFileName(fileName) {
-        const index = g_allAttachedImages.findIndex(image => image.FILE_NAME === fileName);
-        if (index !== -1) {
-            g_allAttachedImages.splice(index, 1);
-        }
-    }
+   
     function base64ToBlob(base64, contentType) {
         const byteCharacters = atob(base64);
         const byteArrays = [];
@@ -198,7 +165,23 @@
         return blob;
     }
     function deleteFileFromServer(fileName) {
-        deleteImageObjectByFileName(fileName);
+
+        $.ajax({
+            url: g_asiBaseURL + "/UploadFile/DeleteFile",
+            type: "POST",
+            data: {
+                'fileName': fileName,
+                'subFolder': g_comId
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.message);
+
+            },
+
+            dataType: "json",
+        });
+
     }
       
   
@@ -315,7 +298,7 @@
                 return;
             }
             complianceRemarks = $('.richText-editor').html();
-
+        $('#nextRoleButtonHandler').attr("disabled", true);
    
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
@@ -325,14 +308,19 @@
                 'NEW_PARA_ID': g_newParaId,
                 'INDICATOR': ind,
                 'COMPLIANCE': complianceRemarks,
-                'EVIDENCE_LIST': g_allAttachedImages
+                'EVIDENCE_LIST': productImagesArr,
+                'SUBFOLDER': g_comId
             },
-            processData: false,
-            contentType: false,
             cache: false,
             success: function (data) {
                 alert(data.Message);
+                $('#nextRoleButtonHandler').attr("disabled", false);
                 onAlertCallback(reloadLocation);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                $('#nextRoleButtonHandler').attr("disabled", false);
+                alert("An error occurred: " + jqXHR.status + " " + errorThrown);
+
+               
             },
             dataType: "json",
         });
@@ -632,14 +620,7 @@
                     <div id="evidenceUploader" class="input-field">
                         <label class="active">Evidences</label>
                         <aks-file-upload></aks-file-upload>
-                        <div class="row col-md-12 mt-1">
-                            <div class="row col-md-8">
-                                <i class="text-danger">Maximum Upload File Size allowed 2.5MB</i>
-                            </div>
-                            <div class="row col-md-4">
-                                <button class="btn btn-secondary offset-md-8 col-md-4" onclick="event.preventDefault();clearEvidencesLog();">Clear</button>
-                            </div>
-                        </div>
+                       
                     </div>
 
                 </form>
