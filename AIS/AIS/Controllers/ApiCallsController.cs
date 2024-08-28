@@ -324,6 +324,7 @@ namespace AIS.Controllers
         {
             return dBConnection.GetManagedObservations(ENG_ID, OBS_ID);
         }
+       
         [HttpPost]
         public List<ManageObservations> get_dept_observation_text(int ENG_ID = 0, int OBS_ID = 0)
         {

@@ -399,6 +399,33 @@ namespace AIS.Controllers
             return filesData;
         }
 
+        public bool DeleteSubFolderDirectoryFromServer(string subfolder)
+        {
+            try
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PostCompliance_Evidences", subfolder);
+
+                if (Directory.Exists(uploadPath))
+                {
+                    // Delete the directory and all its contents
+                    Directory.Delete(uploadPath, true);
+
+                    return true;
+                }
+                else
+                {
+                  
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+               
+                return false;
+            }
+        }
+
+
         // Function to get the MIME type based on file extension
         private string GetMimeType(string filePath)
         {
@@ -5628,14 +5655,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();
-
-            if (loggedInUser.UserLocationType == "Z")
-            {
-                return this.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
-            }
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
+            List<ManageObservations> list = new List<ManageObservations>();           
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5658,8 +5678,6 @@ namespace AIS.Controllers
                     chk.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"]);
                     if (rdr["MEMO_NO"].ToString() != null && rdr["MEMO_NO"].ToString() != "")
                         chk.MEMO_NO = Convert.ToInt32(rdr["MEMO_NO"]);
-
-
                     chk.NO_OF_INSTANCES = Convert.ToInt32(rdr["NOINSTANCES"]);
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.HEADING = rdr["HEADING"].ToString();
@@ -5769,12 +5787,7 @@ namespace AIS.Controllers
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-
-
-            //var con = this.DatabaseConnection(); con.Open();
-            if (ENG_ID == 0 && OBS_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
+            var loggedInUser = sessionHandler.GetSessionUser();          
 
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
@@ -10946,6 +10959,8 @@ namespace AIS.Controllers
                         }
                     }
                 }
+
+                this.DeleteSubFolderDirectoryFromServer(SUBFOLDER);
             }
 
             con.Dispose();
@@ -16009,7 +16024,7 @@ namespace AIS.Controllers
                     m.UNDER_CONSIDERATION = rdr["Under_consideration"].ToString();
                     m.SETTLED = rdr["settled"].ToString();
                     m.REJECTED = rdr["Rejected"].ToString();
-
+                    m.ROLE_ID = loggedInUser.UserRoleID.ToString(); 
                     resp.Add(m);
                 }
             }

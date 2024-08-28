@@ -14,6 +14,7 @@ namespace AIS.Models
         public string UNDER_CONSIDERATION { get; set; }
         public string REJECTED { get; set; }
         public string SETTLED { get; set; }
+        public string ROLE_ID { get; set; }
         
 
 
