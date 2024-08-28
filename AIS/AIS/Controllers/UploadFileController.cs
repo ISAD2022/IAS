@@ -76,7 +76,7 @@ namespace AIS.Controllers
                 }
                 else
                 {
-                    return Json(new { success = false, Message = "File not found." });
+                    return Json(new { success = false, Message = "" });
                 }
             }
             catch (Exception ex)

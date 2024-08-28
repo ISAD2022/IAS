@@ -340,18 +340,17 @@ namespace AIS.Controllers
 
         public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedFilesFromDirectory(string subfolder)
         {
+            var filesData = new List<AuditeeResponseEvidenceModel>();
             try
             {
-                var _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
-                var filesData = new List<AuditeeResponseEvidenceModel>();
-                var folderPath = Path.Combine(_uploadPath, subfolder);
-                if (!Directory.Exists(folderPath))
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PostCompliance_Evidences", subfolder);
+
+                if (!Directory.Exists(uploadPath))
                 {
                     return filesData;
                 }
 
-
-                var files = Directory.GetFiles(folderPath);
+                var files = Directory.GetFiles(uploadPath);
 
                 foreach (var filePath in files)
                 {
@@ -359,32 +358,61 @@ namespace AIS.Controllers
                     var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
                     var fileLength = new FileInfo(filePath).Length;
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    string mimeType = GetMimeType(filePath); // Get MIME type
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
                     {
                         using (var memoryStream = new MemoryStream())
                         {
                             await fileStream.CopyToAsync(memoryStream);
                             var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
+                            // Sanitize the Base64 string
+                            base64String = base64String.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+
+                            // Ensure proper padding
+                            while (base64String.Length % 4 != 0)
+                            {
+                                base64String += "=";
+                            }
+
+                            // Fix URL-safe Base64 (if applicable)
+                            base64String = base64String.Replace('-', '+').Replace('_', '/');
+
                             filesData.Add(new AuditeeResponseEvidenceModel
                             {
                                 FILE_NAME = fileName,
                                 IMAGE_LENGTH = Convert.ToInt64(fileLength),
-                                IMAGE_TYPE = fileType,
+                                IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
                                 IMAGE_DATA = base64String
                             });
                         }
                     }
                 }
-
-                return filesData;
             }
             catch (Exception ex)
             {
-                var filesData = new List<AuditeeResponseEvidenceModel>();
-                return filesData;
+                // Handle exception (e.g., log error)
+                return new List<AuditeeResponseEvidenceModel>();
             }
+
+            return filesData;
         }
+
+        // Function to get the MIME type based on file extension
+        private string GetMimeType(string filePath)
+        {
+            string extension = Path.GetExtension(filePath).ToLowerInvariant();
+            Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            string mimeType;
+            if (!provider.TryGetContentType(filePath, out mimeType))
+            {
+                mimeType = "application/octet-stream"; // Default MIME type
+            }
+            return mimeType;
+        }
+
+
         #region MenuPage
         public List<MenuModel> GetTopMenus()
         {
@@ -5093,7 +5121,60 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public List<AuditeeResponseEvidenceModel> GetOldParasEvidences(string TEXT_ID)
+        public List<AuditeeResponseEvidenceModel> GetOldParasEvidences(string textId)
+        {
+            var list = new List<AuditeeResponseEvidenceModel>();
+
+            try
+            {
+                using (var con = this.DatabaseConnection())
+                {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence";
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("TEXT_ID", OracleDbType.Varchar2).Value = textId;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                var usr = new AuditeeResponseEvidenceModel
+                                {
+                                    IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                                    IMAGE_DATA = "",
+                                    SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                                    LENGTH = Convert.ToInt32(rdr["LENGTH"]),
+                                    FILE_ID= (rdr["id"].ToString())
+                                };
+
+                                // Handle CLOB data
+                                /*var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
+                                if (clob != null)
+                                {
+                                    usr.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
+                                }*/
+
+                                list.Add(usr);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                throw;
+            }
+
+            return list;
+        }
+
+        public List<AuditeeResponseEvidenceModel> GetOldParasEvidencesTEMP(string TEXT_ID)
         {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeResponseEvidenceModel> list = new List<AuditeeResponseEvidenceModel>();
@@ -5109,13 +5190,17 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
-                    AuditeeResponseEvidenceModel usr = new AuditeeResponseEvidenceModel();
-                    usr.IMAGE_NAME = rdr["FILE_NAME"].ToString();
-                    usr.IMAGE_DATA = rdr["FILE_DATA"].ToString();
-                    usr.SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"].ToString());
-                    usr.LENGTH = Convert.ToInt32(rdr["LENGTH"].ToString());
-                    list.Add(usr);
+                    var usr = new AuditeeResponseEvidenceModel
+                    {
+                        IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                        SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                        LENGTH = Convert.ToInt32(rdr["LENGTH"])
+                    };
 
+                    // Handle CLOB data
+                   
+                   
+                    list.Add(usr);
                 }
             }
             con.Dispose();
@@ -10573,6 +10658,44 @@ namespace AIS.Controllers
                     resp.PARA_TEXT_ID = rdr["text_id"].ToString();
                     resp.OBS_TEXT = rdr["para_text"].ToString();
                     resp.EVIDENCES = this.GetOldParasEvidences(resp.PARA_TEXT_ID);
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+        public AuditeeResponseEvidenceModel GetPostComplianceEvidenceData(string FILE_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var resp = new AuditeeResponseEvidenceModel();
+             using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence_FileData";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                     resp = new AuditeeResponseEvidenceModel
+                    {
+                        IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                        SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                        LENGTH = Convert.ToInt32(rdr["LENGTH"]),
+                        FILE_ID = (rdr["id"].ToString())
+                    };
+
+                    // Handle CLOB data
+                    var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
+                    if (clob != null)
+                    {
+                        resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
+                    }
+                 
                 }
             }
             con.Dispose();

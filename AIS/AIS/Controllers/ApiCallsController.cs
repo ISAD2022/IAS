@@ -912,6 +912,11 @@ namespace AIS.Controllers
             return dBConnection.GetOldParasComplianceCycleText(COM_ID, C_CYCLE);
         }
         [HttpPost]
+        public AuditeeResponseEvidenceModel get_post_compliance_evidence_data(string FILE_ID )
+        {
+            return dBConnection.GetPostComplianceEvidenceData(FILE_ID);
+        }
+        [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
         {
             return dBConnection.GetOldParasBranchComplianceTextRef(REF_P, PARA_CATEGORY, REPLY_DATE, OBS_ID);

@@ -476,21 +476,32 @@
 
                                 $.each(data.evidences, function (j, pp) {
                                     var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
-                                    const blob = base64ToBlob(pp.imagE_DATA, getContentType(extension));
-                                    const link = document.createElement('a');
-                                    link.href = URL.createObjectURL(blob);
-                                    link.download = pp.imagE_NAME;
-                                    link.innerText = "Download " + pp.imagE_NAME; // Set the text inside the hyperlink
-                                    const icon = document.createElement('i');
-                                    icon.className = getIconClass(extension) + ' evidence-icon';
+                                    const contentType = getContentType(extension);
 
+                                    // Create and append the attachment item
                                     const container = document.createElement('div');
                                     container.className = 'evidence-link';
+
+                                    // Add icon
+                                    const icon = document.createElement('i');
+                                    icon.className = getIconClass(extension) + ' evidence-icon';
                                     container.appendChild(icon);
-                                    container.appendChild(link);
+
+                                    // Add label
+                                    const label = document.createElement('span');
+                                    label.innerText = pp.imagE_NAME;
+                                    label.classList.add('text-primary');
+
+                                    // Add cursor style to make it look like a link
+                                    label.style.cursor = 'pointer';
+                                    container.appendChild(label);
+
+                                    // Add click event to download file on selection
+                                    container.addEventListener('click', function () {
+                                        downloadFile(pp.filE_ID);
+                                    });
 
                                     $('#complianceCycleEvidences_rep').append(container);
-                                    //$('#complianceCycleEvidences_rep').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
                                 });
                             } else {
                                 $('#complianceCycleEvidences_rep').append("<i>No evidence is attached </i>");
@@ -506,6 +517,30 @@
 
             dataType: "json",
         });
+    }
+    function downloadFile(id) {
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_post_compliance_evidence_data",
+            type: "POST",
+            data: {
+                'FILE_ID': id,
+            },
+            cache: false,
+            success: function (data) {
+                var extension = data.imagE_NAME.split('.').pop().toLowerCase();
+                const contentType = getContentType(extension);
+
+                const blob = base64ToBlob(data.imagE_DATA, contentType);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = data.imagE_NAME;
+                link.click(); // Trigger the download
+
+            },
+            dataType: "json",
+        });
+
+
     }
 </script>
 
