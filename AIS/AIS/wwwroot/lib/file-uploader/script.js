@@ -410,17 +410,15 @@
                     var fileSizeFormat = fileSizeExtension[1].toLowerCase();
                     var bytes = "";
                     if (maxSizeFormat === "kb") {
-                        var bytes = maxSizeConvert * 1000;
-                    } else if (maxSizeFormat === "bytes") {
-                        var bytes = maxSizeConvert * 1;
-                    } else if (maxSizeFormat === "byte") {
+                        var bytes = maxSizeConvert * 1024;
+                    } else if (maxSizeFormat === "bytes" || maxSizeFormat === "byte") {
                         var bytes = maxSizeConvert * 1;
                     } else if (maxSizeFormat === "mb") {
-                        var bytes = maxSizeConvert * 1000000;
+                        var bytes = maxSizeConvert * 1024 * 1024;
                     } else if (maxSizeFormat === "gb") {
-                        var bytes = maxSizeConvert * 1000000000;
+                        var bytes = maxSizeConvert * 1024 * 1024 * 1024;
                     } else if (maxSizeFormat === "tb") {
-                        var bytes = maxSizeConvert * 1000000000000;
+                        var bytes = maxSizeConvert * 1024 * 1024 * 1024 * 1024;
                     } else {
                         console.log('There is a problem with "maxSize"');
                     }

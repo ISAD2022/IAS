@@ -29,7 +29,7 @@
 
 
     var btnClick = "own";
-    var g_allowLimit = '100'; // Maximum file size in MB
+    var g_allowLimit = '12'; // Maximum file size in MB
 
     $(document).ready(function () {
         getOwnParasForCompliance();
@@ -71,13 +71,25 @@
         async function processFiles(files) {
             const formData = new FormData();
             formData.append('subfolder', g_comId);
-            let errorString = "";
+
+            // Convert MB to bytes
+            const maxSizeInBytes = parseInt(g_allowLimit) * 1024 * 1024;
+            let hasFiles = false; // Flag to check if any valid files were added
 
             Array.from(files).forEach((file, index) => {
-                formData.append('files', file);
+                if (file.size <= maxSizeInBytes) {
+                    formData.append('files', file);
+                    hasFiles = true; // Set flag to true if a file is valid
+                }
             });
-            await uploadFiles(formData); 
+
+            // Call uploadFiles only if there are valid files
+            if (hasFiles) {
+                uploadFiles(formData);
+            } 
         }
+
+       
 
         async function uploadFiles(formData) {
             try {
@@ -656,8 +668,11 @@
 
                     <div id="evidenceUploader" class="input-field">
                         <label class="active">Evidences</label>
+                        <div class="row-col-md-12 mt-1">
+                            <p class="text-danger text-italic"> The maximum file size limit is 10MB. </p>
+                        </div>
                         <aks-file-upload></aks-file-upload>
-                       
+
                     </div>
 
                 </form>
