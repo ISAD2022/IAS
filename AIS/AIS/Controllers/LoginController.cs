@@ -71,6 +71,12 @@ namespace AIS.Controllers
             }
         }
 
+        public string ResetPassword(string PPNumber)
+        {
+            return "{\"Status\":true,\"Message\":\""+ dBConnection.ResetUserPassword(PPNumber)  + "\"}";
+
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
