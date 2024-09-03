@@ -5768,12 +5768,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ManageObservations> list = new List<ManageObservations>();
 
-            if (loggedInUser.UserLocationType == "Z")
-            {
-                return this.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
-            }
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
+           
 
             using (OracleCommand cmd = con.CreateCommand())
             {
