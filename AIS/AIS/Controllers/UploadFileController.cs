@@ -16,6 +16,7 @@ namespace AIS.Controllers
         private readonly ILogger<UploadFileController> _logger;
         private readonly IConfiguration _configuration;
         private readonly string _uploadPath;
+        private readonly string _uploadPathAuditee;
 
         public UploadFileController(ILogger<UploadFileController> logger, IConfiguration configuration)
         {
@@ -23,6 +24,7 @@ namespace AIS.Controllers
             _configuration = configuration;
             // Set the directory path where files will be uploaded
             _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
+            _uploadPathAuditee = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Auditee_Evidences");
         }
 
         [HttpPost]
@@ -59,7 +61,40 @@ namespace AIS.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> UploadAuditeeEvideces([FromForm] List<IFormFile> files)
+        {
+            try
+            {
+                var subfolder = Request.Form["subfolder"];
+                var uploadPath = Path.Combine(_uploadPathAuditee, subfolder);
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
 
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = "Files uploaded successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading files");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         [HttpPost]
         public IActionResult DeleteFile(string subFolder,string fileName)
         {
@@ -87,6 +122,31 @@ namespace AIS.Controllers
         }
 
         [HttpPost]
+        public IActionResult DeleteAuditeeEvidences(string subFolder, string fileName)
+        {
+            try
+            {
+                var uploadPath = Path.Combine(_uploadPathAuditee, subFolder);
+                var filePath = Path.Combine(uploadPath, fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    
+                    return Json(new { success = true, Message = "File deleted successfully." });
+                }
+                else
+                {
+                    return Json(new { success = false, Message = "" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting file");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
         public async Task<List<AuditeeResponseEvidenceModel>> GetFilesData(string subfolder)
         {
             try
@@ -99,6 +159,55 @@ namespace AIS.Controllers
                 }
 
              
+                var files = Directory.GetFiles(folderPath);
+
+                foreach (var filePath in files)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                            {
+                                FILE_NAME = fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = fileType,
+                                IMAGE_DATA = base64String
+                            });
+                        }
+                    }
+                }
+
+                return filesData;
+            }
+            catch (Exception ex)
+            {
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                _logger.LogError(ex, "Error retrieving file data");
+                return filesData;
+            }
+        }
+
+        [HttpPost]
+        public async Task<List<AuditeeResponseEvidenceModel>> GetAuditeeEvidenceData(string subfolder)
+        {
+            try
+            {
+                var filesData = new List<AuditeeResponseEvidenceModel>();
+                var folderPath = Path.Combine(_uploadPathAuditee, subfolder);
+                if (!Directory.Exists(folderPath))
+                {
+                    return filesData;
+                }
+
+
                 var files = Directory.GetFiles(folderPath);
 
                 foreach (var filePath in files)

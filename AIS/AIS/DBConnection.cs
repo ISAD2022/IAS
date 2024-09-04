@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Asn1.X500;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Org.BouncyCastle.Ocsp;
 
 namespace AIS.Controllers
 {
@@ -400,6 +401,66 @@ namespace AIS.Controllers
 
             return filesData;
         }
+        public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedAuditeeEvidencesFromDirectory(string subfolder)
+        {
+            var filesData = new List<AuditeeResponseEvidenceModel>();
+            try
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Auditee_Evidences", subfolder);
+
+                if (!Directory.Exists(uploadPath))
+                {
+                    return filesData;
+                }
+
+                var files = Directory.GetFiles(uploadPath);
+
+                foreach (var filePath in files)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    string mimeType = GetMimeType(filePath); // Get MIME type
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            // Sanitize the Base64 string
+                            base64String = base64String.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+
+                            // Ensure proper padding
+                            while (base64String.Length % 4 != 0)
+                            {
+                                base64String += "=";
+                            }
+
+                            // Fix URL-safe Base64 (if applicable)
+                            base64String = base64String.Replace('-', '+').Replace('_', '/');
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                            {
+                                FILE_NAME = fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
+                                IMAGE_DATA = base64String
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exception (e.g., log error)
+                return new List<AuditeeResponseEvidenceModel>();
+            }
+
+            return filesData;
+        }
 
         public bool DeleteSubFolderDirectoryFromServer(string subfolder)
         {
@@ -427,7 +488,31 @@ namespace AIS.Controllers
             }
         }
 
+        public bool DeleteSubFolderDirectoryInAuditeeEvidenceFromServer(string subfolder)
+        {
+            try
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Auditee_Evidences", subfolder);
 
+                if (Directory.Exists(uploadPath))
+                {
+                    // Delete the directory and all its contents
+                    Directory.Delete(uploadPath, true);
+
+                    return true;
+                }
+                else
+                {
+
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+        }
         // Function to get the MIME type based on file extension
         private string GetMimeType(string filePath)
         {
@@ -5105,8 +5190,9 @@ namespace AIS.Controllers
                     while (rdr3.Read())
                     {
                         AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
+                        am.FILE_ID = rdr3["ID"].ToString();
                         am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
-                        am.IMAGE_DATA = rdr3["FILE_DATA"].ToString();
+                        am.IMAGE_DATA = "";
                         am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
                         am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
                         modellist.Add(am);
@@ -5300,9 +5386,10 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-        public bool ResponseAuditObservation(ObservationResponseModel ob)
+        public async Task<bool> ResponseAuditObservation(ObservationResponseModel ob, string SUBFOLDER)
         {
             int AUD_RESP_ID = 0;
+            List<AuditeeResponseEvidenceModel> EVIDENCE_LIST = new List<AuditeeResponseEvidenceModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5334,13 +5421,16 @@ namespace AIS.Controllers
                 {
                     AUD_RESP_ID = Convert.ToInt32(rdr["RESP_ID"]);
                 }
-                if (ob.EVIDENCE_LIST != null)
+
+                EVIDENCE_LIST = await this.GetAttachedAuditeeEvidencesFromDirectory(SUBFOLDER);
+                int index = 1;
+                if (EVIDENCE_LIST != null)
                 {
-                    if (ob.EVIDENCE_LIST.Count > 0)
+                    if (EVIDENCE_LIST.Count > 0)
                     {
-                        foreach (var item in ob.EVIDENCE_LIST)
+                        foreach (var item in EVIDENCE_LIST)
                         {
-                            string fileName = AUD_RESP_ID + "_" + item.IMAGE_NAME;
+                            string fileName = item.FILE_NAME;
                             cmd.CommandText = "pkg_ae.P_AUDITEE_OBSERVATION_RESPONSE_EVIDENCES";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
@@ -5351,13 +5441,17 @@ namespace AIS.Controllers
                             cmd.Parameters.Add("LENGTH", OracleDbType.Int32).Value = item.LENGTH;
                             cmd.Parameters.Add("ENTEREDBY", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                             cmd.Parameters.Add("FILEDATA", OracleDbType.Clob).Value = item.IMAGE_DATA;
-                            cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (item.SEQUENCE + 1);
+                            cmd.Parameters.Add("SEQUENCE", OracleDbType.Int32).Value = (index);
                             cmd.Parameters.Add("TEXT_ID", OracleDbType.Int32).Value = ob.OBS_TEXT_ID;
                             cmd.ExecuteReader();
-                            // this.SaveImage(item.IMAGE_DATA, fileName);
+                            index++;
+
+                          
                         }
                     }
                 }
+
+                this.DeleteSubFolderDirectoryInAuditeeEvidenceFromServer(SUBFOLDER);
             }
             con.Dispose();
             return true;
@@ -5766,9 +5860,7 @@ namespace AIS.Controllers
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();
-
-           
+            List<ManageObservations> list = new List<ManageObservations>();           
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5791,13 +5883,46 @@ namespace AIS.Controllers
                     if (rdr["OBS_RISK_ID"].ToString() != null && rdr["OBS_RISK_ID"].ToString() != "")
                         chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
-                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);                   
+                    chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);                  
 
                     list.Add(chk);
                 }
             }
             con.Dispose();
             return list;
+        }
+
+        public List<AuditeeResponseEvidenceModel> GetRespondedObservationEvidences(int OBS_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+              
+                cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences_by_obs_id";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBS_ID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr3 = cmd.ExecuteReader();
+                while (rdr3.Read())
+                {
+                    AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
+                    am.FILE_ID = rdr3["ID"].ToString();
+                    am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
+                    am.IMAGE_DATA = "";
+                    am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
+                    am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
+                    modellist.Add(am);
+                }
+            }
+            con.Dispose();
+            return modellist;
         }
         public List<ObservationTextModel> GetManagedAllObservationsText(int OBS_ID = 0, string INDICATOR = "")
         {
@@ -10749,6 +10874,45 @@ namespace AIS.Controllers
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence_FileData";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = new AuditeeResponseEvidenceModel
+                    {
+                        IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                        SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                        LENGTH = Convert.ToInt32(rdr["LENGTH"]),
+                        FILE_ID = (rdr["id"].ToString())
+                    };
+
+                    // Handle CLOB data
+                    var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
+                    if (clob != null)
+                    {
+                        resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
+                    }
+
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+
+        public AuditeeResponseEvidenceModel GetAuditeeEvidenceData(string FILE_ID)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var resp = new AuditeeResponseEvidenceModel();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences_FileData";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;

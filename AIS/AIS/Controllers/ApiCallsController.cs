@@ -263,9 +263,9 @@ namespace AIS.Controllers
 
 
         [HttpPost]
-        public bool reply_observation(ObservationResponseModel or)
+        public async Task<bool> reply_observation(ObservationResponseModel or, string SUBFOLDER)
         {
-            return dBConnection.ResponseAuditObservation(or);
+            return await dBConnection.ResponseAuditObservation(or, SUBFOLDER);
         }
         [HttpPost]
         public string update_observation_text(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "", int RISK_ID = 0, int ANNEXURE_ID = 0)
@@ -329,6 +329,11 @@ namespace AIS.Controllers
         public List<ManageObservations> get_dept_observation_text(int ENG_ID = 0, int OBS_ID = 0)
         {
             return dBConnection.GetManagedObservationText(ENG_ID, OBS_ID);
+        }
+        [HttpPost]
+        public List<AuditeeResponseEvidenceModel> get_responded_obs_evidences( int OBS_ID = 0)
+        {
+            return dBConnection.GetRespondedObservationEvidences( OBS_ID);
         }
 
         [HttpPost]
@@ -916,6 +921,12 @@ namespace AIS.Controllers
         public AuditeeResponseEvidenceModel get_post_compliance_evidence_data(string FILE_ID )
         {
             return dBConnection.GetPostComplianceEvidenceData(FILE_ID);
+        }
+
+        [HttpPost]
+        public AuditeeResponseEvidenceModel get_auditee_evidence_data(string FILE_ID)
+        {
+            return dBConnection.GetAuditeeEvidenceData(FILE_ID);
         }
         [HttpPost]
         public GetOldParasBranchComplianceTextModel get_old_para_br_compliance_text_ref(string REF_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)

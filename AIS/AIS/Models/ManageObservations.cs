@@ -36,5 +36,6 @@ namespace AIS.Models
         public string INDICATOR {  get; set; }
         public string TYPE_INDICATOR {  get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
+        public List<AuditeeResponseEvidenceModel> ATTACHED_EVIDENCES { get; set; }
     }
 }
