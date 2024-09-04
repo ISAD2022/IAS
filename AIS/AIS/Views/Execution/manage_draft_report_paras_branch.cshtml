@@ -2,7 +2,17 @@
     ViewData["Title"] = "Manage Draft Report Paras FAD";
     Layout = "_Layout";
 }
+<style type="text/css">
+    .evidence-link {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
 
+    .evidence-icon {
+        margin-right: 10px;
+    }
+</style>
 
 <script type="text/javascript">
     var g_obsId = 0;
@@ -49,6 +59,59 @@
             cache: false,
             success: function (data) {
                 $('#viewMemoRes_panel').html(data[0].obS_REPLY);
+                ViewAuditeeAttachedEvidences(id);
+            },
+            dataType: "json",
+        });
+    }
+    function ViewAuditeeAttachedEvidences(id) {
+        $('#viewMemoResponseModel').modal('show');
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_responded_obs_evidences",
+            type: "POST",
+            data: {
+                'OBS_ID': id
+            },
+            cache: false,
+            success: function (data) {
+
+                $('#complianceCycleEvidences').empty();
+                if (data.length > 0) {
+                    $.each(data, function (i, pp) {
+
+                        var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
+                        const contentType = getContentType(extension);
+
+                        // Create and append the attachment item
+                        const container = document.createElement('div');
+                        container.className = 'evidence-link';
+
+                        // Add icon
+                        const icon = document.createElement('i');
+                        icon.className = getIconClass(extension) + ' evidence-icon';
+                        container.appendChild(icon);
+
+                        // Add label
+                        const label = document.createElement('span');
+                        label.innerText = pp.imagE_NAME;
+                        label.classList.add('text-primary');
+
+                        // Add cursor style to make it look like a link
+                        label.style.cursor = 'pointer';
+                        container.appendChild(label);
+
+                        // Add click event to download file on selection
+                        container.addEventListener('click', function () {
+                            downloadFile(pp.filE_ID);
+                        });
+
+                        $('#complianceCycleEvidences').append(container);
+                    });
+                }
+                else {
+                    $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
+                }
+
             },
             dataType: "json",
         });
@@ -148,6 +211,79 @@
 
         }
     }
+
+    function downloadFile(id) {
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_auditee_evidence_data",
+            type: "POST",
+            data: {
+                'FILE_ID': id,
+            },
+            cache: false,
+            success: function (data) {
+                var extension = data.imagE_NAME.split('.').pop().toLowerCase();
+                const contentType = getContentType(extension);
+
+                const blob = base64ToBlob(data.imagE_DATA, contentType);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = data.imagE_NAME;
+                link.click(); // Trigger the download
+
+            },
+            dataType: "json",
+        });
+
+
+    }
+    function getFileExtension(file) {
+        var fileName = file.name;
+        var extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        return extension;
+    }
+    function getIconClass(extension) {
+        switch (extension) {
+            case 'pdf': return 'fa fa-file-pdf';
+            case 'zip': return 'fa fa-file-archive';
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'bmp': return 'fa fa-file-image';
+            case 'doc':
+            case 'docx': return 'fa fa-file-word';
+            default: return 'fa fa-file';
+        }
+    }
+    function getContentType(extension) {
+        switch (extension) {
+            case 'pdf': return 'application/pdf';
+            case 'zip': return 'application/zip';
+            case 'png': return 'image/png';
+            case 'doc': return 'application/msword';
+            case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            default: return 'application/octet-stream';
+        }
+    }
+    function base64ToBlob(base64, contentType) {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: contentType });
+        return blob;
+    }
+
 </script>
 
 <div class="row">
@@ -279,6 +415,13 @@
                     <div class="form-group">
                         <label for="viewMemoRes_panel">Reponse</label>
                         <div class="col-md-12" style="max-height:500px; overflow-y:auto;" id="viewMemoRes_panel"></div>
+                    </div>
+                    <div id="evidenceViewer" class="input-field">
+                        <label class="font-weight-bold">Evidences</label>
+                        <div class="row col-md-12 mt-3 mb-3">
+                            <div id="complianceCycleEvidences">
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

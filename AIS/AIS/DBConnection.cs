@@ -6054,13 +6054,10 @@ namespace AIS.Controllers
                         chk.HEADING = rdr["OBS_HEADING"].ToString();
                         if (rdr["OBS_RISK_ID"].ToString() != null && rdr["OBS_RISK_ID"].ToString() != "")
                             chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
-                        //if (rdr["ANNEXURE_ID"].ToString() != null && rdr["ANNEXURE_ID"].ToString() != "")
-                        //    chk.ANNEXURE_ID = Convert.ToInt32(rdr["ANNEXURE_ID"].ToString());
-                        // chk.Checklist_Details = rdr["NATURE"].ToString();
-                        //chk.Checklist_Details_Id = rdr["Check_List_Detail_Id"].ToString();
                         chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                         chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                         chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+                        chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);
                         list.Add(chk);
                     }
                 }
