@@ -18702,6 +18702,31 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
-    }
 
+        public List<UserRelationshipModel> GetrealtionshiptypeForCAU()
+        {
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ad.P_Getrealtionshiptype";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+    }
 }

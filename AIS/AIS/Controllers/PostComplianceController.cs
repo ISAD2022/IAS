@@ -49,6 +49,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["UserEntityName"] = sessionHandler.GetSessionUser().UserEntityName;
+            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForCAU();
             if (!sessionHandler.IsUserLoggedIn())
                 return RedirectToAction("Index", "Login");
             else

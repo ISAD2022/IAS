@@ -328,9 +328,13 @@
         $('#viewParaComplianceModel').modal('hide');
         $('#viewMemoModel').modal('hide');
         $('#viewMemoReportingModel').modal('hide');
+
+
         if ($.fn.DataTable.isDataTable('#manageObsPanel2')) {
-            $('#manageObsPanel2').DataTable().destroy();
+            $('#manageObsPanel2').DataTable().clear().destroy();
         }
+
+        
         getReivewParasForCompliance();
     }
     function clearEvidencesLog() {

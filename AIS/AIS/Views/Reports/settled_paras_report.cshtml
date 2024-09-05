@@ -20,7 +20,9 @@
             alert("Please select End Date to proceed");
             return;
         }
-
+        if ($.fn.DataTable.isDataTable('#settled_paras')) {
+            $('#settled_paras').DataTable().clear().destroy();
+        }
         $('#settled_paras tbody').empty();
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_settled_paras_for_compliance_report",
@@ -39,10 +41,7 @@
                         $('#settled_paras tbody').append('<tr><td>' + ++index + '</td><td>' + row.reportinG_OFFICE + '</td><td>' + row.placE_OF_POSTING + '</td> <td>' + row.audiT_PERIOD + '</td><td>' + row.parA_NO + '</td><td>' + row.gist + '</td><td>' + row.auditeD_BY + '</td><td>' + row.settleD_ON + '</td></tr>');
                  
                 });
-                 if ($.fn.DataTable.isDataTable('#settled_paras')) {
-            $('#settled_paras').DataTable().destroy();
-        }        
-
+                
                   $('#settled_paras').DataTable({
                     dom: '<"top"lfB>rt<"bottom"ip><"clear">',
                     buttons: [
