@@ -18662,6 +18662,46 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
+
+        public List<CAUParaForComplianceModel> GetCAUParasForPostCompliance()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.CAU_STATUS = rdr["cau_status"].ToString();
+                    chk.CAU_ASSIGNED_ENT_ID = rdr["cau_assigned_ent_id"].ToString();
+                    chk.COM_ID = rdr["com_id"].ToString();
+                
+                 
+                    list.Add(chk);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
     }
 
 }

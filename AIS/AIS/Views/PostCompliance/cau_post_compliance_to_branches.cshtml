@@ -205,7 +205,7 @@
 
         $('#manageObsPanel tbody').empty();
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_paras_for_compliance_by_auditee",
+            url: g_asiBaseURL + "/ApiCalls/get_cau_paras_for_compliance",
             type: "POST",
             data: {
 
@@ -216,7 +216,7 @@
               
                 $.each(data, function (index, child) {
 
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.receiveD_FROM + '</td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Forward</small></a></td></tr>');
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ', \'' + child.parA_NO + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Forward</small></a></td></tr>');
                 });
 
                 $('#manageObsPanel').DataTable({
@@ -496,11 +496,8 @@
                 <tr>
                     <th class="col-md-auto">Sr No.</th>
                     <th class="col-md-auto">Audit Period</th>                                        
-                    <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Audit Execution Date</th>                    
-                    <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Received From</th>
-                    <th class="col-md-auto">Auditor Remarks</th>                    
+                    <th class="col-md-auto">Para No.</th>              
+                    <th class="col-md-auto">Title / Gist</th>                    
                     <th class="col-md-auto hide-export">Action</th>
                 </tr>
             </thead>

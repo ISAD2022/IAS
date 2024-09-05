@@ -2398,7 +2398,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetParasForComplianceSummaryReport();
         }
-
+        [HttpPost]
+        public List<CAUParaForComplianceModel> get_cau_paras_for_compliance()
+        {
+            return dBConnection.GetCAUParasForPostCompliance();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

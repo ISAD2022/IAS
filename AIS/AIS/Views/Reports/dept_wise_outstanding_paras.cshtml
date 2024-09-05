@@ -27,9 +27,16 @@
     })
 
     function entityTypeSelectionChangeEvent() {
-
         if ($('#entityTypeSelectionField').val() != 0) {
+            // Clear the existing table
+            // Clear and destroy the existing DataTable instance
+            if ($.fn.DataTable.isDataTable('#entity_oustanding_paras_grid')) {
+                $('#entity_oustanding_paras_grid').DataTable().clear().destroy();
+            }
+
+            // Clear existing rows from tbody
             $('#entity_oustanding_paras_grid tbody').empty();
+
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_outstanding_paras_for_entity_type_id",
                 type: "POST",
@@ -42,34 +49,33 @@
                         var entityId = data[0].entitY_ID;
                         var totalParasCount = parseInt(0);
                         var sr = 1;
+
                         $.each(data, function (i, v) {
-                            
                             if (i > 0) {
                                 if (v.entitY_ID == entityId) {
                                     $('#' + v.age + '_' + v.entitY_ID).html(v.totaL_PARAS);
                                     totalParasCount += parseInt(v.totaL_PARAS);
-
                                 } else {
                                     $('#TOTAL_' + entityId).html(totalParasCount);
                                     totalParasCount = parseInt(0);
                                     totalParasCount += parseInt(v.totaL_PARAS);
                                     entityId = v.entitY_ID;
-                                    $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + sr + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                    $('#entity_oustanding_paras_grid tbody').append(
+                                        generateTableRow(sr, v.entitY_ID, v.entitY_NAME, v.totaL_PARAS)
+                                    );
                                     sr++;
                                 }
                             } else {
                                 totalParasCount += parseInt(v.totaL_PARAS);
-                                $('#entity_oustanding_paras_grid tbody').append('<tr id="row_' + v.entitY_ID + '"><td>' + sr + '</td><td>' + v.entitY_NAME + '</td><td id="SLAB_1_CURRENT_YEAR_' + v.entitY_ID + '">' + v.totaL_PARAS + '</td><td id="SLAB_2_Age_1_to_3_' + v.entitY_ID + '">0</td><td id="SLAB_3_Age_4_to_6_' + v.entitY_ID + '">0</td><td id="SLAB_4_Age_7_to_9_' + v.entitY_ID + '">0</td><td id="SLAB_5_Age_10_to_12_' + v.entitY_ID + '">0</td><td id="SLAB_6_Age_12_plus_' + v.entitY_ID + '">0</td><td id="TOTAL_' + v.entitY_ID + '">0</td></tr>');
+                                $('#entity_oustanding_paras_grid tbody').append(
+                                    generateTableRow(sr, v.entitY_ID, v.entitY_NAME, v.totaL_PARAS)
+                                );
                                 sr++;
                             }
-                           
                         });
                         $('#TOTAL_' + entityId).html(totalParasCount);
 
-                        if ($.fn.DataTable.isDataTable('#entity_oustanding_paras_grid')) {
-                            $('#entity_oustanding_paras_grid').DataTable().destroy();
-                        }
-
+                        // Re-initialize DataTable after the table content is updated
                         $('#entity_oustanding_paras_grid').DataTable({
                             dom: '<"top"lfB>rt<"bottom"ip><"clear">',
                             buttons: [
@@ -79,7 +85,6 @@
                                     className: 'btn btn-success',
                                     exportOptions: {
                                         columns: function (idx, data, node) {
-                                            // Exclude columns with the class 'hide-export'
                                             return !$(node).hasClass('hide-export');
                                         }
                                     }
@@ -90,7 +95,6 @@
                                     className: 'btn btn-danger',
                                     exportOptions: {
                                         columns: function (idx, data, node) {
-                                            // Exclude columns with the class 'hide-export'
                                             return !$(node).hasClass('hide-export');
                                         }
                                     }
@@ -102,17 +106,26 @@
                             ]
                         });
                     }
-
-                  
-
-
-
                 },
                 dataType: "json",
             });
         }
     }
 
+    // Helper function to generate table rows
+    function generateTableRow(sr, entityId, entityName, totalParas) {
+        return '<tr id="row_' + entityId + '">' +
+            '<td>' + sr + '</td>' + // Sr No.
+            '<td>' + entityName + '</td>' + // Entity Name
+            '<td id="SLAB_1_CURRENT_YEAR_' + entityId + '">' + totalParas + '</td>' + // Current Year Paras
+            '<td id="SLAB_2_Age_1_to_3_' + entityId + '">0</td>' + // Age 1 to 3 years Paras
+            '<td id="SLAB_3_Age_4_to_6_' + entityId + '">0</td>' + // Age 4 to 6 years Paras
+            '<td id="SLAB_4_Age_7_to_9_' + entityId + '">0</td>' + // Age 7 to 9 years Paras
+            '<td id="SLAB_5_Age_10_to_12_' + entityId + '">0</td>' + // Age 10 to 12 years Paras
+            '<td id="SLAB_6_Age_12_plus_' + entityId + '">0</td>' + // Age 12+ years Paras
+            '<td id="TOTAL_' + entityId + '">0</td>' + // Grand Total
+            '</tr>';
+    }
 
 
 
