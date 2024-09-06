@@ -461,7 +461,66 @@ namespace AIS.Controllers
 
             return filesData;
         }
+        public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedCAUEvidencesFromDirectory(string subfolder)
+        {
+            var filesData = new List<AuditeeResponseEvidenceModel>();
+            try
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CAU_Evidences", subfolder);
 
+                if (!Directory.Exists(uploadPath))
+                {
+                    return filesData;
+                }
+
+                var files = Directory.GetFiles(uploadPath);
+
+                foreach (var filePath in files)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    string mimeType = GetMimeType(filePath); // Get MIME type
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            // Sanitize the Base64 string
+                            base64String = base64String.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+
+                            // Ensure proper padding
+                            while (base64String.Length % 4 != 0)
+                            {
+                                base64String += "=";
+                            }
+
+                            // Fix URL-safe Base64 (if applicable)
+                            base64String = base64String.Replace('-', '+').Replace('_', '/');
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                            {
+                                FILE_NAME = fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
+                                IMAGE_DATA = base64String
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exception (e.g., log error)
+                return new List<AuditeeResponseEvidenceModel>();
+            }
+
+            return filesData;
+        }
         public bool DeleteSubFolderDirectoryFromServer(string subfolder)
         {
             try
@@ -493,6 +552,31 @@ namespace AIS.Controllers
             try
             {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Auditee_Evidences", subfolder);
+
+                if (Directory.Exists(uploadPath))
+                {
+                    // Delete the directory and all its contents
+                    Directory.Delete(uploadPath, true);
+
+                    return true;
+                }
+                else
+                {
+
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+        }
+        public bool DeleteSubFolderDirectoryInCAUEvidenceFromServer(string subfolder)
+        {
+            try
+            {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CAU_Evidences", subfolder);
 
                 if (Directory.Exists(uploadPath))
                 {
@@ -18662,7 +18746,7 @@ namespace AIS.Controllers
             con.Dispose();
             return resp;
         }
-
+        // -------------- CAU PARAS FOR SUBMISSION TO BRANCH -----------
         public List<CAUParaForComplianceModel> GetCAUParasForPostCompliance()
         {
             sessionHandler = new SessionHandler();
@@ -18690,6 +18774,7 @@ namespace AIS.Controllers
                     chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.INDICATOR = rdr["ind"].ToString();
                     chk.CAU_STATUS = rdr["cau_status"].ToString();
                     chk.CAU_ASSIGNED_ENT_ID = rdr["cau_assigned_ent_id"].ToString();
                     chk.COM_ID = rdr["com_id"].ToString();
@@ -18702,6 +18787,41 @@ namespace AIS.Controllers
             con.Dispose();
             return list;
         }
+        public List<EngPlanDelayAnalysisReportModel> GetEngagementPlanDelayAnalysisReport()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<EngPlanDelayAnalysisReportModel> resp = new List<EngPlanDelayAnalysisReportModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_rpt.p_delay_audits";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    EngPlanDelayAnalysisReportModel cp = new EngPlanDelayAnalysisReportModel();
+                    cp.ENTITY_ID = rdr["entity_id"].ToString();
+                    cp.REPORTING_OFFICE = rdr["p_name"].ToString();
+                    cp.PLACE_OF_POSTING = rdr["c_name"].ToString();
+                    cp.ENTITY_NAME = rdr["name"].ToString();
+                    cp.AUDIT_START_DATE = rdr["audit_startdate"].ToString();
+                    cp.AUDIT_END_DATE = rdr["audit_enddate"].ToString();
+                    cp.STATUS = rdr["status"].ToString();
+                    cp.DELAY_DAYS = rdr["no_of_days"].ToString();
+                    resp.Add(cp);
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
 
         public List<UserRelationshipModel> GetrealtionshiptypeForCAU()
         {
@@ -18711,7 +18831,7 @@ namespace AIS.Controllers
 
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ad.P_Getrealtionshiptype";
+                cmd.CommandText = "pkg_ae.P_GetrealtionshiptypeforCAU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -18728,5 +18848,272 @@ namespace AIS.Controllers
             return entitiesList;
 
         }
+        public List<UserRelationshipModel> GetParentRelationshipForCAU(int r_id = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+           
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetparentrepofficeforCAU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("rid", OracleDbType.Int32).Value = r_id;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.ACTIVE = rdr["ACTIVE"].ToString();
+                    entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
+                    entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public List<UserRelationshipModel> GetChildRelationshipForCAU(int e_r_id = 0)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            if (e_r_id == 0)
+                e_r_id = Convert.ToInt32(loggedInUser.UserEntityID);
+
+            List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetchildpostingforCAU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_ENT_ID", OracleDbType.Int32).Value = e_r_id;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    UserRelationshipModel entity = new UserRelationshipModel();
+                    entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
+                    entity.C_NAME = rdr["C_NAME"].ToString();
+                    entity.C_TYPE_ID = rdr["TYPEID"].ToString();
+                    entity.COMPLICE_BY = rdr["COMPLICE_BY"].ToString();
+                    entity.AUDIT_BY = rdr["AUDIT_BY"].ToString();
+                    entitiesList.Add(entity);
+                }
+            }
+            con.Dispose();
+            return entitiesList;
+
+        }
+        public string SubmitCAUParaToBranch(string COM_ID, string BR_ENT_ID, string CAU_COMMENTS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_FORWARD_CAU_PARA_TO_BRANCH";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_ID", OracleDbType.Varchar2).Value = COM_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("B_ENT_ID", OracleDbType.Int32).Value = BR_ENT_ID;              
+                cmd.Parameters.Add("CAU_COMMENTS", OracleDbType.Varchar2).Value = CAU_COMMENTS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+        public ParaTextModel GetCAUParaToBranchParaText(string COM_ID, string INDICATOR)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ParaTextModel resp = new ParaTextModel();
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetParasForCompliance_CAU_para_text";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_ID", OracleDbType.Int32).Value = COM_ID;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp.MEMO_TXT = rdr["para_text"].ToString();
+                    resp.TEXT_ID =Convert.ToInt32(rdr["text_id"].ToString());
+                }
+            }
+            con.Dispose();
+            return resp;
+        }
+        // -------------- CAU PARAS FOR REPLY BY BRANCH -----------
+        public List<CAUParaForComplianceModel> GetCAUParasForPostComplianceSubmittedToBranch()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU_BY_BRANCH";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.INDICATOR = rdr["ind"].ToString();
+                    chk.CAU_INSTRUCTIONS = rdr["cau_instructions"].ToString();
+                    chk.CAU_NAME = rdr["CAU_NAME"].ToString();
+                    chk.COM_ID = rdr["com_id"].ToString();
+                    list.Add(chk);
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+        public async Task<string> SubmitCAUParaByBranch(string COM_ID, string TEXT_ID, string BR_COMMENTS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            var con = this.DatabaseConnection(); con.Open();
+
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_BY_BRANCH";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("C_ID", OracleDbType.Varchar2).Value = COM_ID;
+                cmd.Parameters.Add("T_ID", OracleDbType.Varchar2).Value = TEXT_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("Auditee_COM", OracleDbType.Clob).Value = BR_COMMENTS;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    resp = rdr["remarks"].ToString();
+                }
+                List<AuditeeResponseEvidenceModel> EVIDENCE_LIST = new List<AuditeeResponseEvidenceModel>();
+                EVIDENCE_LIST = await this.GetAttachedCAUEvidencesFromDirectory(COM_ID);
+                int index = 1;
+                if (EVIDENCE_LIST != null)
+                {
+                    if (EVIDENCE_LIST.Count > 0)
+                    {
+                        foreach (var item in EVIDENCE_LIST)
+                        {
+                            string fileName = item.FILE_NAME;
+                            cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_Evidence_By_BRANCH";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("TEXT_ID", OracleDbType.Int32).Value = TEXT_ID;
+                            cmd.Parameters.Add("filename", OracleDbType.Varchar2).Value = fileName;
+                            cmd.Parameters.Add("len_id", OracleDbType.Int32).Value = item.LENGTH;
+                            cmd.Parameters.Add("enter_by", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("filetype", OracleDbType.Varchar2).Value = item.IMAGE_TYPE;
+                            cmd.Parameters.Add("filedata", OracleDbType.Clob).Value = item.IMAGE_DATA;
+                            cmd.Parameters.Add("seq_id", OracleDbType.Int32).Value = (index);
+                            cmd.ExecuteReader();
+                            index++;
+
+
+                        }
+                    }
+                }
+
+                this.DeleteSubFolderDirectoryInCAUEvidenceFromServer(COM_ID);
+            }
+            con.Dispose();
+            return resp;
+        }
+        // -------------- CAU PARAS REVIEW OF BRANCH REPLY -----------
+        public List<CAUParaForComplianceModel> GetCAUParasForPostComplianceForReview()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString();
+                    chk.NEW_PARA_ID = rdr["new_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["new_para_id"].ToString());
+                    chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.INDICATOR = rdr["ind"].ToString();
+                    chk.CAU_STATUS = rdr["cau_status"].ToString();
+                    chk.CAU_ASSIGNED_ENT_ID = rdr["cau_assigned_ent_id"].ToString();
+                    chk.COM_ID = rdr["com_id"].ToString();
+
+
+                    list.Add(chk);
+
+                }
+            }
+            con.Dispose();
+            return list;
+        }
+
     }
 }

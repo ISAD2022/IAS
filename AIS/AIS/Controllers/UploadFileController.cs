@@ -17,6 +17,7 @@ namespace AIS.Controllers
         private readonly IConfiguration _configuration;
         private readonly string _uploadPath;
         private readonly string _uploadPathAuditee;
+        private readonly string _uploadPathCAU;
 
         public UploadFileController(ILogger<UploadFileController> logger, IConfiguration configuration)
         {
@@ -25,6 +26,7 @@ namespace AIS.Controllers
             // Set the directory path where files will be uploaded
             _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
             _uploadPathAuditee = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Auditee_Evidences");
+            _uploadPathCAU = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/CAU_Evidences");
         }
 
         [HttpPost]
@@ -68,6 +70,40 @@ namespace AIS.Controllers
             {
                 var subfolder = Request.Form["subfolder"];
                 var uploadPath = Path.Combine(_uploadPathAuditee, subfolder);
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = "Files uploaded successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading files");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UploadFilesCAU([FromForm] List<IFormFile> files)
+        {
+            try
+            {
+                var subfolder = Request.Form["subfolder"];
+                var uploadPath = Path.Combine(_uploadPathCAU, subfolder);
                 if (!Directory.Exists(uploadPath))
                 {
                     Directory.CreateDirectory(uploadPath);
@@ -145,7 +181,29 @@ namespace AIS.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
+        [HttpPost]
+        public IActionResult DeleteFileCAU(string subFolder, string fileName)
+        {
+            try
+            {
+                var uploadPath = Path.Combine(_uploadPathCAU, subFolder);
+                var filePath = Path.Combine(uploadPath, fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    return Json(new { success = true, Message = "File deleted successfully." });
+                }
+                else
+                {
+                    return Json(new { success = false, Message = "" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting file");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         [HttpPost]
         public async Task<List<AuditeeResponseEvidenceModel>> GetFilesData(string subfolder)
         {

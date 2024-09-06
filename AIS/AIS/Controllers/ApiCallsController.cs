@@ -2398,12 +2398,52 @@ namespace AIS.Controllers
         {
             return dBConnection.GetParasForComplianceSummaryReport();
         }
+     
+        [HttpPost]
+        public List<EngPlanDelayAnalysisReportModel> get_engagement_plan_delay_analysis_report()
+        {
+            return dBConnection.GetEngagementPlanDelayAnalysisReport();
+        }
         [HttpPost]
         public List<CAUParaForComplianceModel> get_cau_paras_for_compliance()
         {
             return dBConnection.GetCAUParasForPostCompliance();
         }
-
+        [HttpPost]
+        public List<UserRelationshipModel> get_parent_relationship_for_CAU(int ENTITY_REALTION_ID)
+        {
+            return dBConnection.GetParentRelationshipForCAU(ENTITY_REALTION_ID);
+        }
+        [HttpPost]
+        public List<UserRelationshipModel> get_child_relationship_for_CAU(int E_R_ID)
+        {
+            return dBConnection.GetChildRelationshipForCAU(E_R_ID);
+        }
+        [HttpPost]
+        public string submit_cau_para_to_branch(string COM_ID,string BR_ENT_ID, string CAU_COMMENTS )
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitCAUParaToBranch(COM_ID,BR_ENT_ID,CAU_COMMENTS) + "\"}";
+        }
+        [HttpPost]
+        public ParaTextModel get_cau_para_to_branch_para_text(string COM_ID, string INDICATOR)
+        {
+            return dBConnection.GetCAUParaToBranchParaText(COM_ID, INDICATOR);
+        }
+        [HttpPost]
+        public List<CAUParaForComplianceModel> get_cau_paras_for_compliance_submitted_to_branch()
+        {
+            return dBConnection.GetCAUParasForPostComplianceSubmittedToBranch();
+        }
+        [HttpPost]
+        public async Task<string> submit_cau_para_by_branch(string COM_ID, string TEXT_ID, string BR_COMMENTS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + await dBConnection.SubmitCAUParaByBranch(COM_ID, TEXT_ID, BR_COMMENTS) + "\"}";
+        }
+        [HttpPost]
+        public List<CAUParaForComplianceModel> get_cau_paras_for_compliance_for_review()
+        {
+            return dBConnection.GetCAUParasForPostComplianceForReview();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
