@@ -15825,6 +15825,7 @@ namespace AIS.Controllers
                     eng.REVENUE_RECORD_DAYS = rdr["revenue_record_day"].ToString();
                     eng.WEEKEND_DAYS = rdr["total_weekend_days"].ToString();
                     eng.TOTAL_DAYS = rdr["total_days"].ToString();
+                    eng.DELAY_DAYS = rdr["delay_days"].ToString();
                     eng.AUDIT_TEAM = rdr["t_name"].ToString();
                     eng.ENG_STATUS = rdr["status"].ToString();
                     resp.Add(eng);
@@ -18970,6 +18971,8 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     resp.MEMO_TXT = rdr["para_text"].ToString();
+                    resp.BRANCH_REPLY = rdr["reply"].ToString();
+                    resp.CAU_INSTRUCTION = rdr["cau_instructions"].ToString();
                     resp.TEXT_ID =Convert.ToInt32(rdr["text_id"].ToString());
                 }
             }
@@ -19084,7 +19087,7 @@ namespace AIS.Controllers
             List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU";
+                cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU_FOR_REVIEW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -19112,6 +19115,52 @@ namespace AIS.Controllers
                 }
             }
             con.Dispose();
+            return list;
+        }
+        public List<AuditeeResponseEvidenceModel> GetCAUAllComplianceEvidence(string textId)
+        {
+            var list = new List<AuditeeResponseEvidenceModel>();
+
+            try
+            {
+                using (var con = this.DatabaseConnection())
+                {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "pkg_ae.P_GetAllCompliance_Evidence_CAU";
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("TEXT_ID", OracleDbType.Varchar2).Value = textId;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                var usr = new AuditeeResponseEvidenceModel
+                                {
+                                    IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                                    IMAGE_DATA = "",
+                                    SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                                    LENGTH = Convert.ToInt32(rdr["LENGTH"]),
+                                    FILE_ID = (rdr["id"].ToString())
+                                };
+
+
+                                list.Add(usr);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
             return list;
         }
 

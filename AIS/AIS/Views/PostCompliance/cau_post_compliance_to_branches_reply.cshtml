@@ -3,14 +3,24 @@
     Layout = "_Layout";
 }
 <head>
+    <style type="text/css">
+        .evidence-link {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
+        .evidence-icon {
+            margin-right: 10px;
+        }
+    </style>
 
 </head>
 <script type="text/javascript">
     var g_newParaId = 0;
     var g_comId = 0;
     var g_oldParaId = 0;
-    var g_paraTextId = 0; 
+    var g_paraTextId = 0;
     var fileInput = null;
     var g_allAttachedImages = [];
     var g_allowedFormats = ["pdf", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"]; // allowed file formats
@@ -167,17 +177,72 @@
             },
             cache: false,
             success: function (data) {
-                $('#viewParaTextModelField').html(data.memO_TXT);
                 g_paraTextId = data.texT_ID;
+                $('#viewParaTextModelField').html(data.memO_TXT);
+                $('#branchReplyAgainstCAUIns').html(data.brancH_REPLY);
+                $('#cauInstructionToBranch').val(data.caU_INSTRUCTION);
+                $('#complianceCycleEvidences').empty();
+                if (data.brancH_REPLY != "") {
+                    $.ajax({
+                        url: g_asiBaseURL + "/ApiCalls/get_cau_paras_evidences_for_compliance_for_review",
+                        type: "POST",
+                        data: {
+                            'TEXT_ID': g_paraTextId
+                        },
+                        cache: false,
+                        success: function (data) {
+                            if (data.length > 0) {
+
+                                $.each(data, function (j, pp) {
+                                    var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
+                                    const contentType = getContentType(extension);
+
+                                    // Create and append the attachment item
+                                    const container = document.createElement('div');
+                                    container.className = 'evidence-link';
+
+                                    // Add icon
+                                    const icon = document.createElement('i');
+                                    icon.className = getIconClass(extension) + ' evidence-icon';
+                                    container.appendChild(icon);
+
+                                    // Add label
+                                    const label = document.createElement('span');
+                                    label.innerText = pp.imagE_NAME;
+                                    label.classList.add('text-primary');
+
+                                    // Add cursor style to make it look like a link
+                                    label.style.cursor = 'pointer';
+                                    container.appendChild(label);
+
+                                    // Add click event to download file on selection
+                                    container.addEventListener('click', function () {
+                                        downloadFile(pp.filE_ID);
+                                    });
+
+                                    $('#complianceCycleEvidences').append(container);
+                                });
+                            } else {
+                                $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
+                            }
+                        },
+                        dataType: "json",
+                    });
+                }
+                else {
+                    $('#branchReplyAgainstCAUIns').parent().remove();
+                    $('#complianceCycleEvidences').parent().remove();
+                }
+
             },
             dataType: "json",
         });
-
-    }
+  
+        }
     function reloadLocation() {
         $('#viewParaComplianceModel').modal('hide');
         window.location.reload();
-    }  
+    }
     function CAUSubmitParaByBranch() {
 
         if ($('.richText-editor').html() == "") {
@@ -185,8 +250,8 @@
             return;
         }
         complianceRemarks = $('.richText-editor').html();
-       
-       
+
+
         $('#submitCAUParaResponseHandler').attr("disabled", true);
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/submit_cau_para_by_branch",
@@ -361,6 +426,21 @@
                     <div class="form-group">
                         <label for="viewParaTextModelField">Para Text</label>
                         <div id="viewParaTextModelField" disabled="disabled" class="form-control container-clob"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="controlingsearch">CAU Previous Instructions</label>
+                        <textarea id="cauInstructionToBranch" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="branchReplyAgainstCAUIns">Branch Previous Reply</label>
+                        <div id="branchReplyAgainstCAUIns" disabled="disabled" class="form-control container-clob"></div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="complianceCycleEvidences">Evidence</label>
+                        <div class="row col-md-12 mt-3 mb-3">
+                            <div id="complianceCycleEvidences">
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group mt-3">
                         <label for="branch_reply_to_cau_field">Branch Reply</label>

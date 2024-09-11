@@ -2444,6 +2444,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetCAUParasForPostComplianceForReview();
         }
+        [HttpPost]
+        public List<AuditeeResponseEvidenceModel> get_cau_paras_evidences_for_compliance_for_review(string TEXT_ID)
+        {
+            return dBConnection.GetCAUAllComplianceEvidence(TEXT_ID);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -19,6 +19,7 @@ namespace AIS.Models
         public string REVENUE_RECORD_DAYS { get; set; }
         public string WEEKEND_DAYS { get; set; }
         public string TOTAL_DAYS { get; set; }        
+        public string DELAY_DAYS { get; set; }        
         public string ENG_STATUS { get; set; }
 
 
