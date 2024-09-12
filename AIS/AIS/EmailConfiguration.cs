@@ -1,51 +1,58 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using AIS.Models;
+using AIS;
 using System;
-using System.Web;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AIS.Models;
-using Oracle.ManagedDataAccess.Client;
-using System.Security.Cryptography;
-using System.Text;
+using System.Net;
 using System.Net.Mail;
 
-namespace AIS
+public class EmailConfiguration
 {
+    private readonly EmailCredentails emailCredentails = new EmailCredentails();
 
-    public class EmailConfiguration
+    public bool ConfigEmail(string to = "", string cc = "", string subj = "", string body = "")
     {
-        private readonly EmailCredentails emailCredentails = new EmailCredentails();
-     
-        public bool ConfigEmail(string to="", string cc="", string subj="", string body="")
+        try
         {
-            try
+            EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
+
+            if (string.IsNullOrEmpty(to))
+                throw new ArgumentException("Recipient email address is required.");
+
+            MailMessage mail = new MailMessage
             {
-                //return true;
-                //------WORKING CODE COMMENTED DO NOT DELETE ------
+                From = new MailAddress(em.EMAIL),
+                Subject = subj,
+                Body = body
+            };
 
-                EmailCredentailsModel em = emailCredentails.GetEmailCredentails();
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient(em.Host);
-                mail.From = new MailAddress(em.EMAIL);
-                mail.To.Add(to);
+            // Add recipients
+            mail.To.Add(to);
+            if (!string.IsNullOrEmpty(cc)) // Add CC if provided
+            {
                 mail.CC.Add(cc);
-                mail.Subject = subj;
-                mail.Body = body;
-                SmtpServer.Host = em.Host;
-                SmtpServer.Port = em.Port;
-                SmtpServer.Credentials = new System.Net.NetworkCredential(em.EMAIL, em.PASSWORD);
-                SmtpServer.EnableSsl = true;
-                SmtpServer.Send(mail);
-                return true;
             }
-            catch (Exception) { return false; }
-        }
 
-    }  
+            SmtpClient SmtpServer = new SmtpClient(em.Host)
+            {
+                Port = em.Port,
+                Credentials = new NetworkCredential(em.EMAIL, em.PASSWORD),
+                EnableSsl = true // If the server requires SSL
+            };
+
+            // Send the email
+            SmtpServer.Send(mail);
+            return true;
+        }
+        catch (SmtpException ex)
+        {
+            // Log SmtpException details for debugging
+            Console.WriteLine($"SMTP error: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            // Log general exceptions
+            Console.WriteLine($"General error: {ex.Message}");
+            return false;
+        }
+    }
 }

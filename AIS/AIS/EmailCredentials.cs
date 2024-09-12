@@ -25,7 +25,7 @@ namespace AIS
             EmailCredentailsModel em = new EmailCredentailsModel();
             em.EMAIL = "noreply.audit@ztbl.com.pk";
             em.PASSWORD = "Hello@321";
-            em.Host= "mail.ztbl.com.pk";
+            em.Host= "webmail.ztbl.com.pk";
             em.Port = 587;
             return em;
            

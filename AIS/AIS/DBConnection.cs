@@ -241,6 +241,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                 {
                     user.isAuthenticate = true;
+                    user.changePassword = rdr["password_change_req"].ToString().Trim();
                     user.passwordChangeRequired = enc_pass == getMd5Hash("ztbl1234");
                     user.ID = Convert.ToInt32(rdr["USERID"]);
                     user.Name = rdr["Employeefirstname"].ToString() + " " + rdr["employeelastname"].ToString();
@@ -2341,6 +2342,8 @@ namespace AIS.Controllers
             string res = "";
             bool success = false;
             string userEmail = "";
+            string userCCEmail = "";
+            string userFullName = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.RESET_USER_PASSWORD";
@@ -2354,31 +2357,35 @@ namespace AIS.Controllers
                 {
                     res = rdr["remarks"].ToString();
                     userEmail = rdr["emailAddress"].ToString();
+                    userCCEmail = rdr["emailAddress2"].ToString();
+                    userFullName = rdr["empFullName"].ToString();
                     success = !success;
                 }
             }
             con.Dispose();
             if (success)
             {
-                string emailSubject = "Your Password on IAS Has Been Reset";
+                string emailSubject = "IAS~ Password Reset Successful";
                 string emailBody = $@"
-                Dear {userEmail},
+Dear {userFullName},
 
+                    
                 Your password has been successfully reset. Please find your new login details below:
 
-                Username: {userEmail}
+                Username: {PPNumber}
                 Password: {pass}
 
                 For security reasons, we recommend that you change this password immediately after logging in.
 
                 If you did not request this password reset, please contact our support team immediately.
 
-                Best Regards,
+                
+            Best Regards,
 
-                Internal Audit System (IAS)
-                ";
+            Internal Audit System (IAS)
+";
                 EmailConfiguration email = new EmailConfiguration();
-                email.ConfigEmail(userEmail,null , emailSubject, emailBody);
+                email.ConfigEmail(userEmail, userCCEmail, emailSubject, emailBody);
             }
             return res;
 
