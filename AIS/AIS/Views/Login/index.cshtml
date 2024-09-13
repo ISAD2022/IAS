@@ -40,17 +40,28 @@
     function submitPasswordResetRequest(){
         $('#resetPasswordModel').modal('show'); 
         $('#inputPPNoField_reset').val('');
+        $('#inputCnicField_reset').val('');
     }
 
     function submitPasswordResetRequestHandler() {
+        if ($('#inputPPNoField_reset').val() == "") {
+            alert("Please enter PP Number to proceed");
+            return;
+        }
+        if ($('#inputCnicField_reset').val()==""){
+            alert("Please enter CNIC Number to proceed");
+            return;
+        }
         $.ajax({
             url: g_asiBaseURL + "/Login/ResetPassword",
             type: "POST",
             data: {
                 'PPNumber': $('#inputPPNoField_reset').val(),
+                'CNICNumber': $('#inputCnicField_reset').val(),
             },
             cache: false,
             success: function (data) {
+                $('#resetPasswordModel').modal('hide');
                 alert(data.Message);
             },
             dataType: "json",
@@ -207,9 +218,12 @@
                 <div class="form-outline mb-4">
                     <input autocomplete="off" required type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="6" placeholder="P.P Number" id="inputPPNoField_reset" name="PPNumber" class="form-control" />
                 </div>
+                <div class="form-outline mb-4">
+                    <input autocomplete="off" required type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="13" placeholder="CNIC Number" id="inputCnicField_reset" name="cnicNumber" class="form-control" />
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="submitPasswordResetRequestHandler();" class="btn btn-danger" data-dismiss="modal">Submit Request</button>
+                <button type="button" onclick="submitPasswordResetRequestHandler();" class="btn btn-danger">Submit Request</button>
             </div>
         </div>
     </div>

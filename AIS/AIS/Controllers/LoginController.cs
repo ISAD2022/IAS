@@ -71,9 +71,9 @@ namespace AIS.Controllers
             }
         }
 
-        public string ResetPassword(string PPNumber)
+        public string ResetPassword(string PPNumber, string CNICNumber)
         {
-            return "{\"Status\":true,\"Message\":\""+ dBConnection.ResetUserPassword(PPNumber)  + "\"}";
+            return "{\"Status\":true,\"Message\":\""+ dBConnection.ResetUserPassword(PPNumber, CNICNumber)  + "\"}";
 
         }
 

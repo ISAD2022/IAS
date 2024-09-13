@@ -2334,7 +2334,7 @@ namespace AIS.Controllers
             }
             return new string(password);
         }
-        public string ResetUserPassword(string PPNumber)
+        public string ResetUserPassword(string PPNumber, string CNICNumber)
         {
             var con = this.DatabaseConnection(); con.Open();
             string pass = this.GeneratePassword();
@@ -2344,12 +2344,14 @@ namespace AIS.Controllers
             string userEmail = "";
             string userCCEmail = "";
             string userFullName = "";
+            string successIndicator = "";
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.CommandText = "pkg_ad.RESET_USER_PASSWORD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("PPNUMBER", OracleDbType.Int32).Value = PPNumber;
+                cmd.Parameters.Add("CNIC", OracleDbType.Int32).Value = CNICNumber;
                 cmd.Parameters.Add("PASS", OracleDbType.Varchar2).Value = enc_pass;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -2359,11 +2361,12 @@ namespace AIS.Controllers
                     userEmail = rdr["emailAddress"].ToString();
                     userCCEmail = rdr["emailAddress2"].ToString();
                     userFullName = rdr["empFullName"].ToString();
+                    successIndicator = rdr["IND"].ToString();
                     success = !success;
                 }
             }
             con.Dispose();
-            if (success)
+            if (successIndicator.Trim()=="Y")
             {
                 string emailSubject = "IAS~ Password Reset Successful";
                 string emailBody = $@"
