@@ -1172,20 +1172,16 @@ namespace AIS.Controllers
         {
             return dBConnection.GetLegacyParasForUpdateHO(ENTITY_NAME, PARA_REF, PARA_ID);
         }
-
         [HttpPost]
         public List<OldParasModel> get_legacy_paras_for_gist_update(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
         {
             return dBConnection.GetLegacyParasForGistUpdate(ENTITY_ID, PARA_REF, PARA_ID);
         }
-
-
         [HttpPost]
         public List<OldParasModel> get_legacy_paras_for_update_FAD(int ENTITY_ID, string PARA_REF, int PARA_ID = 0)
         {
             return dBConnection.GetLegacyParasForUpdateFAD(ENTITY_ID, PARA_REF, PARA_ID);
         }
-
         [HttpPost]
         public string update_legacy_para_with_responsibilities(AddLegacyParaModel LEGACY_PARA)
         {
@@ -2448,6 +2444,12 @@ namespace AIS.Controllers
         public List<AuditeeResponseEvidenceModel> get_cau_paras_evidences_for_compliance_for_review(string TEXT_ID)
         {
             return dBConnection.GetCAUAllComplianceEvidence(TEXT_ID);
+        }
+
+        [HttpPost]
+        public List<FADMonthlyReviewParasModel> get_fad_monthly_review_paras_for_entity_type_id(string ENT_TYPE_ID, DateTime? S_DATE, DateTime? E_DATE)
+        {
+            return dBConnection.GetFADMonthlyReviewParasForEntityTypeId(ENT_TYPE_ID,S_DATE,E_DATE);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

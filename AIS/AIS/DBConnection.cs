@@ -2366,7 +2366,7 @@ namespace AIS.Controllers
                 }
             }
             con.Dispose();
-            if (successIndicator.Trim()=="Y")
+            if (successIndicator.Trim() == "Y")
             {
                 string emailSubject = "IAS~ Password Reset Successful";
                 string emailBody = $@"
@@ -4249,11 +4249,13 @@ Dear {userFullName},
                 {
                     AuditSubVoilationcatModel vsgm = new AuditSubVoilationcatModel();
                     vsgm.ID = Convert.ToInt32(rdr["ID"]);
-                    vsgm.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    if (rdr["V_ID"].ToString() != "")
+                        vsgm.V_ID = Convert.ToInt32(rdr["V_ID"]);
+                    else
+                        vsgm.V_ID = 0;
                     vsgm.SUB_V_NAME = rdr["SUB_V_NAME"].ToString();
                     vsgm.RISK_ID = rdr["RISK_ID"].ToString();
                     vsgm.STATUS = rdr["STATUS"].ToString();
-
                     voilationsubgroupList.Add(vsgm);
                 }
             }
@@ -5540,7 +5542,7 @@ Dear {userFullName},
                             cmd.ExecuteReader();
                             index++;
 
-                          
+
                         }
                     }
                 }
@@ -5954,7 +5956,7 @@ Dear {userFullName},
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<ManageObservations> list = new List<ManageObservations>();           
+            List<ManageObservations> list = new List<ManageObservations>();
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5977,8 +5979,8 @@ Dear {userFullName},
                     if (rdr["OBS_RISK_ID"].ToString() != null && rdr["OBS_RISK_ID"].ToString() != "")
                         chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"].ToString());
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
-                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);                   
-                    chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);                  
+                    chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
+                    chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);
 
                     list.Add(chk);
                 }
@@ -5997,7 +5999,7 @@ Dear {userFullName},
             List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
             using (OracleCommand cmd = con.CreateCommand())
             {
-              
+
                 cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences_by_obs_id";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8479,7 +8481,6 @@ Dear {userFullName},
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
-                    chk.ENTITY_CODE = rdr["ENTITY_CODE"].ToString();
                     chk.TYPE_ID = rdr["TYPE_ID"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -8497,7 +8498,6 @@ Dear {userFullName},
                     }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
-
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
@@ -18789,8 +18789,8 @@ Dear {userFullName},
                     chk.CAU_STATUS = rdr["cau_status"].ToString();
                     chk.CAU_ASSIGNED_ENT_ID = rdr["cau_assigned_ent_id"].ToString();
                     chk.COM_ID = rdr["com_id"].ToString();
-                
-                 
+
+
                     list.Add(chk);
 
                 }
@@ -18868,7 +18868,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
-           
+
 
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -18948,7 +18948,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("B_ENT_ID", OracleDbType.Int32).Value = BR_ENT_ID;              
+                cmd.Parameters.Add("B_ENT_ID", OracleDbType.Int32).Value = BR_ENT_ID;
                 cmd.Parameters.Add("CAU_COMMENTS", OracleDbType.Varchar2).Value = CAU_COMMENTS;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -18983,7 +18983,7 @@ Dear {userFullName},
                     resp.MEMO_TXT = rdr["para_text"].ToString();
                     resp.BRANCH_REPLY = rdr["reply"].ToString();
                     resp.CAU_INSTRUCTION = rdr["cau_instructions"].ToString();
-                    resp.TEXT_ID =Convert.ToInt32(rdr["text_id"].ToString());
+                    resp.TEXT_ID = Convert.ToInt32(rdr["text_id"].ToString());
                 }
             }
             con.Dispose();
@@ -19173,6 +19173,62 @@ Dear {userFullName},
 
             return list;
         }
+        //------------------- FAD Monthly Review Report 
+        public List<FADMonthlyReviewParasModel> GetFADMonthlyReviewParasForEntityTypeId(string ENT_TYPE_ID, DateTime? S_DATE, DateTime? E_DATE)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var list = new List<FADMonthlyReviewParasModel>();
+            try
+            {
+                using (var con = this.DatabaseConnection())
+                {
+                    con.Open();
 
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "pkg_rpt.R_FAD_MONTHLY_REVIEW";
+                        cmd.CommandType = CommandType.StoredProcedure;                        
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                        
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("R_T", OracleDbType.Int32).Value = ENT_TYPE_ID;
+                        cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value = S_DATE;
+                        cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = E_DATE;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                var review = new FADMonthlyReviewParasModel
+                                {
+                                    REPORTING_OFFICE = rdr["P_NAME"].ToString(),
+                                    PLACE_OF_POSTING= rdr["C_NAME"].ToString(),
+                                    CHILD_CODE = rdr["CHILD_CODE"].ToString(),
+                                    OPENING_BALANCE = rdr["opening_bal"].ToString(),
+                                    PARAS_ADDED = rdr["Para_added"].ToString(),
+                                    TOTAL = rdr["total"].ToString(),
+                                    SETTLED = rdr["Settled"].ToString(),
+                                    PARA_ADDED = rdr["Outstanding"].ToString()
+                                };
+
+
+                                list.Add(review);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return list;
+        }
     }
 }

@@ -17,153 +17,15 @@
             fileUpload: false,
             videoEmbed: false,
             urls: false
-        });      
-
+        });
     });
-
-    function DeleteRecord(e){
-        var respRow = $(e).closest("tr");
-        if ($($(e).closest("tr").find('.ibtnAdd').eq(0)).length > 0) {
-            $(e).closest("tr").remove();
-        }else{
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/delete_responsibility_of_legacy_para",
-                type: "POST",
-                data: {
-                    'PP_NO': $($($(respRow).find('td').eq(0)).find('input').eq(0)).val(),
-                    'REF_P': g_paraRef,
-                    'P_ID': g_paraId
-                },
-                cache: false,
-                success: function (data) {
-                    alert(data.Message);
-                    $(e).closest("tr").remove();
-                },
-
-                dataType: "json",
-            });
-        }
-       
-       
-    }
-    function AddRecord(e)
-    {
-        var respRow=$(e).closest("tr");
-        if ($(respRow).find('input').eq(0).val()==''){
-            alert("Please enter responsible PP No to proceed");
-            return;
-        }
-        var resP = [];
-        var _error = false;
-        $.each($(respRow), function (i, v) {
-
-            if ($(v).find('td').eq(0).find('input').eq(0).val() != "" && ($(v).find('td').eq(2).find('input').eq(0).val() == "" || $(v).find('td').eq(3).find('input').eq(0).val() == "") && $(v).find('td').eq(4).find('input').eq(0).val() == "") {
-               
-                _error = true;
-            }
-            resP.push({
-                'PP_NO': $(v).find('td').eq(0).find('input').eq(0).val(),
-                'EMP_NAME': $(v).find('td').eq(1).find('input').eq(0).val(),
-                'LOAN_CASE': $(v).find('td').eq(2).find('input').eq(0).val(),
-                'LC_AMOUNT': $(v).find('td').eq(3).find('input').eq(0).val(),
-                'ACCOUNT_NUMBER': $(v).find('td').eq(4).find('input').eq(0).val(),
-                'ACC_AMOUNT': $(v).find('td').eq(5).find('input').eq(0).val(),
-            });
-        });
-
-        if (_error) {
-            alert("Please enter either Loan Case and Loan Case Amount or Account Number against responsible");
-            return false;
-        }
-
-
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/add_responsibility_to_legacy_para",
-            type: "POST",
-            data: {
-                'RESP_PP': resP[0],
-                'REF_P':g_paraRef,
-                'P_ID': g_paraId
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                $($(e).closest("tr").find('.ibtnAdd').eq(0)).attr('disabled', true);
-                $($(e).closest("tr").find('.ibtnAdd').eq(0)).val('Added');
-                $($(e).closest("tr").find('.ibtnAdd').eq(0)).addClass('ibtnAdded');
-                $($(e).closest("tr").find('.ibtnAdded').eq(0)).removeClass('ibtnAdd');
-                $($(e).closest("tr").find('.ibtnDel').eq(0)).removeClass('d-none');
-
-            },
-
-            dataType: "json",
-        });
-
-     }
-   
-    function AddNewRespRecord (pp, emp_name, lc, lc_amount, acc, acc_amount,checkClass) {
-
-      
-        var newRow = $("<tr>");
-        var cols = "";
-        var counter = $('#listofRespPersons tbody tr').length + 1;
-        cols += '<td><input type="text" placeholder="111111" onfocusout="getEmployeeName(this,' + counter + ');" class="form-control" id="ppNo' + counter + '" name="ppNo' + counter + '" value="' + pp + '" /></td>';
-        cols += '<td><input type="text" class="form-control"  disabled="disabled" id="empName' + counter + '" value="' + emp_name + '" name="empName' + counter + '" value="' + emp_name + '"  /></td>';
-        cols += '<td><input type="text" class="form-control" placeholder="111111,222222, 3333333" name="loanCase' + counter + '" id="loanCase' + counter + '" value ="' + lc + '" /></td>';
-        cols += '<td><input type="text" class="form-control"   name="lcAMount' + counter + '" id="lcAMount' + counter + '" value="' + lc_amount + '"  /></td>';
-
-        cols += '<td><input type="text" class="form-control"  name="account' + counter + '"  id="account' + counter + '" value="' + acc + '" /></td>';
-        cols += '<td><input type="text" class="form-control" name="accountAmount' + counter + '" id="accountAmount' + counter + '" value="' + acc_amount + '" /></td>';
-
-        if (checkClass == "checked")
-            cols += '<td><input onclick="event.preventDefault();AddRecord(this);" disabled="disabled" type="button" class="ibtnAdded btn btn-md btn-success" value="Added"></td>';
-        else
-            cols += '<td><input onclick="event.preventDefault();AddRecord(this);" type="button" class="ibtnAdd btn btn-md btn-success" value="Add"></td>';
-        cols += '<td><input onclick="event.preventDefault();DeleteRecord(this);" type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
-        newRow.append(cols);
-        $('#listofRespPersons tbody').append(newRow);
-    }
-
-    function calculateRow(row) {
-        var price = +row.find('input[name^="price"]').val();
-
-    }
-    function getEmployeeName(e, counter){
-       console.log(e.value);
-        if (e.value != "" && e.value.length > 4 && e.value !="000000"){
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
-                type: "POST",
-                data: {
-                    'PP_NO': e.value
-                },
-                cache: false,
-                success: function (data) {
-                    console.log($(e));
-                    $('#empName' + counter).val(data.name);
-                },
-
-                dataType: "json",
-            });
-        }
-    }
-
-    function calculateGrandTotal() {
-        var grandTotal = 0;
-        $("table.order-list").find('input[name^="price"]').each(function () {
-            grandTotal += +$(this).val();
-        });
-        $("#grandtotal").text(grandTotal.toFixed(2));
-    }
-
-    function getReportDropdownContents(){
-        if ($('#entitySelectField').val()==0){
+    function getReportDropdownContents() {
+        if ($('#entitySelectField').val() == 0) {
             $('#dropdownReportPanel').addClass('d-none');
-        }else{
+        } else {
             $('#dropdownReportPanel').removeClass('d-none');
             $('#entityReportSelectField').empty();
-             $('#entityReportSelectField').append('<option value="0">--Select Entity for Report</option>');
-
+            $('#entityReportSelectField').append('<option value="0">--Select Entity for Report</option>');
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_legacy_report_dropdown_contents",
                 type: "POST",
@@ -175,17 +37,15 @@
                     g_obsList = data;
                     $('#entityNameField').html(data.length > 0 ? data[0].name : '');
                     $.each(data, function (index, v) {
-                        $('#entityReportSelectField').append('<option value="'+v.id+'"> '+v.entitY_NAME+'</option>');
+                        $('#entityReportSelectField').append('<option value="' + v.id + '"> ' + v.entitY_NAME + '</option>');
                     });
                 },
-
                 dataType: "json",
             });
         }
 
     }
-    function getLegacyPara()
-    {
+    function getLegacyPara() {
         $('#process_detail').modal('hide');
         $('#manageObsPanel tbody').empty();
         $.ajax({
@@ -198,10 +58,9 @@
             success: function (data) {
                 g_obsList = data;
                 $('#entityNameField').html(data.length > 0 ? data[0].name : '');
-               
+
                 $.each(data, function (index, child) {
                     child.parA_STATUS = child.parA_STATUS == 9 ? 'Settle' : 'Un-Settle';
-
                     $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="event.preventDefault();updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
                 });
             },
@@ -210,10 +69,35 @@
         });
 
     }
-    function updateParaDetails(ref_p, memo_no, paraId) {       
+    function getViolationNature() {
+        $('#nature_selectBox').empty();
+        $('#nature_selectBox').append('<option value="0">--Select Nature/Area--</option>');
+        if ($('#violation_selectBox option:selected').val() != 0) {
 
-        g_paraId=paraId;
-        g_paraRef=ref_p;
+            $.ajax({
+                url: g_asiBaseURL + "/Execution/sub_voilation",
+                type: "POST",
+                data: {
+                    'V_ID': $('#violation_selectBox option:selected').val(),
+                },
+                cache: false,
+                success: function (data) {
+                    $('#nature_selectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
+                    $.each(data, function (index, item) {
+                        var className = "";
+                        if (g_subprocId!=0 && g_subprocId == item.id) {
+                            className = 'selected = "selected"';
+                        }
+                        $('#nature_selectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + " </option> ");
+                    });
+                },
+                dataType: "json",
+            });
+        }
+    }
+    function updateParaDetails(ref_p, memo_no, paraId) {
+        g_paraId = paraId;
+        g_paraRef = ref_p;
         $('#process_detail').modal('show');
         $('#listofRespPersons tbody').empty();
         $.ajax({
@@ -226,44 +110,18 @@
             },
             cache: false,
             success: function (data) {
-              
+
                 if (data.length > 0) {
                     var v = data[0];
-
-
                     g_procId = v.process;
                     g_subprocId = v.suB_PROCESS;
                     g_procDetailId = v.procesS_DETAIL;
                     g_entType = v.enT_TYPE;
-
-                    if (v.enT_TYPE != "D") {
-                        $('#updateMemo_process').val(v.process);
-                        $('#riskGroupSelectBox').parent().addClass('d-none');
-                        $('#updateMemo_process').parent().removeClass('d-none');
-                        $('#updateMemo_subprocess').parent().removeClass('d-none');
-                        $('#updateMemo_violation').parent().removeClass('d-none');
-
-                        $('#listofRespPersons').parent().parent().removeClass('d-none');
-                        
-
-                        getSubProcessList();
-                    }
-                    else{
-                        $('#riskGroupSelectBox').val(v.process);
-                        $('#updateMemo_process').parent().addClass('d-none');
-                        $('#updateMemo_subprocess').parent().addClass('d-none');
-                        $('#updateMemo_violation').parent().addClass('d-none');
-                        $('#listofRespPersons').parent().parent().addClass('d-none');
-                        $('#riskGroupSelectBox').parent().removeClass('d-none');
-                        div_risksubcategoryShowHide();
-                    }
-                    
-                    $('#observation').html(v.gisT_OF_PARAS);
-                    $('#auditCriteriaRiskField').val(0);
-                    $('#responseAuditee').val(v.parA_TEXT).trigger('change');                   
-                    $.each(v.parA_RESP,function(i,res){
-                        AddNewRespRecord(res.pP_NO, res.emP_NAME, res.loaN_CASE, res.lC_AMOUNT, res.accounT_NUMBER, res.acC_AMOUNT,'checked')
-                    });
+                    $('#violation_selectBox').val(v.process);
+                    $('#violation_selectBox').val(v.risK_ID);
+                    $('#responseAuditee').val(v.parA_TEXT).trigger('change');   
+                    getViolationNature();
+                 
                 }
             },
 
@@ -272,12 +130,12 @@
 
 
     }
+   
     function updateParaStatusToSettle(ref_p, memo_no, paraId) {
         g_paraRef = ref_p;
         $('#settleRemarksModel').modal('show');
         $('#Reason_settlement').val('');
     }
-
     function submitSettlementofLegacyPara()
     {
         $.ajax({
@@ -300,13 +158,11 @@
         });
 
     }
-
     function submitDeletionofLegacyPara(paraRef) {
         g_paraRef = paraRef;
         confirmAlert("Do you confirm to delete this Legacy Para");
         onconfirmAlertCallback(confirmDeletionofLegacyPara);
     }
-
     function confirmDeletionofLegacyPara() {
 
         confirmAlert("Your PP Number will be recorded for this action, Do you confirm to delete this Legacy Para");
@@ -330,138 +186,12 @@
             dataType: "json",
         });
 
-    }
-  
-    function getSubProcessList() {
-        if ($('#updateMemo_process option:selected').val() == 0) {
-            $('#updateMemo_subprocess').empty();
-            $('#updateMemo_violation').empty();
-        }
-        else {
-
-            $('#updateMemo_subprocess').empty();
-            $('#updateMemo_violation').empty();
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/sub_checklist",
-                type: "POST",
-                data: {
-                    'T_ID': $('#updateMemo_process option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $('#updateMemo_subprocess').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                    $.each(data, function (index, item) {
-                        var className = "";
-                        if (g_subprocId == item.s_ID) {
-                            className = 'selected = "selected"';
-                        }
-                        $('#updateMemo_subprocess').append("<option " + className + " value=\"" + item.s_ID + "\"> " + item.heading + " </option > ");
-                    });
-                    if (g_subprocId != 0) {
-                        getSubProcessViolationList();
-                    }
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function getSubProcessViolationList() {
-        if ($('#updateMemo_subprocess option:selected').val() == 0)
-            $('#updateMemo_violation').empty();
-        else {
-            $('#updateMemo_violation').empty();
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/checklist_details",
-                type: "POST",
-                data: {
-                    'S_ID': $('#updateMemo_subprocess option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $('#updateMemo_violation').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                    $.each(data, function (index, item) {
-
-                        var className = "";
-                        if (g_procDetailId == item.id) {
-                            className = 'selected = "selected"';
-                        }
-
-                        $('#updateMemo_violation').append("<option " + className + " value=\"" + item.id + "\"> " + item.heading + "</option>");
-                    });
-                },
-                dataType: "json",
-            });
-        }
-
-
-    }
-
-    function div_risksubcategoryShowHide() {
-        if ($('#riskGroupSelectBox option:selected').val() == 0) {
-            $('#div_risksubcategory').hide();
-            $('#div_activityContainer').hide();
-        }
-        else {
-            $('#div_risksubcategory').show();
-            $('#div_activityContainer').hide();
-            $('#riskSubGroupSelectBox').empty();
-            $.ajax({
-                url: g_asiBaseURL + "/Execution/sub_voilation",
-                type: "POST",
-                data: {
-                    'V_ID': $('#riskGroupSelectBox option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                    $.each(data, function (index, item) {
-                        var className = "";
-                        if (g_subprocId == item.id) {
-                            className = 'selected = "selected"';
-                        }
-                        $('#riskSubGroupSelectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
-                    });
-                   
-
-                },
-                dataType: "json",
-            });
-        }
-    }
-    function div_activityContainerShowHide() {
-        if ($('#riskSubGroupSelectBox option:selected').val() == 0)
-            $('#div_activityContainer').hide();
-        else
-            $('#div_activityContainer').show();
-        $('#riskActivitiesSelectBox').empty();
-        $.ajax({
-            url: g_asiBaseURL + "/Execution/risk_activities",
-            type: "POST",
-            data: {
-                'S_GR_ID': $('#riskSubGroupSelectBox option:selected').val(),
-            },
-            cache: false,
-            success: function (data) {
-                $('#riskActivitiesSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
-                $.each(data, function (index, item) {
-
-                     var className = "";
-                        if (g_procDetailId == item.id) {
-                            className = 'selected = "selected"';
-                        }
-
-                    $('#riskActivitiesSelectBox').append("<option " + className + " value=\"" + item.activitY_ID + "\"> " + item.description + "</option>");
-                });
-
-            },
-            dataType: "json",
-        });
-    }
-
+    }  
+   
+    
     function reloadLocation() {
         getLegacyPara();
     }
-
     function submitLegacyParaUpdates(){
 
         if(g_entType=="B"){
@@ -487,8 +217,6 @@
     function confirm_submitLegacyParaUpdates(){
         var resP = [];
         $('#PublishParaText').attr('disabled', true);
-
-
         if(g_entType!="D"){
             if ($('#updateMemo_process').val() == 0) {
                 alert("Please select Process");
@@ -513,8 +241,6 @@
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
-
         }
         else{
             if ($('#riskGroupSelectBox').val() == 0) {
@@ -536,7 +262,6 @@
             }
 
         }
-
       
         var add_leg_data = {
             'PARA_TEXT': $('.richText-editor').html(),
@@ -557,13 +282,11 @@
                 $('#PublishParaText').attr('disabled', false);
                 alert(data.Message);
                 getLegacyPara();
-                //onAlertCallback(getLegacyPara);
             },
 
             dataType: "json",
         });
     }
-
     function submitLegacyParaUpdatesWithNoChanges() {
         if(g_entType=="B"){
 
@@ -662,18 +385,16 @@
         });
 
     }
-
 </script>
-
-<div class="row">
-    <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Update Legacy Paras</h3>
-    </div>
+<div class="row col-md-12 mt-3">
+    <h3 style=" display:block;color: #45c545;">Update Legacy Paras</h3>
+</div>
+<div class="row col-md-12">   
     <div class="row col-md-12 mt-3">
-        <div class="col-md-2">
+        <div class="row col-md-2">
             <label><b>Entity:</b></label>
         </div>
-        <div class="col-md-10">
+        <div class="row col-md-10">
             <select id="entitySelectField" onchange="getReportDropdownContents();" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
@@ -690,36 +411,33 @@
         </div>
     </div>
     <div id="dropdownReportPanel" class="row col-md-12 mt-3 d-none">
-        <div class="col-md-2">
+        <div class="row col-md-2">
             <label><b>Report:</b></label>
         </div>
-        <div class="col-md-10">
+        <div class="row col-md-10">
             <select id="entityReportSelectField" onchange="getLegacyPara();" class="form-control form-select">
-              
+
             </select>
         </div>
     </div>
-    <div class="row col-md-12 mt-3">
-        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto">Audit Year</th>
-                    <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Observation Gist</th>
-                    <th class="col-md-auto">Para Status</th>
-                    <th class="col-md-auto">Update Text</th>
-                    <th class="col-md-auto">Update Status</th>
-                    <th class="col-md-auto">Delete Duplicate Para</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-
-        </table>
-    </div>
-
 </div>
-
-
+<div class="row col-md-12 mt-3">
+    <table id="manageObsPanel" class="table responsive table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">Audit Year</th>
+                <th class="col-md-auto">Para No.</th>
+                <th class="col-md-auto">Observation Gist</th>
+                <th class="col-md-auto">Para Status</th>
+                <th class="col-md-auto">Update Text</th>
+                <th class="col-md-auto">Update Status</th>
+                <th class="col-md-auto">Delete Duplicate Para</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 <div id="process_detail" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog  modal-xl" role="document" style="max-width:1450px !important;">
         <div class="modal-content">
@@ -730,27 +448,10 @@
                 </button>
             </div>
             <div class="mt-3 modal-body">
-                <form>
-
+                <form>                  
                     <div class="form-group">
-                        <label for="updateMemo_process" class="font-weight-bold">Process</label>
-                        <select id="updateMemo_process" onchange="getSubProcessList();" class="form-select form-control" aria-label="Default select example">
-                            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
-                            @{
-                                if (ViewData["ProcessList"] != null)
-                                {
-                                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
-                                    {
-                                                <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
-                                    }
-                                }
-                            }
-                        </select>
-                      
-                    </div>
-                    <div class="form-group">
-                        <label for="riskGroupSelectBox" class="font-weight-bold">Violation</label>
-                        <select id="riskGroupSelectBox" onchange="div_risksubcategoryShowHide();" class="form-select form-control" aria-label="Default select example">
+                        <label for="violation_selectBox" class="font-weight-bold">Violation</label>
+                        <select id="violation_selectBox" onchange="getViolationNature();" class="form-select form-control" aria-label="">
                             <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
                             @{
                                 if (ViewData["Voilation_Cat"] != null)
@@ -762,30 +463,18 @@
                                 }
                             }
                         </select>
-
                     </div>
-                    <div id="div_risksubcategory" style="display:none;" class="form-group">
+                    <div class="form-group">
                         <h5>Nature/Area</h5>
-                        <select id="riskSubGroupSelectBox" onchange="div_activityContainerShowHide();" class="form-select form-control" aria-label="Default select example">
+                        <select id="nature_selectBox" class="form-select form-control" aria-label="Default select example">
+                           
                         </select>
-                    </div>
-                  
-                    <div class="form-group">
-                        <label for="updateMemo_subprocess" class="font-weight-bold">Sub Process</label>
-                        <select id="updateMemo_subprocess" onchange="getSubProcessViolationList();" class="form-select form-control" aria-label="Default select example">
-                        </select>
-
-                    </div>
-                    <div class="form-group">
-                        <label for="updateMemo_violation" class="font-weight-bold">Checklist Details</label>
-                        <select id="updateMemo_violation" class="form-select form-control" aria-label="Default select example">
-                        </select>
-                    </div>
+                    </div>                  
 
                     <div class="form-group">
 
                         <label class="font-weight-bold">Risk Category </label>
-                        <select id="auditCriteriaRiskField" class="form-select form-control" aria-label="Default select example">
+                        <select id="risk_selectBox" class="form-select form-control" aria-label="Default select example">
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
@@ -806,29 +495,9 @@
 
                     </div>
                     <div class="form-group">
-                        <textarea class="form-control" id="responseAuditee"></textarea>
+                        <textarea class="form-control" id="text_selectBox"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="viewMemo_loancase">Responsible PP NO.</label>
-                        <div class="row col-sm-12">
-                            <table id="listofRespPersons" class="table table-hover table-bordered table-hover mt-3 table-striped">
-                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                                    <tr>
-                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
-                                        <th class="col-md- auto font-weight-bold">Name</th>
-                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
-                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
-                                        <th class="col-md- auto font-weight-bold">Account No.</th>
-                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
-                                        <th colspan="2" class="col-md- auto text-center font-weight-bold"><center><button type="button" onclick="AddNewRespRecord('','','','','','','');" class="rounded-circle btn btn-danger btn-sm"><i class="fa fa-plus text-white"></i></button></center></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>                               
-                            </table>
-                            
-                        </div>
-                    </div>
+                  
                 </form>
 
               
@@ -845,8 +514,6 @@
         </div>
     </div>
 </div>
-
-
 <div id="settleRemarksModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog  modal-xl" role="document" style="max-width:1450px !important;">
         <div class="modal-content">
@@ -889,5 +556,3 @@
         </div>
     </div>
 </div>
-
-

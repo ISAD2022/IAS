@@ -330,7 +330,7 @@
                         if (g_subprocId == item.id) {
                             className = 'selected = "selected"';
                         }
-                        $('#riskSubGroupSelectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
+                        $('#riskSubGroupSelectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + "</option> ");
                     });
                    
 
@@ -424,8 +424,6 @@
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
-
         }
         else{
             if ($('#riskGroupSelectBox').val() == 0) {
@@ -476,9 +474,7 @@
     }
 
     function submitLegacyParaUpdatesWithNoChanges() {
-        if(g_entType=="B"){
-
-        
+        if(g_entType=="B"){       
 
         if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
             alert("There are pending responsibilities, please add all pending responsibilities to proceed");
@@ -495,12 +491,9 @@
         }else{
             confirm_submitLegacyParaUpdatesWithNoChanges();
         }
-
     }
-    function confirm_submitLegacyParaUpdatesWithNoChanges() {      
-
-        var resP = [];
-        
+    function confirm_submitLegacyParaUpdatesWithNoChanges() {
+        var resP = [];        
         if (g_entType != "D") {
             if ($('#updateMemo_process').val() == 0) {
                 alert("Please select Process");
@@ -525,8 +518,6 @@
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
-
         }
         else {
             if ($('#riskGroupSelectBox').val() == 0) {
@@ -534,22 +525,17 @@
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
             if ($('#riskSubGroupSelectBox').val() == 0) {
                 alert("Please select Nature");
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
             if ($('#auditCriteriaRiskField').val() == 0) {
                 alert("Please select Risk");
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
-
         }
-
-
         var add_leg_data = {
             'ID': g_paraId,
             'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#riskGroupSelectBox').val(),
@@ -571,20 +557,19 @@
 
             dataType: "json",
         });
-
     }
 
 </script>
 
-<div class="row">
-    <div class="col-md-12 mt-3">
+<div class="row col-md-12">
+    <div class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Update Legacy Paras</h3>
     </div>
     <div class="row col-md-12 mt-3">
-        <div class="col-md-2">
+        <div class="row col-md-2">
             <label><b>Entity:</b></label>
         </div>
-        <div class="col-md-10">
+        <div class="row col-md-10">
             <select id="entitySelectField" onchange="getLegacyPara();" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
@@ -600,25 +585,24 @@
             </select>
         </div>
     </div>
-    <div class="row col-md-12 mt-3">
-        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto">Audit Year</th>
-                    <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Observation Gist</th>
-                    <th class="col-md-auto d-none">Amount</th>
-                    <th class="col-md-auto d-none">VOL I II</th>
-                    <th class="col-md-auto">Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-
-        </table>
-    </div>
+    
 
 </div>
-
+<div class="row col-md-12 mt-3">
+    <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-auto">Audit Year</th>
+                <th class="col-md-auto">Para No.</th>
+                <th class="col-md-auto">Observation Gist</th>
+                <th class="col-md-auto d-none">Amount</th>
+                <th class="col-md-auto d-none">VOL I II</th>
+                <th class="col-md-auto">Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 <div id="process_detail" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog  modal-xl" role="document" style="max-width:1450px !important;">

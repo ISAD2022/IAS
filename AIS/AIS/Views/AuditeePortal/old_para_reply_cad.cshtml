@@ -81,7 +81,7 @@
                 success: function (data) {
                     $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
-                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.suB_V_NAME + " " + item.risK_ID + " </option > ");
+                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.suB_V_NAME + "</option> ");
                     });
 
                 },

@@ -527,7 +527,6 @@ namespace AIS.Controllers
         {
             return dBConnection.GetVoilationSubGroup(vsg.V_ID);
         }
-
         
         public IActionResult checklist()
         {
@@ -860,8 +859,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetLegacyParasEntitiesHO();
-            ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
-            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();        
             ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
             {

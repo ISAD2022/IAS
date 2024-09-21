@@ -2,101 +2,187 @@
     ViewData["Title"] = "FAD_Monthly_Review";
     Layout = "_Layout";
 }
-<script>
+
+<script type="text/javascript">
+
     $(document).ready(function () {
+        $('#entityTypeSelectionField').select2();
         $("#searchTableRecord").on("keyup", function () {
             var value = $(this).val().toLowerCase();
-            $("#A_P_E_T tbody tr").filter(function () {
+            $("#entity_oustanding_paras_grid tbody tr").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
 
 
-    });
+
+    })
+
+    function entityTypeSelectionChangeEvent() {
+        if ($('#entityTypeSelectionField').val() != 0) {
+            // Clear the existing table
+            // Clear and destroy the existing DataTable instance
+            if ($.fn.DataTable.isDataTable('#fadMonthlyReviewGrid')) {
+                $('#fadMonthlyReviewGrid').DataTable().clear().destroy();
+            }
+
+            // Clear existing rows from tbody
+            $('#fadMonthlyReviewGrid tbody').empty();
+
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/get_fad_monthly_review_paras_for_entity_type_id",
+                type: "POST",
+                data: {
+                    "ENT_TYPE_ID": $('#entityTypeSelectionField').val()
+                },
+                cache: false,
+                success: function (data) {
+                    if (data.length > 0) {
+                        
+                        var sr = 1;
+
+                        $.each(data, function (i, v) {
+                            $('#fadMonthlyReviewGrid tbody').append('<td>' + ++i'</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.placE_OF_POSTING + '</td><td>'+v.reportinG_OFFICE+'</td>')
+                        });
+
+
+                        // Re-initialize DataTable after the table content is updated
+                        $('#fadMonthlyReviewGrid').DataTable({
+                            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+                            buttons: [
+                                {
+                                    extend: 'excelHtml5',
+                                    text: 'Export to Excel',
+                                    className: 'btn btn-success',
+                                    exportOptions: {
+                                        columns: function (idx, data, node) {
+                                            return !$(node).hasClass('hide-export');
+                                        }
+                                    }
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    text: 'Export To PDF',
+                                    className: 'btn btn-danger',
+                                    exportOptions: {
+                                        columns: function (idx, data, node) {
+                                            return !$(node).hasClass('hide-export');
+                                        }
+                                    }
+                                }
+                            ],
+                            lengthMenu: [
+                                [10, 50, 100, -1],
+                                [10, 50, 100, "All"]
+                            ]
+                        });
+                    }
+                },
+                dataType: "json",
+            });
+        }
+    }
+
+    // Helper function to generate table rows
+    function generateTableRow(sr, entityId, entityName, totalParas) {
+        return '<tr id="row_' + entityId + '">' +
+            '<td>' + sr + '</td>' + // Sr No.
+            '<td>' + entityName + '</td>' + // Entity Name
+            '<td id="SLAB_1_CURRENT_YEAR_' + entityId + '">' + totalParas + '</td>' + // Current Year Paras
+            '<td id="SLAB_2_Age_1_to_3_' + entityId + '">0</td>' + // Age 1 to 3 years Paras
+            '<td id="SLAB_3_Age_4_to_6_' + entityId + '">0</td>' + // Age 4 to 6 years Paras
+            '<td id="SLAB_4_Age_7_to_9_' + entityId + '">0</td>' + // Age 7 to 9 years Paras
+            '<td id="SLAB_5_Age_10_to_12_' + entityId + '">0</td>' + // Age 10 to 12 years Paras
+            '<td id="SLAB_6_Age_12_plus_' + entityId + '">0</td>' + // Age 12+ years Paras
+            '<td id="TOTAL_' + entityId + '">0</td>' + // Grand Total
+            '</tr>';
+    }
+
+
 </script>
+
+<div class="row col-md-12">
 
     <div class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">FAD Monthly Review-Operational Zone Wise Settlement Position</h3>
     </div>
-
-
-
-    <div class="row col-md-12 mt-4">
-        <div style=" width:155px">
-            <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
-        </div>
-        <div class=" col-md-5 mr-1">
-            <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
-        </div>
-
-        <div style=" width:135px">
-            <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
-        </div>
-        <div style=" width:545px">
-            <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
-        </div>
+    <div class="row col-md-12 mt-3">
+        <label>Entity Type</label>
     </div>
     <div class="row col-md-12 mt-1">
-        <button id="findButton" onclick="" class="btn btn-danger" style="margin-left:auto;">Search</button>
-
-    </div>
-
-
-
-
-<div class="row col-md-12 mt-3 mb-2">
-
-    <input class="form-control" id="searchTableRecord" type="text" placeholder="Search Results..">
-
-</div>
-
-<div class="row col-md-12 mt-3">
-    <table id="zoneiwseperformance" class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-            <tr>
-                <th class="col-md-auto">Sr. No</th>
-                <th class="col-md-auto">Zone Name</th>
-                <th class="col-md-auto">Branch Code</th>
-
-                <th class="col-md-auto">Operational Zone/Branch</th>
-
-                <th class="col-md-auto">Paras As At</th>
-                <th class="col-md-auto">Para Added</th>
-                <th class="col-md-auto">Total Paras</th>
-                <th class="col-md-auto">Paras Settled</th>
-                <th class="col-md-auto">Total Paras</th>
-                <th class="col-md-auto">Percentage Of Settlement</th>
-                <th class="col-md-auto">Status</th>
-
-
-
-            </tr>
-        </thead>
-        <tbody>
+        <select id="entityTypeSelectionField" onchange="entityTypeSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
+            <option value="0" selected>--Select Entity Type--</option>
             @{
-                if (ViewData["ZONEWISEPERFORMANCE"] != null)
+                if (ViewData["EntitiesList"] != null)
                 {
-
-                    var index = 1;
-                    foreach (var item in (dynamic)(ViewData["ZONEWISEPERFORMANCE"]))
+                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
-
-                        <tr>
-                            <td>@index</td>
-                            <td>@item.ZONENAME</td>
-                            <td>@item.PARA_TOTAL</td>
-                            <td>@item.PARA_PENDING</td>
-                            <td>@item.PARA_ENTERED</td>
-                        </tr>
-                        index++;
+                        <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
                     }
                 }
             }
-        </tbody>
+        </select>
 
-    </table>
-</div>
-<div class="col-md-12 offset-md-12 mt-4">
-    <button id="printPreview_btn" class="btn btn-danger" style="float:right; margin-bottom:10px;">Download Report/Print</button>
-</div>
+    </div>
+    <div class="row col-md-12 mt-3">
 
+        <label for="periodStartModalField"><b>Report Period From</b><span class="text-danger">*</span></label>
+        <input required type="date" class="form-control" id="periodStartModalField" aria-describedby="brcode" placeholder="Start Date">
+    </div>
+    <div class="row col-md-12 mt-3">
+
+        <label for="periodEndModalField"><b>Report Period To</b><span class="text-danger">*</span></label>
+        <input required type="date" class="form-control" id="periodEndModalField" aria-describedby="brcode" placeholder="End Date">
+
+    </div>
+    <div class="row col-md-12 mt-3">
+
+        <button id="findButton" onclick="" class="btn btn-danger col-md-2 offset-md-10">Search</button>
+
+    </div>
+    <div class="row col-md-12 mt-3">
+        <table id="fadMonthlyReviewGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
+            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                <tr>
+                    <th class="col-md-auto">Sr. No</th>
+                    <th class="col-md-auto">Zone Name</th>
+                    <th class="col-md-auto">Branch Code</th>
+                    <th class="col-md-auto">Operational Zone/Branch</th>
+                    <th class="col-md-auto">Opening Balance</th>
+                    <th class="col-md-auto">Para Added</th>
+                    <th class="col-md-auto">Total Paras</th>
+                    <th class="col-md-auto">Paras Settled</th>
+                    <th class="col-md-auto">Total Paras</th>
+                    <th class="col-md-auto">Percentage Of Settlement</th>
+                    <th class="col-md-auto">Status</th>
+
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (ViewData["ZONEWISEPERFORMANCE"] != null)
+                    {
+
+                        var index = 1;
+                        foreach (var item in (dynamic)(ViewData["ZONEWISEPERFORMANCE"]))
+                        {
+
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.ZONENAME</td>
+                                <td>@item.PARA_TOTAL</td>
+                                <td>@item.PARA_PENDING</td>
+                                <td>@item.PARA_ENTERED</td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

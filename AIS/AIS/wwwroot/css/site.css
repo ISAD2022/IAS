@@ -13,6 +13,10 @@ for details on configuring this project to bundle and minify static web assets. 
     box-sizing: border-box !important; /* Include padding and border in width and height */
 }
 
+.table td{
+    word-break:break-word !important;
+}
+
 .container-clob table {
     margin-left: 0px !important;
 }
