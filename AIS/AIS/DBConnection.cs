@@ -394,7 +394,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
@@ -454,7 +454,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
@@ -514,7 +514,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
@@ -541,7 +541,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 return false;
@@ -567,7 +567,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 return false;
@@ -592,7 +592,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 return false;
@@ -969,7 +969,7 @@ namespace AIS.Controllers
             con.Dispose();
             return periodList;
         }
-        public List<AuditPeriodModel> GetParaPrintingYearsForCAU(int dept_code = 0)
+        public List<AuditPeriodModel> GetParaPrintingYearsForCAU()
         {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
@@ -994,11 +994,7 @@ namespace AIS.Controllers
         }
         public string UpdateAuditPeriod(AuditPeriodModel periodModel)
         {
-            string resp = "";
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";        
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1023,9 +1019,6 @@ namespace AIS.Controllers
         {
             string resp = "";
             sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -1251,9 +1244,12 @@ namespace AIS.Controllers
         {
             if (REMARKS == "")
                 REMARKS = "REFERRED BACK";
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            sessionHandler = new SessionHandler
+            {
+                _httpCon = this._httpCon,
+                _session = this._session,
+                _configuration = this._configuration
+            };
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
@@ -1271,7 +1267,7 @@ namespace AIS.Controllers
             con.Dispose();
             return true;
         }
-        public bool SetAuditCriteriaStatusApprove(int ID, string REMARKS)
+        public string SetAuditCriteriaStatusApprove(int ID, string REMARKS)
         {
             if (REMARKS == "")
                 REMARKS = "APPROVED";
@@ -1303,7 +1299,7 @@ namespace AIS.Controllers
 
             }
             con.Dispose();
-            return true;
+            return REMARK;
         }
         public List<AuditCriteriaModel> GetPendingAuditCriterias()
         {
@@ -2312,6 +2308,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("IS_ACTIVE", OracleDbType.Varchar2).Value = user.ISACTIVE;
                 cmd.Parameters.Add("ROLEID", OracleDbType.Int32).Value = user.ROLE_ID;
                 cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = user.ENTITY_ID;
+                cmd.Parameters.Add("EMAIL_ADDRESS", OracleDbType.Varchar2).Value = user.EMAIL_ADDRESS;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
             }
@@ -5441,7 +5438,7 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 throw;
@@ -19165,7 +19162,7 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 throw;
@@ -19209,10 +19206,9 @@ Dear {userFullName},
                                     PLACE_OF_POSTING= rdr["C_NAME"].ToString(),
                                     CHILD_CODE = rdr["CHILD_CODE"].ToString(),
                                     OPENING_BALANCE = rdr["opening_bal"].ToString(),
-                                    PARAS_ADDED = rdr["Para_added"].ToString(),
-                                    TOTAL = rdr["total"].ToString(),
+                                    PARA_ADDED = rdr["Para_added"].ToString(),
                                     SETTLED = rdr["Settled"].ToString(),
-                                    PARA_ADDED = rdr["Outstanding"].ToString()
+                                    OUTSTANDING = rdr["Outstanding"].ToString()
                                 };
 
 
@@ -19222,7 +19218,7 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
                 throw;

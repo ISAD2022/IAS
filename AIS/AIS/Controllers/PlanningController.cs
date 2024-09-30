@@ -45,6 +45,30 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult special_audit_criteria()
+        {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditEntities"] = dBConnection.GetAuditEntities();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
+            ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["PendingCriteriaList"] = dBConnection.GetPendingAuditCriterias();
+            if (!sessionHandler.IsUserLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            else
+            {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                {
+                    return RedirectToAction("Index", "PageNotFound");
+                }
+                else
+                    return View();
+            }
+        }
         public IActionResult refferedback_audit_criteria()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

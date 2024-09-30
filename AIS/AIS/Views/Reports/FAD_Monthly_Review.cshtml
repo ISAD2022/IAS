@@ -7,16 +7,8 @@
 
     $(document).ready(function () {
         $('#entityTypeSelectionField').select2();
-        $("#searchTableRecord").on("keyup", function () {
-            var value = $(this).val().toLowerCase();
-            $("#entity_oustanding_paras_grid tbody tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
-        });
 
-
-
-    })
+    });
 
     function entityTypeSelectionChangeEvent() {
         if ($('#entityTypeSelectionField').val() != 0) {
@@ -33,21 +25,20 @@
                 url: g_asiBaseURL + "/ApiCalls/get_fad_monthly_review_paras_for_entity_type_id",
                 type: "POST",
                 data: {
-                    "ENT_TYPE_ID": $('#entityTypeSelectionField').val()
+                    "ENT_TYPE_ID": $('#entityTypeSelectionField').val(),
+                    "S_DATE": $('#periodStartModalField').val(),
+                    "E_DATE": $('#periodEndModalField').val()
                 },
                 cache: false,
                 success: function (data) {
-                    if (data.length > 0) {
-                        
-                        var sr = 1;
+                    
 
                         $.each(data, function (i, v) {
-                            $('#fadMonthlyReviewGrid tbody').append('<td>' + ++i'</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.placE_OF_POSTING + '</td><td>'+v.reportinG_OFFICE+'</td>')
+                            $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + v.settled + '</td></tr>')
                         });
 
-
                         // Re-initialize DataTable after the table content is updated
-                        $('#fadMonthlyReviewGrid').DataTable({
+                    $('#fadMonthlyReviewGrid').DataTable({
                             dom: '<"top"lfB>rt<"bottom"ip><"clear">',
                             buttons: [
                                 {
@@ -76,7 +67,6 @@
                                 [10, 50, 100, "All"]
                             ]
                         });
-                    }
                 },
                 dataType: "json",
             });
@@ -84,19 +74,7 @@
     }
 
     // Helper function to generate table rows
-    function generateTableRow(sr, entityId, entityName, totalParas) {
-        return '<tr id="row_' + entityId + '">' +
-            '<td>' + sr + '</td>' + // Sr No.
-            '<td>' + entityName + '</td>' + // Entity Name
-            '<td id="SLAB_1_CURRENT_YEAR_' + entityId + '">' + totalParas + '</td>' + // Current Year Paras
-            '<td id="SLAB_2_Age_1_to_3_' + entityId + '">0</td>' + // Age 1 to 3 years Paras
-            '<td id="SLAB_3_Age_4_to_6_' + entityId + '">0</td>' + // Age 4 to 6 years Paras
-            '<td id="SLAB_4_Age_7_to_9_' + entityId + '">0</td>' + // Age 7 to 9 years Paras
-            '<td id="SLAB_5_Age_10_to_12_' + entityId + '">0</td>' + // Age 10 to 12 years Paras
-            '<td id="SLAB_6_Age_12_plus_' + entityId + '">0</td>' + // Age 12+ years Paras
-            '<td id="TOTAL_' + entityId + '">0</td>' + // Grand Total
-            '</tr>';
-    }
+
 
 
 </script>
@@ -110,7 +88,7 @@
         <label>Entity Type</label>
     </div>
     <div class="row col-md-12 mt-1">
-        <select id="entityTypeSelectionField" onchange="entityTypeSelectionChangeEvent();" class="form-select form-control" aria-label="Default select example">
+        <select id="entityTypeSelectionField" class="form-select form-control" aria-label="Default select example">
             <option value="0" selected>--Select Entity Type--</option>
             @{
                 if (ViewData["EntitiesList"] != null)
@@ -137,7 +115,7 @@
     </div>
     <div class="row col-md-12 mt-3">
 
-        <button id="findButton" onclick="" class="btn btn-danger col-md-2 offset-md-10">Search</button>
+        <button onclick="entityTypeSelectionChangeEvent();" class="btn btn-danger col-md-2 offset-md-10">Search</button>
 
     </div>
     <div class="row col-md-12 mt-3">
@@ -150,36 +128,11 @@
                     <th class="col-md-auto">Operational Zone/Branch</th>
                     <th class="col-md-auto">Opening Balance</th>
                     <th class="col-md-auto">Para Added</th>
-                    <th class="col-md-auto">Total Paras</th>
                     <th class="col-md-auto">Paras Settled</th>
-                    <th class="col-md-auto">Total Paras</th>
-                    <th class="col-md-auto">Percentage Of Settlement</th>
-                    <th class="col-md-auto">Status</th>
-
-
 
                 </tr>
             </thead>
             <tbody>
-                @{
-                    if (ViewData["ZONEWISEPERFORMANCE"] != null)
-                    {
-
-                        var index = 1;
-                        foreach (var item in (dynamic)(ViewData["ZONEWISEPERFORMANCE"]))
-                        {
-
-                            <tr>
-                                <td>@index</td>
-                                <td>@item.ZONENAME</td>
-                                <td>@item.PARA_TOTAL</td>
-                                <td>@item.PARA_PENDING</td>
-                                <td>@item.PARA_ENTERED</td>
-                            </tr>
-                            index++;
-                        }
-                    }
-                }
             </tbody>
 
         </table>
