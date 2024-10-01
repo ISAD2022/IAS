@@ -454,7 +454,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
@@ -514,7 +514,7 @@ namespace AIS.Controllers
                     }
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
@@ -541,7 +541,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 return false;
@@ -567,7 +567,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 return false;
@@ -592,7 +592,7 @@ namespace AIS.Controllers
                     return false;
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 return false;
@@ -994,7 +994,7 @@ namespace AIS.Controllers
         }
         public string UpdateAuditPeriod(AuditPeriodModel periodModel)
         {
-            string resp = "";        
+            string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -5438,7 +5438,7 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 throw;
@@ -19162,7 +19162,7 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 throw;
@@ -19187,9 +19187,9 @@ Dear {userFullName},
                     using (var cmd = con.CreateCommand())
                     {
                         cmd.CommandText = "pkg_rpt.R_FAD_MONTHLY_REVIEW";
-                        cmd.CommandType = CommandType.StoredProcedure;                        
-                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
-                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                        
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                         cmd.Parameters.Add("R_T", OracleDbType.Int32).Value = ENT_TYPE_ID;
                         cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value = S_DATE;
@@ -19203,7 +19203,7 @@ Dear {userFullName},
                                 var review = new FADMonthlyReviewParasModel
                                 {
                                     REPORTING_OFFICE = rdr["P_NAME"].ToString(),
-                                    PLACE_OF_POSTING= rdr["C_NAME"].ToString(),
+                                    PLACE_OF_POSTING = rdr["C_NAME"].ToString(),
                                     CHILD_CODE = rdr["CHILD_CODE"].ToString(),
                                     OPENING_BALANCE = rdr["opening_bal"].ToString(),
                                     PARA_ADDED = rdr["Para_added"].ToString(),
@@ -19218,13 +19218,115 @@ Dear {userFullName},
                     }
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
 
                 throw;
             }
 
             return list;
+        }
+
+        //------------------- Special Audit Plan 
+        public List<SpecialAuditPlanModel> GetSaveSpecialAuditPlan()
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var list = new List<SpecialAuditPlanModel>();
+            try
+            {
+                using (var con = this.DatabaseConnection())
+                {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "pkg_pg.P_GET_Specical_Audit_for_Approval";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                var review = new SpecialAuditPlanModel
+                                {
+                                    REPORTING_OFFICE = rdr["reporting"].ToString(),
+                                    ENTITY_NAME = rdr["auditee"].ToString(),
+                                    AUDITED_BY = rdr["auditor"].ToString(),
+                                    PLAN_ID = rdr["P_ID"].ToString(),
+                                    AUDIT_PERIOD = rdr["period"].ToString(),
+                                    NO_DAYS = rdr["no_of_days"].ToString(),
+                                    NATURE = rdr["nature"].ToString(),
+                                   // FIELD_VISIT = rdr["visit"].ToString(),
+                                };
+
+
+                                list.Add(review);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return list;
+        }
+        public string AddSpecialAuditPlan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS)
+        {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            var list = new List<SpecialAuditPlanModel>();
+            try
+            {
+                using (var con = this.DatabaseConnection())
+                {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "pkg_pg.P_ADD_Special_Audit_Plan";
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("NOOFDAYS", OracleDbType.Int32).Value = NO_DAYS;
+                        cmd.Parameters.Add("Nature", OracleDbType.Int32).Value = NATURE;
+                        cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = PERIOD;
+                        cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                    
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                resp = rdr["remarks"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw ;
+            }
+
+            return resp;
         }
     }
 }

@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-	  <TargetFramework>net8.0</TargetFramework>
-    <NoWin32Manifest>true</NoWin32Manifest>
-    <Platforms>AnyCPU;x64</Platforms>
+	
+    <TargetFramework>net8.0</TargetFramework>
+  <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  <NoWin32Manifest>true</NoWin32Manifest>
+  <Platforms>AnyCPU;x64</Platforms>
+
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Planning\special_audit_criteria.cshtml~RF117b2e7.TMP" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="itext7.pdfhtml" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0-rc.1.24451.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0-rc.1.24451.1">
       <PrivateAssets>all</PrivateAssets>

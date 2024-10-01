@@ -49,12 +49,10 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["AuditEntities"] = dBConnection.GetAuditEntities();
+            ViewData["AuditNatureList"] = dBConnection.GetAuditNatureForAddLegacyPara();
             ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
-            ViewData["AuditFrequencies"] = dBConnection.GetAuditFrequencies();
-            ViewData["BranchSizesList"] = dBConnection.GetBranchSizes();
-            ViewData["RiskList"] = dBConnection.GetRisks();
-            ViewData["PendingCriteriaList"] = dBConnection.GetPendingAuditCriterias();
+            ViewData["ReportingOfficeList"] = dBConnection.Getparentrepoffice(5);
+
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");

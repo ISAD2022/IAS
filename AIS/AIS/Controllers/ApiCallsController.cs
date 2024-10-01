@@ -2451,6 +2451,16 @@ namespace AIS.Controllers
         {
             return dBConnection.GetFADMonthlyReviewParasForEntityTypeId(ENT_TYPE_ID,S_DATE,E_DATE);
         }
+        [HttpPost]
+        public List<SpecialAuditPlanModel> get_saved_special_audit_plans()
+        {
+            return dBConnection.GetSaveSpecialAuditPlan();
+        }
+        [HttpPost]
+        public string add_special_audit_plan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS)
+        {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddSpecialAuditPlan(NATURE, PERIOD, ENTITY_ID, NO_DAYS) + "\"}";
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
