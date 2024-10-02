@@ -34,7 +34,10 @@
                 var t_uparas = 0;
                 var t_opara = 0;
                 var t_percentage = 0;
-                var t_aparas = 0;
+                var t_aparas = 0;                
+                var t_r1 = 0;
+                var t_r2 = 0;
+                var t_r3 = 0;
                 if (g_response.length > 0) {
                     $.each(data, function (i, v) {
 
@@ -46,8 +49,11 @@
                         t_slparas += parseInt(v.settleD_LEGACY);
                         t_sparas += parseInt(v.settleD_NEW_PARA);
                         t_uparas += parseInt(v.uN_SETTLED);
-                        percentage = (((parseInt(v.settleD_LEGACY) + parseInt(v.settleD_NEW_PARA)) / parseInt(v.total)) * 100).toFixed(2);
-                        $('#observation_panel tbody').append('<tr><td align="center"> ' + sr + '</td><td class="auditZoneCol" align="left">' + v.audiT_ZONE + '</td><td class="visibCol"  align="left">' + v.entitY_TYPE_DESC + '</td><td class="visibCol" align="left">' + v.reportinG_OFFICE + '</td><td class="visibCol" align="left">' + v.entitY_NAME + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + percentage + '%</td></tr>');
+                        t_r1 += parseInt(v.r1);
+                        t_r2 += parseInt(v.r2);
+                        t_r3 += parseInt(v.r3);
+                        //percentage = (((parseInt(v.settleD_LEGACY) + parseInt(v.settleD_NEW_PARA)) / parseInt(v.total)) * 100).toFixed(2);
+                        $('#observation_panel tbody').append('<tr><td align="center"> ' + sr + '</td><td class="auditZoneCol" align="left">' + v.audiT_ZONE + '</td><td class="visibCol"  align="left">' + v.entitY_TYPE_DESC + '</td><td class="visibCol" align="left">' + v.reportinG_OFFICE + '</td><td class="visibCol" align="left">' + v.entitY_NAME + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + v.r1 + '</td><td align="right">' + v.r2 + '</td><td align="right">' + v.r3 + '</td><td align="right">' + v.percentage + '%</td></tr>');
                         sr++;
                     });
                     var colSpan = 5;
@@ -102,6 +108,9 @@
                     <th class="col-md-auto text-center">Settled Legacy Para</th>
                     <th class="col-md-auto text-center">Settled New Para</th>
                     <th class="col-md-auto text-center">Un-Settled</th>
+                    <th class="col-md-auto text-center">High Risk</th>
+                    <th class="col-md-auto text-center">Medium Risk</th>
+                    <th class="col-md-auto text-center">Low Risk</th>
                     <th class="col-md-auto text-center">Percentage</th>
                 </tr>
             </thead>

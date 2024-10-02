@@ -17,6 +17,9 @@ namespace AIS.Models
         public string SETTLED_NEW_PARA{ get; set; }
         public string UN_SETTLED{ get; set; }
         public string INDICATOR { get; set; }
+        public string R1 { get; set; }
+        public string R2 { get; set; }
+        public string R3 { get; set; }
         public string PERCENTAGE { get; set; }
       
 

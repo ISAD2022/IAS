@@ -2457,10 +2457,31 @@ namespace AIS.Controllers
             return dBConnection.GetSaveSpecialAuditPlan();
         }
         [HttpPost]
-        public string add_special_audit_plan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS)
+        public string add_special_audit_plan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS, string PLAN_ID, string INDICATOR)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddSpecialAuditPlan(NATURE, PERIOD, ENTITY_ID, NO_DAYS) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddSpecialAuditPlan(NATURE, PERIOD, ENTITY_ID, NO_DAYS, PLAN_ID, INDICATOR) + "\"}";
         }
+        [HttpPost]
+        public string delete_special_audit_plan( string PLAN_ID, string INDICATOR)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.DeleteSpecialAuditPlan(PLAN_ID, INDICATOR) + "\"}";
+            }
+        [HttpPost]
+        public string submit_special_audit_plan(string PLAN_ID, string INDICATOR)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitSpecialAuditPlan(PLAN_ID, INDICATOR) + "\"}";
+            }
+        [HttpPost]
+        public string referred_back_special_audit_plan(string PLAN_ID, string INDICATOR)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitSpecialAuditPlan(PLAN_ID, INDICATOR) + "\"}";
+            }
+        [HttpPost]
+        public string approve_special_audit_plan(string PLAN_ID, string INDICATOR)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitSpecialAuditPlan(PLAN_ID, INDICATOR) + "\"}";
+            }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

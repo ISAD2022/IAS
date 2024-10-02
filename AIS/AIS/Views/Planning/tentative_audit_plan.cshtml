@@ -48,8 +48,9 @@
         <table  id="tentative_plan_list" class="table table-hover table-bordered table-hover mt-3 table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
             <tr>
-                <th width="80" style="font-size:large">Sr No</th>
+                <th width="80" style="font-size:large">Sr No</th>                
                 <th width="150" style="font-size:large">Audit Period</th>
+                <th width="150" style="font-size:large">Nature of Audit</th>
                 <th width="250" style="font-size:large">Reporting/Controlling Office</th>
                 <th width="150" style="font-size:large">Entity Name</th>
                 <th width="150" style="font-size:large">Entity Size</th>
@@ -70,6 +71,7 @@
                                 <tr @item.PLAN_ID>
                                     <td align="center">@sr</td>
                                     <td align="center">@item.PERIOD_NAME</td>
+                                    <td align="center">@item.NATURE_OF_AUDIT</td>
                                     <td align="left">@item.REPORTING_OFFICE</td>
                                     <td align="left">@item.ENTITY_NAME</td>
                                     <td align="center">@item.BR_SIZE</td>

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Audit Criteria";
+    ViewData["Title"] = "Special Audit Plan";
     Layout = "_Layout";
 }
 
@@ -20,36 +20,37 @@
 </style>
 
 <script type="text/javascript">
-    g_status = 'Created';
-
-    $(document).ready(function (){
+    var g_status = 'Create';
+    var g_preCreatedPlans=[];
+    var g_planId=0;
+    var g_indicator='N';
+    $(document).ready(function () {
         getSavedSpecialAuditPlan();
     });
 
-
-       function getSavedSpecialAuditPlan() {
+    function getSavedSpecialAuditPlan() {
         $('#auditCriteriaListBox tbody').empty();
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_saved_special_audit_plans",
             type: "POST",
             data: {
-              
+
             },
 
             cache: false,
             success: function (data) {
-                
+                g_preCreatedPlans=data;
                 $.each(data, function (index, row) {
 
-                    $('#auditCriteriaListBox tbody').append("<tr id="+row.plaN_ID+"><td>"+ ++index +"</td><td>"+row.nature+"</td><td>"+row.audiT_PERIOD+"</td><td>"+row.reportinG_OFFICE+"</td><td>"+row.entitY_NAME+"</td><td>"+row.nO_DAYS+"</td><td>"+row.auditeD_BY+"</td><td><a href=\"#\" onclick=\"event.preventDefault();UpdateCriteriaRecordFromGrid("+row.plaN_ID+");\">Edit</a></td><td><a href=\"#\" onclick=\"event.preventDefault();DeleteCriteriaRecordFromGrid("+row.plaN_ID+");\">Delete</a></td></tr>");
+                    $('#auditCriteriaListBox tbody').append("<tr id=" + row.plaN_ID + "><td>" + ++index + "</td><td>" + row.nature + "</td><td>" + row.audiT_PERIOD + "</td><td>" + row.reportinG_OFFICE + "</td><td>" + row.entitY_NAME + "</td><td>" + row.nO_DAYS + "</td><td>" + row.auditeD_BY + "</td><td><a href=\"#\" class=\"text-primary\" onclick=\"event.preventDefault();UpdateCriteriaRecordFromGrid(" + row.plaN_ID + ");\">Edit</a></td><td><a href=\"#\" class=\"text-danger\" onclick=\"event.preventDefault();DeleteCriteriaRecordFromGrid(" + row.plaN_ID + ");\">Delete</a></td><td><a href=\"#\" class=\"text-success\" onclick=\"event.preventDefault();SubmitCriteriaRecordFromGrid(" + row.plaN_ID + ");\">Submit</a></td></tr>");
                 });
             },
             dataType: "json",
         });
 
     }
-     function getAuditableEntities(userEntityId = 0) {
+    function getAuditableEntities(userEntityId = 0) {
         $('#auditCriteriaEntField').empty();
 
         $.ajax({
@@ -79,20 +80,20 @@
         var nature = 0;
         if ($('#auditNatureEntityField option:selected').val() != 0)
             nature = $('#auditNatureEntityField option:selected').val();
-        
-            var period = 0;
+
+        var period = 0;
         if ($('#auditCriteriaPeriodField option:selected').val() != 0)
             period = $('#auditCriteriaPeriodField option:selected').val();
 
-        var entityId=0;        
+        var entityId = 0;
         if ($('#auditCriteriaEntField option:selected').val() != 0) {
-             entityId = $('#auditCriteriaEntField option:selected').val();
-        }    
-       
+            entityId = $('#auditCriteriaEntField option:selected').val();
+        }
+
         var days = '';
         if ($('#auditCriteriaDaysField').val() != '')
             days = $('#auditCriteriaDaysField').val();
-       
+
         if (nature == 0) {
             alert('Select Audit Nature to proceed');
             return;
@@ -106,57 +107,111 @@
             alert('Select Audit Entity to proceed');
             return;
         }
-         if (days == '') {
+        if (days == '') {
             alert('Enter No. of days to proceed');
             return;
         }
-          $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/add_special_audit_plan",
-                type: "POST",
-                data: {
-                   
-                   'NATURE':$('#auditNatureEntityField').val(),
-                   'PERIOD':$('#auditNatureEntityField').val(),
-                   'ENTITY_ID':$('#auditCriteriaEntField').val(),
-                   'NO_DAYS':$('#auditCriteriaDaysField').val()
-                },
-                cache: false,
-                success: function (data) {
-                    alert(data.Message);
-                    getSavedSpecialAuditPlan();
 
-                },
+        var plan_id=0;
+        var ind='N';
 
-                dataType: "json",
-            });
-    }
-     function UpdateCriteriaRecordFromGrid(criteria_id) {
-
+        if(g_status=="Update"){
+            plan_id=g_planId;
+            ind=g_indicator;
+        }
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/DeletePendingCriteria",
+            url: g_asiBaseURL + "/ApiCalls/add_special_audit_plan",
             type: "POST",
             data: {
-                'CID': criteria_id
+
+                'NATURE': $('#auditNatureEntityField').val(),
+                'PERIOD': $('#auditCriteriaPeriodField').val(),
+                'ENTITY_ID': $('#auditCriteriaEntField').val(),
+                'NO_DAYS': $('#auditCriteriaDaysField').val(),
+                'PLAN_ID': plan_id,
+                'INDICATOR': ind
             },
             cache: false,
             success: function (data) {
-                location.reload();
+                alert(data.Message);
+                g_status='Create';
+                $('#saveButtonSpecialPlan').html('Save');
+                getSavedSpecialAuditPlan();
+                   clearPlanFields();
+            },
+
+            dataType: "json",
+        });
+
+
+    }
+
+    function clearPlanFields(){
+        $('#auditNatureEntityField').val(0);
+                 $('#auditCriteriaPeriodField').val(0);
+                 $('#auditCriteriaRepField').val(0);
+                 getAuditableEntities();
+                 $('#auditCriteriaDaysField').val(0);
+    }
+    function UpdateCriteriaRecordFromGrid(pId) {
+        g_planId=pId;
+        g_status="Update";
+        g_indicator="E";
+        $('#saveButtonSpecialPlan').html('Update');
+        $.each(g_preCreatedPlans,function(i,v){
+            if(v.plaN_ID==g_planId){
+                $('#auditNatureEntityField').val(v.naturE_ID);
+                 $('#auditCriteriaPeriodField').val(v.audiT_PERIOD_ID);
+                 $('#auditCriteriaRepField').val(v.reportinG_OFFICE_ID);
+                 getAuditableEntities(v.entitY_ID);
+                 $('#auditCriteriaDaysField').val(v.nO_DAYS);
+            }
+        })
+
+    }
+
+
+    function DeleteCriteriaRecordFromGrid(pId) 
+    {
+        g_planId=pId;
+
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/delete_special_audit_plan",
+            type: "POST",
+            data: {
+                'PLAN_ID': g_planId,
+                'INDICATOR':'D'
+            },
+            cache: false,
+            success: function (data) {
+                  alert(data.Message);
+                g_status='Create';
+                $('#saveButtonSpecialPlan').html('Save');
+                getSavedSpecialAuditPlan();
+                   clearPlanFields();
             },
 
             dataType: "json",
         });
     }
-    function DeleteCriteriaRecordFromGrid(criteria_id) {
+     function SubmitCriteriaRecordFromGrid(pId) 
+    {
+        g_planId=pId;
 
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/DeletePendingCriteria",
+            url: g_asiBaseURL + "/ApiCalls/submit_special_audit_plan",
             type: "POST",
             data: {
-                'CID': criteria_id
+                'PLAN_ID': g_planId,
+                'INDICATOR':'S'
             },
             cache: false,
             success: function (data) {
-                location.reload();
+                 alert(data.Message);
+                g_status='Create';
+                $('#saveButtonSpecialPlan').html('Save');
+                getSavedSpecialAuditPlan();
+                   clearPlanFields();
             },
 
             dataType: "json",
@@ -170,58 +225,11 @@
     function addAuditEntitiesModal() {
         $('#setupAuditEntitiesModal').modal('show');
     }
-    function submitAuditCriteria() {
 
-        var criteria_list = [];
-        $.each($('#auditCriteriaListBox tbody tr.new'), function (index, row) {
-            var criteria = [];
-            $.each($(row).find('td'), function (i, d) {
-                if (typeof $(d).attr('value') != "undefined" && $(d).attr('value') != null) {
-                    criteria.push($(d).attr('value'));
-                }
-            });
-            criteria.push($($(row).find('td').eq(0)).html()); //[period]
-            criteria.push($($(row).find('td').eq(1)).html()); //[entname]
-            criteria.push($($(row).find('td').eq(2)).html()); //[risk]
-            criteria.push($($(row).find('td').eq(4)).html()); //[size]
-            criteria.push($($(row).find('td').eq(3)).html()); //[freq]
-            criteria.push($($(row).find('td').eq(1)).attr('data-value')); //[entityId]
-            criteria_list.push(criteria);
-        });
-        console.log(criteria_list);
-
-        if (criteria_list.length > 0) {
-          
-        }
-        else {
-
-            alert('No Audit Criteria Defined');
-            return;
-        }
-    }
-    function FinalsubmitAuditCriteria() {
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/submit_audit_criterias",
-            type: "POST",
-            data: {
-                'PERIOD_ID': 0
-            },
-            cache: false,
-            success: function (data) {
-
-                alert("Audit Criteria Submitted Successfully");
-                onAlertCallback(reloadLocation);
-            },
-
-            dataType: "json",
-        });
-
-    }
-   
 </script>
 
 <div class="row col-md-12">
-    <h3 style="color: #45c545;">Special Audit Criteria</h3>
+    <h3 style="color: #45c545;">Special Audit Plan</h3>
 </div>
 <div class="mt-3 row col-md-12">
     <div class="col-md-4">
@@ -233,12 +241,12 @@
                 <option value="0" id="0">--Select Nature of Audit--</option>
                 @{
                     if (ViewData["AuditNatureList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["AuditNatureList"]))
                         {
-                            <option value="@item.N_ID" id="@item.N_ID">@item.DESCRIPTION</option>
+                        foreach (var item in (dynamic)(ViewData["AuditNatureList"]))
+                            {
+                                                    <option value="@item.N_ID" id="@item.N_ID">@item.DESCRIPTION</option>
+                            }
                         }
-                    }
                 }
             </select>
         </div>
@@ -253,14 +261,14 @@
             <option value="0" id="0" selected>--Select Audit Period--</option>
             @{
                 if (ViewData["AuditPeriodList"] != null)
-                {
+                    {
 
                     foreach (var period in (dynamic)(ViewData["AuditPeriodList"]))
-                    {
-                        <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
-                    }
+                        {
+                                                <option id="@period.AUDITPERIODID" value="@period.AUDITPERIODID">@period.DESCRIPTION</option>
+                        }
 
-                }
+                    }
             }
         </select>
     </div>
@@ -275,14 +283,14 @@
             <option value="0" id="0" selected>--Select Reporting Office--</option>
             @{
                 if (ViewData["ReportingOfficeList"] != null)
-                {
+                    {
 
                     foreach (var ent in (dynamic)(ViewData["ReportingOfficeList"]))
-                    {
-                        <option id="@ent.ENTITY_ID" value="@ent.ENTITY_ID">@ent.DESCRIPTION</option>
-                    }
+                        {
+                                                <option id="@ent.ENTITY_ID" value="@ent.ENTITY_ID">@ent.DESCRIPTION</option>
+                        }
 
-                }
+                    }
             }
         </select>
     </div>
@@ -295,18 +303,7 @@
     </div>
     <div class="col-md-8">
         <select id="auditCriteriaEntField" class="form-select form-control" aria-label="Default select example">
-            <option value="0" id="0" selected>--Select Risk Category--</option>
-            @{
-                if (ViewData["RiskList"] != null)
-                {
 
-                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                    {
-                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                    }
-
-                }
-            }
         </select>
     </div>
 </div>
@@ -321,7 +318,7 @@
 
 
 <div class="col-md-12 mt-3">
-    <button onclick="addRecordToauditCriteriaListBox();" class="col-md-2 btn btn-danger">Save</button>
+    <button id="saveButtonSpecialPlan" onclick="addRecordToauditCriteriaListBox();" class="col-md-2 btn btn-danger">Save</button>
 </div>
 
 <div class="col-md-12">
@@ -336,14 +333,11 @@
                 <th class="col-md-auto">No. of Days</th>
                 <th class="col-md-auto">Audited By</th>
                 <th class="col-md-auto"></th>
-                 <th class="col-md-auto"></th>
+                <th class="col-md-auto"></th>
+                  <th class="col-md-auto"></th>
             </tr>
         </thead>
-        <tbody>
-         
+        <tbody style="font-size:85% !important;">
         </tbody>
     </table>
-</div>
-<div class="col-md-12 mt-3">
-    <button onclick="FinalsubmitAuditCriteria();" class="col-md-2 btn btn-success">Submit</button>
 </div>

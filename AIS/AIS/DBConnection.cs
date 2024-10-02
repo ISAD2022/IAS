@@ -3039,6 +3039,7 @@ Dear {userFullName},
                     tplan.AUDITEDBY = Convert.ToInt32(rdr["AUDITEDBY"]);
                     tplan.BR_SIZE = rdr["AUDITEE_SIZE"].ToString();
                     tplan.RISK = rdr["AUDITEE_RISK"].ToString();
+                    tplan.NATURE_OF_AUDIT = rdr["NATURE_OF_AUDIT"].ToString();
                     tplan.NO_OF_DAYS = Convert.ToInt32(rdr["NO_OF_DAYS"]);
                     tplan.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     tplan.CODE = rdr["ENTITY_CODE"].ToString();
@@ -15538,7 +15539,10 @@ Dear {userFullName},
                     rd.SETTLED_NEW_PARA = rdr["Settled_New_Paras"].ToString();
                     rd.UN_SETTLED = rdr["Un_Settled"].ToString();
                     rd.INDICATOR = rdr["ind"].ToString();
-                    //rd.PERCENTAGE = rdr["percentage"].ToString();
+                    rd.PERCENTAGE = rdr["percentage"].ToString();
+                    rd.R1 = rdr["r1"].ToString();
+                    rd.R2 = rdr["r2"].ToString();
+                    rd.R3 = rdr["r3"].ToString();
                     resp.Add(rd);
 
                 }
@@ -19258,14 +19262,19 @@ Dear {userFullName},
                                 var review = new SpecialAuditPlanModel
                                 {
                                     REPORTING_OFFICE = rdr["reporting"].ToString(),
+                                    REPORTING_OFFICE_ID = rdr["reporting_id"].ToString(),
                                     ENTITY_NAME = rdr["auditee"].ToString(),
+                                    ENTITY_ID = rdr["auditee_id"].ToString(),
                                     AUDITED_BY = rdr["auditor"].ToString(),
+                                    AUDITED_BY_ID = rdr["auditor_id"].ToString(),
                                     PLAN_ID = rdr["P_ID"].ToString(),
                                     AUDIT_PERIOD = rdr["period"].ToString(),
+                                    AUDIT_PERIOD_ID = rdr["period_id"].ToString(),
                                     NO_DAYS = rdr["no_of_days"].ToString(),
                                     NATURE = rdr["nature"].ToString(),
-                                   // FIELD_VISIT = rdr["visit"].ToString(),
-                                };
+                                    NATURE_ID = rdr["nature_id"].ToString(),
+                                    // FIELD_VISIT = rdr["visit"].ToString(),
+                                    };
 
 
                                 list.Add(review);
@@ -19282,7 +19291,7 @@ Dear {userFullName},
 
             return list;
         }
-        public string AddSpecialAuditPlan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS)
+        public string AddSpecialAuditPlan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS, string PLAN_ID, string INDICATOR)
         {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -19300,11 +19309,12 @@ Dear {userFullName},
                     {
                         cmd.CommandText = "pkg_pg.P_ADD_Special_Audit_Plan";
                         cmd.CommandType = CommandType.StoredProcedure;
-
+                        cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PLAN_ID;
                         cmd.Parameters.Add("NOOFDAYS", OracleDbType.Int32).Value = NO_DAYS;
                         cmd.Parameters.Add("Nature", OracleDbType.Int32).Value = NATURE;
                         cmd.Parameters.Add("AUDITPERIODID", OracleDbType.Int32).Value = PERIOD;
                         cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
+                        cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                         cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                    
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -19328,5 +19338,94 @@ Dear {userFullName},
 
             return resp;
         }
-    }
+        public string DeleteSpecialAuditPlan( string PLAN_ID, string INDICATOR)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+           
+            try
+                {
+                using (var con = this.DatabaseConnection())
+                    {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                        {
+                        cmd.CommandText = "pkg_pg.P_Update_Special_Audit";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PLAN_ID;
+                        cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                            {
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+
+            return resp;
+            }
+        public string SubmitSpecialAuditPlan(string PLAN_ID, string INDICATOR)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            try
+                {
+                using (var con = this.DatabaseConnection())
+                    {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                        {
+                        cmd.CommandText = "pkg_pg.P_Update_Special_Audit";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PLAN_ID;
+                        cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                            {
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+
+            return resp;
+            }
+        
+        }
 }
