@@ -31,42 +31,42 @@
                 },
                 cache: false,
                 success: function (data) {
-                    
 
-                        $.each(data, function (i, v) {
-                            $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + v.settled + '</td></tr>')
-                        });
 
-                        // Re-initialize DataTable after the table content is updated
+                    $.each(data, function (i, v) {
+                        $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + total + '</td><td>' + v.settled + '</td><td>' + v.outstanding + '</td></tr>')
+                    });
+
+                    // Re-initialize DataTable after the table content is updated
                     $('#fadMonthlyReviewGrid').DataTable({
-                            dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-                            buttons: [
-                                {
-                                    extend: 'excelHtml5',
-                                    text: 'Export to Excel',
-                                    className: 'btn btn-success',
-                                    exportOptions: {
-                                        columns: function (idx, data, node) {
-                                            return !$(node).hasClass('hide-export');
-                                        }
-                                    }
-                                },
-                                {
-                                    extend: 'pdfHtml5',
-                                    text: 'Export To PDF',
-                                    className: 'btn btn-danger',
-                                    exportOptions: {
-                                        columns: function (idx, data, node) {
-                                            return !$(node).hasClass('hide-export');
-                                        }
+                        dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: 'Export to Excel',
+                                className: 'btn btn-success',
+                                exportOptions: {
+                                    columns: function (idx, data, node) {
+                                        return !$(node).hasClass('hide-export');
                                     }
                                 }
-                            ],
-                            lengthMenu: [
-                                [10, 50, 100, -1],
-                                [10, 50, 100, "All"]
-                            ]
-                        });
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: 'Export To PDF',
+                                className: 'btn btn-danger',
+                                exportOptions: {
+                                    columns: function (idx, data, node) {
+                                        return !$(node).hasClass('hide-export');
+                                    }
+                                }
+                            }
+                        ],
+                        lengthMenu: [
+                            [10, 50, 100, -1],
+                            [10, 50, 100, "All"]
+                        ]
+                    });
                 },
                 dataType: "json",
             });
@@ -92,12 +92,12 @@
             <option value="0" selected>--Select Entity Type--</option>
             @{
                 if (ViewData["EntitiesList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                     {
+                    foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                        {
                         <option value="@item.CODE" id="@item.CODE">@item.NAME</option>
+                        }
                     }
-                }
             }
         </select>
 
@@ -123,12 +123,14 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr. No</th>
-                    <th class="col-md-auto">Zone Name</th>
-                    <th class="col-md-auto">Branch Code</th>
-                    <th class="col-md-auto">Operational Zone/Branch</th>
+                    <th class="col-md-auto">Reporting Office</th>
+                    <th class="col-md-auto">Entity Code</th>
+                    <th class="col-md-auto">Entity Name</th>
                     <th class="col-md-auto">Opening Balance</th>
                     <th class="col-md-auto">Para Added</th>
+                    <th class="col-md-auto">Total</th>
                     <th class="col-md-auto">Paras Settled</th>
+                    <th class="col-md-auto">Paras Outstanding</th>
 
                 </tr>
             </thead>

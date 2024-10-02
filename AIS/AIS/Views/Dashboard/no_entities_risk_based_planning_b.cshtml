@@ -52,7 +52,8 @@
                     sr++;
                 });
 
-                $('#observation_panel tbody').append('  <tr><td colspan="4" align="right"> Total</td> <td align="right">' + total_sum + '</td></tr>');
+                $('#observation_panel tbody').append('  <tr><td></td><td></td><td></td><td><b>Total</b></td> <td align="right">' + total_sum + '</td></tr>');
+                initializeDataTable('observation_panel');
             },
             dataType: "json",
         });

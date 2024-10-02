@@ -40,7 +40,8 @@
                     $('#entitywise_panel_mainGrid tbody').append("<tr><td>" + sr + "</td><td>" + item.heading + "</td><td>" + item.annex + "</td><td class=\"text-right\">" + item.neW_TOTAL + "</td><td class=\"text-right\">" + item.olD_TOTAL + "</td><td class=\"text-right\">" + item.total + "</td><td class=\"text-right\" style=\"background-color: #ff968f; \">" + item.r1 + "</td><td class=\"text-right\" style=\"background-color: #f9e10a6b; \">" + item.r2 + "</td><td class=\"text-right\" style=\"background-color:#82f386;\">" + item.r3 + "</td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaViewerDetails(" + item.id + ");\">View Detail</a></td><td class=\"actionsCol\"><a href=\"#\" onclick=\"getParaSummaryDetails(" + item.id + ");\">View Summary</a></td></tr>");
                     sr++;
                 });
-                $('#entitywise_panel_mainGrid tbody').append("<tr><td colspan=\"3\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td class=\"text-right text-bold\"><b>" + r1 + "</b></td><td class=\"text-right text-bold\"><b>" + r2 + "</b></td><td class=\"text-right text-bold\"><b>" + r3 + "</b></td><td</td><td</td></tr>");
+                $('#entitywise_panel_mainGrid tbody').append("<tr><td></td><td></td><td><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td class=\"text-right text-bold\"><b>" + r1 + "</b></td><td class=\"text-right text-bold\"><b>" + r2 + "</b></td><td class=\"text-right text-bold\"><b>" + r3 + "</b></td><td></td><td></td></tr>");
+                dTable = initializeDataTable('entitywise_panel_mainGrid');
 
 
             },
@@ -81,11 +82,10 @@
                 var sr = 1;
 
                 $.each(data, function (index, item) {
-
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText(" + item.id + ", '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
-
+                dTable = initializeDataTable('entitywise_panel');
 
             },
             dataType: "json",
@@ -110,7 +110,7 @@
                     $('#summarywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.p_NAME + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td></tr>");
                     sr++;
                 });
-
+                initializeDataTable('summarywise_panel');
 
             },
             dataType: "json",

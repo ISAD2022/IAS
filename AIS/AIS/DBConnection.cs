@@ -15540,9 +15540,9 @@ Dear {userFullName},
                     rd.UN_SETTLED = rdr["Un_Settled"].ToString();
                     rd.INDICATOR = rdr["ind"].ToString();
                     rd.PERCENTAGE = rdr["percentage"].ToString();
-                    rd.R1 = rdr["r1"].ToString();
-                    rd.R2 = rdr["r2"].ToString();
-                    rd.R3 = rdr["r3"].ToString();
+                    //rd.R1 = rdr["r1"].ToString();
+                    //rd.R2 = rdr["r2"].ToString();
+                    //rd.R3 = rdr["r3"].ToString();
                     resp.Add(rd);
 
                 }

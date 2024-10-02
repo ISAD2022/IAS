@@ -6,7 +6,6 @@
 <script>
 
     $(document).ready(function () {
-
         getEntityWiseObservations("");
     });
 
@@ -43,7 +42,7 @@
                 $('#entitywise_panel_mainGrid tbody').append("<tr><td colspan=\"2\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + totalC + "</b></td><td class=\"text-right text-bold\"><b>" + atRepo + "</b></td><td class=\"text-right text-bold\"><b>" + underCon + "</b></td><td class=\"text-right text-bold\"><b>" + settled + "</b></td><td class=\"text-right text-bold\"><b>" + rejected + "</b></td><td class=\"text-right text-bold\"><b>" + totalP + "</b></td><td class=\"col_hide\"></td></tr>");
                 if (roleID == 12 || roleID == 13 || roleID == 14 || roleID == 21)
                     $('.col_hide').remove();
-
+         initializeDataTable('entitywise_panel_mainGrid');
 
             },
             dataType: "json",
@@ -82,8 +81,8 @@
                     $('#summarywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td class=\"text-right\">" + item.totaL_COMPLIANCE + "</td><td class=\"text-right\">" + item.aT_REPORTING + "</td><td class=\"text-right\">" + item.undeR_CONSIDERATION + "</td><td class=\"text-right\">" + item.settled + "</td><td class=\"text-right\">" + item.rejected + "</td><td>" + item.totaL_PARA + "</td></tr>");
                     sr++;
                 });
-                $('#summarywise_panel tbody').append("<tr><td colspan=\"2\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + totalC + "</b></td><td class=\"text-right text-bold\"><b>" + atRepo + "</b></td><td class=\"text-right text-bold\"><b>" + underCon + "</b></td><td class=\"text-right text-bold\"><b>" + settled + "</b></td><td class=\"text-right text-bold\"><b>" + rejected + "</b></td><td class=\"text-right text-bold\"><b>" + totalP + "</b></td></tr>");
-
+                $('#summarywise_panel tbody').append("<tr><td></td><td><b>Total</b></td><td class=\"text-right text-bold\"><b>" + totalC + "</b></td><td class=\"text-right text-bold\"><b>" + atRepo + "</b></td><td class=\"text-right text-bold\"><b>" + underCon + "</b></td><td class=\"text-right text-bold\"><b>" + settled + "</b></td><td class=\"text-right text-bold\"><b>" + rejected + "</b></td><td class=\"text-right text-bold\"><b>" + totalP + "</b></td></tr>");
+                initializeDataTable('summarywise_panel');
 
             },
             dataType: "json",
@@ -219,8 +218,6 @@
                         <div id="paraTextDivField" style="max-width:100%; overflow-y:auto;" class="col-md-12"></div>
 
                     </div>
-
-
                 </form>
             </div>
 

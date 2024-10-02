@@ -21,6 +21,7 @@
                         $('#manageObsPanel tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + ++i + '</td><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.annexure + '</td><td>' + v.parA_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td>' + v.amounT_INVOLVED + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="event.preventDefault();viewParaText(\'' + v.reF_P + '\',\'' + v.obS_ID + '\',\'' + v.parA_CATEGORY + '\')"> View Para</a></td></tr>');
 
                     });
+                    initializeDataTable('manageObsPanel');
                 },
                 dataType: "json",
             });

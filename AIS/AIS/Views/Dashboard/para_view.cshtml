@@ -88,7 +88,7 @@
             alert("Select Reporting Office or Place of Posting to Proceed");
             return;
         }
-
+      
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_functional_observations",
             type: "POST",
@@ -106,7 +106,9 @@
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
+              initializeDataTable('entitywise_panel');
 
+               
 
             },
             dataType: "json",

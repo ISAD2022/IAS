@@ -145,6 +145,48 @@ function getBase64(file) {
 function encryptPassword(password) {
     return btoa(password);
 }
+function destroyDatatable(id) {
+    if ($.fn.DataTable.isDataTable('#' + id)) {
+        $('#' + id).DataTable().clear().destroy();
+    }
+}
+function initializeDataTable(id) {
+    if ($.fn.DataTable.isDataTable('#' + id)) {
+        $('#' + id).DataTable().clear().destroy();
+    }
+
+    // Re-initialize DataTable after the table content is updated
+    var dTable=$('#' + id).DataTable({
+        dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                text: 'Export to Excel',
+                className: 'btn btn-success',
+                exportOptions: {
+                    columns: function (idx, data, node) {
+                        return !$(node).hasClass('hide-export');
+                    }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'Export To PDF',
+                className: 'btn btn-danger',
+                exportOptions: {
+                    columns: function (idx, data, node) {
+                        return !$(node).hasClass('hide-export');
+                    }
+                }
+            }
+        ],
+        lengthMenu: [
+            [10, 50, 100, -1],
+            [10, 50, 100, "All"]
+        ]
+});
+    return dTable;
+}
 
 
 

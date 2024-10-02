@@ -16,38 +16,64 @@
             url: g_asiBaseURL + "/ApiCalls/get_reporting_wise_observations",
             type: "POST",
             data: {
-           },
+            },
             cache: false,
             success: function (data) {
                 var sr = 1;
-                var rowspan = 1;
-                var mergeRow = 1;
-                var currentT = 0;
-                var legacyT = 0;
-                var totalT = 0;
-                var r1 = 0;
-                var r2 = 0;
-                var r3 = 0;
-                
-                $.each(data, function (index, item) {
+                var currentT = 0, legacyT = 0, totalT = 0;
+                var r1 = 0, r2 = 0, r3 = 0;
 
-                    currentT += parseInt(item.neW_TOTAL);
-                    legacyT += parseInt(item.olD_TOTAL);
-                    totalT += parseInt(item.total);
-                    r1 += parseInt(item.r1);
-                    r2 += parseInt(item.r2);
-                    r3 += parseInt(item.r3);
-                    $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.reportinG_OFFICE + "</td><td class=\"text-right\">" + item.neW_TOTAL + "</td><td class=\"text-right\">" + item.olD_TOTAL + "</td><td class=\"text-right\">" + item.total + "</td><td class=\"text-right\" style=\"background-color: #ff968f; \">" + item.r1 + "</td><td class=\"text-right\" style=\"background-color: #f9e10a6b; \">" + item.r2 + "</td><td class=\"text-right\" style=\"background-color:#82f386;\">" + item.r3 + "</td></tr>");
+                // Disable DataTable before making DOM changes
+                $('#entitywise_panel').DataTable().clear().destroy();
+
+                // Clear existing tbody content before appending new rows
+                $('#entitywise_panel tbody').empty();
+
+                $.each(data, function (index, item) {
+                    // Accumulate totals
+                    currentT += parseInt(item.neW_TOTAL, 10);
+                    legacyT += parseInt(item.olD_TOTAL, 10);
+                    totalT += parseInt(item.total, 10);
+                    r1 += parseInt(item.r1, 10);
+                    r2 += parseInt(item.r2, 10);
+                    r3 += parseInt(item.r3, 10);
+
+                    // Append row data
+                    $('#entitywise_panel tbody').append(
+                        `<tr>
+                        <td>${sr}</td>
+                        <td>${item.reportinG_OFFICE}</td>
+                        <td class="text-right">${item.neW_TOTAL}</td>
+                        <td class="text-right">${item.olD_TOTAL}</td>
+                        <td class="text-right">${item.total}</td>
+                        <td class="text-right" style="background-color: #ff968f;">${item.r1}</td>
+                        <td class="text-right" style="background-color: #f9e10a6b;">${item.r2}</td>
+                        <td class="text-right" style="background-color:#82f386;">${item.r3}</td>
+                    </tr>`
+                    );
                     sr++;
                 });
-                $('#entitywise_panel tbody').append("<tr><td colspan=\"2\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td class=\"text-right text-bold\"><b>" + r1 + "</b></td><td class=\"text-right text-bold\"><b>" + r2 + "</b></td><td class=\"text-right text-bold\"><b>" + r3 + "</b></td></tr>");
+
                 
 
+            
+                 dTable = initializeDataTable('entitywise_panel');
+                
+                    dTable.row.add([ '', 
+                                '<b>Total</b>',
+                                '<b>'+currentT+'</b>',
+                                '<b>'+legacyT+'</b>',
+                                 '<b>'+totalT+'</b>',
+                                  '<b>'+r1+'</b>',
+                                   '<b>'+r2+'</b>',
+                                    '<b>'+r3+'</b>'
+                            ]).draw(true);
+                
             },
             dataType: "json",
         });
     }
-  
+
 </script>
 <div class="row col-md-12">
     <h3 style="color: rgb(186 113 46) !important;">Controlling Office Wise Observation Overview</h3>
@@ -65,11 +91,10 @@
                     <th class="col-md-auto text-center text-light">Total</th>
                     <th class="col-md-auto text-center text-light">High</th>
                     <th class="col-md-auto text-center text-light">Medium</th>
-                    <th class="col-md-auto text-center text-light">Low</th>                    
+                    <th class="col-md-auto text-center text-light">Low</th>
                 </tr>
             </thead>
             <tbody>
-             
             </tbody>
         </table>
     </div>

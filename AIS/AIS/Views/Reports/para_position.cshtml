@@ -57,23 +57,25 @@
                         sr++;
                     });
                     var colSpan = 5;
-                    if (g_response[0].indicator == "Z") {
-                        $('.auditZoneCol').hide();
+                  
+                }
+ 
+                t_percentage = (((t_sparas + t_slparas) / t_tparas) * 100).toFixed(2);
+                $('#observation_panel tbody').append('<tr><td align="center"></td><td class="auditZoneCol" align="left"></td><td class="visibCol"  align="left"></td><td class="visibCol" align="left"></td><td align="right"><Total</td><td align="right">' + t_opara + '</td><td align="right">' + t_aparas + '</td><td align="right">' + t_tparas + '</td><td align="right">' + t_slparas + '</td><td align="right">' + t_sparas + '</td><td align="right">' + t_uparas + '</td><td align="right">' + t_percentage + '%</td></tr>')
+                 if (g_response[0].indicator == "Z") {
+                        $('.auditZoneCol').remove();
                         colSpan = 4;
                     }
                     else if (g_response[0].indicator == "A") {
-                        $('.visibCol').hide();
+                        $('.visibCol').remove();
                         colSpan = 2;
 
                     }
                     else {
-                        $('.auditZoneCol').hide();
+                        $('.auditZoneCol').remove();
                         colSpan = 4;
                     }
-                }
-
-                t_percentage = (((t_sparas + t_slparas) / t_tparas) * 100).toFixed(2);
-                $('#observation_panel tbody').append('<tr><td colspan="' + colSpan + '" align="right">Total</td><td align="right">' + t_opara + '</td><td align="right">' + t_aparas + '</td><td align="right">' + t_tparas + '</td><td align="right">' + t_slparas + '</td><td align="right">' + t_sparas + '</td><td align="right">' + t_uparas + '</td><td align="right">' + t_percentage + '%</td></tr>')
+                    initializeDataTable('observation_panel');
 
             },
             dataType: "json",
