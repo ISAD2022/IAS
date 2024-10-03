@@ -73,7 +73,8 @@
 
     function getObservations() {
 
-        $('#entitywise_panel tbody').empty();
+        
+        destroyDatatable('entitywise_panel');
         var entId = 0;
         if ($('#childposting').val() == 0)
             entId = $('#controlingsearch').val();
@@ -101,14 +102,10 @@
                 var sr = 1;
 
                 $.each(data, function (index, item) {
-
-
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
-              initializeDataTable('entitywise_panel');
-
-               
+              initializeDataTable('entitywise_panel');              
 
             },
             dataType: "json",

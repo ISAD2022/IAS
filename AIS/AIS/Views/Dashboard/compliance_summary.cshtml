@@ -6,11 +6,12 @@
 <script>
 
     $(document).ready(function () {
-        getEntityWiseObservations("");
+        getEntityWiseObservations(0);
     });
 
     function getEntityWiseObservations(entityId) {
-        $('#entitywise_panel_mainGrid tbody').empty();
+        
+        destroyDatatable('entitywise_panel_mainGrid');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_compliance_summary",
             type: "POST",
@@ -35,14 +36,13 @@
                     underCon += parseInt(item.undeR_CONSIDERATION);
                     settled += parseInt(item.settled);
                     rejected += parseInt(item.rejected);
-                  
                     $('#entitywise_panel_mainGrid tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td class=\"text-right\">" + item.totaL_COMPLIANCE + "</td><td class=\"text-right\">" + item.aT_REPORTING + "</td><td class=\"text-right\">" + item.undeR_CONSIDERATION + "</td><td class=\"text-right\">" + item.settled + "</td><td class=\"text-right\">" + item.rejected + "</td><td>" + item.totaL_PARA + "</td><td class=\"actionsCol col_hide\"><a href=\"#\" onclick=\"getComplianceSummaryDetails(" + item.id + ");\">View Details</a></td></tr>");
                     sr++;
                 });
-                $('#entitywise_panel_mainGrid tbody').append("<tr><td colspan=\"2\"><b>Total</b></td><td class=\"text-right text-bold\"><b>" + totalC + "</b></td><td class=\"text-right text-bold\"><b>" + atRepo + "</b></td><td class=\"text-right text-bold\"><b>" + underCon + "</b></td><td class=\"text-right text-bold\"><b>" + settled + "</b></td><td class=\"text-right text-bold\"><b>" + rejected + "</b></td><td class=\"text-right text-bold\"><b>" + totalP + "</b></td><td class=\"col_hide\"></td></tr>");
+                $('#entitywise_panel_mainGrid tbody').append("<tr><td></td><td><b>Total</b></td><td class=\"text-right text-bold\"><b>" + totalC + "</b></td><td class=\"text-right text-bold\"><b>" + atRepo + "</b></td><td class=\"text-right text-bold\"><b>" + underCon + "</b></td><td class=\"text-right text-bold\"><b>" + settled + "</b></td><td class=\"text-right text-bold\"><b>" + rejected + "</b></td><td class=\"text-right text-bold\"><b>" + totalP + "</b></td><td class=\"col_hide\"></td></tr>");
                 if (roleID == 12 || roleID == 13 || roleID == 14 || roleID == 21)
                     $('.col_hide').remove();
-         initializeDataTable('entitywise_panel_mainGrid');
+                initializeDataTable('entitywise_panel_mainGrid');
 
             },
             dataType: "json",
@@ -50,9 +50,8 @@
     }
 
     function getComplianceSummaryDetails(id) {
-        $('#paraSummaryModel').modal('show');
-
-        $('#summarywise_panel tbody').empty();
+        $('#paraSummaryModel').modal('show');        
+        destroyDatatable('summarywise_panel');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_compliance_summary",
             type: "POST",
@@ -101,10 +100,10 @@
             <thead style="background-color: rgb(84 56 135) !important; ">
                 <tr>
                     <th class="col-md-auto text-light">Sr. No.</th>
-                    <th class="col-md-auto text-light">Name</th>                    
+                    <th class="col-md-auto text-light">Name</th>
                     <th class="col-md-auto text-center text-light">Total Compliance</th>
                     <th class="col-md-auto text-center text-light">At Reporting Office</th>
-                    <th class="col-md-auto text-center text-light">Under Consideration</th>                    
+                    <th class="col-md-auto text-center text-light">Under Consideration</th>
                     <th class="col-md-auto text-center text-light">Settled</th>
                     <th class="col-md-auto text-center text-light">Rejected</th>
                     <th class="col-md-auto text-center text-light">Remaining Outstanding Para</th>
@@ -137,12 +136,12 @@
                                     <tr>
                                         <th class="col-md-auto text-light">Sr. No.</th>
                                         <th class="col-md-auto text-light">Name</th>
-                                        
+
                                         <th class="col-md-auto text-center text-light">Total Compliance</th>
                                         <th class="col-md-auto text-center text-light">At Reporting Office</th>
                                         <th class="col-md-auto text-center text-light">Under Consideration</th>
                                         <th class="col-md-auto text-center text-light">Settled</th>
-                                        <th class="col-md-auto text-center text-light">Rejected</th>                                        
+                                        <th class="col-md-auto text-center text-light">Rejected</th>
                                         <th class="col-md-auto text-center text-light">Remaining Outstanding Paras</th>
                                     </tr>
                                 </thead>

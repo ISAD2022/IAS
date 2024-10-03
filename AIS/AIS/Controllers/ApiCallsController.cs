@@ -2016,7 +2016,7 @@ namespace AIS.Controllers
             return dBConnection.GetUserDetailAdminPanel(DESIGNATION_CODE);
         }
         [HttpPost]
-        public List<ComplianceSummaryModel> get_compliance_summary(string ENTITY_ID = "")
+        public List<ComplianceSummaryModel> get_compliance_summary(int ENTITY_ID)
         {
             return dBConnection.GetComplianceSummary(ENTITY_ID);
         }

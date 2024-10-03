@@ -16311,7 +16311,7 @@ Dear {userFullName},
             return resp;
 
         }
-        public List<ComplianceSummaryModel> GetComplianceSummary(string entityID = "")
+        public List<ComplianceSummaryModel> GetComplianceSummary(int entityID )
         {
 
             sessionHandler = new SessionHandler();

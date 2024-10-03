@@ -12,15 +12,7 @@
 
     function entityTypeSelectionChangeEvent() {
         if ($('#entityTypeSelectionField').val() != 0) {
-            // Clear the existing table
-            // Clear and destroy the existing DataTable instance
-            if ($.fn.DataTable.isDataTable('#fadMonthlyReviewGrid')) {
-                $('#fadMonthlyReviewGrid').DataTable().clear().destroy();
-            }
-
-            // Clear existing rows from tbody
-            $('#fadMonthlyReviewGrid tbody').empty();
-
+            destroyDatatable('fadMonthlyReviewGrid');
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_fad_monthly_review_paras_for_entity_type_id",
                 type: "POST",
@@ -34,48 +26,17 @@
 
 
                     $.each(data, function (i, v) {
+                        var total = parseInt(v.openinG_BALANCE) + parseInt(v.parA_ADDED);
                         $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + total + '</td><td>' + v.settled + '</td><td>' + v.outstanding + '</td></tr>')
                     });
-
-                    // Re-initialize DataTable after the table content is updated
-                    $('#fadMonthlyReviewGrid').DataTable({
-                        dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-                        buttons: [
-                            {
-                                extend: 'excelHtml5',
-                                text: 'Export to Excel',
-                                className: 'btn btn-success',
-                                exportOptions: {
-                                    columns: function (idx, data, node) {
-                                        return !$(node).hasClass('hide-export');
-                                    }
-                                }
-                            },
-                            {
-                                extend: 'pdfHtml5',
-                                text: 'Export To PDF',
-                                className: 'btn btn-danger',
-                                exportOptions: {
-                                    columns: function (idx, data, node) {
-                                        return !$(node).hasClass('hide-export');
-                                    }
-                                }
-                            }
-                        ],
-                        lengthMenu: [
-                            [10, 50, 100, -1],
-                            [10, 50, 100, "All"]
-                        ]
-                    });
+                    initializeDataTable('fadMonthlyReviewGrid');
                 },
                 dataType: "json",
             });
         }
     }
 
-    // Helper function to generate table rows
-
-
+   
 
 </script>
 

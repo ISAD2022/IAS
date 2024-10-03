@@ -5,31 +5,31 @@
 
 <script type="text/javascript">
 
-    function getSubProcess(){
+    function getSubProcess() {
         $('#riskSubGroupSelectBox').empty();
         $('#riskSubGroupSelectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
         $('#riskGroupDetailSelectBox').empty();
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
         $.ajax({
-                url: g_asiBaseURL + "/Setup/process_details",
-                type: "POST",
-                data: {
-                    'ProcessId': $('#riskGroupSelectBox option:selected').val(),
-                },
-                cache: false,
-                success: function (data) {
-                    $.each(data, function (index, item) {
-                        $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.title + " </option > ");
-                    });
+            url: g_asiBaseURL + "/Setup/process_details",
+            type: "POST",
+            data: {
+                'ProcessId': $('#riskGroupSelectBox option:selected').val(),
+            },
+            cache: false,
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $('#riskSubGroupSelectBox').append("<option value=\"" + item.id + "\"> " + item.title + " </option > ");
+                });
 
-                },
-                dataType: "json",
-            });  
+            },
+            dataType: "json",
+        });
     }
 
     function getProcessDetail() {
 
-       
+
         $('#riskGroupDetailSelectBox').empty();
         $('#riskGroupDetailSelectBox').append("<option value=\"0\" id=\"0\">--Select Checklist Detail--</option>");
 
@@ -48,9 +48,9 @@
             },
             dataType: "json",
         });
-    
+
     }
-       
+
     function getEntityObservation() {
 
         $.ajax({
@@ -93,16 +93,16 @@
             },
             dataType: "json",
         });
-    } 
-   
-  
+    }
+
+
 </script>
 <div class="row col-md-12">
     <div class="col-md-12">
         <h3 style="color: #45c545;">Violation Wise Analysis</h3>
     </div>
-    
-    <div class="col-md-12 mt-3">   
+
+    <div class="col-md-12 mt-3">
         <div class="col-md-2 row">
             <label class="text-bold"><b>Violations</b></label>
         </div>
@@ -110,12 +110,12 @@
             <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
             @{
                 if (ViewData["ProcessList"] != null)
-                {
-                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
                     {
+                    foreach (var item in (dynamic)(ViewData["ProcessList"]))
+                        {
                         <option id="@item.P_ID" value="@item.P_ID">@item.P_NAME</option>
+                        }
                     }
-                }
             }
         </select>
     </div>
@@ -124,7 +124,7 @@
             <label class="text-bold"><b>Sub Process</b></label>
         </div>
         <select id="riskSubGroupSelectBox" onchange="getProcessDetail();" class="form-select form-control" aria-label="Default select example">
-            <option value="0">--Select Sub Process--</option>           
+            <option value="0">--Select Sub Process--</option>
         </select>
     </div>
     <div class="col-md-12 mt-3">

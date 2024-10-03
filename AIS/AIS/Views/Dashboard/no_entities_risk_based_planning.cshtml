@@ -26,7 +26,7 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                $('#observation_panel tbody').empty();
+                destroyDatatable('observation_panel');
                 var sr = 1;
                 var total_sum = 0;
                 $.each(data, function (i, v) {
@@ -35,7 +35,7 @@
                     sr++;
                 });
                 $('#observation_panel tbody').append('  <tr><td></td><td></td><td></td><td></td><td><b>Total</b></td><td align="right">' + total_sum + '</td></tr>');
-                dTable = initializeDataTable('observation_panel');
+               initializeDataTable('observation_panel');
             },
             dataType: "json",
         });

@@ -158,6 +158,8 @@ function initializeDataTable(id) {
     // Re-initialize DataTable after the table content is updated
     var dTable=$('#' + id).DataTable({
         dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+        autoWidth: true,
+        ordering: false,
         buttons: [
             {
                 extend: 'excelHtml5',

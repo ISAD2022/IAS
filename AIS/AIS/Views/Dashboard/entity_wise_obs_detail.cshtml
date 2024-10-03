@@ -14,11 +14,10 @@
     });
 
     function getObservations() {
-
-        $('#entitywise_panel tbody').empty();
-        if (g_entId == 0)
-            return;
        
+        destroyDatatable('entitywise_panel');
+        if (g_entId == 0)
+            return;       
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_entity_wise_observation_detail",
@@ -34,8 +33,7 @@
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td> <td class=\"text-left\">" + item.parA_GIST + "</td><td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
-                dTable = initializeDataTable('entitywise_panel');
-
+                initializeDataTable('entitywise_panel');
             },
             dataType: "json",
         });

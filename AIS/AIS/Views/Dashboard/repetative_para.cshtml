@@ -63,7 +63,7 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                $('#observation_panel tbody').empty();
+                destroyDatatable('observation_panel');
                 var sr = 1;
                 var t_2023 = 0;
                 var t_2022 = 0;
@@ -97,7 +97,8 @@
                     $('#observation_panel tbody').append('<tr id="' + v.id + '"><td align="center"> ' + sr + '</td> <td align="left">' + v.procesS_DETAIL + '</td><td align="right">' + v.y2023 + '</td> <td align="right">' + v.y2022 + '</td><td align="right">' + v.y2021 + '</td><td align="right">' + v.y2020 + '</td><td align="right">' + v.y2019 + '</td><td align="right">' + v.y2018 + '</td><td align="right">' + v.y2017 + '</td><td align="right">' + v.y2016 + '</td><td align="right">' + v.y2015 + '</td><td align="right">' + v.y2014 + '</td><td align="right">' + v.y2013 + '</td><td align="right">' + v.y2012 + '</td><td align="right">' + v.y2011 + '</td><td align="right">' + v.y2010 + '</td></tr>');
                     sr++;
                 });
-                $('#observation_panel tbody').append('<tr><td colspan="2" align="right">Total</td><td align="right">' + t_2023 + '</td><td align="right">' + t_2022 + '</td><td align="right">' + t_2021 + '</td><td align="right">' + t_2020 + '</td><td align="right">' + t_2019 + '</td><td align="right">' + t_2018 + '</td><td align="right">' + t_2017 + '</td><td align="right">' + t_2016 + '</td><td align="right">' + t_2015 + '</td><td align="right">' + t_2014 + '</td><td align="right">' + t_2013 + '</td><td align="right">' + t_2012 + '</td><td align="right">' + t_2011 + '</td><td align="right">' + t_2010 + '</td></tr>');
+                $('#observation_panel tbody').append('<tr><td></td><td align="right">Total</td><td align="right">' + t_2023 + '</td><td align="right">' + t_2022 + '</td><td align="right">' + t_2021 + '</td><td align="right">' + t_2020 + '</td><td align="right">' + t_2019 + '</td><td align="right">' + t_2018 + '</td><td align="right">' + t_2017 + '</td><td align="right">' + t_2016 + '</td><td align="right">' + t_2015 + '</td><td align="right">' + t_2014 + '</td><td align="right">' + t_2013 + '</td><td align="right">' + t_2012 + '</td><td align="right">' + t_2011 + '</td><td align="right">' + t_2010 + '</td></tr>');
+                initializeDataTable('observation_panel');
             },
             dataType: "json",
         });

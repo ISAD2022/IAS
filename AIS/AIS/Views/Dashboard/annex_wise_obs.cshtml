@@ -6,12 +6,11 @@
 <script>
 
     $(document).ready(function () {
-
         getEntityWiseObservations();
     });
 
     function getEntityWiseObservations() {
-        $('#entitywise_panel_mainGrid tbody').empty();
+        destroyDatatable('entitywise_panel_mainGrid');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_annex_wise_observations",
             type: "POST",
@@ -41,7 +40,7 @@
                     sr++;
                 });
                 $('#entitywise_panel_mainGrid tbody').append("<tr><td></td><td></td><td><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td class=\"text-right text-bold\"><b>" + r1 + "</b></td><td class=\"text-right text-bold\"><b>" + r2 + "</b></td><td class=\"text-right text-bold\"><b>" + r3 + "</b></td><td></td><td></td></tr>");
-                dTable = initializeDataTable('entitywise_panel_mainGrid');
+                initializeDataTable('entitywise_panel_mainGrid');
 
 
             },
@@ -70,7 +69,7 @@
 
     function getParaViewerDetails(id) {
         $('#paraViewerModel').modal('show');
-        $('#entitywise_panel tbody').empty();
+        destroyDatatable('entitywise_panel');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_analysis_detail_paras",
             type: "POST",
@@ -85,7 +84,7 @@
                     $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td><td><a href=\"#\" onclick=\"getParaText(" + item.id + ", '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
-                dTable = initializeDataTable('entitywise_panel');
+                initializeDataTable('entitywise_panel');
 
             },
             dataType: "json",
@@ -94,7 +93,7 @@
 
     function getParaSummaryDetails(id) {
         $('#paraSummaryModel').modal('show');
-        $('#summarywise_panel tbody').empty();
+        destroyDatatable('summarywise_panel');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_analysis_summary_paras",
             type: "POST",

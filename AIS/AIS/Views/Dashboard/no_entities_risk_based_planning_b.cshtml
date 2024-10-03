@@ -43,7 +43,7 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                $('#observation_panel tbody').empty();
+                destroyDatatable('observation_panel');
                 var sr = 1;
                 var total_sum=0;
                 $.each(data, function (i, v) {

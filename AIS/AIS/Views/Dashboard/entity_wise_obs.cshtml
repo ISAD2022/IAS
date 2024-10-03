@@ -6,12 +6,11 @@
 <script>
     var dTable;
     $(document).ready(function () {
-
         getEntityWiseObservations();
     });
 
     function getEntityWiseObservations() {
-        $('#entitywise_panel tbody').empty();
+        destroyDatatable('entitywise_panel');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_entity_wise_observations",
             type: "POST",
@@ -39,7 +38,7 @@
                     sr++;
                 });
                $('#entitywise_panel tbody').append("<tr><td></td><td></td><td><b>Total</b></td><td class=\"text-right text-bold\"><b>" + currentT + "</b></td><td class=\"text-right text-bold\"><b>" + legacyT + "</b></td><td class=\"text-right text-bold\"><b>" + totalT + "</b></td><td class=\"text-right text-bold\"><b>" + r1 + "</b></td><td class=\"text-right text-bold\"><b>" + r2 + "</b></td><td class=\"text-right text-bold\"><b>" + r3 + "</b></td><td></td></tr>");
-                dTable = initializeDataTable('entitywise_panel');
+                initializeDataTable('entitywise_panel');
 
             },
             dataType: "json",
