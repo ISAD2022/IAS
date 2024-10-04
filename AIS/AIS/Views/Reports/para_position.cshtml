@@ -39,8 +39,8 @@
                 var t_r2 = 0;
                 var t_r3 = 0;
                 if (g_response.length > 0) {
-                    if (g_response[0].indicator == "Z") {
-                        $('#observation_panel_az').removeClass('d');
+                    if (g_response[0].indicator == "Z" || g_response[0].indicator == "" ) {
+                        $('#observation_panel_az').removeClass('d-none');
                         $.each(data, function (i, v) {
 
                             var percentage = 0;
@@ -64,6 +64,7 @@
 
                     }
                     else if (g_response[0].indicator == "A") {
+                        $('#observation_panel_ho').removeClass('d-none');
                         $.each(data, function (i, v) {
 
                             var percentage = 0;
@@ -77,7 +78,7 @@
                             t_r1 += parseInt(v.r1);
                             t_r2 += parseInt(v.r2);
                             t_r3 += parseInt(v.r3);
-                            $('#observation_panel_ho tbody').append('<tr><td align="center"> ' + sr + '</td><td  align="left">' + v.entitY_TYPE_DESC + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + v.r1 + '</td><td align="right">' + v.r2 + '</td><td align="right">' + v.r3 + '</td><td align="right">' + v.percentage + '%</td></tr>');
+                            $('#observation_panel_ho tbody').append('<tr><td align="center"> ' + sr + '</td><td  align="left">' + v.audiT_ZONE + '</td><td align="right">' + v.opeN_BALANCE + '</td><td align="right">' + v.added + '</td><td align="right">' + v.total + '</td><td align="right">' + v.settleD_LEGACY + '</td><td align="right">' + v.settleD_NEW_PARA + '</td><td align="right">' + v.uN_SETTLED + '</td><td align="right">' + v.r1 + '</td><td align="right">' + v.r2 + '</td><td align="right">' + v.r3 + '</td><td align="right">' + v.percentage + '%</td></tr>');
                             sr++;
                         });
                         t_percentage = (((t_sparas + t_slparas) / t_tparas) * 100).toFixed(2);
@@ -109,7 +110,10 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
                     <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto">Audit Cluster</th>                
+                    <th class="col-md-auto">Entity Type</th>
+                    <th class="col-md-auto">Reporting Office</th>
+                    <th class="col-md-auto">Entity Name</th>
+                                  
                     <th class="col-md-auto text-center">Opening Balance</th>
                     <th class="col-md-auto text-center">Added</th>
                     <th class="col-md-auto text-center">Total</th>
@@ -129,9 +133,7 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
                     <th class="col-md-auto">Sr. No.</th>
-                    <th class="col-md-auto">Entity Type</th>
-                    <th class="col-md-auto">Reporting Office</th>
-                    <th class="col-md-auto">Entity Name</th>
+                    <th class="col-md-auto">Audit Cluster</th>
                     <th class="col-md-auto text-center">Opening Balance</th>
                     <th class="col-md-auto text-center">Added</th>
                     <th class="col-md-auto text-center">Total</th>
