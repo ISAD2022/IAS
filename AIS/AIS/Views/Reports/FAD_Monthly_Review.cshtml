@@ -23,11 +23,17 @@
                 },
                 cache: false,
                 success: function (data) {
-
+                    var t_r1 = 0;
+                    var t_r2 = 0;
+                    var t_r3 = 0;
 
                     $.each(data, function (i, v) {
                         var total = parseInt(v.openinG_BALANCE) + parseInt(v.parA_ADDED);
-                        $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + total + '</td><td>' + v.settled + '</td><td>' + v.outstanding + '</td></tr>')
+                        t_r1 += parseInt(v.r1);
+                        t_r2 += parseInt(v.r2);
+                        t_r3 += parseInt(v.r3);
+
+                        $('#fadMonthlyReviewGrid tbody').append('<tr><td>' + ++i + '</td><td>' + v.reportinG_OFFICE + '</td><td>' + v.chilD_CODE + '</td><td>' + v.placE_OF_POSTING + '</td><td>' + v.openinG_BALANCE + '</td><td>' + v.parA_ADDED + '</td><td>' + total + '</td><td>' + v.settled + '</td><td>' + v.outstanding + '</td><td align="right">' + v.r1 + '</td><td align="right">' + v.r2 + '</td><td align="right">' + v.r3 + '</td></tr>')
                     });
                     initializeDataTable('fadMonthlyReviewGrid');
                 },
@@ -92,6 +98,9 @@
                     <th class="col-md-auto">Total</th>
                     <th class="col-md-auto">Paras Settled</th>
                     <th class="col-md-auto">Paras Outstanding</th>
+                    <th class="col-md-auto">High Risk</th>
+                    <th class="col-md-auto">Medium Risk</th>
+                    <th class="col-md-auto">Low Risk</th>
 
                 </tr>
             </thead>

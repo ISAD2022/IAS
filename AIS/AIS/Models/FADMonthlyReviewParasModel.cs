@@ -13,6 +13,9 @@ namespace AIS.Models
         public string TOTAL {  get; set; }
         public string SETTLED {  get; set; }
         public string OUTSTANDING {  get; set; } 
+        public string R1 {  get; set; } 
+        public string R2 {  get; set; } 
+        public string R3 {  get; set; } 
 
     }
 }

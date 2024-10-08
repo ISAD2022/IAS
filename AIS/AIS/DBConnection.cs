@@ -13452,8 +13452,7 @@ Dear {userFullName},
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = PARA_REF;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                //cmd.Parameters.Add("UserEntityId", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-
+               
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -15540,9 +15539,9 @@ Dear {userFullName},
                     rd.UN_SETTLED = rdr["Un_Settled"].ToString();
                     rd.INDICATOR = rdr["ind"].ToString();
                     rd.PERCENTAGE = rdr["percentage"].ToString();
-                    //rd.R1 = rdr["r1"].ToString();
-                    //rd.R2 = rdr["r2"].ToString();
-                    //rd.R3 = rdr["r3"].ToString();
+                    rd.R1 = rdr["r1"].ToString();
+                    rd.R2 = rdr["r2"].ToString();
+                    rd.R3 = rdr["r3"].ToString();
                     resp.Add(rd);
 
                 }
@@ -19205,15 +19204,18 @@ Dear {userFullName},
                             while (rdr.Read())
                             {
                                 var review = new FADMonthlyReviewParasModel
-                                {
+                                    {
                                     REPORTING_OFFICE = rdr["P_NAME"].ToString(),
                                     PLACE_OF_POSTING = rdr["C_NAME"].ToString(),
                                     CHILD_CODE = rdr["CHILD_CODE"].ToString(),
                                     OPENING_BALANCE = rdr["opening_bal"].ToString(),
                                     PARA_ADDED = rdr["Para_added"].ToString(),
                                     SETTLED = rdr["Settled"].ToString(),
-                                    OUTSTANDING = rdr["Outstanding"].ToString()
-                                };
+                                    OUTSTANDING = rdr["Outstanding"].ToString(),
+                                    R1 = rdr["r1"].ToString(),
+                                    R2 = rdr["r2"].ToString(),
+                                    R3 = rdr["r3"].ToString()
+                                    };
 
 
                                 list.Add(review);
