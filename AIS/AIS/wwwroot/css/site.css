@@ -13,7 +13,7 @@ for details on configuring this project to bundle and minify static web assets. 
     box-sizing: border-box !important; /* Include padding and border in width and height */
 }
 
-.table td:not(:has(*)) {
+.table td:not(:has(a)) {
     word-break: break-word !important;
 }
 

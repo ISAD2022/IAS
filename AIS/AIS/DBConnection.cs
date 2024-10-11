@@ -8492,15 +8492,12 @@ Dear {userFullName},
                         chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
                         chk.RISK_ID = rdr["riskid"].ToString();
-
                     }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
                     chk.AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"].ToString();
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
-
-
                     list.Add(chk);
 
                 }

@@ -61,7 +61,7 @@
 
                 $.each(data, function (index, child) {
                     child.parA_STATUS = child.parA_STATUS == 9 ? 'Settle' : 'Un-Settle';
-                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="event.preventDefault();updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
+                    $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td><p class="fw-normal mb-1">' + ++index + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD.split(' ')[0] + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td><p  class="fw-normal mb-1">' + child.parA_STATUS + '</p></td><td class="text-center"><a href="#" onclick="event.preventDefault();updateParaDetails(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-primary mr-5px"><small>Update Observation</small></a></td><td class="text-center"><a href="#" onclick="updateParaStatusToSettle(\'' + child.reF_P + '\', \'' + child.parA_NO + '\', \'' + child.id + '\' );" class="text-hover text-success mr-5px"><small>Settle Observation</small></a></td><td class="text-center"><a href="#" onclick="submitDeletionofLegacyPara(\'' + child.reF_P + '\' );" class="text-hover text-danger mr-5px"><small>Delete Observation</small></a></td></tr>')
                 });
             },
 
@@ -99,35 +99,19 @@
         g_paraId = paraId;
         g_paraRef = ref_p;
         $('#process_detail').modal('show');
-        $('#listofRespPersons tbody').empty();
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_legacy_paras_for_update_ho",
-            type: "POST",
-            data: {
-                'ENTITY_NAME': $('#entitySelectField option:selected').text(),
-                'PARA_REF': ref_p,
-                'PARA_ID': paraId
-            },
-            cache: false,
-            success: function (data) {
+        $.each(g_obsList, function (i, v) {
+            if (v.reF_P == ref_p) {
 
-                if (data.length > 0) {
-                    var v = data[0];
-                    g_procId = v.process;
-                    g_subprocId = v.suB_PROCESS;
-                    g_procDetailId = v.procesS_DETAIL;
-                    g_entType = v.enT_TYPE;
-                    $('#violation_selectBox').val(v.process);
-                    $('#violation_selectBox').val(v.risK_ID);
-                    $('#responseAuditee').val(v.parA_TEXT).trigger('change');   
-                    getViolationNature();
-                 
-                }
-            },
-
-            dataType: "json",
+                g_procId = v.process;
+                g_subprocId = v.suB_PROCESS;
+                g_procDetailId = v.procesS_DETAIL;
+                g_entType = v.enT_TYPE;
+                $('#violation_selectBox').val(v.process);
+                $('#risk_selectBox').val(v.risK_ID);
+                $('#responseAuditee').val(v.parA_TEXT).trigger('change');
+                getViolationNature();
+            }
         });
-
 
     }
    
@@ -187,8 +171,7 @@
         });
 
     }  
-   
-    
+       
     function reloadLocation() {
         getLegacyPara();
     }
@@ -402,7 +385,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                                    <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
+                                            <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
                         }
                     }
                 }
@@ -458,7 +441,7 @@
                                 {
                                     foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
                                     {
-                                                <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                     }
                                 }
                             }
@@ -482,7 +465,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                                <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
