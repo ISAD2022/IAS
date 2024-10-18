@@ -156,7 +156,7 @@
         $('#viewParaComplianceModel').modal('hide');
         window.location.reload();
     }
-   
+
     function getFileExtension(file) {
         var fileName = file.name;
         var extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
@@ -244,7 +244,7 @@
     }
     function downloadFile(id) {
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_post_compliance_evidence_data",
+            url: g_asiBaseURL + "/ApiCalls/get_cau_paras_post_compliance_evidence_data",
             type: "POST",
             data: {
                 'FILE_ID': id,
@@ -269,7 +269,7 @@
 
     function CAUSubmitParaToBranch() {
 
-      
+
 
         if ($('#cauFurtherInstruction').val() == "") {
             alert("Please provide instructions to proceed");

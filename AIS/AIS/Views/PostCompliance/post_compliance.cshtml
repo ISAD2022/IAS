@@ -52,9 +52,9 @@
             fileTypeError: "Disallowed file format.", // Error message for disallowed file format
             label: "Select your files and wait until they appear below", // Label text for the file input
 
-           
+
         });
-       
+
         var fileInput = document.getElementById('aksfileupload');
 
         fileInput.addEventListener('change', function () {
@@ -86,10 +86,10 @@
             // Call uploadFiles only if there are valid files
             if (hasFiles) {
                 uploadFiles(formData);
-            } 
+            }
         }
 
-       
+
 
         async function uploadFiles(formData) {
             try {
@@ -106,7 +106,7 @@
                     var filename = $(this).attr("data-delete");
                     deleteFileFromServer(filename);
                 });
-               
+
             } catch (error) {
                 console.error("Error uploading files:", error);
                 alert("Error uploading files. Please try again."); // Use custom alert
@@ -155,7 +155,7 @@
         var timestamp = year + month + day + '_' + hours + minutes + seconds + milliseconds;
         return timestamp;
     }
-   
+
     function base64ToBlob(base64, contentType) {
         const byteCharacters = atob(base64);
         const byteArrays = [];
@@ -187,7 +187,7 @@
                 },
                 cache: false,
                 success: function (data) {
-                   
+
 
                 },
 
@@ -196,11 +196,11 @@
         }
 
 
-        
+
 
     }
-      
-  
+
+
     function getOwnParasForCompliance() {
 
         $('#manageObsPanel tbody').empty();
@@ -213,7 +213,7 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-              
+
                 $.each(data, function (index, child) {
 
                     $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.receiveD_FROM + '</td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
@@ -257,7 +257,7 @@
         });
 
     }
-   
+
     function viewParaDetails(newParaId = 0, oldParaId = 0, indicator = '', memo_no = '', prevRole, nextRole, comID) {
 
         g_newParaId = newParaId;
@@ -278,11 +278,11 @@
             },
             cache: false,
             success: function (data) {
-                if (data.length == 0 ) {
+                if (data.length == 0) {
                     $('#manageComplianceHistPanel tbody').append('<tr><td class="text-center" colspan="5"><i>No previous compliance submitted yet</i></td><td><a onclick="event.preventDefault();getComplianceText(' + comID + ', 0);" href="#" class="text-danger">Submit Compliance</a></td></tr>');
                 }
 
-                              else {
+                else {
 
                     var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
                     $.each(data, function (i, v) {
@@ -309,13 +309,13 @@
         var commentsRemarks = "";
         var productImagesArr = [];
 
-         if ($('.richText-editor').html() == "") {
-                alert("Please provide Compliance to proceed");
-                return;
-            }
-            complianceRemarks = $('.richText-editor').html();
+        if ($('.richText-editor').html() == "") {
+            alert("Please provide Compliance to proceed");
+            return;
+        }
+        complianceRemarks = $('.richText-editor').html();
         $('#nextRoleButtonHandler').attr("disabled", true);
-   
+
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/submit_post_audit_compliance",
             type: "POST",
@@ -336,7 +336,7 @@
                 $('#nextRoleButtonHandler').attr("disabled", false);
                 alert("An error occurred: " + jqXHR.status + " " + errorThrown);
 
-               
+
             },
             dataType: "json",
         });
@@ -375,7 +375,7 @@
                     $('#viewMemo_paraGist_sc').val(data.gisT_OF_PARA);
                     $('#viewMemo_memo_sc').html(data.parA_TEXT);
                     $('#viewMemo_compliance_sc').val('').trigger('change');
-                   
+
                     $('#listofRespPersons_sc tbody').empty();
                     if (data.responsiblE_PPs.length > 0) {
                         $.each(data.responsiblE_PPs, function (j, pp) {
@@ -385,14 +385,14 @@
                         });
                     }
 
-                  
+
                 } else {
                     $('#viewMemoModel').modal('show');
                     $('#viewMemo_memoNumber').val(g_memoNo);
                     $('#viewMemo_paraGist').val(data.gisT_OF_PARA);
                     $('#viewMemo_memo').html(data.parA_TEXT);
                     $('#viewMemo_compliance').val('');
-                   
+
                     $('#listofRespPersons tbody').empty();
                     if (data.responsiblE_PPs.length > 0) {
                         $.each(data.responsiblE_PPs, function (j, pp) {
@@ -482,25 +482,25 @@
             dataType: "json",
         });
 
-     
+
     }
 </script>
 
 
 <div class="row">
-  
+
     <div id="ownCompliancePanel" class="row col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANADING @ViewData["UserEntityName"] COMPLIANCES </h3>
         <table id="manageObsPanel" class="display">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr No.</th>
-                    <th class="col-md-auto">Audit Period</th>                                        
+                    <th class="col-md-auto">Audit Period</th>
                     <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Audit Execution Date</th>                    
+                    <th class="col-md-auto">Audit Execution Date</th>
                     <th class="col-md-auto">Title / Gist</th>
                     <th class="col-md-auto">Received From</th>
-                    <th class="col-md-auto">Auditor Remarks</th>                    
+                    <th class="col-md-auto">Auditor Remarks</th>
                     <th class="col-md-auto hide-export">Compliance History</th>
                 </tr>
             </thead>
@@ -593,31 +593,31 @@
                     </div>
                     <div class="form-group mt-3">
                         <label for="complianceCycleTextPanel">Compliance /Remarks</label>
-                          <div class="row col-md-12 mt-3 mb-3">
+                        <div class="row col-md-12 mt-3 mb-3">
                             <div id="complianceCycleTextPanel" class="col-md-12"></div>
                         </div>
-                        
+
                     </div>
-                      <div class="form-group mt-3">
+                    <div class="form-group mt-3">
                         <label for="complianceCycleEvidences">Evidence</label>
-                         <div class="row col-md-12 mt-3 mb-3">
+                        <div class="row col-md-12 mt-3 mb-3">
                             <div id="complianceCycleEvidences">
                             </div>
                         </div>
-                      
+
                     </div>
 
-                   
+
                 </form>
             </div>
-            <div class="modal-footer">             
-                <button id="" type="button" data-dismiss="modal"  class="btn btn-secondary">Close</button>                
+            <div class="modal-footer">
+                <button id="" type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-                                
+
 <div id="submitComplianceMemoModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -677,9 +677,9 @@
 
                 </form>
             </div>
-            <div class="modal-footer">    
-                <button id="" type="button" data-dismiss="modal"  class="btn btn-secondary">Close</button>                
-                <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success">Submit Compliance</button>                
+            <div class="modal-footer">
+                <button id="" type="button" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                <button id="nextRoleButtonHandler" onclick="PublishCompliance('U')" type="button" class="btn btn-success">Submit Compliance</button>
             </div>
         </div>
     </div>

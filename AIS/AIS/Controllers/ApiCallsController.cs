@@ -922,6 +922,11 @@ namespace AIS.Controllers
         {
             return dBConnection.GetPostComplianceEvidenceData(FILE_ID);
         }
+        [HttpPost]
+        public AuditeeResponseEvidenceModel get_cau_paras_post_compliance_evidence_data(string FILE_ID)
+            {
+            return dBConnection.GetCAUParasPostComplianceEvidenceData(FILE_ID);
+            }
 
         [HttpPost]
         public AuditeeResponseEvidenceModel get_auditee_evidence_data(string FILE_ID)

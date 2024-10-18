@@ -10987,7 +10987,44 @@ Dear {userFullName},
             con.Dispose();
             return resp;
         }
+        public AuditeeResponseEvidenceModel GetCAUParasPostComplianceEvidenceData(string FILE_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var resp = new AuditeeResponseEvidenceModel();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence_FileData_CAU";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = new AuditeeResponseEvidenceModel
+                        {
+                        IMAGE_NAME = rdr["FILE_NAME"].ToString(),
+                        SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
+                        LENGTH = Convert.ToInt32(rdr["LENGTH"]),
+                        FILE_ID = (rdr["id"].ToString())
+                        };
 
+                    // Handle CLOB data
+                    var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
+                    if (clob != null)
+                        {
+                        resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
+                        }
+
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
         public AuditeeResponseEvidenceModel GetAuditeeEvidenceData(string FILE_ID)
         {
             sessionHandler = new SessionHandler();

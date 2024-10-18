@@ -108,7 +108,7 @@
                     var filename = $(this).attr("file-name");
                     deleteFileFromServer(filename);
                 });
-              
+
             }
             processFiles(g_imgFiles);
         });
@@ -183,7 +183,7 @@
     function deleteFileFromServer(fileName) {
         deleteImageObjectByFileName(fileName);
     }
-   
+
     function getReivewParasForCompliance() {
         $('#manageObsPanel2 tbody').empty();
         $.ajax({
@@ -194,12 +194,12 @@
             },
             cache: false,
             success: function (data) {
-                g_obsList = data;           
+                g_obsList = data;
                 $.each(data, function (index, child) {
                     $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td>' + child.compliancE_UNIT + '</td><td>' + child.compliancE_SETTLEMENT_OFFICER + '</td><td>' + child.compliancE_UNIT_INCHARGE + '</td><td>' + child.entitY_NAME + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.parA_RISK + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.settleD_ON + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-                   });
+                });
 
-                  $('#manageObsPanel2').DataTable({
+                $('#manageObsPanel2').DataTable({
                     dom: '<"top"lfB>rt<"bottom"ip><"clear">',
                     buttons: [
                         {
@@ -258,17 +258,17 @@
             },
             cache: false,
             success: function (data) {
-               
-                    var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
-                    $.each(data, function (i, v) {
-                        if (v.coM_CYCLE > cycle_count) {
-                            $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
-                            cycle_count++;
-                        }
-                        else
-                            $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
 
-                    });
+                var cycle_count = data.length > 0 ? parseInt(data[0].coM_CYCLE) - 1 : 0;
+                $.each(data, function (i, v) {
+                    if (v.coM_CYCLE > cycle_count) {
+                        $('#manageComplianceHistPanel tbody').append('<tr><td><div>' + v.coM_CYCLE + '</div></td><td>' + v.pP_NO + '</td><td>' + v.name + '</td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td><a onclick="event.preventDefault();getComplianceText(' + v.coM_ID + ',' + v.coM_CYCLE + ');" href="#" class="text-danger">View Compliance</a></td></tr>');
+                        cycle_count++;
+                    }
+                    else
+                        $('#manageComplianceHistPanel tbody').append('<tr><td></td><td><div>' + v.pP_NO + '</div></td><td><div>' + v.name + '</div></td><td>' + v.commenT_BY_ROLE + '</td><td>' + v.comments + '</td><td></td></tr>');
+
+                });
 
             },
 
@@ -276,7 +276,7 @@
         });
     }
 
-   
+
     function clearEvidencesLog() {
         $('.aks-file-upload-delete').click();
         $('.aks-file-upload-error').remove();
@@ -294,72 +294,72 @@
             cache: false,
             success: function (data) {
 
-                
-                    $('#viewMemoReportingModel').modal('show');
-                    $('#viewMemo_memoNumber_rep').val(g_memoNo);
-                    $('#viewMemo_paraGist_rep').val(data.gisT_OF_PARA);
-                    $('#viewMemo_memo_rep').html(data.parA_TEXT);
-                    $('#viewMemo_compliance_rep').val('');
-                    if (g_prevRole == "")
-                        $('#prevRoleButtonHandler_rep').remove();
-                    else
-                        $('#prevRoleButtonHandler_rep').html(g_prevRole);
 
-                    if (g_nextRole == "")
-                        $('#nextRoleButtonHandler_rep').remove();
-                    else
-                        $('#nextRoleButtonHandler_rep').html(g_nextRole);
+                $('#viewMemoReportingModel').modal('show');
+                $('#viewMemo_memoNumber_rep').val(g_memoNo);
+                $('#viewMemo_paraGist_rep').val(data.gisT_OF_PARA);
+                $('#viewMemo_memo_rep').html(data.parA_TEXT);
+                $('#viewMemo_compliance_rep').val('');
+                if (g_prevRole == "")
+                    $('#prevRoleButtonHandler_rep').remove();
+                else
+                    $('#prevRoleButtonHandler_rep').html(g_prevRole);
 
-                    $('#listofRespPersons_rep tbody').empty();
-                    if (data.responsiblE_PPs.length > 0) {
-                        $.each(data.responsiblE_PPs, function (j, pp) {
-                            var srNo = $('#listofRespPersons_rep tbody tr').length;
-                            srNo++;
-                            $('#listofRespPersons_rep tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
-                        });
-                    }
+                if (g_nextRole == "")
+                    $('#nextRoleButtonHandler_rep').remove();
+                else
+                    $('#nextRoleButtonHandler_rep').html(g_nextRole);
 
-                    $.ajax({
-                        url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
-                        type: "POST",
-                        data: {
-                            'COM_ID': comID,
-                            'C_CYCLE': cycle
-                        },
-                        cache: false,
-                        success: function (data) {
-                            $('#complianceCycleTextPanel_rep').html(data.parA_TEXT);
-                            $('#complianceCycleEvidences_rep').empty();
-                            if (data.evidences.length > 0) {
-
-                                $.each(data.evidences, function (j, pp) {
-                                    var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
-                                    const blob = base64ToBlob(pp.imagE_DATA, getContentType(extension));
-                                    const link = document.createElement('a');
-                                    link.href = URL.createObjectURL(blob);
-                                    link.download = pp.imagE_NAME;
-                                    link.innerText = "Download " + pp.imagE_NAME; // Set the text inside the hyperlink
-                                    const icon = document.createElement('i');
-                                    icon.className = getIconClass(extension) + ' evidence-icon';
-
-                                    const container = document.createElement('div');
-                                    container.className = 'evidence-link';
-                                    container.appendChild(icon);
-                                    container.appendChild(link);
-
-                                    $('#complianceCycleEvidences_rep').append(container);
-                                    //$('#complianceCycleEvidences_rep').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
-                                });
-                            } else {
-                                $('#complianceCycleEvidences_rep').append("<i>No evidence is attached </i>");
-                            }
-
-
-                        },
-
-                        dataType: "json",
+                $('#listofRespPersons_rep tbody').empty();
+                if (data.responsiblE_PPs.length > 0) {
+                    $.each(data.responsiblE_PPs, function (j, pp) {
+                        var srNo = $('#listofRespPersons_rep tbody tr').length;
+                        srNo++;
+                        $('#listofRespPersons_rep tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
-                
+                }
+
+                $.ajax({
+                    url: g_asiBaseURL + "/ApiCalls/get_old_para_compliance_cycle_text",
+                    type: "POST",
+                    data: {
+                        'COM_ID': comID,
+                        'C_CYCLE': cycle
+                    },
+                    cache: false,
+                    success: function (data) {
+                        $('#complianceCycleTextPanel_rep').html(data.parA_TEXT);
+                        $('#complianceCycleEvidences_rep').empty();
+                        if (data.evidences.length > 0) {
+
+                            $.each(data.evidences, function (j, pp) {
+                                var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
+                                const blob = base64ToBlob(pp.imagE_DATA, getContentType(extension));
+                                const link = document.createElement('a');
+                                link.href = URL.createObjectURL(blob);
+                                link.download = pp.imagE_NAME;
+                                link.innerText = "Download " + pp.imagE_NAME; // Set the text inside the hyperlink
+                                const icon = document.createElement('i');
+                                icon.className = getIconClass(extension) + ' evidence-icon';
+
+                                const container = document.createElement('div');
+                                container.className = 'evidence-link';
+                                container.appendChild(icon);
+                                container.appendChild(link);
+
+                                $('#complianceCycleEvidences_rep').append(container);
+                                //$('#complianceCycleEvidences_rep').append('<a href="data:image/png; base64, ' + pp.imagE_DATA + '" data-lightbox="gallery"><img class="square-image" src="data:image/png; base64, ' + pp.imagE_DATA + '" alt="Image 1"></a> ');
+                            });
+                        } else {
+                            $('#complianceCycleEvidences_rep').append("<i>No evidence is attached </i>");
+                        }
+
+
+                    },
+
+                    dataType: "json",
+                });
+
             },
 
             dataType: "json",
@@ -489,7 +489,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                 </form>
             </div>
             <div class="modal-footer">

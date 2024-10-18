@@ -162,12 +162,12 @@
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
                     if (ViewData["EntitiesList"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
+                        foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                            {
                             <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
+                            }
                         }
-                    }
                 }
 
             </select>
