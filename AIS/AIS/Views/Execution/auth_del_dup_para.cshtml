@@ -117,7 +117,7 @@
         });
 
     }
-    function DeleteDuplicatePara(np_id, op_id, ind){
+    function DeleteDuplicatePara(np_id, op_id, ind) {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/request_delete_duplicate_para",
             type: "POST",
@@ -152,9 +152,9 @@
             <select id="entitySelectField" onchange="getEntityObservation()" class="form-control form-select">
                 <option value="0" id="0">--Select Audit Entity--</option>
                 @{
-                    if (ViewData["EntitiesList"] != null)
+                    if (ViewData["DupParasEntList"] != null)
                         {
-                        foreach (var item in (dynamic)(ViewData["EntitiesList"]))
+                        foreach (var item in (dynamic)(ViewData["DupParasEntList"]))
                             {
                             <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                             }
@@ -175,9 +175,6 @@
                     <th class="col-md-auto">Annexure</th>
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Gist of Para</th>
-                    <th class="col-md-auto">Last Updated By</th>
-                    <th class="col-md-auto">Last Updated Date</th>
-                    <th class="col-md-auto text-center">Action</th>
                     <th class="col-md-auto text-center">Action</th>
                     <th class="col-md-auto text-center">Action</th>
                 </tr>

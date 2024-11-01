@@ -5859,6 +5859,7 @@ Dear {userFullName},
                     chk.ANNEX_ID = rdr["annex_id"].ToString();
                     chk.UPDATED_ON = rdr["UPDATED_ON"].ToString();
                     chk.UPDATED_BY = rdr["UPDATED_BY"].ToString();
+                    chk.P_TYPE_IND = rdr["P_TYPE_IND"].ToString();
                     list.Add(chk);
                 }
             }
@@ -19462,6 +19463,81 @@ Dear {userFullName},
 
             return resp;
             }
-        
+        public string RequestDeleteDuplicatePara(int NEW_PARA_ID=0, int OLD_PARA_ID=0, string INDICATOR="")
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            try
+                {
+                using (var con = this.DatabaseConnection())
+                    {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                        {
+                        cmd.CommandText = "pkg_hd.P_ADD_DUPLICATE_PARAS";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("old_paraid", OracleDbType.Int32).Value = OLD_PARA_ID;
+                        cmd.Parameters.Add("new_paraid", OracleDbType.Int32).Value = NEW_PARA_ID;
+                        cmd.Parameters.Add("p_ind", OracleDbType.Varchar2).Value = INDICATOR;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                            {
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+
+            return resp;
+            }
+
+        public List<AuditeeEntitiesModel> GetDuplicateParasAuthorizationEntityList()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_hd.P_GET_DUPLICATE_PARAS_ENT_FOR_AUTH";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                    AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
+                    chk.NAME = rdr["name"].ToString();
+                    chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
         }
-}
+    
+    }

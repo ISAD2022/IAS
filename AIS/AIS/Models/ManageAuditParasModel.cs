@@ -13,6 +13,7 @@ namespace AIS.Models
         public string OBS_RISK { get; set; }
         public string OBS_RISK_ID { get; set; }
         public string INDICATOR {  get; set; }       
+        public string P_TYPE_IND {  get; set; }       
         public string AUDIT_PERIOD {  get; set; }       
         public string ANNEX {  get; set; }       
         public string ANNEX_ID {  get; set; }       
