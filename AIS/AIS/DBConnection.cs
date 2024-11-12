@@ -19538,6 +19538,46 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
+        //
+        public List<SeriousFraudulentObsGM> GetSeriousFraudulentObsGMOverview()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<SeriousFraudulentObsGM> list = new List<SeriousFraudulentObsGM>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GET_GM_WISE_SERIOUS_PARAS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("R_T", OracleDbType.Int32).Value = 0;
+                cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value =new DateTime();
+                cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = new DateTime();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                    SeriousFraudulentObsGM chk = new SeriousFraudulentObsGM();
+                    chk.PARENT_ID = Convert.ToInt32(rdr["PARENT_ID"].ToString()); 
+                    chk.P_NAME = rdr["P_NAME"].ToString();
+                    chk.TOTAL_NO = rdr["TOTAL_NO"].ToString();
+                    chk.A1 = rdr["A1"].ToString();
+                    chk.C_AMOUNT = rdr["C_AMOUNT"].ToString();
+                    chk.PER_INV = rdr["PER_INV"].ToString();
+                  
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+
         }
-    
+
     }

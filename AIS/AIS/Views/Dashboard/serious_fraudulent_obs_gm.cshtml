@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Serious/Fraudulent Observations General Manager Overview";
+    Layout = "_Layout";
+}
+
+<div class="row col-md-12">
+    <h3 style="color: rgb(186 113 46) !important;">Serious/Fraudulent Observations General Manager Overview</h3>
+</div>
+@{
+
+    var bgClasses = new List<string> { "bg-primary", "bg-secondary", "bg-danger", "bg-warning", "bg-info", "bg-success", "bg-dark" };
+    var index = 0;
+}
+
+<div class="row col-md-12">
+
+    <div class="row">
+        @{
+            if (ViewData["GMWiseSeriousObs"] != null)
+                {
+                foreach (var rec in (dynamic)(ViewData["GMWiseSeriousObs"]))
+                    {
+                    // Get a background class, cycling through the list
+                    var bgClass = bgClasses[index % bgClasses.Count];
+                    index++;
+
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header @bgClass p-1">
+                                <h5 class="card-title text-light mb-0">@rec.P_NAME</h5>
+                            </div>
+                            <div class="card-body p-1">
+                                <div class="row">
+                                    <div class="col-10" style="border-right: 1px solid #ccc;">
+                                        <p class="mb-0">Serious Observations</p>
+                                        <p class="mb-0">Fraudulent (A-1)</p>
+                                        <p class="mb-0">Amount</p>
+                                        <p class="mb-0">Person Involved</p>
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <p class="mb-0">@rec.TOTAL_NO</p>
+                                        <p class="mb-0">@rec.A1</p>
+                                        <p class="mb-0">@rec.C_AMOUNT</p>
+                                        <p class="mb-0">@rec.PER_INV</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+        }
+    </div>
+
+</div>
