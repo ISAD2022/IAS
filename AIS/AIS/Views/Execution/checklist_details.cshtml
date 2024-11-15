@@ -16,7 +16,7 @@
         S_ID = checklistsub_id;
         g_engId = url.searchParams.get("engId");
         $('#updatedAnnexlist').select2();
-        
+
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/checklist_details",
             type: "POST",
@@ -370,19 +370,19 @@
                                 <option selected="selected" value="0" id="0">--Select Annexure--</option>
                                 @{
                                     if (ViewData["AnnexList"] != null)
-                                    {
+                                        {
 
                                         foreach (var item in (dynamic)(ViewData["AnnexList"]))
-                                        {
-                                            <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
-                                        }
+                                            {
+                                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                            }
 
-                                    }
+                                        }
                                 }
 
                             </select>
                         </div>
-                        
+
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">Heading/Title of Para</label>
@@ -398,18 +398,18 @@
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
-                                {
+                                    {
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                                    {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                                    }
+                                        {
+                                                    <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        }
 
-                                }
+                                    }
                             }
                         </select>
                     </div>
-                  
+
                     <div class="form-group">
                         <label for="viewMemo_loancase">Responsible PP NO.</label>
                         <div class="row col-sm-12">
@@ -431,13 +431,13 @@
                             </table>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="viewMemo_noinstances">No of Instances</label>
                                 <input id="viewMemo_noinstances" class="form-control" type="number" min="1" value="1" />
-                              
+
 
                             </div>
                             <div class="col-md-6">
@@ -544,14 +544,14 @@
                             <option selected="selected" value="0" id="0">--Select Annexure--</option>
                             @{
                                 if (ViewData["AnnexList"] != null)
-                                {
+                                    {
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
-                                    {
-                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
-                                    }
+                                        {
+                                                    <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                        }
 
-                                }
+                                    }
                             }
 
                         </select>
@@ -598,18 +598,18 @@
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
-                                {
+                                    {
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                                    {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                                    }
+                                        {
+                                                    <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        }
 
-                                }
+                                    }
                             }
                         </select>
-                     
-                       
+
+
                     </div>
 
                     <div class="form-group">

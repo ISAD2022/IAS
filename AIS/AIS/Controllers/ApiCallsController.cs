@@ -2496,10 +2496,11 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.RequestDeleteDuplicatePara(NEW_PARA_ID, OLD_PARA_ID, INDICATOR) + "\"}";
             }
         [HttpPost]
-       /* public string get_loan_details_from_lc(string LC_NO = "",  string BR_CODE = "")
+        public List<ObservationResponsiblePPNOModel> get_responsible_person_list(int PARA_ID, string INDICATOR)
             {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.GetLoanDetailsFromLC(LC_NO, BR_CODE) + "\"}";
-            }*/
+            return dBConnection.GetResponsiblePersonsList(PARA_ID,INDICATOR);
+            }
+       
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

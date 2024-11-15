@@ -17,9 +17,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Org.BouncyCastle.Ocsp;
 
 namespace AIS.Controllers
-{
-    public class DBConnection : Controller
     {
+    public class DBConnection : Controller
+        {
         private SessionHandler sessionHandler;
         private readonly SQLParams sqlParams = new SQLParams();
         private readonly LocalIPAddress iPAddress = new LocalIPAddress();
@@ -35,22 +35,22 @@ namespace AIS.Controllers
 
         [Obsolete]
         public DBConnection(IHttpContextAccessor httpContextAccessor, IHostingEnvironment env, IConfiguration configuration)
-        {
+            {
             _session = httpContextAccessor.HttpContext.Session;
             _httpCon = httpContextAccessor;
             _env = env;
             _configuration = configuration;
 
-        }
+            }
         public DBConnection()
-        {
+            {
 
-        }
+            }
         #region Database Connection
         private OracleConnection DatabaseConnection()
-        {
-            try
             {
+            try
+                {
                 OracleConnection con = new OracleConnection();
                 OracleConnectionStringBuilder ocsb = new OracleConnectionStringBuilder();
                 ocsb.Password = _configuration["ConnectionStrings:DBUserPassword"];
@@ -63,18 +63,18 @@ namespace AIS.Controllers
                 ocsb.ConnectionTimeout = 3540;
                 con.ConnectionString = ocsb.ConnectionString;
                 return con;
-            }
+                }
             catch (Exception) { return null; }
-        }
+            }
         #endregion
         private string DecryptPassword(string encryptedPassword)
-        {
+            {
             byte[] bytes = Convert.FromBase64String(encryptedPassword);
             return Encoding.UTF8.GetString(bytes);
-        }
+            }
         #region Session Handling
         public static string getMd5Hash(string input)
-        {
+            {
             // Create a new instance of the MD5CryptoServiceProvider object.
             MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
 
@@ -88,15 +88,15 @@ namespace AIS.Controllers
             // Loop through each byte of the hashed data 
             // and format each one as a hexadecimal string.
             for (int i = 0; i < data.Length; i++)
-            {
+                {
                 sBuilder.Append(data[i].ToString("x2"));
-            }
+                }
 
             // Return the hexadecimal string.
             return sBuilder.ToString();
-        }
+            }
         public bool DisposeLoginSession()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -104,7 +104,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection();
             con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.Session_END";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -113,13 +113,13 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = sessionUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = sessionUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             sessionHandler.DisposeUserSession();
             return true;
-        }
+            }
         public bool IsLoginSessionExist(string PPNumber = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -129,12 +129,12 @@ namespace AIS.Controllers
                 PPNumber = sessionUser.PPNumber;
             bool isSession = false;
             if (PPNumber != null && PPNumber != "")
-            {
+                {
                 var con = this.DatabaseConnection();
                 con.Open();
 
                 using (OracleCommand cmd = con.CreateCommand())
-                {
+                    {
                     cmd.CommandText = "pkg_lg.p_get_user_session";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -142,18 +142,18 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
-                    {
+                        {
                         if (rdr["ID"].ToString() != "" && rdr["ID"].ToString() != null)
                             isSession = true;
+                        }
                     }
-                }
                 con.Dispose();
-            }
+                }
 
             return isSession;
-        }
+            }
         public bool KillExistSession(LoginModel login)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -162,7 +162,7 @@ namespace AIS.Controllers
             con.Open();
             bool isSession = false;
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 string _sql = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -172,64 +172,64 @@ namespace AIS.Controllers
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     cmd.CommandText = "pkg_lg.Session_Kill";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = login.PPNumber;
                     cmd.ExecuteReader();
                     isSession = true;
+                    }
                 }
-            }
             con.Dispose();
             sessionHandler.DisposeUserSession();
             return isSession;
-        }
+            }
         public bool TerminateIdleSession()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             bool isTerminate = false;
             if (!string.IsNullOrEmpty(loggedInUser.PPNumber))
-            {
+                {
                 var con = this.DatabaseConnection();
                 con.Open();
                 using (OracleCommand cmd = con.CreateCommand())
-                {
+                    {
                     cmd.CommandText = "pkg_lg.Session_Kill";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                     cmd.ExecuteReader();
                     isTerminate = true;
-                }
+                    }
                 con.Dispose();
                 sessionHandler.DisposeUserSession();
-            }
+                }
             return isTerminate;
-        }
+            }
         public IActionResult Logout()
-        {
+            {
             this.DisposeLoginSession();
             return RedirectToAction("Index", "Login");
-        }
+            }
         #endregion
 
         #region Authentication
         public UserModel AutheticateLogin(LoginModel login)
-        {
+            {
             var con = this.DatabaseConnection();
             con.Open();
             UserModel user = new UserModel
-            {
+                {
                 isAlreadyLoggedIn = false,
                 isAuthenticate = false
-            };
+                };
             var enc_pass = getMd5Hash(DecryptPassword(login.Password));
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 string _sql = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -239,7 +239,7 @@ namespace AIS.Controllers
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     user.isAuthenticate = true;
                     user.changePassword = rdr["password_change_req"].ToString().Trim();
                     user.passwordChangeRequired = enc_pass == getMd5Hash("ztbl1234");
@@ -298,22 +298,22 @@ namespace AIS.Controllers
                     cmd.CommandText = _sql2;
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
-                    {
-                        if (rdr2["ID"].ToString() != null && rdr2["ID"].ToString() != "")
                         {
+                        if (rdr2["ID"].ToString() != null && rdr2["ID"].ToString() != "")
+                            {
                             isSessionAvailable = !isSessionAvailable;
+                            }
                         }
-                    }
 
                     sessionHandler = new SessionHandler();
                     sessionHandler._httpCon = this._httpCon;
                     sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
                     if (isSessionAvailable)
-                    {
+                        {
                         user.isAlreadyLoggedIn = true;
-                    }
+                        }
                     else
-                    {
+                        {
                         var resp = sessionHandler.SetSessionUser(user);
                         cmd.CommandText = "pkg_lg.User_SESSION";
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -334,30 +334,30 @@ namespace AIS.Controllers
                         cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = user.UserEntityID;
                         cmd.ExecuteReader();
                         //this.CreateAuditReport();
+                        }
                     }
                 }
-            }
             con.Dispose();
             return user;
-        }
+            }
         #endregion
 
         public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedFilesFromDirectory(string subfolder)
-        {
+            {
             var filesData = new List<AuditeeResponseEvidenceModel>();
             try
-            {
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PostCompliance_Evidences", subfolder);
 
                 if (!Directory.Exists(uploadPath))
-                {
+                    {
                     return filesData;
-                }
+                    }
 
                 var files = Directory.GetFiles(uploadPath);
 
                 foreach (var filePath in files)
-                {
+                    {
                     var fileName = Path.GetFileName(filePath);
                     var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
                     var fileLength = new FileInfo(filePath).Length;
@@ -365,9 +365,9 @@ namespace AIS.Controllers
                     string mimeType = GetMimeType(filePath); // Get MIME type
 
                     using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
-                    {
-                        using (var memoryStream = new MemoryStream())
                         {
+                        using (var memoryStream = new MemoryStream())
+                            {
                             await fileStream.CopyToAsync(memoryStream);
                             var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
@@ -376,48 +376,48 @@ namespace AIS.Controllers
 
                             // Ensure proper padding
                             while (base64String.Length % 4 != 0)
-                            {
+                                {
                                 base64String += "=";
-                            }
+                                }
 
                             // Fix URL-safe Base64 (if applicable)
                             base64String = base64String.Replace('-', '+').Replace('_', '/');
 
                             filesData.Add(new AuditeeResponseEvidenceModel
-                            {
+                                {
                                 FILE_NAME = fileName,
                                 IMAGE_LENGTH = Convert.ToInt64(fileLength),
                                 IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
                                 IMAGE_DATA = base64String
-                            });
+                                });
+                            }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
-            }
+                }
 
             return filesData;
-        }
+            }
         public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedAuditeeEvidencesFromDirectory(string subfolder)
-        {
+            {
             var filesData = new List<AuditeeResponseEvidenceModel>();
             try
-            {
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Auditee_Evidences", subfolder);
 
                 if (!Directory.Exists(uploadPath))
-                {
+                    {
                     return filesData;
-                }
+                    }
 
                 var files = Directory.GetFiles(uploadPath);
 
                 foreach (var filePath in files)
-                {
+                    {
                     var fileName = Path.GetFileName(filePath);
                     var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
                     var fileLength = new FileInfo(filePath).Length;
@@ -425,9 +425,9 @@ namespace AIS.Controllers
                     string mimeType = GetMimeType(filePath); // Get MIME type
 
                     using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
-                    {
-                        using (var memoryStream = new MemoryStream())
                         {
+                        using (var memoryStream = new MemoryStream())
+                            {
                             await fileStream.CopyToAsync(memoryStream);
                             var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
@@ -436,48 +436,48 @@ namespace AIS.Controllers
 
                             // Ensure proper padding
                             while (base64String.Length % 4 != 0)
-                            {
+                                {
                                 base64String += "=";
-                            }
+                                }
 
                             // Fix URL-safe Base64 (if applicable)
                             base64String = base64String.Replace('-', '+').Replace('_', '/');
 
                             filesData.Add(new AuditeeResponseEvidenceModel
-                            {
+                                {
                                 FILE_NAME = fileName,
                                 IMAGE_LENGTH = Convert.ToInt64(fileLength),
                                 IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
                                 IMAGE_DATA = base64String
-                            });
+                                });
+                            }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
-            }
+                }
 
             return filesData;
-        }
+            }
         public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedCAUEvidencesFromDirectory(string subfolder)
-        {
+            {
             var filesData = new List<AuditeeResponseEvidenceModel>();
             try
-            {
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CAU_Evidences", subfolder);
 
                 if (!Directory.Exists(uploadPath))
-                {
+                    {
                     return filesData;
-                }
+                    }
 
                 var files = Directory.GetFiles(uploadPath);
 
                 foreach (var filePath in files)
-                {
+                    {
                     var fileName = Path.GetFileName(filePath);
                     var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
                     var fileLength = new FileInfo(filePath).Length;
@@ -485,9 +485,9 @@ namespace AIS.Controllers
                     string mimeType = GetMimeType(filePath); // Get MIME type
 
                     using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
-                    {
-                        using (var memoryStream = new MemoryStream())
                         {
+                        using (var memoryStream = new MemoryStream())
+                            {
                             await fileStream.CopyToAsync(memoryStream);
                             var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
@@ -496,125 +496,125 @@ namespace AIS.Controllers
 
                             // Ensure proper padding
                             while (base64String.Length % 4 != 0)
-                            {
+                                {
                                 base64String += "=";
-                            }
+                                }
 
                             // Fix URL-safe Base64 (if applicable)
                             base64String = base64String.Replace('-', '+').Replace('_', '/');
 
                             filesData.Add(new AuditeeResponseEvidenceModel
-                            {
+                                {
                                 FILE_NAME = fileName,
                                 IMAGE_LENGTH = Convert.ToInt64(fileLength),
                                 IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
                                 IMAGE_DATA = base64String
-                            });
+                                });
+                            }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
                 // Handle exception (e.g., log error)
                 return new List<AuditeeResponseEvidenceModel>();
-            }
+                }
 
             return filesData;
-        }
+            }
         public bool DeleteSubFolderDirectoryFromServer(string subfolder)
-        {
-            try
             {
+            try
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "PostCompliance_Evidences", subfolder);
 
                 if (Directory.Exists(uploadPath))
-                {
+                    {
                     // Delete the directory and all its contents
                     Directory.Delete(uploadPath, true);
 
                     return true;
-                }
+                    }
                 else
-                {
+                    {
 
                     return false;
+                    }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 return false;
+                }
             }
-        }
 
         public bool DeleteSubFolderDirectoryInAuditeeEvidenceFromServer(string subfolder)
-        {
-            try
             {
+            try
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Auditee_Evidences", subfolder);
 
                 if (Directory.Exists(uploadPath))
-                {
+                    {
                     // Delete the directory and all its contents
                     Directory.Delete(uploadPath, true);
 
                     return true;
-                }
+                    }
                 else
-                {
+                    {
 
                     return false;
+                    }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 return false;
+                }
             }
-        }
         public bool DeleteSubFolderDirectoryInCAUEvidenceFromServer(string subfolder)
-        {
-            try
             {
+            try
+                {
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CAU_Evidences", subfolder);
 
                 if (Directory.Exists(uploadPath))
-                {
+                    {
                     // Delete the directory and all its contents
                     Directory.Delete(uploadPath, true);
 
                     return true;
-                }
+                    }
                 else
-                {
+                    {
 
                     return false;
+                    }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 return false;
+                }
             }
-        }
         // Function to get the MIME type based on file extension
         private string GetMimeType(string filePath)
-        {
+            {
             string extension = Path.GetExtension(filePath).ToLowerInvariant();
             Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
             string mimeType;
             if (!provider.TryGetContentType(filePath, out mimeType))
-            {
+                {
                 mimeType = "application/octet-stream"; // Default MIME type
-            }
+                }
             return mimeType;
-        }
+            }
 
 
         #region MenuPage
         public List<MenuModel> GetTopMenus()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -623,7 +623,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuModel> modelList = new List<MenuModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.p_GetTopMenus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -634,20 +634,20 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuModel menu = new MenuModel();
                     menu.Menu_Id = Convert.ToInt32(rdr["MENU_ID"]);
                     menu.Menu_Name = rdr["MENU_NAME"].ToString();
                     menu.Menu_Order = rdr["MENU_ORDER"].ToString();
                     menu.Menu_Description = rdr["MENU_DESCRIPTION"].ToString();
                     modelList.Add(menu);
+                    }
                 }
-            }
             con.Dispose();
             return modelList;
-        }
+            }
         public List<MenuPagesModel> GetTopMenuPages()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -655,7 +655,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.p_GetTopMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -666,7 +666,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuPagesModel menuPage = new MenuPagesModel();
                     menuPage.Id = Convert.ToInt32(rdr["ID"]);
                     menuPage.Menu_Id = Convert.ToInt32(rdr["MENU_ID"]);
@@ -681,13 +681,13 @@ namespace AIS.Controllers
                     if (rdr["HIDE_MENU"].ToString() != null && rdr["HIDE_MENU"].ToString() != "")
                         menuPage.Hide_Menu = Convert.ToInt32(rdr["HIDE_MENU"]);
                     modelList.Add(menuPage);
+                    }
                 }
-            }
             con.Dispose();
             return modelList;
-        }
+            }
         public List<MenuModel> GetAllTopMenus()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -695,7 +695,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<MenuModel> modelList = new List<MenuModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAllTopMenus";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -705,20 +705,20 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuModel menu = new MenuModel();
                     menu.Menu_Id = Convert.ToInt32(rdr["MENU_ID"]);
                     menu.Menu_Name = rdr["MENU_NAME"].ToString();
                     menu.Menu_Order = rdr["MENU_ORDER"].ToString();
                     menu.Menu_Description = rdr["MENU_DESCRIPTION"].ToString();
                     modelList.Add(menu);
+                    }
                 }
-            }
             con.Dispose();
             return modelList;
-        }
+            }
         public List<MenuPagesModel> GetAllMenuPages(int menuId = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -727,7 +727,7 @@ namespace AIS.Controllers
 
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_GetAllMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -738,7 +738,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuPagesModel menuPage = new MenuPagesModel();
                     menuPage.Id = Convert.ToInt32(rdr["ID"]);
                     menuPage.Menu_Id = Convert.ToInt32(rdr["MENU_ID"]);
@@ -747,13 +747,13 @@ namespace AIS.Controllers
                     menuPage.Page_Order = Convert.ToInt32(rdr["PAGE_ORDER"]);
                     menuPage.Status = rdr["STATUS"].ToString();
                     modelList.Add(menuPage);
+                    }
                 }
-            }
             con.Dispose();
             return modelList;
-        }
+            }
         public List<MenuPagesModel> GetAssignedMenuPages(int groupId, int menuId)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -762,7 +762,7 @@ namespace AIS.Controllers
 
             List<MenuPagesModel> modelList = new List<MenuPagesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAssignedMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -774,7 +774,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuPagesModel menuPage = new MenuPagesModel();
                     menuPage.Id = Convert.ToInt32(rdr["ID"]);
                     menuPage.Menu_Id = Convert.ToInt32(rdr["MENU_ID"]);
@@ -783,13 +783,13 @@ namespace AIS.Controllers
                     menuPage.Page_Order = Convert.ToInt32(rdr["PAGE_ORDER"]);
                     menuPage.Status = rdr["STATUS"].ToString();
                     modelList.Add(menuPage);
+                    }
                 }
-            }
             con.Dispose();
             return modelList;
-        }
+            }
         public bool UpdateMenuPagesAssignment(int menuId, int pageId)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -797,7 +797,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_updateAllMenuPages";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -807,14 +807,14 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
 
         #endregion
         public List<GroupModel> GetGroups()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -822,7 +822,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetGroups";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -832,7 +832,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GroupModel grp = new GroupModel();
                     grp.GROUP_ID = Convert.ToInt32(rdr["GROUP_ID"]);
                     grp.GROUP_NAME = rdr["GROUP_NAME"].ToString();
@@ -840,22 +840,22 @@ namespace AIS.Controllers
                     grp.GROUP_CODE = Convert.ToInt32(rdr["GROUP_ID"]);
                     grp.ISACTIVE = rdr["STATUS"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public GroupModel AddGroup(GroupModel gm)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
-                if (gm.GROUP_ID == 0)
                 {
+                if (gm.GROUP_ID == 0)
+                    {
                     cmd.CommandText = "pkg_ad.p_AddGroup";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -866,9 +866,9 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
-                }
+                    }
                 else if (gm.GROUP_ID != 0)
-                {
+                    {
                     cmd.CommandText = "pkg_ad.P_Group_Update";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -880,13 +880,13 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
+                    }
                 }
-            }
             con.Dispose();
             return gm;
-        }
+            }
         public List<AuditPeriodModel> GetAuditPeriodStatus()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -894,7 +894,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GET_Auditperiod_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -902,18 +902,18 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPeriodModel period = new AuditPeriodModel();
                     period.STATUS_ID = Convert.ToInt32(rdr["ID"]);
                     period.STATUS = rdr["STATUS"].ToString();
                     periodList.Add(period);
+                    }
                 }
-            }
             con.Dispose();
             return periodList;
-        }
+            }
         public List<AuditPeriodModel> GetAuditPeriods(int dept_code = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -921,7 +921,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditPeriods";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -932,7 +932,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPeriodModel period = new AuditPeriodModel();
                     period.AUDITPERIODID = Convert.ToInt32(rdr["AUDITPERIODID"]);
                     period.DESCRIPTION = rdr["DESCRIPTION"].ToString();
@@ -941,17 +941,17 @@ namespace AIS.Controllers
                     period.STATUS_ID = Convert.ToInt32(rdr["STATUS_ID"]);
                     period.STATUS = rdr["STATUS"].ToString();
                     periodList.Add(period);
+                    }
                 }
-            }
             con.Dispose();
             return periodList;
-        }
+            }
         public List<AuditPeriodModel> GetInsYearsForCAU(int dept_code = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_cm.p_CAU_OM_YEAR";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -959,22 +959,22 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPeriodModel period = new AuditPeriodModel();
                     period.AUDITPERIODID = Convert.ToInt32(rdr["auditperiodid"]);
                     period.DESCRIPTION = rdr["period"].ToString();
                     periodList.Add(period);
+                    }
                 }
-            }
             con.Dispose();
             return periodList;
-        }
+            }
         public List<AuditPeriodModel> GetParaPrintingYearsForCAU()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_cm.p_CAU_ARPSE_YEAR";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -982,22 +982,22 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPeriodModel period = new AuditPeriodModel();
                     period.AUDITPERIODID = Convert.ToInt32(rdr["auditperiodid"]);
                     period.DESCRIPTION = rdr["period"].ToString();
                     periodList.Add(period);
+                    }
                 }
-            }
             con.Dispose();
             return periodList;
-        }
+            }
         public string UpdateAuditPeriod(AuditPeriodModel periodModel)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_Update_AuditPeriod";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1006,22 +1006,22 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public string AddAuditPeriod(AuditPeriodModel periodModel)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_AddAuditPeriod";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1032,16 +1032,16 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditTeamModel> GetAuditTeams(int dept_code = 0, int userEntId = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1050,7 +1050,7 @@ namespace AIS.Controllers
             List<AuditTeamModel> teamList = new List<AuditTeamModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditTeams";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1062,7 +1062,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditTeamModel team = new AuditTeamModel();
                     team.ID = Convert.ToInt32(rdr["ID"]);
                     team.T_ID = Convert.ToInt32(rdr["T_ID"]);
@@ -1075,13 +1075,13 @@ namespace AIS.Controllers
                     team.EMPLOYEENAME = rdr["MEMBER_NAME"].ToString();
                     team.STATUS = rdr["STATUS"].ToString();
                     teamList.Add(team);
+                    }
                 }
-            }
             con.Dispose();
             return teamList;
-        }
+            }
         public string AddAuditTeam(AuditTeamModel aTeam)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1089,7 +1089,7 @@ namespace AIS.Controllers
             string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_addauditteam";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1105,25 +1105,25 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public bool DeleteAuditTeam(string T_CODE)
-        {
-            if (T_CODE != "" && T_CODE != null)
             {
+            if (T_CODE != "" && T_CODE != null)
+                {
                 sessionHandler = new SessionHandler();
                 sessionHandler._httpCon = this._httpCon;
                 sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
                 var con = this.DatabaseConnection(); con.Open();
                 var loggedInUser = sessionHandler.GetSessionUser();
                 using (OracleCommand cmd = con.CreateCommand())
-                {
+                    {
                     cmd.CommandText = "pkg_pg.P_DeleteAuditTeam";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -1133,15 +1133,15 @@ namespace AIS.Controllers
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
 
-                }
+                    }
                 con.Dispose();
                 return true;
-            }
+                }
             else
                 return false;
-        }
+            }
         public int GetLatestTeamID()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1149,7 +1149,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             int maxTeamId = 1;
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_MAXTEAMID";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1159,19 +1159,19 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["MAX_T_ID"].ToString() != null && rdr["MAX_T_ID"].ToString() != "")
                     {
+                    if (rdr["MAX_T_ID"].ToString() != null && rdr["MAX_T_ID"].ToString() != "")
+                        {
                         maxTeamId = Convert.ToInt32(rdr["MAX_T_ID"]);
+                        }
                     }
-                }
 
-            }
+                }
             con.Dispose();
             return maxTeamId;
-        }
+            }
         public bool AddAuditCriteria(AddAuditCriteriaModel acm)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1180,7 +1180,7 @@ namespace AIS.Controllers
 
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_ADDAUDITCRITERIA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1200,26 +1200,26 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
                     {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
+                        {
                         isAlreadyAdded = false;
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return !isAlreadyAdded;
-        }
+            }
         public bool UpdateAuditCriteria(AddAuditCriteriaModel acm, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_UpdateAuditCriteria";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1236,24 +1236,24 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public bool SetAuditCriteriaStatusReferredBack(int ID, string REMARKS)
-        {
+            {
             if (REMARKS == "")
                 REMARKS = "REFERRED BACK";
             sessionHandler = new SessionHandler
-            {
+                {
                 _httpCon = this._httpCon,
                 _session = this._session,
                 _configuration = this._configuration
-            };
+                };
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusReferredBack";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1263,12 +1263,12 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public string SetAuditCriteriaStatusApprove(int ID, string REMARKS)
-        {
+            {
             if (REMARKS == "")
                 REMARKS = "APPROVED";
 
@@ -1279,7 +1279,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             string REMARK = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_SetAuditCriteriaStatusApprove";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1291,18 +1291,18 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     REMARK = rdr["remark"].ToString();
 
+                    }
+
+
                 }
-
-
-            }
             con.Dispose();
             return REMARK;
-        }
+            }
         public List<AuditCriteriaModel> GetPendingAuditCriterias()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1310,7 +1310,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetPendingAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1320,7 +1320,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditCriteriaModel acr = new AuditCriteriaModel();
                     acr.ID = Convert.ToInt32(rdr["ID"]);
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
@@ -1344,13 +1344,13 @@ namespace AIS.Controllers
                     if (rdr["no_of_entity"].ToString() != null && rdr["no_of_entity"].ToString() != "")
                         acr.ENTITIES_COUNT = Convert.ToInt32(rdr["no_of_entity"].ToString());
                     criteriaList.Add(acr);
+                    }
                 }
-            }
             con.Dispose();
             return criteriaList;
-        }
+            }
         public List<AuditCriteriaModel> GetRefferedBackAuditCriterias()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1359,7 +1359,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetRefferedBackAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1369,7 +1369,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditCriteriaModel acr = new AuditCriteriaModel();
                     acr.ID = Convert.ToInt32(rdr["ID"]);
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
@@ -1391,13 +1391,13 @@ namespace AIS.Controllers
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     criteriaList.Add(acr);
+                    }
                 }
-            }
             con.Dispose();
             return criteriaList;
-        }
+            }
         public List<AuditCriteriaModel> GetAuditCriteriasToAuthorize()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1405,7 +1405,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditCriteriasToAuthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1415,7 +1415,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditCriteriaModel acr = new AuditCriteriaModel();
                     acr.ID = Convert.ToInt32(rdr["ID"]);
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
@@ -1438,13 +1438,13 @@ namespace AIS.Controllers
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.RISK_ID, acr.SIZE_ID, acr.ENTITY_TYPEID, acr.AUDITPERIODID, acr.FREQUENCY_ID);
                     criteriaList.Add(acr);
+                    }
                 }
-            }
             con.Dispose();
             return criteriaList;
-        }
+            }
         public List<AuditCriteriaModel> GetPostChangesAuditCriterias()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1452,7 +1452,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AuditCriteriaModel> criteriaList = new List<AuditCriteriaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_pg.P_GetPostChangesAuditCriterias";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -1464,7 +1464,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditCriteriaModel acr = new AuditCriteriaModel();
                     acr.ID = Convert.ToInt32(rdr["ID"]);
                     acr.ENTITY_TYPEID = Convert.ToInt32(rdr["ENTITY_TYPEID"]);
@@ -1486,20 +1486,20 @@ namespace AIS.Controllers
                     acr.ENTITY_NAME = rdr["NAME"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
                     criteriaList.Add(acr);
+                    }
                 }
-            }
             con.Dispose();
             return criteriaList;
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOutstandingParas(int ENTITY_CODE = 0)
-        {
+            {
             //Functionality Completed, no further need of this code is required as of now...
             // Once Page will be removed, this function will be removed as well
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             return entitiesList;
-        }
+            }
         public string GeneratePlanForAuditCriteria(int CRITERIA_ID)
-        {
+            {
             string resMsg = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -1507,7 +1507,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.Tentative_Audit_Plan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1519,16 +1519,16 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     resMsg = rdr["REMARKS"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resMsg;
-        }
+            }
         public List<RoleRespModel> GetRoleResponsibilities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1536,7 +1536,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<RoleRespModel> groupList = new List<RoleRespModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetRoleResponsibilities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1544,19 +1544,19 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     RoleRespModel grp = new RoleRespModel();
                     grp.DESIGNATIONCODE = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
                     grp.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     grp.STATUS = rdr["STATUSTYPE"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public List<RoleRespModel> GetRoleResponsibleForChecklistDetail()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1564,7 +1564,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<RoleRespModel> groupList = new List<RoleRespModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_get_role_responsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1575,18 +1575,18 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     RoleRespModel grp = new RoleRespModel();
                     grp.DESIGNATIONCODE = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
                     grp.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public List<AnnexureModel> GetAnnexuresForChecklistDetail()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1594,7 +1594,7 @@ namespace AIS.Controllers
             var con = this.DatabaseConnection(); con.Open();
             List<AnnexureModel> groupList = new List<AnnexureModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_annexure";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1605,7 +1605,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AnnexureModel grp = new AnnexureModel();
                     grp.ID = Convert.ToInt32(rdr["ID"]);
                     grp.ANNEX = rdr["Annex"].ToString();
@@ -1628,13 +1628,13 @@ namespace AIS.Controllers
                     grp.VOL = rdr["Vol"].ToString();
                     grp.STATUS = rdr["Status"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public List<UserModel> GetAllUsers(FindUserModel user)
-        {
+            {
             List<UserModel> userList = new List<UserModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -1642,7 +1642,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_allusers";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1657,7 +1657,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserModel um = new UserModel();
                     if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
                         um.ID = Convert.ToInt32(rdr["USERID"]);
@@ -1687,35 +1687,35 @@ namespace AIS.Controllers
                         um.RelationshipId = Convert.ToInt32(rdr["relation_type_id"]);
                     um.UserParentEntityName = rdr["p_name"].ToString();
                     if (Convert.ToInt32(rdr["type_id"].ToString()) == 6)
-                    {
-                        if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
                         {
+                        if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
+                            {
                             um.UserPostingBranch = Convert.ToInt32(rdr["code"]);
-                        }
+                            }
                         if (rdr["parent_code"].ToString() != null && rdr["parent_code"].ToString() != "")
-                        {
+                            {
                             um.UserPostingZone = Convert.ToInt32(rdr["parent_code"]);
-                        }
+                            }
 
-                    }
+                        }
                     else
-                    {
+                        {
                         if (rdr["code"].ToString() != null && rdr["code"].ToString() != "")
-                        {
+                            {
                             um.UserPostingDept = Convert.ToInt32(rdr["code"]);
-                        }
+                            }
                         if (rdr["parent_code"].ToString() != null && rdr["parent_code"].ToString() != "")
-                        {
+                            {
                             um.UserPostingDiv = Convert.ToInt32(rdr["parent_code"]);
-                        }
+                            }
 
-                    }
+                        }
 
                     if (rdr["group_id"].ToString() != null && rdr["group_id"].ToString() != "")
-                    {
+                        {
                         um.UserGroupID = Convert.ToInt32(rdr["group_id"]);
                         um.UserRoleID = Convert.ToInt32(rdr["group_id"]);
-                    }
+                        }
 
 
                     um.DivName = rdr["p_name"].ToString();
@@ -1726,19 +1726,19 @@ namespace AIS.Controllers
                     um.UserGroup = rdr["group_name"].ToString();
                     um.IsActive = rdr["ISACTIVE"].ToString();
                     userList.Add(um);
+                    }
                 }
-            }
             con.Dispose();
             return userList;
 
-        }
+            }
         public string AddNewUser(FindUserModel user)
-        {
+            {
             string resp = "";
             var enc_pass = getMd5Hash(user.PASSWORD);
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_add_new_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1749,15 +1749,15 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string GetUserName(string PPNUMBER)
-        {
+            {
             string userName = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -1765,7 +1765,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.p_ppno_name";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1776,16 +1776,16 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     userName = rdr["EMPLOYEE_NAME"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return userName;
 
-        }
+            }
         public List<AuditEntitiesModel> GetAuditEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1795,7 +1795,7 @@ namespace AIS.Controllers
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1803,7 +1803,7 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.AUTID = Convert.ToInt32(rdr["AUTID"]);
                     entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
@@ -1811,14 +1811,14 @@ namespace AIS.Controllers
                     entity.AUDITABLE = rdr["AUDITABLE"].ToString();
                     entity.D_RISK = rdr["d_risk"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditEntitiesModel> GetAuditEntitiesForOtherEntitySelection()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1828,7 +1828,7 @@ namespace AIS.Controllers
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_get_auditee_submission_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1836,20 +1836,20 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.AUTID = Convert.ToInt32(rdr["entity_id"]);
                     entity.ENTITYTYPEDESC = rdr["name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditEntitiesModel> GetAuditEntityTypes()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1859,14 +1859,14 @@ namespace AIS.Controllers
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Entity_type";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.AUTID = Convert.ToInt32(rdr["AUTID"]);
                     entity.ENTITYCODE = rdr["ENTITYCODE"].ToString();
@@ -1874,14 +1874,14 @@ namespace AIS.Controllers
                     entity.AUDITABLE = rdr["AUDITABLE"].ToString();
                     //entity.D_RISK = rdr["d_risk"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditEntitiesModel> GetAuditBy()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -1891,27 +1891,27 @@ namespace AIS.Controllers
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audited_by";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.AUTID = Convert.ToInt32(rdr["entity_id"]);
                     entity.ENTITYTYPEDESC = rdr["deptname"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForOldParas(int ENTITY_ID = 0)
-        {
+            {
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
@@ -1920,7 +1920,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetAuditeeEntitiesForOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1931,7 +1931,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -1941,14 +1941,14 @@ namespace AIS.Controllers
                         entity.NAME = rdr["entity_name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetEntitiesByParentEntityTypeId(int ENTITY_TYPE_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -1956,7 +1956,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditeeEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -1966,7 +1966,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -1975,14 +1975,14 @@ namespace AIS.Controllers
                         entity.NAME = rdr["name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditeeEntities(int ENTITY_TYPE_ID = 0)
-        {
+            {
             string TYPE_ID = "";
             if (ENTITY_TYPE_ID != 0)
                 TYPE_ID = Convert.ToString(ENTITY_TYPE_ID);
@@ -1993,7 +1993,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2002,7 +2002,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["entitycode"].ToString() != "" && rdr["entitycode"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["entitycode"]);
@@ -2011,15 +2011,15 @@ namespace AIS.Controllers
                         entity.NAME = rdr["ENTITY_TYPE"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetProcOwnerForChecklistDetail()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2027,7 +2027,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_get_process_owner";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2038,7 +2038,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -2047,13 +2047,13 @@ namespace AIS.Controllers
                         entity.NAME = rdr["name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditeeEntitiesForUpdate(int ENTITY_TYPE_ID = 0, int ENTITY_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2061,7 +2061,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetEntitees_for_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2071,7 +2071,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -2080,15 +2080,15 @@ namespace AIS.Controllers
                         entity.NAME = rdr["c_name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetAISEntities(string ENTITY_ID, string TYPE_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2096,7 +2096,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_auditee_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2106,7 +2106,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ENTITY_ID"].ToString() != "" && rdr["ENTITY_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -2127,15 +2127,15 @@ namespace AIS.Controllers
                     entity.STATUS = rdr["active"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetCBASEntities(string E_CODE, string E_NAME)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2143,7 +2143,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_CBAS_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2153,7 +2153,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ORG_UNITID"].ToString() != "" && rdr["ORG_UNITID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ORG_UNITID"]);
@@ -2162,15 +2162,15 @@ namespace AIS.Controllers
                         entity.NAME = rdr["NAME"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetERPEntities(string E_CODE, string E_NAME)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2178,7 +2178,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ERP_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2188,7 +2188,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["ORG_ID"].ToString() != "" && rdr["ORG_ID"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["ORG_ID"]);
@@ -2197,15 +2197,15 @@ namespace AIS.Controllers
                         entity.NAME = rdr["ORG_DESC"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetHREntities(string E_CODE, string E_NAME)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -2213,7 +2213,7 @@ namespace AIS.Controllers
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_HR_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2223,7 +2223,7 @@ namespace AIS.Controllers
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     if (rdr["div_code"].ToString() != "" && rdr["div_code"].ToString() != null)
                         entity.ENTITY_ID = Convert.ToInt32(rdr["div_code"]);
@@ -2232,41 +2232,41 @@ namespace AIS.Controllers
                         entity.NAME = rdr["div_name"].ToString();
 
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public AuditEntitiesModel AddAuditEntity(AuditEntitiesModel am)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_AddAuditEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("AUDITABLE", OracleDbType.Varchar2).Value = am.AUDITABLE;
                 cmd.Parameters.Add("ENTITYTYPEDESC", OracleDbType.Varchar2).Value = am.ENTITYTYPEDESC;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return am;
 
-        }
+            }
         public List<AuditSubEntitiesModel> GetAuditSubEntities()
-        {
+            {
             List<AuditSubEntitiesModel> subEntitiesList = new List<AuditSubEntitiesModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditSubEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditSubEntitiesModel entity = new AuditSubEntitiesModel();
                     entity.ID = Convert.ToInt32(rdr["ID"]);
                     entity.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
@@ -2274,14 +2274,14 @@ namespace AIS.Controllers
                     entity.NAME = rdr["E_NAME"].ToString();
                     entity.STATUS = rdr["STATUS"].ToString();
                     subEntitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return subEntitiesList;
 
-        }
+            }
         public UpdateUserModel UpdateUser(UpdateUserModel user)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2289,14 +2289,14 @@ namespace AIS.Controllers
             var newPassword = "";
             bool setPassword = false;
             if (user.PASSWORD != "" && user.PASSWORD != null)
-            {
+                {
                 newPassword = getMd5Hash(user.PASSWORD);
                 setPassword = !setPassword;
-            }
+                }
 
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.UPDATE_USERS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2311,28 +2311,28 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("EMAIL_ADDRESS", OracleDbType.Varchar2).Value = user.EMAIL_ADDRESS;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             user.PASSWORD = "";
             return user;
-        }
+            }
         public string GeneratePassword(int length = 8)
-        {
+            {
             const string validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             char[] password = new char[length];
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-            {
+                {
                 byte[] data = new byte[length];
                 rng.GetBytes(data);
                 for (int i = 0; i < length; i++)
-                {
+                    {
                     password[i] = validChars[data[i] % validChars.Length];
+                    }
                 }
-            }
             return new string(password);
-        }
+            }
         public string ResetUserPassword(string PPNumber, string CNICNumber)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             string pass = this.GeneratePassword();
             string enc_pass = getMd5Hash(pass);
@@ -2343,7 +2343,7 @@ namespace AIS.Controllers
             string userFullName = "";
             string successIndicator = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.RESET_USER_PASSWORD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2353,18 +2353,18 @@ namespace AIS.Controllers
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     res = rdr["remarks"].ToString();
                     userEmail = rdr["emailAddress"].ToString();
                     userCCEmail = rdr["emailAddress2"].ToString();
                     userFullName = rdr["empFullName"].ToString();
                     successIndicator = rdr["IND"].ToString();
                     success = !success;
+                    }
                 }
-            }
             con.Dispose();
             if (successIndicator.Trim() == "Y")
-            {
+                {
                 string emailSubject = "IAS~ Password Reset Successful";
                 string emailBody = $@"
 Dear {userFullName},
@@ -2386,12 +2386,12 @@ Dear {userFullName},
 ";
                 EmailConfiguration email = new EmailConfiguration();
                 email.ConfigEmail(userEmail, userCCEmail, emailSubject, emailBody);
-            }
+                }
             return res;
 
-        }
+            }
         public bool ChangePassword(string Password, string NewPassowrd)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2403,7 +2403,7 @@ Dear {userFullName},
             bool res = false;
             var enc_new_pass = getMd5Hash(DecryptPassword(NewPassowrd));
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.p_get_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2412,16 +2412,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
                     {
+                    if (rdr["USERID"].ToString() != null && rdr["USERID"].ToString() != "")
+                        {
                         correctPass = true;
                         res = true;
-                    }
+                        }
 
-                }
+                    }
                 if (correctPass)
-                {
+                    {
                     cmd.CommandText = "pkg_lg.P_ChangePassword";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -2432,42 +2432,42 @@ Dear {userFullName},
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
                     res = true;
+                    }
                 }
-            }
             con.Dispose();
             return res;
-        }
+            }
         public void AddGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_AddGroupMenuItemsAssignment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("groupid", OracleDbType.Int32).Value = group_id;
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
-        }
+            }
         public void RemoveGroupMenuItemsAssignment(int group_id = 0, int menu_item_id = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_RemoveGroupMenuItemsAssignment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("groupid", OracleDbType.Int32).Value = group_id;
                 cmd.Parameters.Add("PAGEID", OracleDbType.Int32).Value = menu_item_id;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
-        }
+            }
 
         public List<AuditZoneModel> GetAuditZones(bool sessionCheck = true)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2476,12 +2476,12 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             int entityId = 0;
             if (loggedInUser.UserGroupID != 1)
-            {
+                {
                 if (sessionCheck)
                     entityId = Convert.ToInt32(loggedInUser.PPNumber);
-            }
+                }
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditZones";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2489,7 +2489,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditZoneModel z = new AuditZoneModel();
                     z.ID = Convert.ToInt32(rdr["entity_id"]);
                     z.ZONECODE = rdr["CODE"].ToString();
@@ -2503,17 +2503,17 @@ Dear {userFullName},
                         z.ISACTIVE = rdr["ACTIVE"].ToString();
 
                     AZList.Add(z);
+                    }
                 }
-            }
             con.Dispose();
             return AZList;
-        }
+            }
         public List<InspectionUnitsModel> GetInspectionUnits()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<InspectionUnitsModel> ICList = new List<InspectionUnitsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_GetInspectionUnits";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -2521,7 +2521,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     InspectionUnitsModel z = new InspectionUnitsModel();
                     z.I_ID = Convert.ToInt32(rdr["I_ID"]);
                     z.I_CODE = rdr["I_CODE"].ToString();
@@ -2535,17 +2535,17 @@ Dear {userFullName},
                         z.STATUS = rdr["ISACTIVE"].ToString();
 
                     ICList.Add(z);
+                    }
                 }
-            }
             con.Dispose();
             return ICList;
-        }
+            }
         public List<BranchModel> GetBranches(int zone_code = 0, bool sessionCheck = true)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2553,7 +2553,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BranchModel br = new BranchModel();
                     br.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     br.ZONEID = Convert.ToInt32(rdr["ZONEID"]);
@@ -2571,13 +2571,13 @@ Dear {userFullName},
                         br.ISACTIVE = rdr["ISACTIVE"].ToString();
 
                     branchList.Add(br);
+                    }
                 }
-            }
             con.Dispose();
             return branchList;
-        }
+            }
         public List<BranchModel> GetZoneBranches(int zone_code = 0, bool sessionCheck = true)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2586,7 +2586,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasEntityid";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2597,37 +2597,37 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BranchModel br = new BranchModel();
                     br.BRANCHID = Convert.ToInt32(rdr["branchentityid"]);
                     br.BRANCHNAME = rdr["branchname"].ToString();
                     branchList.Add(br);
+                    }
                 }
-            }
             con.Dispose();
             return branchList;
-        }
+            }
         public BranchModel AddBranch(BranchModel br)
-        {
+            {
             return br;
-        }
+            }
         public BranchModel UpdateBranch(BranchModel br)
-        {
+            {
             return br;
-        }
+            }
         public List<ZoneModel> GetZones(bool sessionCheck = true)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetZones";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ZoneModel z = new ZoneModel();
                     z.ZONEID = Convert.ToInt32(rdr["ZONEID"]);
                     z.ENTITYID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -2642,13 +2642,13 @@ Dear {userFullName},
                         z.ISACTIVE = rdr["ISACTIVE"].ToString();
 
                     zoneList.Add(z);
+                    }
                 }
-            }
             con.Dispose();
             return zoneList;
-        }
+            }
         public List<ZoneModel> GetZonesoldparamointoring(bool sessionCheck = true)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2656,7 +2656,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetZonesForHoMointoring";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2666,7 +2666,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ZoneModel z = new ZoneModel();
                     z.ZONEID = Convert.ToInt32(rdr["ZONEID"]);
                     z.ENTITYID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -2681,47 +2681,47 @@ Dear {userFullName},
                         z.ISACTIVE = rdr["ISACTIVE"].ToString();
 
                     zoneList.Add(z);
+                    }
                 }
-            }
             con.Dispose();
             return zoneList;
-        }
+            }
         public List<BranchSizeModel> GetBranchSizes()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<BranchSizeModel> brSizeList = new List<BranchSizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetBranchSizes";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BranchSizeModel bs = new BranchSizeModel();
                     bs.BR_SIZE_ID = Convert.ToInt32(rdr["ENTITY_SIZE"]);
                     bs.DESCRIPTION = rdr["DESCRIPTION"].ToString();
 
                     brSizeList.Add(bs);
+                    }
                 }
-            }
             con.Dispose();
             return brSizeList;
-        }
+            }
         public List<ControlViolationsModel> GetControlViolations()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetControlViolations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ControlViolationsModel v = new ControlViolationsModel();
                     v.ID = Convert.ToInt32(rdr["S_GR_ID"]);
                     v.V_NAME = rdr["DESCRIPTION"].ToString();
@@ -2729,25 +2729,25 @@ Dear {userFullName},
                         v.MAX_NUMBER = Convert.ToInt32(rdr["MAX_NUMBER"]);
                     v.STATUS = "Y";
                     controlViolationList.Add(v);
+                    }
                 }
-            }
             con.Dispose();
             return controlViolationList;
-        }
+            }
         public ControlViolationsModel AddControlViolation(ControlViolationsModel cv)
-        {
+            {
             return cv;
-        }
+            }
         public List<DivisionModel> GetDivisions(bool sessionCheck = true)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<DivisionModel> divList = new List<DivisionModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = sqlParams.GetDivisionQueryFromParams();
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DivisionModel div = new DivisionModel();
                     div.DIVISIONID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     div.NAME = rdr["NAME"].ToString();
@@ -2760,14 +2760,14 @@ Dear {userFullName},
                     else
                         div.ISACTIVE = rdr["ACTIVE"].ToString();
                     divList.Add(div);
+                    }
                 }
-            }
             con.Dispose();
             return divList;
-        }
+            }
 
         public List<DepartmentModel> GetDepartments(int div_code = 0, bool sessionCheck = true)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -2782,7 +2782,7 @@ Dear {userFullName},
                 entityId = div_code;
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_GetDepartments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2792,7 +2792,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     DepartmentModel dept = new DepartmentModel();
                     dept.ID = Convert.ToInt32(rdr["ID"]);
                     dept.DIV_ID = Convert.ToInt32(rdr["DIVISIONID"]);
@@ -2806,7 +2806,7 @@ Dear {userFullName},
                         dept.STATUS = rdr["ISACTIVE"].ToString();
                     dept.DIV_NAME = rdr["DIV_NAME"].ToString();
                     if (rdr["AUDITED_BY_DEPID"].ToString() != null && rdr["AUDITED_BY_DEPID"].ToString() != "")
-                    {
+                        {
                         // dept.AUDITED_BY_NAME = rdr["ADUTIED_BY"].ToString();
 
                         dept.AUDITED_BY_DEPID = Convert.ToInt32(rdr["AUDITED_BY_DEPID"]);
@@ -2815,22 +2815,22 @@ Dear {userFullName},
                         cmd.CommandText = sqlParams.GetDepartmentNameByIdQueryFromParams(dept.AUDITED_BY_DEPID);
                         OracleDataReader rdr2 = cmd.ExecuteReader();
                         while (rdr2.Read())
-                        {
+                            {
                             dept.AUDITED_BY_NAME = rdr2["NAME"].ToString();
+                            }
                         }
-                    }
                     deptList.Add(dept);
+                    }
                 }
-            }
             con.Dispose();
             return deptList;
-        }
+            }
         public List<SubEntitiesModel> GetSubEntities(int div_code = 0, int dept_code = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<SubEntitiesModel> entitiesList = new List<SubEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetSubEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2839,7 +2839,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubEntitiesModel entity = new SubEntitiesModel();
                     entity.ID = Convert.ToInt32(rdr["ID"]);
                     entity.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
@@ -2854,16 +2854,16 @@ Dear {userFullName},
                     else
                         entity.STATUS = rdr["STATUS"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
-        }
+            }
         public SubEntitiesModel AddSubEntity(SubEntitiesModel subentity)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_AddSubEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2873,15 +2873,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("STATUS", OracleDbType.Varchar2).Value = subentity.STATUS;
 
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return subentity;
-        }
+            }
         public SubEntitiesModel UpdateSubEntity(SubEntitiesModel subentity)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UpdateSubEntity";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2893,17 +2893,17 @@ Dear {userFullName},
 
                 cmd.ExecuteReader();
 
-            }
+                }
             con.Dispose();
             return subentity;
-        }
+            }
 
         public List<RiskGroupModel> GetRiskGroup()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskGroupModel> riskgroupList = new List<RiskGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetRiskGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2911,23 +2911,23 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     RiskGroupModel rgm = new RiskGroupModel();
                     rgm.GR_ID = Convert.ToInt32(rdr["GR_ID"]);
                     rgm.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     riskgroupList.Add(rgm);
+                    }
                 }
-            }
 
             con.Dispose();
             return riskgroupList;
-        }
+            }
         public List<RiskSubGroupModel> GetRiskSubGroup(int group_id)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskSubGroupModel> risksubgroupList = new List<RiskSubGroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetRiskSubGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2936,24 +2936,24 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     RiskSubGroupModel rsgm = new RiskSubGroupModel();
                     rsgm.S_GR_ID = Convert.ToInt32(rdr["S_GR_ID"]);
                     rsgm.GR_ID = Convert.ToInt32(rdr["GR_ID"]);
                     rsgm.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     rsgm.GROUP_DESC = rdr["GROUP_DESC"].ToString();
                     risksubgroupList.Add(rsgm);
+                    }
                 }
-            }
             con.Dispose();
             return risksubgroupList;
-        }
+            }
         public List<RiskActivityModel> GetRiskActivities(int Sub_group_id)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskActivityModel> riskActivityList = new List<RiskActivityModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetRiskActivities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2962,29 +2962,29 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     RiskActivityModel ram = new RiskActivityModel();
                     ram.S_GR_ID = Convert.ToInt32(rdr["S_GR_ID"]);
                     ram.ACTIVITY_ID = Convert.ToInt32(rdr["ACTIVITY_ID"]);
                     ram.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     ram.SUB_GROUP_DESC = rdr["SUB_GROUP_DESC"].ToString();
                     riskActivityList.Add(ram);
+                    }
                 }
-            }
             con.Dispose();
             return riskActivityList;
-        }
+            }
         public List<AuditObservationTemplateModel> GetAuditObservationTemplates(int activity_id)
-        {
+            {
             List<AuditObservationTemplateModel> templateList = new List<AuditObservationTemplateModel>();
             return templateList;
-        }
+            }
         public List<AuditEmployeeModel> GetAuditEmployees(int dept_code = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditEmployeeModel> empList = new List<AuditEmployeeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditEmployees";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -2992,7 +2992,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEmployeeModel emp = new AuditEmployeeModel();
                     emp.PPNO = Convert.ToInt32(rdr["PPNO"]);
                     emp.DEPARTMENTCODE = Convert.ToInt32(rdr["DEPARTMENTCODE"]);
@@ -3006,13 +3006,13 @@ Dear {userFullName},
                     emp.FUN_DESIGNATION = rdr["FUN_DESIGNATION"].ToString();
                     emp.TYPE = rdr["TYPE"].ToString();
                     empList.Add(emp);
+                    }
                 }
-            }
             con.Dispose();
             return empList;
-        }
+            }
         public List<TentativePlanModel> GetTentativePlansForFields(bool sessionCheck = true)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3021,7 +3021,7 @@ Dear {userFullName},
             List<TentativePlanModel> tplansList = new List<TentativePlanModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 string _sql = "pkg_pg.p_get_audit_plan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -3031,7 +3031,7 @@ Dear {userFullName},
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     TentativePlanModel tplan = new TentativePlanModel();
                     tplan.PLAN_ID = Convert.ToInt32(rdr["PLAN_ID"]);
                     tplan.CRITERIA_ID = Convert.ToInt32(rdr["CRITERIA_ID"]);
@@ -3049,17 +3049,17 @@ Dear {userFullName},
                     tplan.PERIOD_NAME = rdr["PERIOD_NAME"].ToString();
                     tplan.REPORTING_OFFICE = rdr["REPORTING_OFFICE"].ToString();
                     tplansList.Add(tplan);
+                    }
                 }
-            }
             con.Dispose();
             return tplansList;
-        }
+            }
         public string GetAuditOperationalStartDate(int auditPeriodId = 0, int entityCode = 0)
-        {
+            {
             string result = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditOperationalStartDate";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3068,17 +3068,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     result = rdr["YEAR"].ToString() + "-";
                     result += rdr["MONTH"].ToString() + "-";
                     result += rdr["DAY"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return result;
-        }
+            }
         public List<AuditRefEngagementPlanModel> GetAuditEngagementPlans()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3086,7 +3086,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetAuditEngagementPlans";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3096,7 +3096,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 while (ardr.Read())
-                {
+                    {
                     AuditRefEngagementPlanModel eng = new AuditRefEngagementPlanModel();
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
                     eng.TEAM_NAME = ardr["team_name"].ToString();
@@ -3107,13 +3107,13 @@ Dear {userFullName},
                     eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString()).ToString("dd/MM/yyyy");
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditRefEngagementPlanModel> GetAuditOngoingEngagementPlans()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3121,7 +3121,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audit_team_postchanges";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3131,7 +3131,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 while (ardr.Read())
-                {
+                    {
                     AuditRefEngagementPlanModel eng = new AuditRefEngagementPlanModel();
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
                     eng.TEAM_NAME = ardr["team_name"].ToString();
@@ -3142,13 +3142,13 @@ Dear {userFullName},
                     eng.OP_ENDDATE = Convert.ToDateTime(ardr["op_enddate"].ToString()).ToString("dd/MM/yyyy");
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditRefEngagementPlanModel> GetRefferedBackAuditEngagementPlans()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3156,7 +3156,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditRefEngagementPlanModel> list = new List<AuditRefEngagementPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetRefferedBackAuditEngagementPlans";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3166,7 +3166,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader ardr = cmd.ExecuteReader();
                 while (ardr.Read())
-                {
+                    {
                     AuditRefEngagementPlanModel eng = new AuditRefEngagementPlanModel();
                     eng.PLAN_ID = Convert.ToInt32(ardr["plan_id"].ToString());
                     eng.ENG_ID = Convert.ToInt32(ardr["eng_id"].ToString());
@@ -3181,13 +3181,13 @@ Dear {userFullName},
 
                     eng.ENTITY_ID = Convert.ToInt32(ardr["entity_id"].ToString());
                     list.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public AuditEngagementPlanModel AddAuditEngagementPlan(AuditEngagementPlanModel ePlan)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3199,7 +3199,7 @@ Dear {userFullName},
             ePlan.CREATEDBY = Convert.ToInt32(loggedInUser.PPNumber);
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_AddAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3224,17 +3224,17 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ePlan.REMARKS_OUT = rdr["REMARKS"].ToString();
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
+                        {
                         isContinue = true;
                         ePlan.IS_SUCCESS = "Yes";
+                        }
                     }
-                }
 
                 if (isContinue)
-                {
+                    {
                     cmd.CommandText = "pkg_pg.P_AddAuditteamtasklist";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -3246,22 +3246,22 @@ Dear {userFullName},
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.ExecuteReader();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return ePlan;
 
-        }
+            }
         public bool RefferedBackAuditEngagementPlan(int ENG_ID, string REMARKS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_RefferedBackAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3271,12 +3271,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public string RerecommendAuditEngagementPlan(int ENG_ID, int PLAN_ID, int ENTITY_ID, DateTime OP_START_DATE, DateTime OP_END_DATE, DateTime START_DATE, DateTime END_DATE, int TEAM_ID, string COMMENTS)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -3284,7 +3284,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_RerecommendAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3303,22 +3303,22 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARK"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_ApproveAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3327,22 +3327,22 @@ Dear {userFullName},
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
 
             return true;
-        }
+            }
         public UserModel GetMatchedPPNumbers(string PPNO)
-        {
+            {
             UserModel um = new UserModel();
             if (PPNO == "")
                 return um;
             if (PPNO != null && PPNO != "")
-            {
+                {
                 var con = this.DatabaseConnection(); con.Open();
 
                 using (OracleCommand cmd = con.CreateCommand())
-                {
+                    {
                     cmd.CommandText = "pkg_ad.p_get_allusers";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -3354,19 +3354,19 @@ Dear {userFullName},
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
-                    {
+                        {
                         um.ID = Convert.ToInt32(rdr["USERID"].ToString());
                         um.Name = rdr["EMPLOYEEFIRSTNAME"].ToString() + " " + rdr["EMPLOYEELASTNAME"].ToString();
                         um.PPNumber = rdr["ppno"].ToString();
+                        }
                     }
-                }
                 con.Dispose();
-            }
+                }
 
             return um;
-        }
+            }
         public List<AuditPlanModel> GetAuditPlan(int period_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3374,7 +3374,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanModel> planList = new List<AuditPlanModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 string _sql = "pkg_ais.p_get_audit_plan";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -3383,7 +3383,7 @@ Dear {userFullName},
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanModel plan = new AuditPlanModel();
                     plan.PLAN_ID = Convert.ToInt32(rdr["PLAN_ID"]);
                     plan.AUDITPERIOD_ID = Convert.ToInt32(rdr["AUDITPERIOD_ID"]);
@@ -3410,13 +3410,13 @@ Dear {userFullName},
                     plan.DIVISION_NAME = rdr["DIVISION_NAME"].ToString();
                     plan.AUDITZONE_NAME = rdr["AUDITZONE_NAME"].ToString();
                     planList.Add(plan);
+                    }
                 }
-            }
             con.Dispose();
             return planList;
-        }
+            }
         public List<RiskProcessDefinition> GetFunctionalListForDashboard()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3424,7 +3424,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3434,18 +3434,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["entity_id"]);
                     proc.P_NAME = rdr["Functional_owner"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetViolationListForDashboard(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3453,7 +3453,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3465,18 +3465,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["t_id"]);
                     proc.P_NAME = rdr["heading"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetSubViolationListForDashboard(int ENTITY_ID = 0, int PROCESS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3484,7 +3484,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_sub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3496,18 +3496,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["S_ID"]);
                     proc.P_NAME = rdr["HEADING"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetHOFunctionalListForDashboard(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3515,7 +3515,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3526,18 +3526,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["entity_id"]);
                     proc.P_NAME = rdr["Functional_owner"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetHOViolationListForDashboard(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3545,7 +3545,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3556,22 +3556,22 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["t_id"]);
                     proc.P_NAME = rdr["heading"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetHOSubViolationListForDashboard(int ENTITY_ID = 0, int PROCESS_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_names_checklist_sub_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3580,46 +3580,46 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["S_ID"]);
                     proc.P_NAME = rdr["HEADING"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDefinition> GetRiskProcessDefinition()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDefinition> pdetails = new List<RiskProcessDefinition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.P_GetRiskProcessDefinition";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDefinition proc = new RiskProcessDefinition();
                     proc.P_ID = Convert.ToInt32(rdr["T_ID"]);
                     if (rdr["ENTITY_TYPE"].ToString() != null && rdr["ENTITY_TYPE"].ToString() != "")
                         proc.RISK_ID = Convert.ToInt32(rdr["ENTITY_TYPE"]);
                     proc.P_NAME = rdr["HEADING"].ToString();
                     pdetails.Add(proc);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<RiskProcessDetails> GetRiskProcessDetails(int procId = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessDetails> riskProcList = new List<RiskProcessDetails>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetRiskProcessDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3627,7 +3627,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessDetails pdetail = new RiskProcessDetails();
                     pdetail.ID = Convert.ToInt32(rdr["S_ID"]);
                     pdetail.P_ID = Convert.ToInt32(rdr["T_ID"]);
@@ -3635,17 +3635,17 @@ Dear {userFullName},
                     pdetail.TITLE = rdr["HEADING"].ToString();
                     pdetail.ACTIVE = rdr["STATUS"].ToString();
                     riskProcList.Add(pdetail);
+                    }
                 }
-            }
             con.Dispose();
             return riskProcList;
-        }
+            }
         public List<SubProcessUpdateModelForReviewAndAuthorizeModel> GetSubChecklistComparisonDetailById(int SUB_PROCESS_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<SubProcessUpdateModelForReviewAndAuthorizeModel> riskTransList = new List<SubProcessUpdateModelForReviewAndAuthorizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_sub_checklist_update_byid";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3653,7 +3653,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubProcessUpdateModelForReviewAndAuthorizeModel pm = new SubProcessUpdateModelForReviewAndAuthorizeModel();
                     pm.PROCESS_NAME = rdr["Process"].ToString();
                     pm.SUB_PROCESS_NAME = rdr["sub_porcess"].ToString();
@@ -3665,17 +3665,17 @@ Dear {userFullName},
                     pm.SP_ID = rdr["s_id"].ToString();
                     pm.NEW_SP_ID = rdr["n_s_id"].ToString();
                     riskTransList.Add(pm);
+                    }
                 }
-            }
             con.Dispose();
             return riskTransList;
-        }
+            }
         public List<ChecklistDetailComparisonModel> GetChecklistComparisonDetailById(int CHECKLIST_DETAIL_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ChecklistDetailComparisonModel> riskTransList = new List<ChecklistDetailComparisonModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_checklist_update_byid";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3683,7 +3683,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ChecklistDetailComparisonModel pTran = new ChecklistDetailComparisonModel();
                     pTran.ID = Convert.ToInt32(rdr["ID"]);
                     pTran.PROCESS = rdr["PROCESS"].ToString();
@@ -3718,17 +3718,17 @@ Dear {userFullName},
                     pTran.N_ANNEX_ID = rdr["n_annex"].ToString();
 
                     riskTransList.Add(pTran);
+                    }
                 }
-            }
             con.Dispose();
             return riskTransList;
-        }
+            }
         public List<ChecklistDetailComparisonModel> GetChecklistComparisonDetailByIdForRefferedBack(int CHECKLIST_DETAIL_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ChecklistDetailComparisonModel> riskTransList = new List<ChecklistDetailComparisonModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_checklist_update_byid_ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3736,7 +3736,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ChecklistDetailComparisonModel pTran = new ChecklistDetailComparisonModel();
                     pTran.ID = Convert.ToInt32(rdr["ID"]);
 
@@ -3768,17 +3768,17 @@ Dear {userFullName},
 
 
                     riskTransList.Add(pTran);
+                    }
                 }
-            }
             con.Dispose();
             return riskTransList;
-        }
+            }
         public List<RiskProcessTransactions> GetRiskProcessTransactions(int procDetailId = 0, int transactionId = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetRiskProcessTransactions";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3787,7 +3787,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessTransactions pTran = new RiskProcessTransactions();
                     pTran.ID = Convert.ToInt32(rdr["ID"]);
                     pTran.PD_ID = Convert.ToInt32(rdr["S_ID"]);
@@ -3807,13 +3807,13 @@ Dear {userFullName},
                     pTran.VIOLATION_NAME = rdr["V_NAME"].ToString();
                     pTran.PROCESS_STATUS = rdr["STATUS"].ToString();
                     riskTransList.Add(pTran);
+                    }
                 }
-            }
             con.Dispose();
             return riskTransList;
-        }
+            }
         public List<SubProcessUpdateModelForReviewAndAuthorizeModel> GetUpdatedSubChecklistForReviewAndAuthorize(int statusId)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3821,7 +3821,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<SubProcessUpdateModelForReviewAndAuthorizeModel> pmList = new List<SubProcessUpdateModelForReviewAndAuthorizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_Get_updated_Sub_Checklist_for_review";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3832,7 +3832,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubProcessUpdateModelForReviewAndAuthorizeModel pm = new SubProcessUpdateModelForReviewAndAuthorizeModel();
                     pm.PROCESS_NAME = rdr["Process"].ToString();
                     pm.SUB_PROCESS_NAME = rdr["sub_process"].ToString();
@@ -3845,13 +3845,13 @@ Dear {userFullName},
                     pm.NEW_SP_ID = rdr["n_s_id"].ToString();
                     pmList.Add(pm);
 
+                    }
                 }
-            }
             con.Dispose();
             return pmList;
-        }
+            }
         public List<RiskProcessTransactions> GetUpdatedChecklistDetailsForReviewAndAuthorize(int statusId)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3859,7 +3859,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskProcessTransactions> riskTransList = new List<RiskProcessTransactions>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_Get_updated_Checklist_for_review";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3870,7 +3870,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskProcessTransactions pTran = new RiskProcessTransactions();
                     pTran.ID = Convert.ToInt32(rdr["ID"]);
                     pTran.PD_ID = Convert.ToInt32(rdr["S_ID"]);
@@ -3891,35 +3891,35 @@ Dear {userFullName},
                     pTran.PROCESS_STATUS = rdr["STATUS"].ToString();
                     pTran.PROCESS_COMMENTS = this.GetLatestCommentsOnProcess(pTran.ID);
                     riskTransList.Add(pTran);
+                    }
                 }
-            }
             con.Dispose();
             return riskTransList;
-        }
+            }
         public RiskProcessDefinition AddRiskProcess(RiskProcessDefinition proc)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("p_name", OracleDbType.Varchar2).Value = proc.P_NAME;
                 cmd.Parameters.Add("RISK_ID", OracleDbType.Int32).Value = proc.RISK_ID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return proc;
-        }
+            }
         public RiskProcessDetails AddRiskSubProcess(RiskProcessDetails subProc)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3930,19 +3930,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return subProc;
-        }
+            }
         public RiskProcessTransactions AddRiskSubProcessTransaction(RiskProcessTransactions trans)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_detail";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3954,12 +3954,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("ACTION", OracleDbType.Varchar2).Value = trans.ACTION;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Varchar2).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return trans;
-        }
+            }
         public string AuthorizeSubProcessByAuthorizer(int T_ID, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3967,7 +3967,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_Approved_Sub_Process_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3979,15 +3979,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string RefferedBackSubProcessByAuthorizer(int T_ID, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3995,7 +3995,7 @@ Dear {userFullName},
             string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_RefferedBack_Sub_checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4007,15 +4007,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string RecommendProcessTransactionByReviewer(int T_ID, string COMMENTS, int PROCESS_DETAIL_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4023,7 +4023,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Recommend_Checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4043,15 +4043,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string RefferedBackProcessTransactionByReviewer(int T_ID, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4059,7 +4059,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_RefferedBack_checklist_By_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4071,15 +4071,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AuthorizeProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4087,7 +4087,7 @@ Dear {userFullName},
             string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_approve_checklist_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4099,15 +4099,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string RefferedBackProcessTransactionByAuthorizer(int T_ID, string COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4115,7 +4115,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_RefferedBack_checklist_By_Authorizer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4127,50 +4127,50 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditFrequencyModel> GetAuditFrequencies()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditFrequencyModel> freqList = new List<AuditFrequencyModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.p_GetAuditFrequencies";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditFrequencyModel freq = new AuditFrequencyModel();
                     freq.ID = Convert.ToInt32(rdr["ID"]);
                     freq.FREQUENCY_ID = Convert.ToInt32(rdr["FREQUENCY_ID"]);
                     freq.FREQUENCY_DISCRIPTION = rdr["FREQUENCY_DISCRIPTION"].ToString();
                     freq.STATUS = rdr["STATUS"].ToString();
                     freqList.Add(freq);
+                    }
                 }
-            }
             con.Dispose();
             return freqList;
-        }
+            }
         public List<RiskModel> GetRisks()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetRisks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskModel risk = new RiskModel();
                     if (rdr["R_ID"].ToString() != null && rdr["R_ID"].ToString() != "")
                         risk.R_ID = Convert.ToInt32(rdr["R_ID"]);
@@ -4178,64 +4178,64 @@ Dear {userFullName},
                     risk.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     if (risk.R_ID > 0)
                         riskList.Add(risk);
+                    }
                 }
-            }
             con.Dispose();
             return riskList;
-        }
+            }
         public List<RiskModel> GetCOSORisks()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<RiskModel> riskList = new List<RiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.p_GetCOSORisks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskModel risk = new RiskModel();
                     risk.R_ID = Convert.ToInt32(rdr["R_ID"]);
                     risk.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     risk.RATING = rdr["RATING"].ToString();
                     riskList.Add(risk);
+                    }
                 }
-            }
             con.Dispose();
             return riskList;
-        }
+            }
         public List<AuditVoilationcatModel> GetAuditVoilationcats()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditVoilationcatModel> voilationList = new List<AuditVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetAuditVoilationcats";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditVoilationcatModel voilationcat = new AuditVoilationcatModel();
                     voilationcat.ID = Convert.ToInt32(rdr["ID"]);
                     voilationcat.V_NAME = rdr["V_Name"].ToString();
                     voilationcat.MAX_NUMBER = Convert.ToInt32(rdr["MAX_Number"]);
                     voilationcat.STATUS = rdr["Status"].ToString();
                     voilationList.Add(voilationcat);
+                    }
                 }
-            }
             con.Dispose();
             return voilationList;
-        }
+            }
         public List<AuditSubVoilationcatModel> GetVoilationSubGroup(int group_id)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditSubVoilationcatModel> voilationsubgroupList = new List<AuditSubVoilationcatModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetVoilationSubGroup";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4244,7 +4244,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditSubVoilationcatModel vsgm = new AuditSubVoilationcatModel();
                     vsgm.ID = Convert.ToInt32(rdr["ID"]);
                     if (rdr["V_ID"].ToString() != "")
@@ -4255,13 +4255,13 @@ Dear {userFullName},
                     vsgm.RISK_ID = rdr["RISK_ID"].ToString();
                     vsgm.STATUS = rdr["STATUS"].ToString();
                     voilationsubgroupList.Add(vsgm);
+                    }
                 }
-            }
             con.Dispose();
             return voilationsubgroupList;
-        }
+            }
         public List<TaskListModel> GetTaskList()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4269,7 +4269,7 @@ Dear {userFullName},
             List<TaskListModel> tasklist = new List<TaskListModel>();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetTaskList";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4279,7 +4279,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     TaskListModel tlist = new TaskListModel();
                     tlist.ID = Convert.ToInt32(rdr["ID"]);
                     tlist.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"]);
@@ -4308,13 +4308,13 @@ Dear {userFullName},
                     if (rdr["OPERATION_ENDDATE"].ToString() != null && rdr["OPERATION_ENDDATE"].ToString() != "")
                         tlist.OPERATION_ENDDATE = Convert.ToDateTime(rdr["OPERATION_ENDDATE"]);
                     tasklist.Add(tlist);
+                    }
                 }
-            }
             con.Dispose();
             return tasklist;
-        }
+            }
         public JoiningModel GetJoiningDetails(int engId = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4325,7 +4325,7 @@ Dear {userFullName},
             if (engId == 0)
                 engId = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetJoiningDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4336,7 +4336,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     jm.ENG_PLAN_ID = engId;
                     jm.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     jm.ENTITY_CODE = Convert.ToInt32(rdr["ENTITY_CODE"]);
@@ -4354,13 +4354,13 @@ Dear {userFullName},
                     tm.IS_TEAM_LEAD = rdr["ISTEAMLEAD"].ToString();
                     tjlist.Add(tm);
                     jm.TEAM_DETAILS = tjlist;
+                    }
                 }
-            }
             con.Dispose();
             return jm;
-        }
+            }
         public string AddJoiningReport(AddJoiningModel jm)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4370,7 +4370,7 @@ Dear {userFullName},
             jm.ENTEREDDATE = System.DateTime.Now;
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddJoiningReport";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4382,21 +4382,21 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     this.SetEngIdOnHold();
                     response = rdr["remarks"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return response;
-        }
+            }
         public List<AuditChecklistModel> GetAuditChecklist()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_GetAuditChecklist";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -4405,7 +4405,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
@@ -4415,19 +4415,19 @@ Dear {userFullName},
                     chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
 
         public List<AuditChecklistModel> GetAuthorizeMergeSubChecklist()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_GET_SUBCHECKILIST";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -4436,7 +4436,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["S_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
@@ -4446,18 +4446,18 @@ Dear {userFullName},
                     // chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<AuditChecklistModel> GetAuditChecklistCAD()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_GetAuditChecklistCAD";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -4466,7 +4466,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
@@ -4474,13 +4474,13 @@ Dear {userFullName},
                     //chk.ENTITY_TYPE_NAME = rdr["ENTITY_TYPE_NAME"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditChecklistSubModel> GetAuditChecklistSub(int t_id = 0, int eng_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4488,7 +4488,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistSubModel> list = new List<AuditChecklistSubModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetAuditChecklistSub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4499,7 +4499,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistSubModel chk = new AuditChecklistSubModel();
                     chk.S_ID = Convert.ToInt32(rdr["S_ID"]);
                     chk.T_ID = Convert.ToInt32(rdr["T_ID"]);
@@ -4524,13 +4524,13 @@ Dear {userFullName},
                     }*/
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetails(int s_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4538,7 +4538,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetAuditChecklistDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4549,7 +4549,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.S_ID = Convert.ToInt32(rdr["S_ID"]);
@@ -4560,28 +4560,28 @@ Dear {userFullName},
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"]);
                     chk.RISK = rdr["RISK"].ToString();
                     if (rdr["ROLE_RESP_ID"].ToString() != null && rdr["ROLE_RESP_ID"].ToString() != "")
-                    {
+                        {
                         chk.ROLE_RESP_ID = Convert.ToInt32(rdr["ROLE_RESP_ID"]);
-                    }
+                        }
                     if (rdr["PROCESS_OWNER_ID"].ToString() != null && rdr["PROCESS_OWNER_ID"].ToString() != "")
-                    {
+                        {
                         chk.PROCESS_OWNER_ID = Convert.ToInt32(rdr["PROCESS_OWNER_ID"]);
 
-                    }
+                        }
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<AuditChecklistModel> GetAnnexureProcess()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.p_get_annexure_process";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -4590,19 +4590,19 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<AuditChecklistDetailsModel> GetEntityObservationDetails(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4610,7 +4610,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_get_audit_pre_Concluding";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4621,7 +4621,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.HEADING = rdr["check_list"].ToString();
@@ -4629,13 +4629,13 @@ Dear {userFullName},
                     chk.OB_STATUS = rdr["ob_status"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GlHeadDetailsModel> GetGlheadDetails(int engId = 0, int gl_code = 0)
-        {
+            {
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -4647,7 +4647,7 @@ Dear {userFullName},
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.p_getglheadsummary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4657,7 +4657,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     GlHeadDetails.GL_TYPEID = Convert.ToInt32(rdr["GL_TYPEID"]);
@@ -4672,14 +4672,14 @@ Dear {userFullName},
                     if (rdr["CREDIT"].ToString() != null && rdr["CREDIT"].ToString() != "")
                         GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public GlHeadSubDetailsModel GetGlheadSubDetails(int gltypeid = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4689,7 +4689,7 @@ Dear {userFullName},
             GlHeadSubDetailsModel GlHeadSubDetails = new GlHeadSubDetailsModel();
             List<GlHeadSubDetailsModel> GlSubHeadList = new List<GlHeadSubDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.p_getglheadsum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4698,7 +4698,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
 
 
                     GlHeadSubDetailsModel GHSD = new GlHeadSubDetailsModel();
@@ -4714,14 +4714,14 @@ Dear {userFullName},
                     GHSD.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     GlSubHeadList.Add(GHSD);
                     GlHeadSubDetails.GL_SUBDETAILS = GlSubHeadList;
+                    }
                 }
-            }
             con.Dispose();
             return GlHeadSubDetails;
 
-        }
+            }
         public List<LoanCaseModel> GetLoanCaseDetails(int lid = 0, string type = "", int ENG_ID = 0)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4731,7 +4731,7 @@ Dear {userFullName},
             List<LoanCaseModel> list = new List<LoanCaseModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_GetLoanCaseDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4742,7 +4742,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
                     //LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
@@ -4757,13 +4757,13 @@ Dear {userFullName},
                     LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
                     LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
                     list.Add(LoanCaseDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<LoanCasedocModel> GetLoanCaseDocuments(int ENG_ID)
-        {
+            {
             List<LoanCasedocModel> list = new List<LoanCasedocModel>();
 
             sessionHandler = new SessionHandler();
@@ -4774,7 +4774,7 @@ Dear {userFullName},
 
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetLoanCaseDocuments";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4783,7 +4783,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LoanCasedocModel LoanCaseDetails = new LoanCasedocModel();
                     LoanCaseDetails.TEAM_MEM_PPNO = Convert.ToString(rdr["TEAM_MEM_PPNO"]);
                     LoanCaseDetails.BRANCHCODE = Convert.ToString(rdr["BRANCHCODE"]);
@@ -4797,13 +4797,13 @@ Dear {userFullName},
                     LoanCaseDetails.IMAGES = rdr["IMAGES"].ToString();
 
                     list.Add(LoanCaseDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GlHeadDetailsModel> GetIncomeExpenceDetails(int bid = 0, int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4812,7 +4812,7 @@ Dear {userFullName},
             List<GlHeadDetailsModel> list = new List<GlHeadDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_GetIncomeExpenceDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4822,7 +4822,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GlHeadDetailsModel GlHeadDetails = new GlHeadDetailsModel();
                     //GlHeadDetails.TEAM_MEM_PPNO = Convert.ToDouble(rdr["TEAM_MEM_PPNO"]);
                     GlHeadDetails.NAME = rdr["NAME"].ToString();
@@ -4839,14 +4839,14 @@ Dear {userFullName},
                     if (rdr["CREDIT"].ToString() != null && rdr["CREDIT"].ToString() != "")
                         GlHeadDetails.CREDIT = Convert.ToDouble(rdr["CREDIT"]);
                     list.Add(GlHeadDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public List<DepositAccountModel> GetDepositAccountdetails()
-        {
+            {
             List<DepositAccountModel> depositacclist = new List<DepositAccountModel>();
             /*
             sessionHandler = new SessionHandler();
@@ -4874,9 +4874,9 @@ Dear {userFullName},
             }
            con.Dispose();*/
             return depositacclist;
-        }
+            }
         public List<DepositAccountModel> GetDepositAccountSubdetails(string bname = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4885,7 +4885,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<DepositAccountModel> depositaccsublist = new List<DepositAccountModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_GetDepositAccountSubdetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4893,7 +4893,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DepositAccountModel depositaccsubdetails = new DepositAccountModel();
 
                     depositaccsubdetails.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
@@ -4909,13 +4909,13 @@ Dear {userFullName},
 
 
                     if (rdr["OPENINGDATE"].ToString() != null && rdr["OPENINGDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.OPENINGDATE = Convert.ToDateTime(rdr["OPENINGDATE"]);
-                    }
+                        }
                     if (rdr["CNIC"].ToString() != null && rdr["CNIC"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
-                    }
+                        }
                     if (rdr["TITLE"].ToString() != null && rdr["TITLE"].ToString() != "")
                         depositaccsubdetails.TITLE = rdr["TITLE"].ToString();
 
@@ -4923,21 +4923,21 @@ Dear {userFullName},
                     if (rdr["ACCOCUNTSTATUS"].ToString() != null && rdr["ACCOCUNTSTATUS"].ToString() != "")
                         depositaccsubdetails.ACCOUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
                     if (rdr["LASTTRANSACTIONDATE"].ToString() != null && rdr["LASTTRANSACTIONDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
-                    }
+                        }
                     if (rdr["CNICEXPIRYDATE"].ToString() != null && rdr["CNICEXPIRYDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
-                    }
+                        }
                     depositaccsublist.Add(depositaccsubdetails);
+                    }
                 }
-            }
             con.Dispose();
             return depositaccsublist;
-        }
+            }
         public List<LoanCaseModel> GetBranchDesbursementAccountdetails(int bid = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -4947,7 +4947,7 @@ Dear {userFullName},
             List<LoanCaseModel> list = new List<LoanCaseModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_GetBranchDesbursementAccountdetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -4956,7 +4956,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     LoanCaseModel LoanCaseDetails = new LoanCaseModel();
                     //  LoanCaseDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
                     LoanCaseDetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
@@ -4971,13 +4971,13 @@ Dear {userFullName},
                     LoanCaseDetails.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
                     LoanCaseDetails.DISB_STATUSID = Convert.ToInt32(rdr["DISB_STATUSID"]);
                     list.Add(LoanCaseDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string SaveAuditObservation(ObservationModel ob)
-        {
+            {
             //105400
             int addedObsId = 0;
             string returnResp = "";
@@ -4990,7 +4990,7 @@ Dear {userFullName},
             if (ob.ENGPLANID == 0)
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_SaveAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5015,26 +5015,26 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
-                    {
+                        {
                         returnResp = rdr["remarks"].ToString();
-                    }
+                        }
                     else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
+                        {
                         addedObsId = Convert.ToInt32(rdr["ID"].ToString());
                         returnResp = rdr["remarks"].ToString();
                         proceed = true;
+                        }
                     }
-                }
                 if (proceed)
-                {
-                    if (ob.RESPONSIBLE_PPNO != null)
                     {
-                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
+                    if (ob.RESPONSIBLE_PPNO != null)
                         {
-                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
                             {
+                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                                {
                                 cmd.CommandText = "pkg_ar.P_responibilityassigned";
                                 cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.Parameters.Clear();
@@ -5046,18 +5046,18 @@ Dear {userFullName},
                                 cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
                                 cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
                                 cmd.ExecuteReader();
+                                }
                             }
+
                         }
-
                     }
-                }
 
-            }
+                }
             con.Dispose();
             return returnResp;
-        }
+            }
         public string SaveAuditObservationCAU(ObservationModel ob)
-        {
+            {
 
             int addedObsId = 0;
             string returnResp = "";
@@ -5070,7 +5070,7 @@ Dear {userFullName},
             if (ob.ENGPLANID == 0)
                 ob.ENGPLANID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_SaveAuditObservationCAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5090,27 +5090,27 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
-                    {
+                        {
                         returnResp = rdr["remarks"].ToString();
-                    }
+                        }
                     else if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "1")
-                    {
+                        {
                         addedObsId = Convert.ToInt32(rdr["ID"].ToString());
                         returnResp = rdr["remarks"].ToString();
                         proceed = true;
 
+                        }
                     }
-                }
                 if (proceed)
-                {
-                    if (ob.RESPONSIBLE_PPNO != null)
                     {
-                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
+                    if (ob.RESPONSIBLE_PPNO != null)
                         {
-                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                        if (ob.RESPONSIBLE_PPNO.Count > 0 && addedObsId > 0)
                             {
+                            foreach (ObservationResponsiblePPNOModel pp in ob.RESPONSIBLE_PPNO)
+                                {
                                 cmd.CommandText = "pkg_ar.P_responibilityassigned";
                                 cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.Parameters.Clear();
@@ -5122,19 +5122,19 @@ Dear {userFullName},
                                 cmd.Parameters.Add("LCAMOUNT", OracleDbType.Int32).Value = pp.LC_AMOUNT;
                                 cmd.Parameters.Add("ACAMOUNT", OracleDbType.Int32).Value = pp.ACC_AMOUNT;
                                 cmd.ExecuteReader();
+                                }
                             }
+
                         }
-
                     }
+
+
                 }
-
-
-            }
             con.Dispose();
             return returnResp;
-        }
+            }
         public List<AssignedObservations> GetAssignedObservations(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5142,7 +5142,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.p_GetAssignedObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5154,7 +5154,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AssignedObservations chk = new AssignedObservations();
                     chk.ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
@@ -5171,13 +5171,13 @@ Dear {userFullName},
                     chk.CAN_REPLY = Convert.ToInt32(rdr["CANREPLY"].ToString());
                     chk.EDITABLE = Convert.ToInt32(rdr["EDITABLE"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AssignedObservations> GetAssignedObservationsForBranch(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5186,7 +5186,7 @@ Dear {userFullName},
 
             List<AssignedObservations> list = new List<AssignedObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAssignedObservationsForBranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5197,7 +5197,7 @@ Dear {userFullName},
 
 
                 while (rdr.Read())
-                {
+                    {
                     AssignedObservations chk = new AssignedObservations();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
@@ -5223,13 +5223,13 @@ Dear {userFullName},
                     chk.MEMO_DATE = rdr["MEMO_DATE"].ToString();
                     chk.MEMO_REPLY_DATE = rdr["REPLYDATE"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<object> GetObservationText(int OBS_ID, int RESP_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5241,7 +5241,7 @@ Dear {userFullName},
             List<object> list = new List<object>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetObservationText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5252,13 +5252,13 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ob_text = rdr["TEXT"].ToString();
 
-                }
+                    }
                 list.Add(ob_text);
                 if (RESP_ID > 0)
-                {
+                    {
                     cmd.CommandText = "pkg_ar.P_GetOBSERVATIONSAUDITEERESPONSE";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -5270,9 +5270,9 @@ Dear {userFullName},
                     OracleDataReader rdr2 = cmd.ExecuteReader();
 
                     while (rdr2.Read())
-                    {
+                        {
                         ob_resp = rdr2["REPLY"].ToString();
-                    }
+                        }
                     list.Add(ob_resp);
                     List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
                     cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences";
@@ -5282,7 +5282,7 @@ Dear {userFullName},
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr3 = cmd.ExecuteReader();
                     while (rdr3.Read())
-                    {
+                        {
                         AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
                         am.FILE_ID = rdr3["ID"].ToString();
                         am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
@@ -5290,27 +5290,27 @@ Dear {userFullName},
                         am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
                         am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
                         modellist.Add(am);
-                    }
+                        }
                     list.Add(modellist);
 
-                }
+                    }
                 else
-                {
+                    {
                     list.Add("");
                     list.Add(new List<object>());
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<ObservationResponsiblePPNOModel> GetObservationResponsiblePPNOs(int OBS_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetObservationResponsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5318,7 +5318,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
                     usr.EMP_NAME = rdr["EMP_NAME"].ToString();
                     usr.PP_NO = rdr["PP_NO"].ToString();
@@ -5328,18 +5328,18 @@ Dear {userFullName},
                     usr.ACC_AMOUNT = rdr["ACAMOUNT"].ToString();
                     list.Add(usr);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ObservationResponsiblePPNOModel> GetOldParasObservationResponsiblePPNOs(int OLD_PARA_ID = 0, int NEW_PARA_ID = 0, string INDICATOR = "")
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.p_GetParaComplianceResponsible";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5349,7 +5349,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
                     usr.EMP_NAME = rdr["EMP_NAME"].ToString();
                     usr.PP_NO = rdr["PP_NO"].ToString();
@@ -5359,18 +5359,18 @@ Dear {userFullName},
                     usr.ACC_AMOUNT = rdr["ACAMOUNT"].ToString();
                     list.Add(usr);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ObservationResponsiblePPNOModel> GetOldParasObservationResponsiblePPNOsUpdatedByImp(int PARA_ID, string PARA_CATEGORY, int AU_OBS_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforfinalsettlement_responsibles";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5380,7 +5380,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
                     usr.EMP_NAME = rdr["EMP_NAME"].ToString();
                     usr.PP_NO = rdr["PP_NO"].ToString();
@@ -5390,23 +5390,23 @@ Dear {userFullName},
                     usr.ACC_AMOUNT = rdr["ACAMOUNT"].ToString();
                     list.Add(usr);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeResponseEvidenceModel> GetOldParasEvidences(string textId)
-        {
+            {
             var list = new List<AuditeeResponseEvidenceModel>();
 
             try
-            {
-                using (var con = this.DatabaseConnection())
                 {
+                using (var con = this.DatabaseConnection())
+                    {
                     con.Open();
 
                     using (var cmd = con.CreateCommand())
-                    {
+                        {
                         cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence";
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -5414,17 +5414,17 @@ Dear {userFullName},
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                         using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
                             {
-                                var usr = new AuditeeResponseEvidenceModel
+                            while (rdr.Read())
                                 {
+                                var usr = new AuditeeResponseEvidenceModel
+                                    {
                                     IMAGE_NAME = rdr["FILE_NAME"].ToString(),
                                     IMAGE_DATA = "",
                                     SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
                                     LENGTH = Convert.ToInt32(rdr["LENGTH"]),
                                     FILE_ID = (rdr["id"].ToString())
-                                };
+                                    };
 
                                 // Handle CLOB data
                                 /*var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
@@ -5434,27 +5434,27 @@ Dear {userFullName},
                                 }*/
 
                                 list.Add(usr);
+                                }
                             }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 throw;
-            }
+                }
 
             return list;
-        }
+            }
 
         public List<AuditeeResponseEvidenceModel> GetOldParasEvidencesTEMP(string TEXT_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeResponseEvidenceModel> list = new List<AuditeeResponseEvidenceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5463,25 +5463,25 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    var usr = new AuditeeResponseEvidenceModel
                     {
+                    var usr = new AuditeeResponseEvidenceModel
+                        {
                         IMAGE_NAME = rdr["FILE_NAME"].ToString(),
                         SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
                         LENGTH = Convert.ToInt32(rdr["LENGTH"])
-                    };
+                        };
 
                     // Handle CLOB data
 
 
                     list.Add(usr);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public async Task<bool> ResponseAuditObservation(ObservationResponseModel ob, string SUBFOLDER)
-        {
+            {
             int AUD_RESP_ID = 0;
             List<AuditeeResponseEvidenceModel> EVIDENCE_LIST = new List<AuditeeResponseEvidenceModel>();
             sessionHandler = new SessionHandler();
@@ -5495,7 +5495,7 @@ Dear {userFullName},
             ob.SUBMITTED = "Y";
             ob.REPLY_ROLE = 0;
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_AUDITEE_OBSERVATION_RESPONSE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5512,18 +5512,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AUD_RESP_ID = Convert.ToInt32(rdr["RESP_ID"]);
-                }
+                    }
 
                 EVIDENCE_LIST = await this.GetAttachedAuditeeEvidencesFromDirectory(SUBFOLDER);
                 int index = 1;
                 if (EVIDENCE_LIST != null)
-                {
-                    if (EVIDENCE_LIST.Count > 0)
                     {
-                        foreach (var item in EVIDENCE_LIST)
+                    if (EVIDENCE_LIST.Count > 0)
                         {
+                        foreach (var item in EVIDENCE_LIST)
+                            {
                             string fileName = item.FILE_NAME;
                             cmd.CommandText = "pkg_ae.P_AUDITEE_OBSERVATION_RESPONSE_EVIDENCES";
                             cmd.CommandType = CommandType.StoredProcedure;
@@ -5541,17 +5541,17 @@ Dear {userFullName},
                             index++;
 
 
+                            }
                         }
                     }
-                }
 
                 this.DeleteSubFolderDirectoryInAuditeeEvidenceFromServer(SUBFOLDER);
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public int GetLoggedInUserEngId()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5559,7 +5559,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             int engId = 0;
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_lg.P_GetLoggedInUserEngId";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5567,15 +5567,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     engId = Convert.ToInt32(rdr["eng_plan_id"]);
+                    }
                 }
-            }
             con.Dispose();
             return engId;
-        }
+            }
         public bool SetEngIdOnHold()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5583,19 +5583,19 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             int ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_SetEngIdOnHold";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public string GetLatestAuditorResponse(int obs_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5603,7 +5603,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLatestAuditorResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5614,15 +5614,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["Recommendation"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public string GetLatestDepartmentalHeadResponse(int obs_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5630,7 +5630,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLatestDepartmentalHeadResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5641,19 +5641,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["audit_reply"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public string GetRiskDescByID(int risk_id = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetRiskDescByID";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5662,19 +5662,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["DESCRIPTION"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public string GetLatestCommentsOnProcess(int procId = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetLatestCommentsOnProcess";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5682,19 +5682,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["comments"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public string GetLatestCommentsOnEngagement(int engId = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetLatestCommentsOnEngagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5703,15 +5703,15 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public string GetLatestAuditeeResponse(int obs_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5719,7 +5719,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string response = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLatestAuditeeResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5730,15 +5730,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["reply"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return response;
-        }
+            }
         public List<ObservationSummaryModel> GetManagedObservationsSummaryForSelectedEntity(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5747,7 +5747,7 @@ Dear {userFullName},
             List<ObservationSummaryModel> list = new List<ObservationSummaryModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_details_for_manage_observations_summary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5758,7 +5758,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationSummaryModel chk = new ObservationSummaryModel();
 
                     chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"]);
@@ -5775,13 +5775,13 @@ Dear {userFullName},
                     chk.SETTELED = rdr["SETTELED"].ToString();
                     chk.TOTAL = rdr["TOTAL"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ObservationRevisedModel> GetManagedObservationsForSelectedEntity(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5790,7 +5790,7 @@ Dear {userFullName},
             List<ObservationRevisedModel> list = new List<ObservationRevisedModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_details_for_manage_observations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5801,7 +5801,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationRevisedModel chk = new ObservationRevisedModel();
 
                     chk.OBS_ID = Convert.ToInt32(rdr["OBD_ID"]);
@@ -5819,13 +5819,13 @@ Dear {userFullName},
                     chk.STATUS_ID = Convert.ToInt32(rdr["status_id"].ToString());
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ManageAuditParasModel> GetObservationsForMangeAuditParas(int ENTITY_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5834,7 +5834,7 @@ Dear {userFullName},
             List<ManageAuditParasModel> list = new List<ManageAuditParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetObservationsForManageAuditParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5845,7 +5845,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageAuditParasModel chk = new ManageAuditParasModel();
                     chk.NEW_PARA_ID = rdr["new_paraid"].ToString();
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString();
@@ -5860,14 +5860,15 @@ Dear {userFullName},
                     chk.UPDATED_ON = rdr["UPDATED_ON"].ToString();
                     chk.UPDATED_BY = rdr["UPDATED_BY"].ToString();
                     chk.P_TYPE_IND = rdr["P_TYPE_IND"].ToString();
+                    chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string UpdateAuditObservationStatus(ManageAuditParasModel pm)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -5876,7 +5877,7 @@ Dear {userFullName},
 
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_UpdateParaForManageAuditParas";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -5895,17 +5896,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
+
+
                 }
-
-
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<ManageObservations> GetManagedObservations(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5914,7 +5915,7 @@ Dear {userFullName},
             List<ManageObservations> list = new List<ManageObservations>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5926,7 +5927,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
 
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
@@ -5943,13 +5944,13 @@ Dear {userFullName},
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedObservationText(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5958,7 +5959,7 @@ Dear {userFullName},
             List<ManageObservations> list = new List<ManageObservations>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedObservationsText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -5969,7 +5970,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.VIOLATION = rdr["VIOLATION"].ToString();
                     chk.NATURE = rdr["NATURE"].ToString();
@@ -5982,14 +5983,14 @@ Dear {userFullName},
                     chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<AuditeeResponseEvidenceModel> GetRespondedObservationEvidences(int OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -5997,7 +5998,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeResponseEvidenceModel> modellist = new List<AuditeeResponseEvidenceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences_by_obs_id";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -6006,7 +6007,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr3 = cmd.ExecuteReader();
                 while (rdr3.Read())
-                {
+                    {
                     AuditeeResponseEvidenceModel am = new AuditeeResponseEvidenceModel();
                     am.FILE_ID = rdr3["ID"].ToString();
                     am.IMAGE_NAME = rdr3["FILE_NAME"].ToString();
@@ -6014,13 +6015,13 @@ Dear {userFullName},
                     am.SEQUENCE = Convert.ToInt32(rdr3["SEQUENCE"].ToString());
                     am.IMAGE_TYPE = rdr3["FILE_TYPE"].ToString();
                     modellist.Add(am);
+                    }
                 }
-            }
             con.Dispose();
             return modellist;
-        }
+            }
         public List<ObservationTextModel> GetManagedAllObservationsText(int OBS_ID = 0, string INDICATOR = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6029,7 +6030,7 @@ Dear {userFullName},
             List<ObservationTextModel> list = new List<ObservationTextModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_details_for_manage_observations_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6041,7 +6042,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationTextModel chk = new ObservationTextModel();
                     chk.CP = rdr["CP"].ToString();
                     chk.CP_ID = rdr["CP_ID"].ToString();
@@ -6058,13 +6059,13 @@ Dear {userFullName},
                     chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedObservationsForBranches(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6073,7 +6074,7 @@ Dear {userFullName},
 
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6086,7 +6087,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
 
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
@@ -6108,13 +6109,13 @@ Dear {userFullName},
                     chk.PPNO_TEST = loggedInUser.PPNumber;
                     //chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedObservationTextForBranches(int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6123,10 +6124,10 @@ Dear {userFullName},
 
             List<ManageObservations> list = new List<ManageObservations>();
             if (loggedInUser.UserEntityID == 112242 || loggedInUser.UserEntityID == 112248)
-            {
+                {
 
                 using (OracleCommand cmd = con.CreateCommand())
-                {
+                    {
                     cmd.CommandText = "pkg_ar.P_GetManagedObservationstext";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -6138,7 +6139,7 @@ Dear {userFullName},
 
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
-                    {
+                        {
                         ManageObservations chk = new ManageObservations();
                         chk.INDICATOR = "D";
                         //chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
@@ -6154,13 +6155,13 @@ Dear {userFullName},
                         chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
                         chk.ATTACHED_EVIDENCES = this.GetRespondedObservationEvidences(OBS_ID);
                         list.Add(chk);
+                        }
                     }
                 }
-            }
             else
-            {
-                using (OracleCommand cmd = con.CreateCommand())
                 {
+                using (OracleCommand cmd = con.CreateCommand())
+                    {
                     cmd.CommandText = "pkg_ar.P_GetManagedObservationsForBranchesText";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -6172,7 +6173,7 @@ Dear {userFullName},
 
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
-                    {
+                        {
                         ManageObservations chk = new ManageObservations();
                         chk.INDICATOR = "Z";
                         chk.PROCESS = rdr["PROCESS"].ToString();
@@ -6190,16 +6191,16 @@ Dear {userFullName},
                         chk.OBS_REPLY = this.GetLatestAuditeeResponse(OBS_ID);
                         chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(OBS_ID);
                         list.Add(chk);
+                        }
                     }
                 }
-            }
 
 
             con.Dispose();
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6209,7 +6210,7 @@ Dear {userFullName},
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6220,7 +6221,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6242,14 +6243,14 @@ Dear {userFullName},
                     // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetFinalizedDraftObservations(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6259,7 +6260,7 @@ Dear {userFullName},
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetFinalizedDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6270,7 +6271,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6296,14 +6297,14 @@ Dear {userFullName},
                     // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6313,7 +6314,7 @@ Dear {userFullName},
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6324,7 +6325,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6350,20 +6351,20 @@ Dear {userFullName},
                     // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetEntityReportParasForBranch(int ENG_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6371,7 +6372,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6398,14 +6399,14 @@ Dear {userFullName},
                     // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetFinalizedDraftObservationsBranch(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6415,7 +6416,7 @@ Dear {userFullName},
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetFinalizedDraftObservationsbranch";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6426,7 +6427,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6452,14 +6453,14 @@ Dear {userFullName},
                     // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedDraftObservationsText(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6469,7 +6470,7 @@ Dear {userFullName},
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsText";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6480,25 +6481,25 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<ManageObservations> GetManagedDraftObservationsForBranches(int ENG_ID = 0)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             List<ManageObservations> list = new List<ManageObservations>();
             List<ManageObservations> finalList = new List<ManageObservations>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetManagedDraftObservationsForBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6508,7 +6509,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservations chk = new ManageObservations();
                     chk.OBS_ID = Convert.ToInt32(rdr["OBS_ID"]);
                     chk.OBS_RISK_ID = Convert.ToInt32(rdr["OBS_RISK_ID"]);
@@ -6535,20 +6536,20 @@ Dear {userFullName},
                     chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
 
             return list;
-        }
+            }
         public List<SubCheckListStatus> GetSubChecklistStatus(int ENG_ID = 0, int S_ID = 0)
-        {
+            {
             List<SubCheckListStatus> list = new List<SubCheckListStatus>();
             var con = this.DatabaseConnection(); con.Open();
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_getauditeecheckklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6557,7 +6558,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubCheckListStatus chk = new SubCheckListStatus();
                     if (rdr["S_ID"].ToString() != null && rdr["S_ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["S_ID"].ToString());
@@ -6568,17 +6569,17 @@ Dear {userFullName},
                     if (rdr["OBSID"].ToString() != null && rdr["OBSID"].ToString() != "")
                         chk.OBS_ID = Convert.ToInt32(rdr["OBSID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<SubCheckListStatus> GetAuditSubChecklist(int PROCESS_ID = 0)
-        {
+            {
             List<SubCheckListStatus> list = new List<SubCheckListStatus>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_GET_SUB_CHECKLIST_MAKER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6586,7 +6587,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubCheckListStatus chk = new SubCheckListStatus();
                     if (rdr["S_ID"].ToString() != null && rdr["S_ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["S_ID"].ToString());
@@ -6597,13 +6598,13 @@ Dear {userFullName},
                     chk.RISK_WEIGHTAGE = rdr["WEIGHT_ASSIGNED"].ToString();
                     chk.COMMENTS = rdr["COMMENTS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string AddAuditChecklist(string HEADING = "", int ENTITY_TYPE_ID = 0, string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6611,7 +6612,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6625,15 +6626,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateAuditChecklist(int PROCESS_ID = 0, string HEADING = "", string ACTIVE = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6641,7 +6642,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6656,15 +6657,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddAuditSubChecklist(int PROCESS_ID = 0, int ENTITY_TYPE_ID = 0, string HEADING = "", string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6672,7 +6673,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6687,15 +6688,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateAuditSubChecklist(int PROCESS_ID = 0, int OLD_PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int ENTITY_TYPE_ID = 0, string RISK_SEQUENCE = "", string RISK_WEIGHTAGE = "")
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6703,7 +6704,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_sub_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6720,15 +6721,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetail(int SUB_PROCESS_ID = 0)
-        {
+            {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6736,7 +6737,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_GetChecklistDetailBySubProcessId";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6747,7 +6748,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -6759,13 +6760,13 @@ Dear {userFullName},
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditChecklistDetailsModel> GetAuditChecklistDetailForRemoveDuplicate(int SUB_PROCESS_ID = 0)
-        {
+            {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6773,7 +6774,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_Get_ChecklistDetail_FOR_DUPLICATE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6784,7 +6785,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -6796,13 +6797,13 @@ Dear {userFullName},
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditChecklistDetailsModel> GetChecklistDetailForSubProcess(int SUB_PROCESS_ID = 0)
-        {
+            {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6810,7 +6811,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_checklistdetail_for_subchecklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6821,17 +6822,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     chk.HEADING = rdr["details"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditChecklistDetailsModel> GetReferredBackAuditChecklistDetail()
-        {
+            {
             List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6839,7 +6840,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_GetChecklistDetail_ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6849,7 +6850,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
                     if (rdr["S_ID"].ToString() != null && rdr["ID"].ToString() != "")
                         chk.S_ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -6863,13 +6864,13 @@ Dear {userFullName},
                     chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     chk.ANNEX_ID = Convert.ToInt32(rdr["ANNEX"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string AddAuditChecklistDetail(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6877,7 +6878,7 @@ Dear {userFullName},
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_audit_checklist_detail";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6895,15 +6896,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateAuditChecklistDetail(int PROCESS_DETAIL_ID = 0, int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, string HEADING = "", int V_ID = 0, int CONTROL_ID = 0, int ROLE_ID = 0, int RISK_ID = 0, string ANNEX_CODE = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -6911,7 +6912,7 @@ Dear {userFullName},
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.audit_checklist_detail_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6929,26 +6930,26 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<ControlViolationsModel> GetViolationsForChecklistDetail()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<ControlViolationsModel> controlViolationList = new List<ControlViolationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_get_violations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ControlViolationsModel v = new ControlViolationsModel();
                     v.ID = Convert.ToInt32(rdr["S_GR_ID"]);
                     v.V_NAME = rdr["DESCRIPTION"].ToString();
@@ -6956,13 +6957,13 @@ Dear {userFullName},
                         v.MAX_NUMBER = Convert.ToInt32(rdr["MAX_NUMBER"]);
                     v.STATUS = "Y";
                     controlViolationList.Add(v);
+                    }
                 }
-            }
             con.Dispose();
             return controlViolationList;
-        }
+            }
         public string DropAuditObservation(int OBS_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6970,7 +6971,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_DropAuditObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -6981,14 +6982,14 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             return resp;
-        }
+            }
         public string SubmitAuditObservationToAuditee(int OBS_ID = 0)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -6996,7 +6997,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_SubmitAuditObservationToAuditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7007,14 +7008,14 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             return resp;
-        }
+            }
         public string UpdateAuditObservationStatus(int OBS_ID, int NEW_STATUS_ID, string DRAFT_PARA_NO, string AUDITOR_COMMENT)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7022,14 +7023,14 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
-            {
-                if (loggedInUser.UserRoleID != 5 && loggedInUser.UserRoleID != 6 && loggedInUser.UserRoleID != 7 && loggedInUser.UserRoleID != 15)
                 {
+                if (loggedInUser.UserRoleID != 5 && loggedInUser.UserRoleID != 6 && loggedInUser.UserRoleID != 7 && loggedInUser.UserRoleID != 15)
+                    {
                     resp = "Only Departmental Head is authorized to update this observation status";
                     return resp;
 
+                    }
                 }
-            }
 
             string Remarks = "";
             if (NEW_STATUS_ID == 4)
@@ -7042,7 +7043,7 @@ Dear {userFullName},
                 Remarks = "Para settle in discussion";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_UpdateAuditObservationStatus";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -7057,12 +7058,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
-                }
+                    }
 
                 if (NEW_STATUS_ID == 4 || NEW_STATUS_ID == 5)
-                {
+                    {
                     cmd.CommandText = "pkg_ar.AUDITOR_RESPONSE";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7072,9 +7073,9 @@ Dear {userFullName},
                     cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
                     cmd.ExecuteReader();
 
-                }
+                    }
                 else if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
-                {
+                    {
                     cmd.CommandText = "pkg_ar.AUDITOR_REPLY";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7083,14 +7084,14 @@ Dear {userFullName},
                     cmd.Parameters.Add("AUDITOR_COMMENT", OracleDbType.Varchar2).Value = AUDITOR_COMMENT;
                     cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
                     cmd.ExecuteReader();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateAuditObservationStatusByHead(int OBS_ID, int NEW_STATUS_ID, string FINAL_PARA_NO, string AUDITOR_COMMENT)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7107,7 +7108,7 @@ Dear {userFullName},
                 Remarks = "Para settle in discussion";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_UpdateAuditObservationStatusByHead";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -7122,12 +7123,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
-                }
+                    }
 
                 if (NEW_STATUS_ID == 4 || NEW_STATUS_ID == 5)
-                {
+                    {
                     cmd.CommandText = "pkg_ar.AUDITOR_RESPONSE";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7137,9 +7138,9 @@ Dear {userFullName},
                     cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
                     cmd.ExecuteReader();
 
-                }
+                    }
                 else if (NEW_STATUS_ID == 8 || NEW_STATUS_ID == 9)
-                {
+                    {
                     cmd.CommandText = "pkg_ar.AUDITOR_REPLY";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7148,14 +7149,14 @@ Dear {userFullName},
                     cmd.Parameters.Add("AUDITOR_COMMENT", OracleDbType.Varchar2).Value = AUDITOR_COMMENT;
                     cmd.Parameters.Add("status", OracleDbType.Int32).Value = NEW_STATUS_ID;
                     cmd.ExecuteReader();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateAuditObservationText(int OBS_ID, string OBS_TEXT, int PROCESS_ID = 0, int SUBPROCESS_ID = 0, int CHECKLIST_ID = 0, string OBS_TITLE = "", int RISK_ID = 0, int ANNEXURE_ID = 0)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7163,7 +7164,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_UpdateObservation";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -7181,16 +7182,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<ClosingDraftTeamDetailsModel> GetClosingDraftObservations(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7199,7 +7200,7 @@ Dear {userFullName},
 
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7210,7 +7211,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
                     //  chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
                     if (rdr["TOTAL_NO_OB"].ToString() != null && rdr["TOTAL_NO_OB"].ToString() != "")
@@ -7236,13 +7237,13 @@ Dear {userFullName},
                     chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
                     chk.ENG_PLAN_ID = Convert.ToInt32(rdr["ENG_PLAN_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ClosingDraftTeamDetailsModel> GetClosingDraftTeamDetails(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7253,7 +7254,7 @@ Dear {userFullName},
             List<ClosingDraftTeamDetailsModel> list = new List<ClosingDraftTeamDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetClosingDraftObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7263,7 +7264,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ClosingDraftTeamDetailsModel chk = new ClosingDraftTeamDetailsModel();
                     chk.ENG_PLAN_ID = Convert.ToInt32(ENG_ID);
                     if (rdr["SUBMITTED_TO_AUDITEE"].ToString() != null && rdr["SUBMITTED_TO_AUDITEE"].ToString() != "")
@@ -7285,25 +7286,25 @@ Dear {userFullName},
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.MEMBER_NAME = rdr["MEMBER_NAME"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             int count = 0;
             int criteria_id = 0;
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = sqlParams.GetCriteriaIdQueryFromParams(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
                         criteria_id = Convert.ToInt32(rdr["ID"]);
-                }
+                    }
 
                 cmd.CommandText = "pkg_pg.P_get_Criteria_ent_count";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -7316,23 +7317,23 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.Text;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     if (rdr2["NO_OF_ENTITY"].ToString() != null && rdr2["NO_OF_ENTITY"].ToString() != "")
                         count = Convert.ToInt32(rdr2["NO_OF_ENTITY"]);
+                    }
                 }
-            }
             con.Dispose();
             return count;
-        }
+            }
         public bool DeletePendingCriteria(int CID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_DeletePendingCriteria";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7341,19 +7342,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("CID", OracleDbType.Int32).Value = CID;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public bool SubmitAuditCriteriaForApproval(int PERIOD_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_SubmitAuditCriteriaForApproval";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7395,12 +7396,12 @@ Dear {userFullName},
                     email.ConfigEmail(email_to, email_cc, email_subject, email_body);
                 }*/
 
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         public List<COSORiskModel> GetCOSORiskForDepartment(int PERIOD_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7408,7 +7409,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetCOSORiskForDepartment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7417,7 +7418,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     COSORiskModel chk = new COSORiskModel();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.DEPT_NAME = rdr["DEPT_NAME"].ToString();
@@ -7432,13 +7433,13 @@ Dear {userFullName},
                     chk.FINAL_AUDIT_RATING = rdr["FINAL_AUDIT_RATING"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<COSORiskModel> GetCOSORiskForBranches(int PERIOD_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7446,7 +7447,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<COSORiskModel> list = new List<COSORiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetCOSORiskForDepartment";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7455,7 +7456,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     COSORiskModel chk = new COSORiskModel();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.DEPT_NAME = rdr["DEPT_NAME"].ToString();
@@ -7470,13 +7471,13 @@ Dear {userFullName},
                     chk.FINAL_AUDIT_RATING = rdr["FINAL_AUDIT_RATING"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public CAUOMAssignmentResponseModel CAUOMAssignment(CAUOMAssignmentModel om)
-        {
+            {
             string encodedMsg = "";
             if (om.CONTENTS_OF_OM != "")
                 encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
@@ -7493,7 +7494,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_CM.P_CAU_OM";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7507,13 +7508,13 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["OM_ID"].ToString() != null && rdr["OM_ID"].ToString() != "")
                         resp.ID = Convert.ToInt32(rdr["OM_ID"].ToString());
-                }
+                    }
 
                 if (resp.ID > 0)
-                {
+                    {
                     cmd.CommandText = "PKG_CM.P_CAU_OM_REPLY";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7527,18 +7528,18 @@ Dear {userFullName},
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
-                    {
+                        {
                         if (rdr2["REF_OUT"].ToString() != null && rdr2["REF_OUT"].ToString() != "")
                             resp.RESPONSE = rdr2["REF_OUT"].ToString();
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public CAUOMAssignmentResponseModel CAUOMAssignmentAIR(CAUOMAssignmentAIRModel om)
-        {
+            {
 
             string encodedMsg = "";
             if (om.CONTENTS_OF_OM != "")
@@ -7555,7 +7556,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_CM.P_CAU_AIR";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7569,12 +7570,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["AIRID"].ToString() != null && rdr["AIRID"].ToString() != "")
                         resp.ID = Convert.ToInt32(rdr["AIRID"].ToString());
-                }
+                    }
                 if (resp.ID > 0)
-                {
+                    {
                     cmd.CommandText = "PKG_CM.P_CAU_AIR_REPLY";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -7589,17 +7590,17 @@ Dear {userFullName},
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr2 = cmd.ExecuteReader();
                     while (rdr2.Read())
-                    {
+                        {
                         if (rdr2["REF_OUT"].ToString() != null && rdr2["REF_OUT"].ToString() != "")
                             resp.RESPONSE = rdr2["REF_OUT"].ToString();
+                        }
                     }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public CAUOMAssignmentResponseModel CAUOMAssignmentPDP(CAUOMAssignmentPDPModel om)
-        {
+            {
             string encodedMsg = "";
             if (om.CONTENTS_OF_OM != "")
                 encodedMsg = encoderDecoder.Encrypt(om.CONTENTS_OF_OM);
@@ -7610,7 +7611,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_CM.T_CAU_PDP";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7623,16 +7624,16 @@ Dear {userFullName},
 
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     if (rdr2["REF_OUT"].ToString() != null && rdr2["REF_OUT"].ToString() != "")
                         resp.RESPONSE = rdr2["REF_OUT"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public CAUOMAssignmentResponseModel CAUOMAssignmentARPSE(CAUOMAssignmentARPSEModel om)
-        {
+            {
 
             string encodedMsg = "";
             if (om.CONTENTS_OF_OM != "")
@@ -7644,7 +7645,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_CM.T_CAU_ARPSE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7658,16 +7659,16 @@ Dear {userFullName},
 
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     if (rdr2["REF_OUT"].ToString() != null && rdr2["REF_OUT"].ToString() != "")
                         resp.RESPONSE = rdr2["REF_OUT"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public CAUOMAssignmentModel CAUGetPreAddedOM(string OM_NO, string INS_YEAR)
-        {
+            {
             CAUOMAssignmentModel resp = new CAUOMAssignmentModel();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7675,7 +7676,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_CM.P_CAU_OM_Get";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7684,19 +7685,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
                         resp.ID = Convert.ToInt32(rdr["ID"].ToString());
                     resp.DIV_ID = Convert.ToInt32(rdr["DIV_ID"].ToString());
                     resp.CONTENTS_OF_OM = rdr["CONTENTS_OF_OM"].ToString();
                     resp.CONTENTS_OF_OM = rdr["CONTENTS_OF_OM"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<CAUOMAssignmentModel> CAUGetAssignedOMs()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7705,7 +7706,7 @@ Dear {userFullName},
 
             List<CAUOMAssignmentModel> list = new List<CAUOMAssignmentModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_cm.P_CAUGetAssignedOMs";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7713,7 +7714,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     CAUOMAssignmentModel chk = new CAUOMAssignmentModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.DIV_ID = Convert.ToInt32(rdr["DIV_ID"]);
@@ -7722,14 +7723,14 @@ Dear {userFullName},
                     chk.STATUS_DES = rdr["DISCRIPTION"].ToString();
                     chk.CONTENTS_OF_OM = encoderDecoder.Decrypt(rdr["CONTENTS_OF_OM"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public List<AuditCCQModel> GetCCQ(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7737,7 +7738,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditCCQModel> list = new List<AuditCCQModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_GetCCQ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7747,50 +7748,50 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditCCQModel chk = new AuditCCQModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     if (rdr["ENTITY_ID"].ToString() != null && rdr["ENTITY_ID"].ToString() != "")
-                    {
+                        {
                         chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                         chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
-                    }
+                        }
                     else
-                    {
+                        {
                         chk.ENTITY_NAME = "";
 
-                    }
+                        }
 
                     chk.QUESTIONS = rdr["QUESTIONS"].ToString();
                     if (rdr["CONTROL_VIOLATION_ID"].ToString() != null && rdr["CONTROL_VIOLATION_ID"].ToString() != "")
-                    {
+                        {
                         chk.CONTROL_VIOLATION_ID = Convert.ToInt32(rdr["CONTROL_VIOLATION_ID"]);
                         chk.CONTROL_VIOLATION = rdr["VIOLATION_NAME"].ToString();
 
-                    }
+                        }
                     else
-                    {
+                        {
                         chk.CONTROL_VIOLATION = "";
-                    }
+                        }
                     if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
-                    {
+                        {
                         chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                         chk.RISK = rdr["RISK_DEF"].ToString();
-                    }
+                        }
                     else
-                    {
+                        {
                         chk.RISK = "";
-                    }
+                        }
 
                     chk.STATUS = rdr["STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public bool UpdateCCQ(AuditCCQModel ccq)
-        {
+            {
             bool resp = false;
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -7798,7 +7799,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_pg.P_UpdateCCQ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7812,12 +7813,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.ExecuteReader();
                 resp = true;
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditeeOldParasModel> GetAuditeeOldParasEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7825,7 +7826,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasentitiesFAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7836,19 +7837,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetAuditeeOldParas(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7856,7 +7857,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7866,7 +7867,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
 
 
@@ -7899,13 +7900,13 @@ Dear {userFullName},
                     chk.TYPE_DES = rdr["entitytypedesc"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public bool AuditeeOldParaResponse(AuditeeOldParasResponseModel ob)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7914,7 +7915,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             ob.REPLIEDBY = Convert.ToInt32(loggedInUser.PPNumber);
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_AuditeeOldParaResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7923,19 +7924,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
                 success = true;
-            }
+                }
             con.Dispose();
             return success;
-        }
+            }
         public List<OldParasModel> GetOldParas(string AUDITED_BY, string AUDIT_YEAR)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7944,7 +7945,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
@@ -7961,13 +7962,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModelCAD> GetOldParasManagement()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -7975,7 +7976,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<OldParasModelCAD> list = new List<OldParasModelCAD>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetOldParaManagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -7983,7 +7984,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModelCAD chk = new OldParasModelCAD();
                     chk.PARA_ID = Convert.ToInt32(rdr["PARA_ID"]);
                     chk.AUDIT_PERIOD = rdr["PERIOD"].ToString();
@@ -8000,13 +8001,13 @@ Dear {userFullName},
                     if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
                         chk.RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetOldSettledParasForResponse(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8014,7 +8015,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8024,7 +8025,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
@@ -8040,13 +8041,13 @@ Dear {userFullName},
                     chk.IND = rdr["IND"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetCurrentParasForStatusChangeRequest(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8054,7 +8055,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetnewParasForResponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8063,7 +8064,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
@@ -8076,13 +8077,13 @@ Dear {userFullName},
                     chk.VOL_I_II = "";
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetCurrentParasForStatusChangeRequestReview()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8090,7 +8091,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetnewParasForResponse_reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8098,7 +8099,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
@@ -8111,13 +8112,13 @@ Dear {userFullName},
                     chk.MAKER_REMARKS = rdr["remarks"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetCurrentParasForStatusChangeRequestAuthorize()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8125,7 +8126,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_GetnewParasForResponseAuthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8133,7 +8134,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
@@ -8147,13 +8148,13 @@ Dear {userFullName},
                     chk.REVIEWER_REMARKS = rdr["reviewer_comments"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString() == "6" ? "Settled" : "Un-settled";
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetManageLegacyParas()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8161,7 +8162,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8169,7 +8170,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
@@ -8186,13 +8187,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["AUDITED_BY"].ToString();
                     chk.AUDITEDBY = rdr["AUDITEDBY"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<SearchChecklistDetailsModel> SearchChecklistDetails()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8200,14 +8201,14 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<SearchChecklistDetailsModel> list = new List<SearchChecklistDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetAuditChecklistDetails_search";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SearchChecklistDetailsModel cm = new SearchChecklistDetailsModel();
                     cm.ID = Convert.ToInt32(rdr["ID"].ToString());
                     cm.PROCESS = rdr["P_NAME"].ToString();
@@ -8216,13 +8217,13 @@ Dear {userFullName},
                     cm.RISK = rdr["RISK"].ToString();
                     list.Add(cm);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetLegacyParasEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8230,7 +8231,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetEntitiesForLegacyPara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8240,19 +8241,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetCurrentParasEntitiesForStatusChange()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8260,7 +8261,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetEntitiesForNewPara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8268,20 +8269,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENG_ID = rdr["ENG_ID"].ToString();
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetLegacyParasEntitiesHO()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8289,7 +8290,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetEntitiesForLegacyPara_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8297,19 +8298,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetLegacyParasEntitiesReport(int ENTITY_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8317,7 +8318,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetEntitiesForLegacyPara_ho_report";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8325,19 +8326,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetLegacyParasEntitiesFAD()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8345,7 +8346,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_FAD.P_GetEntitiesForLegacyPara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8353,19 +8354,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeOldParasModel> GetSettledParasEntitiesForMonitoringFAD()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8373,7 +8374,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_FAD.P_GET_SETTLED_PARA_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8383,19 +8384,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     chk.ENTITY_NAME = rdr["NAME"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetLegacyParasForUpdate(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8404,7 +8405,7 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
 
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLeagacyObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8414,7 +8415,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
 
                     chk.ID = Convert.ToInt32(rdr["ID"]);
@@ -8426,7 +8427,7 @@ Dear {userFullName},
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     if (PARA_REF != null)
-                    {
+                        {
                         chk.ENT_TYPE = rdr["ENT_TYPE"].ToString();
                         if (rdr["PROCESS"].ToString() != null && rdr["PROCESS"].ToString() != "")
                             chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
@@ -8435,7 +8436,7 @@ Dear {userFullName},
                         if (rdr["PROCESS_DETAIL"].ToString() != null && rdr["PROCESS_DETAIL"].ToString() != "")
                             chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
-                    }
+                        }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
@@ -8446,16 +8447,16 @@ Dear {userFullName},
                         chk.PARA_RESP = this.GetLegacyParaResponsiblePersons(PARA_ID);
                     list.Add(chk);
 
+                    }
+
+
+
                 }
-
-
-
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetLegacyParasForUpdateHO(string entityName, string PARA_REF = "", int PARA_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8464,7 +8465,7 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
 
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLeagacyObservations_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8474,7 +8475,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
 
                     chk.ID = Convert.ToInt32(rdr["ID"]);
@@ -8486,14 +8487,14 @@ Dear {userFullName},
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     chk.PARA_STATUS = rdr["PARA_STATUS"].ToString();
                     if (PARA_REF != null)
-                    {
+                        {
                         chk.ENT_TYPE = rdr["ENT_TYPE"].ToString();
                         chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
                         chk.SUB_PROCESS = Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
                         chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
                         chk.RISK_ID = rdr["riskid"].ToString();
-                    }
+                        }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
@@ -8501,16 +8502,16 @@ Dear {userFullName},
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     list.Add(chk);
 
+                    }
+
+
+
                 }
-
-
-
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetLegacyParasForGistUpdate(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8519,7 +8520,7 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
 
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLeagacyObservations_for_gist_update";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8529,7 +8530,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
 
                     chk.ID = Convert.ToInt32(rdr["ID"]);
@@ -8547,16 +8548,16 @@ Dear {userFullName},
                     chk.VOL_I_II = rdr["VOL_I_II"].ToString();
                     list.Add(chk);
 
+                    }
+
+
+
                 }
-
-
-
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetLegacyParasForUpdateFAD(int ENTITY_ID, string PARA_REF = "", int PARA_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8565,7 +8566,7 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
 
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_GetLeagacyObservations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8575,7 +8576,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.ID = Convert.ToInt32(rdr["ID"]);
                     chk.REF_P = rdr["REF_P"].ToString();
@@ -8587,14 +8588,14 @@ Dear {userFullName},
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
                     chk.PARA_NO = rdr["PARA_NO"].ToString();
                     if (PARA_REF != null)
-                    {
+                        {
                         chk.PROCESS = Convert.ToInt32(rdr["PROCESS"].ToString());
                         chk.SUB_PROCESS = Convert.ToInt32(rdr["SUB_PROCESS"].ToString());
                         chk.PROCESS_DETAIL = Convert.ToInt32(rdr["PROCESS_DETAIL"].ToString());
                         chk.PARA_TEXT = rdr["PARA_TEXT"].ToString();
 
 
-                    }
+                        }
 
                     chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
                     chk.ANNEXURE = rdr["ANNEXURE"].ToString();
@@ -8604,16 +8605,16 @@ Dear {userFullName},
                     if (PARA_REF != null)
                         chk.PARA_RESP = this.GetLegacyParaResponsiblePersonsFAD(PARA_REF);
                     list.Add(chk);
+                    }
+
+
+
                 }
-
-
-
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string UpdateLegacyParasWithResponsibility(AddLegacyParaModel LEGACY_PARA)
-        {
+            {
             string resp = "";
             string responseRes = "";
             sessionHandler = new SessionHandler();
@@ -8622,7 +8623,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_update_legacy_Para_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8636,24 +8637,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                        {
                         resp = rdr["REMARKS"].ToString();
                         return resp;
-                    }
+                        }
                     else
-                    {
-                        resp = rdr["REMARKS"].ToString();
-                    }
-
-                }
-                if (LEGACY_PARA.RESP_PP != null)
-                {
-                    if (LEGACY_PARA.RESP_PP.Count > 0)
-                    {
-                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
                         {
+                        resp = rdr["REMARKS"].ToString();
+                        }
+
+                    }
+                if (LEGACY_PARA.RESP_PP != null)
+                    {
+                    if (LEGACY_PARA.RESP_PP.Count > 0)
+                        {
+                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
+                            {
                             responseRes = "";
                             cmd.CommandText = "pkg_ar.p_add_para_responsibility";
                             cmd.CommandType = CommandType.StoredProcedure;
@@ -8670,21 +8671,21 @@ Dear {userFullName},
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr2.Read())
-                            {
+                                {
                                 responseRes = rdr2["REMARKS"].ToString();
 
+                                }
                             }
+
                         }
 
                     }
-
                 }
-            }
             con.Dispose();
             return resp + "<br/>" + responseRes;
-        }
+            }
         public string UpdateLegacyParaGistParaNo(string PARA_REF, string PARA_NO, string GIST_OF_PARA)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8692,7 +8693,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_update_legacy_Para_Gist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8704,17 +8705,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddResponsibilityToLegacyParas(ObservationResponsiblePPNOModel RESP_PP, string REF_P, int P_ID)
-        {
+            {
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8722,7 +8723,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_add_para_responsibility";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8738,17 +8739,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     responseRes = rdr2["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return responseRes;
-        }
+            }
         public string AddResponsibilityToLegacyParasFAD(ObservationResponsiblePPNOModel RESP_PP, string REF_P, int P_ID)
-        {
+            {
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8756,7 +8757,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_add_para_responsibility";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8772,17 +8773,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     responseRes = rdr2["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return responseRes;
-        }
+            }
         public string DeleteResponsibilityOfLegacyParas(string REF_P, int P_ID, int PP_NO)
-        {
+            {
             string responseRes = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8790,7 +8791,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_delete_para_responsibility";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8799,17 +8800,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
                 while (rdr2.Read())
-                {
+                    {
                     responseRes = rdr2["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return responseRes;
-        }
+            }
         public string UpdateLegacyParasWithResponsibilityNoChangesAZ(AddLegacyParaModel LEGACY_PARA)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8817,7 +8818,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_no_update_legacy_Para_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8827,24 +8828,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                        {
                         resp = rdr["REMARKS"].ToString();
                         return resp;
-                    }
+                        }
                     else
-                    {
+                        {
                         resp = rdr["REMARKS"].ToString();
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateLegacyParasWithResponsibilityNoChanges(AddLegacyParaModel LEGACY_PARA)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -8852,7 +8853,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_reviewed_legacy_Para";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8861,24 +8862,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                        {
                         resp = rdr["REMARKS"].ToString();
                         return resp;
-                    }
+                        }
                     else
-                    {
+                        {
                         resp = rdr["REMARKS"].ToString();
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateLegacyParasWithResponsibilityFAD(AddLegacyParaModel LEGACY_PARA)
-        {
+            {
             string resp = "";
             string responseRes = "";
             sessionHandler = new SessionHandler();
@@ -8887,7 +8888,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_update_legacy_Para_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -8901,24 +8902,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
                     {
+                    if (rdr["REF"].ToString() != "" && rdr["REF"].ToString() != null && rdr["REF"].ToString() == "2")
+                        {
                         resp = rdr["REMARKS"].ToString();
                         return resp;
-                    }
+                        }
                     else
-                    {
-                        resp = rdr["REMARKS"].ToString();
-                    }
-
-                }
-                if (LEGACY_PARA.RESP_PP != null)
-                {
-                    if (LEGACY_PARA.RESP_PP.Count > 0)
-                    {
-                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
                         {
+                        resp = rdr["REMARKS"].ToString();
+                        }
+
+                    }
+                if (LEGACY_PARA.RESP_PP != null)
+                    {
+                    if (LEGACY_PARA.RESP_PP.Count > 0)
+                        {
+                        foreach (ObservationResponsiblePPNOModel respRow in LEGACY_PARA.RESP_PP)
+                            {
                             responseRes = "";
                             cmd.CommandText = "pkg_fad.p_add_para_responsibility";
                             cmd.CommandType = CommandType.StoredProcedure;
@@ -8935,25 +8936,25 @@ Dear {userFullName},
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr2.Read())
-                            {
+                                {
                                 responseRes = rdr2["REMARKS"].ToString();
 
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp + "<br/>" + responseRes;
-        }
+            }
         public List<AuditeeOldParasModel> GetOutstandingParas(string ENTITY_ID)
-        {
+            {
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             return list;
-        }
+            }
         public List<OldParasModel> GetOldParasAuditYear()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8961,24 +8962,24 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetOldParasAuditYear";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<OldParasModel> GetOutstandingParasAuditYear()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -8986,24 +8987,24 @@ Dear {userFullName},
             List<OldParasModel> list = new List<OldParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetOutstandingParasAuditYear";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasModel chk = new OldParasModel();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public bool AddOldParas(OldParasModel jm)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9011,14 +9012,14 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 List<int> PP_NOs = new List<int>();
                 jm.STATUS = 1;
                 jm.ENTERED_BY = loggedInUser.PPNumber;
                 if (jm.RESPONSIBLE_PP_NO != "" && jm.RESPONSIBLE_PP_NO != null)
-                {
+                    {
                     PP_NOs = jm.RESPONSIBLE_PP_NO.Split(',').Select(int.Parse).ToList();
-                }
+                    }
                 cmd.CommandText = "pkg_hd.P_AddOldParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9030,20 +9031,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("PID", OracleDbType.Clob).Value = jm.ID;
                 cmd.ExecuteReader();
                 foreach (int pp in PP_NOs)
-                {
+                    {
                     cmd.CommandText = "pkg_ais.P_AddOldParasResponsibilityAssigned";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("REF_P", OracleDbType.Int32).Value = jm.ID;
                     cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = pp;
                     cmd.ExecuteReader();
+                    }
                 }
-            }
             con.Dispose();
             return true;
-        }
+            }
         public bool UpdateOldParasStatus(int ID, int NEW_STATUS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9051,7 +9052,7 @@ Dear {userFullName},
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_UpdateOldParasFadsettleunsettle";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9060,12 +9061,12 @@ Dear {userFullName},
                 cmd.Parameters.Add(" NEW_STATUS ", OracleDbType.Int32).Value = NEW_STATUS;
                 cmd.ExecuteReader();
                 success = true;
-            }
+                }
             con.Dispose();
             return success;
-        }
+            }
         public string AddOldParasCADReply(int ID, int V_CAT_ID, int V_CAT_NATURE_ID, int RISK_ID, string REPLY)
-        {
+            {
             string response = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -9073,7 +9074,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_updateoldparamanagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9086,16 +9087,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["REMARKS"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return response;
-        }
+            }
         public string AddOldParasCADCompliance(OldParaComplianceModel opc)
-        {
+            {
             string response = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -9103,7 +9104,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_UpdateAuditeeOldParasresponse";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9116,16 +9117,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     response = rdr["REMARKS"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return response;
-        }
+            }
         public List<ZoneWiseOldParasPerformanceModel> GetZoneWiseOldParasPerformance()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9138,7 +9139,7 @@ Dear {userFullName},
             List<ZoneWiseOldParasPerformanceModel> list = new List<ZoneWiseOldParasPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GetZoneWiseOldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9146,7 +9147,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ZoneWiseOldParasPerformanceModel chk = new ZoneWiseOldParasPerformanceModel();
                     chk.ZONEID = rdr["ID"].ToString();
                     chk.ZONENAME = rdr["ZONENAME"].ToString();
@@ -9155,13 +9156,13 @@ Dear {userFullName},
                     chk.PARA_TOTAL = rdr["PARA_TOTAL"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<UserWiseOldParasPerformanceModel> GetUserWiseOldParasPerformance()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9171,7 +9172,7 @@ Dear {userFullName},
             List<UserWiseOldParasPerformanceModel> list = new List<UserWiseOldParasPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_GetUserWiseOldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9179,24 +9180,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserWiseOldParasPerformanceModel chk = new UserWiseOldParasPerformanceModel();
                     chk.AUDIT_ZONEID = rdr["AUDIT_ZONEID"].ToString();
                     chk.ZONENAME = rdr["ZONENAME"].ToString();
                     chk.PARA_ENTERED = rdr["PARA_ENTERED"].ToString();
                     chk.PPNO = rdr["PPNO"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public ActiveInactiveChart GetActiveInactiveChartData()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             ActiveInactiveChart chk = new ActiveInactiveChart();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GetActiveInactiveChartData";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9204,18 +9205,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["STATUS"].ToString() == "1")
                         chk.Active_Count = rdr["TOTAL_COUNT"].ToString();
                     if (rdr["STATUS"].ToString() == "0")
                         chk.Inactive_Count = rdr["TOTAL_COUNT"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public List<AuditeeEntitiesModel> GetEntitiesDropDownForManageObservations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9223,7 +9224,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_entities_for_manage_observations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9233,19 +9234,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.NAME = rdr["name"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetEntitiesForManageAuditParas()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9253,7 +9254,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetManageAuditParasEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9263,19 +9264,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.NAME = rdr["name"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetObservationEntitiesForManageObservations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9283,7 +9284,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_GetObservationEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9291,7 +9292,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
                     chk.NAME = rdr["entity_name"].ToString();
@@ -9299,13 +9300,13 @@ Dear {userFullName},
                     chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetObservationEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9313,7 +9314,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_get_audit_pre_Concluding_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9322,7 +9323,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
                     chk.NAME = rdr["entity_name"].ToString();
@@ -9330,13 +9331,13 @@ Dear {userFullName},
                     chk.ENG_ID = Convert.ToInt32(rdr["eng_id"].ToString());
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditeeAssignedEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9344,7 +9345,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeAssignedEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9352,20 +9353,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
                     chk.NAME = rdr["NAME"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     chk.ENG_ID = Convert.ToInt32(rdr["engplanid"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetObservationEntitiesForPreConcluding(int pageId = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9373,7 +9374,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_get_audit_pre_Concluding_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9383,19 +9384,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.NAME = rdr["ENTITY_NAME"].ToString();
                     chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"].ToString());
                     //  chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeEntitiesModel> GetCCQsEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9403,7 +9404,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeEntitiesModel> list = new List<AuditeeEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetCCQsEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9411,19 +9412,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel chk = new AuditeeEntitiesModel();
                     chk.CODE = Convert.ToInt32(rdr["CODE"].ToString());
                     chk.NAME = rdr["NAME"].ToString();
                     chk.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<UserRelationshipModel> Getchildposting(int e_r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9436,7 +9437,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Getchildposting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9444,7 +9445,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
@@ -9452,14 +9453,14 @@ Dear {userFullName},
                     entity.COMPLICE_BY = rdr["COMPLICE_BY"].ToString();
                     entity.AUDIT_BY = rdr["AUDIT_BY"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetchildpostingForDashboardPanel(int e_r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9472,7 +9473,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Getchildposting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9480,19 +9481,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetchildpostingForParaPositionReport(int e_r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9505,7 +9506,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_Getchildposting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9514,25 +9515,25 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> Getparentrepoffice(int r_id = 0)
-        {
+            {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Getparentrepoffice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9540,7 +9541,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -9548,20 +9549,20 @@ Dear {userFullName},
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetparentrepofficeForDashboardPanel(int r_id = 0)
-        {
+            {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Getparentrepoffice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9569,7 +9570,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -9577,14 +9578,14 @@ Dear {userFullName},
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetparentrepofficeForParaPositionReport(int r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9593,7 +9594,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_Getparentrepoffice";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9602,7 +9603,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -9610,14 +9611,14 @@ Dear {userFullName},
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetEntityTypeList()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9627,7 +9628,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditeeEntityTypes";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9635,19 +9636,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["ENTITY_TYPE"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetAuditDepartmentsZones()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9657,7 +9658,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 //AuditDepartmentList
                 cmd.CommandText = "pkg_rpt.P_AUDITED_BY_DEPARTMENTS";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -9668,19 +9669,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["NAME"].ToString();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetComplianceUnits()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9690,27 +9691,27 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_COMPLIANCE_OFFICE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["NAME"].ToString();
                     entity.COM_BY = rdr["ENTITY_ID"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetComplianceOfficer()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9720,51 +9721,51 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_COMPLIANCE_OFFICE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["NAME"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> Getrealtionshiptype()
-        {
+            {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetrealtionshiptypeForDashboardPanel()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9774,7 +9775,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9784,19 +9785,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetrealtionshiptypeForParaPositionReport()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9806,7 +9807,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_Getrealtionshiptype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9814,19 +9815,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<StaffPositionModel> GetStaffPosition()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9835,7 +9836,7 @@ Dear {userFullName},
             List<StaffPositionModel> list = new List<StaffPositionModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_GetStaffPosition";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9845,7 +9846,7 @@ Dear {userFullName},
 
 
                 while (rdr.Read())
-                {
+                    {
                     StaffPositionModel staffposition = new StaffPositionModel();
                     staffposition.PPNO = Convert.ToInt32(rdr["PPNO"]);
                     staffposition.EMPLOYEE_NAME = Convert.ToString(rdr["EMPLOYEE_NAME"]);
@@ -9858,13 +9859,13 @@ Dear {userFullName},
 
 
                     list.Add(staffposition);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FunctionalResponsibilityWiseParas> GetFunctionalResponsibilityWisePara(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9873,7 +9874,7 @@ Dear {userFullName},
             List<FunctionalResponsibilityWiseParas> list = new List<FunctionalResponsibilityWiseParas>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GetFunctionalResponsibilityWisePara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9886,7 +9887,7 @@ Dear {userFullName},
 
 
                 while (rdr.Read())
-                {
+                    {
                     FunctionalResponsibilityWiseParas para = new FunctionalResponsibilityWiseParas();
                     para.PROCESS_ID = Convert.ToInt32(rdr["PROCESS_ID"].ToString());
                     para.PROCESS = rdr["PROCESS"].ToString();
@@ -9905,13 +9906,13 @@ Dear {userFullName},
                     para.OBS_STATUS_ID = Convert.ToInt32(rdr["OBS_STATUS_ID"].ToString());
                     para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     list.Add(para);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9919,7 +9920,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9931,7 +9932,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Functional_owner"].ToString();
                     zb.D_ID = rdr["d_id"].ToString();
@@ -9943,13 +9944,13 @@ Dear {userFullName},
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetHOFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0, int DEPT_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9957,7 +9958,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_ho";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -9970,7 +9971,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Functional_owner"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -9981,13 +9982,13 @@ Dear {userFullName},
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetViolationWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -9996,7 +9997,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_v_wise";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10006,7 +10007,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["process"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -10017,20 +10018,20 @@ Dear {userFullName},
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public bool AddDivisionalHeadRemarksOnFunctionalLegacyPara(int CONCERNED_DEPT_ID = 0, string COMMENTS = "", int REF_PARA_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ais.P_AddDivisionalHeadRemarksOnFunctionalLegacyPara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10039,31 +10040,31 @@ Dear {userFullName},
                 cmd.Parameters.Add("REF_PARAID", OracleDbType.Int32).Value = REF_PARA_ID;
                 cmd.Parameters.Add("PPNumber", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
         [Obsolete]
         public void SaveImage(string base64img, string outputImgFilename = "image.jpg")
-        {
+            {
             var folderPath = System.IO.Path.Combine(_env.WebRootPath, "Auditee_Evidences");
             if (!System.IO.Directory.Exists(folderPath))
-            {
+                {
                 System.IO.Directory.CreateDirectory(folderPath);
-            }
+                }
             System.IO.File.WriteAllBytes(Path.Combine(folderPath, outputImgFilename), Convert.FromBase64String(base64img));
-        }
+            }
         [Obsolete]
         public void DeleteImage(string Filename = "image.jpg")
-        {
+            {
             var filePath = System.IO.Path.Combine(_env.WebRootPath, "Auditee_Evidences", Filename);
             if (System.IO.File.Exists(filePath))
-            {
+                {
                 System.IO.File.Delete(filePath);
+                }
             }
-        }
         public string CreateAuditReport(int ENG_ID)
-        {
+            {
             List<ManageObservations> list = new List<ManageObservations>();
             string filename = "";
             return filename;
@@ -10128,9 +10129,9 @@ Dear {userFullName},
             }
             return filename;
             */
-        }
+            }
         public List<Glheadsummaryyearlymodel> GetGlheadDetailsyearwise(int engId = 0, int gl_code = 0)
-        {
+            {
             int ENG_ID = this.GetLoggedInUserEngId();
             var con = this.DatabaseConnection(); con.Open();
 
@@ -10142,7 +10143,7 @@ Dear {userFullName},
             List<Glheadsummaryyearlymodel> list = new List<Glheadsummaryyearlymodel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.p_getglheadsummary_Yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10151,7 +10152,7 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     Glheadsummaryyearlymodel GlHeadDetails = new Glheadsummaryyearlymodel();
                     GlHeadDetails.GLSUBCODE = Convert.ToInt32(rdr["GLSUBCODE"]);
                     GlHeadDetails.BRANCHID = Convert.ToInt32(rdr["BRANCHID"]);
@@ -10183,14 +10184,14 @@ Dear {userFullName},
                     GlHeadDetails.CURRENT_BALANCE = rdr["CURRENT_BALANCE"].ToString();
 
                     list.Add(GlHeadDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public List<DepositAccountCatModel> GetDepositCat()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10201,7 +10202,7 @@ Dear {userFullName},
             List<DepositAccountCatModel> list = new List<DepositAccountCatModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_AI.P_GetDepositACCOUNTCATEGORY";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10210,7 +10211,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     DepositAccountCatModel depcat = new DepositAccountCatModel();
 
                     depcat.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
@@ -10223,15 +10224,15 @@ Dear {userFullName},
                         depcat.AMOUNT = Convert.ToDouble(rdr["AMOUNT"]);
 
                     list.Add(depcat);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public List<DepositAccountCatDetailsModel> GetDepositAccountcatdetails(int catid = 0)
 
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10240,7 +10241,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<DepositAccountCatDetailsModel> depositaccsublist = new List<DepositAccountCatDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_AIS.P_GetDepositACCOUNTCATEGORY_details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10250,7 +10251,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DepositAccountCatDetailsModel depositaccsubdetails = new DepositAccountCatDetailsModel();
 
                     depositaccsubdetails.BRANCH_NAME = rdr["BRANCH_NAME"].ToString();
@@ -10266,13 +10267,13 @@ Dear {userFullName},
 
 
                     if (rdr["OPENINGDATE"].ToString() != null && rdr["OPENINGDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.OPENINGDATE = Convert.ToDateTime(rdr["OPENINGDATE"]);
-                    }
+                        }
                     if (rdr["CNIC"].ToString() != null && rdr["CNIC"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.CNIC = Convert.ToDouble(rdr["CNIC"]);
-                    }
+                        }
                     if (rdr["TITLE"].ToString() != null && rdr["TITLE"].ToString() != "")
                         depositaccsubdetails.TITLE = rdr["TITLE"].ToString();
 
@@ -10280,21 +10281,21 @@ Dear {userFullName},
                     if (rdr["ACCOCUNTSTATUS"].ToString() != null && rdr["ACCOCUNTSTATUS"].ToString() != "")
                         depositaccsubdetails.ACCOUNTSTATUS = rdr["ACCOCUNTSTATUS"].ToString();
                     if (rdr["LASTTRANSACTIONDATE"].ToString() != null && rdr["LASTTRANSACTIONDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.LASTTRANSACTIONDATE = Convert.ToDateTime(rdr["LASTTRANSACTIONDATE"]);
-                    }
+                        }
                     if (rdr["CNICEXPIRYDATE"].ToString() != null && rdr["CNICEXPIRYDATE"].ToString() != "")
-                    {
+                        {
                         depositaccsubdetails.CNICEXPIRYDATE = Convert.ToDateTime(rdr["CNICEXPIRYDATE"]);
-                    }
+                        }
                     depositaccsublist.Add(depositaccsubdetails);
+                    }
                 }
-            }
             con.Dispose();
             return depositaccsublist;
-        }
+            }
         public List<AuditPlanEngagementModel> GetAuditPlanEngagement(int periodid)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10302,7 +10303,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanEngagementModel> periodList = new List<AuditPlanEngagementModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.r_audit_plan_engagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10315,7 +10316,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanEngagementModel period = new AuditPlanEngagementModel();
 
 
@@ -10341,13 +10342,13 @@ Dear {userFullName},
 
 
                     periodList.Add(period);
+                    }
                 }
-            }
             con.Dispose();
             return periodList;
-        }
+            }
         public List<LoanSchemeModel> GetLoansScheme(int engId)
-        {
+            {
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10357,7 +10358,7 @@ Dear {userFullName},
             List<LoanSchemeModel> list = new List<LoanSchemeModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10368,7 +10369,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     LoanSchemeModel LoanSchemeDetails = new LoanSchemeModel();
 
                     LoanSchemeDetails.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -10385,13 +10386,13 @@ Dear {userFullName},
 
 
                     list.Add(LoanSchemeDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<LoanSchemeYearlyModel> GetLoansSchemeYearly(int engId)
-        {
+            {
             int ENG_ID = this.GetLoggedInUserEngId();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10401,7 +10402,7 @@ Dear {userFullName},
             List<LoanSchemeYearlyModel> list = new List<LoanSchemeYearlyModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ai.P_preauditinfo_loan_scheme_yearly";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10412,7 +10413,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     LoanSchemeYearlyModel LoanSchemeDetails = new LoanSchemeYearlyModel();
 
                     LoanSchemeDetails.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -10437,17 +10438,17 @@ Dear {userFullName},
                         LoanSchemeDetails.MARKUP_OUT_2022 = Convert.ToDouble(rdr["MARKUP_OUT_2022"]);
 
                     list.Add(LoanSchemeDetails);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FadOldParaReportModel> GetFadBranchesParas(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
-        {
+            {
             List<FadOldParaReportModel> list = new List<FadOldParaReportModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "PKG_rpt.r_functionalresp";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10459,7 +10460,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     FadOldParaReportModel para = new FadOldParaReportModel();
 
                     para.PERIOD = Convert.ToInt32(rdr["PERIOD"].ToString());
@@ -10471,17 +10472,17 @@ Dear {userFullName},
                     para.OBS_RISK = rdr["OBS_RISK"].ToString();
                     para.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     list.Add(para);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<JoiningCompletionReportModel> GetJoiningCompletion(int DEPT_ID, DateTime AUDIT_STARTDATE, DateTime AUDIT_ENDDATE)
-        {
+            {
             List<JoiningCompletionReportModel> list = new List<JoiningCompletionReportModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_JOININGCOMPLETION";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10492,7 +10493,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     JoiningCompletionReportModel jc = new JoiningCompletionReportModel();
 
                     jc.AUDIT_BY = rdr["AUDIT_BY"].ToString();
@@ -10506,17 +10507,17 @@ Dear {userFullName},
                     jc.STATUS = rdr["STATUS"].ToString();
 
                     list.Add(jc);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditPlanCompletionReportModel> GetauditplanCompletion(int DEPT_ID)
-        {
+            {
             List<AuditPlanCompletionReportModel> list = new List<AuditPlanCompletionReportModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_AUDITPLANPROGRESS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10525,7 +10526,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanCompletionReportModel jac = new AuditPlanCompletionReportModel();
 
                     jac.AUDITNAME = rdr["AUDITNAME"].ToString();
@@ -10538,13 +10539,13 @@ Dear {userFullName},
                     jac.MEDIUMRISKPARA = Convert.ToInt32(rdr["MEDIUMRISKPARA"].ToString());
                     jac.LOWRISKPARA = Convert.ToInt32(rdr["LOWRISKPARA"].ToString());
                     list.Add(jac);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public DraftReportSummaryModel GetDraftReportSummary(int ENG_ID = 0, int OBS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10553,16 +10554,16 @@ Dear {userFullName},
             DraftReportSummaryModel list = new DraftReportSummaryModel();
 
             if (loggedInUser.UserLocationType == "Z")
-            {
+                {
                 paras = this.GetManagedObservationsForBranches(ENG_ID, OBS_ID);
-            }
+                }
             else
-            {
+                {
                 paras = this.GetManagedObservations(ENG_ID, OBS_ID);
-            }
+                }
 
             foreach (var p in paras)
-            {
+                {
                 list.Total++;
                 if (p.OBS_STATUS_ID == 7)
                     list.Dropped++;
@@ -10576,12 +10577,12 @@ Dear {userFullName},
                     list.Medium++;
                 if (p.OBS_RISK_ID == 1)
                     list.High++;
-            }
+                }
 
             return list;
-        }
+            }
         public List<CurrentAuditProgress> GetCurrentAuditProgressEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10589,7 +10590,7 @@ Dear {userFullName},
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_GetAuditees";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10598,18 +10599,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CurrentAuditProgress ent = new CurrentAuditProgress();
                     ent.CODE = rdr["ENG_ID"].ToString();
                     ent.NAME = rdr["Entity_Name"].ToString();
                     list.Add(ent);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<CurrentAuditProgress> GetCurrentAuditProgress(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10617,7 +10618,7 @@ Dear {userFullName},
             List<CurrentAuditProgress> list = new List<CurrentAuditProgress>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_GetAuditeesobervations";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10626,7 +10627,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CurrentAuditProgress ent = new CurrentAuditProgress();
 
                     ent.CODE = rdr["code"].ToString();
@@ -10634,13 +10635,13 @@ Dear {userFullName},
                     ent.AREA = rdr["area"].ToString();
                     ent.OBS_COUNT = Convert.ToInt32(rdr["observation"].ToString());
                     list.Add(ent);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<CurrentActiveUsers> GetCurrentActiveUsers()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10648,7 +10649,7 @@ Dear {userFullName},
             List<CurrentActiveUsers> list = new List<CurrentActiveUsers>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_LOGINUSERS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10657,7 +10658,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CurrentActiveUsers ent = new CurrentActiveUsers();
                     //e.code, e.name as auditee, d.heading as area, count(o.id) as observation
 
@@ -10667,13 +10668,13 @@ Dear {userFullName},
                     ent.LOGGED_IN_DATE = Convert.ToDateTime(rdr["LOGINDATE"].ToString());
                     ent.SESSION_TIME = rdr["SESSIONTIME"].ToString();
                     list.Add(ent);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ParaTextModel> GetReportParas(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10681,7 +10682,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ParaTextModel> list = new List<ParaTextModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.r_getauditeeParas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10689,7 +10690,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ParaTextModel chk = new ParaTextModel();
                     chk.MEMO_NO = Convert.ToInt32(rdr["memo_number"]);
 
@@ -10697,13 +10698,13 @@ Dear {userFullName},
 
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasBranchComplianceModel> GetParasForComplianceByAuditee()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10711,7 +10712,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByAuditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10722,7 +10723,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
@@ -10744,13 +10745,13 @@ Dear {userFullName},
                     chk.NEXT_ROLE = "SUBMIT COMPLIANCE";
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasBranchComplianceModel> GetParasForReviewComplianceByAuditee()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10758,7 +10759,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForCompliancereview";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10769,7 +10770,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
@@ -10792,14 +10793,14 @@ Dear {userFullName},
 
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<SettledPostCompliancesModel> GetSettledPostCompliancesForMonitoring()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10807,7 +10808,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<SettledPostCompliancesModel> list = new List<SettledPostCompliancesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetSettledParasForReview";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10818,7 +10819,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     SettledPostCompliancesModel chk = new SettledPostCompliancesModel();
                     chk.COM_ID = rdr["COM_ID"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
@@ -10850,13 +10851,13 @@ Dear {userFullName},
 
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceRef()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10864,7 +10865,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFAD_REF";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10873,7 +10874,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
@@ -10883,13 +10884,13 @@ Dear {userFullName},
                     chk.OLD_PARA_ID = rdr["old_para_id"].ToString() == "" ? 0 : Convert.ToInt32(rdr["old_para_id"].ToString());
                     chk.AUDIT_BY_ID = rdr["auditedby"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetParaComplianceText(int OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -10900,7 +10901,7 @@ Dear {userFullName},
 
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByAuditee_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10911,19 +10912,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
 
                     chk.PARA_TEXT = rdr["text"].ToString();
                     chk.PARA_TEXT_ID = rdr["text_id"].ToString();
                     chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
                     chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(OLD_PARA_ID, NEW_PARA_ID, INDICATOR);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasComplianceCycleText(string COM_ID, string C_CYCLE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10931,7 +10932,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel resp = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceforhistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10940,18 +10941,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp.PARA_TEXT = rdr["reply"].ToString();
                     resp.PARA_TEXT_ID = rdr["text_id"].ToString();
                     resp.OBS_TEXT = rdr["para_text"].ToString();
                     resp.EVIDENCES = this.GetOldParasEvidences(resp.PARA_TEXT_ID);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public AuditeeResponseEvidenceModel GetPostComplianceEvidenceData(string FILE_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -10959,7 +10960,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var resp = new AuditeeResponseEvidenceModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetPostAuditCompliance_Evidence_FileData";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -10967,27 +10968,27 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    resp = new AuditeeResponseEvidenceModel
                     {
+                    resp = new AuditeeResponseEvidenceModel
+                        {
                         IMAGE_NAME = rdr["FILE_NAME"].ToString(),
                         SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
                         LENGTH = Convert.ToInt32(rdr["LENGTH"]),
                         FILE_ID = (rdr["id"].ToString())
-                    };
+                        };
 
                     // Handle CLOB data
                     var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
                     if (clob != null)
-                    {
+                        {
                         resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public AuditeeResponseEvidenceModel GetCAUParasPostComplianceEvidenceData(string FILE_ID)
             {
             sessionHandler = new SessionHandler();
@@ -11027,7 +11028,7 @@ Dear {userFullName},
             return resp;
             }
         public AuditeeResponseEvidenceModel GetAuditeeEvidenceData(string FILE_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11035,7 +11036,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             var resp = new AuditeeResponseEvidenceModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_AUDITEE_OBSERVATION_RESPONSE_evidences_FileData";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11043,29 +11044,29 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
-                    resp = new AuditeeResponseEvidenceModel
                     {
+                    resp = new AuditeeResponseEvidenceModel
+                        {
                         IMAGE_NAME = rdr["FILE_NAME"].ToString(),
                         SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
                         LENGTH = Convert.ToInt32(rdr["LENGTH"]),
                         FILE_ID = (rdr["id"].ToString())
-                    };
+                        };
 
                     // Handle CLOB data
                     var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
                     if (clob != null)
-                    {
+                        {
                         resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
-                    }
+                        }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11073,7 +11074,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFADText_Ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11084,18 +11085,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     chk.GIST_OF_PARA = rdr["checklistdetail"].ToString();
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     // chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(OLD_PARA_ID, NEW_PARA_ID,INDICATOR);
                     //   chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZone(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11103,7 +11104,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFADtext_Reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11114,18 +11115,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.GIST_OF_PARA = rdr["para_text"].ToString();
                     //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForZoneRef(string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11133,7 +11134,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeOldParasFADtext_Reviewer_Ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11144,18 +11145,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.GIST_OF_PARA = rdr["para_text"].ToString();
                     //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForImpIncharge(int PID, string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11163,7 +11164,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforsettlementext";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11176,18 +11177,18 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
                     //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasReferredBackBranchComplianceTextForImpIncharge(int PID, string Ref_P, string PARA_CATEGORY, string REPLY_DATE, string OBS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11195,7 +11196,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforsettlementext_referedack";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11208,19 +11209,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
 
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
                     //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public GetOldParasBranchComplianceTextModel GetOldParasBranchComplianceTextForHeadAZ(int PID, string Ref_P, string OBS_ID, string PARA_CATEGORY, string REPLY_DATE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11228,7 +11229,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             GetOldParasBranchComplianceTextModel chk = new GetOldParasBranchComplianceTextModel();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforfinalsettlementext";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11241,19 +11242,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     chk.PARA_TEXT = rdr["para_text"].ToString();
                     chk.GIST_OF_PARA = rdr["gist_of_paras"].ToString();
                     //chk.RESPONSIBLE_PPs = this.GetOldParasObservationResponsiblePPNOs(Ref_P, chk.PARA_CATEGORY);
                     //chk.UPDATED_RESPONSIBLE_PPs_BY_IMP = this.GetOldParasObservationResponsiblePPNOsUpdatedByImp(PID, chk.PARA_CATEGORY, 0);
                     //chk.EVIDENCES = this.GetOldParasEvidences(Ref_P, chk.PARA_CATEGORY, REPLY_DATE, OBS_ID);
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
         public async Task<string> SubmitPostAuditCompliance(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST, string SUBFOLDER)
-        {
+            {
 
             string resp = "";
             int TEXT_ID = 0;
@@ -11263,7 +11264,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11278,20 +11279,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
                     TEXT_ID = Convert.ToInt32(rdr["text_id"].ToString());
 
-                }
+                    }
 
                 EVIDENCE_LIST = await this.GetAttachedFilesFromDirectory(SUBFOLDER);
                 int index = 1;
                 if (EVIDENCE_LIST != null)
-                {
-                    if (EVIDENCE_LIST.Count > 0)
                     {
-                        foreach (var item in EVIDENCE_LIST)
+                    if (EVIDENCE_LIST.Count > 0)
                         {
+                        foreach (var item in EVIDENCE_LIST)
+                            {
                             string fileName = item.FILE_NAME;
                             cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_Evidence";
                             cmd.CommandType = CommandType.StoredProcedure;
@@ -11306,19 +11307,19 @@ Dear {userFullName},
                             cmd.ExecuteReader();
                             index++;
                             //this.SaveImage(item.IMAGE_DATA, fileName);
+                            }
                         }
                     }
-                }
 
                 this.DeleteSubFolderDirectoryFromServer(SUBFOLDER);
-            }
+                }
 
             con.Dispose();
             return resp;
-        }
+            }
 
         public string SubmitPostAuditComplianceReview(string OLD_PARA_ID, int NEW_PARA_ID, string INDICATOR, string COMPLIANCE, string COMMENTS, List<AuditeeResponseEvidenceModel> EVIDENCE_LIST)
-        {
+            {
 
             string resp = "";
             sessionHandler = new SessionHandler();
@@ -11327,7 +11328,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_review";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11341,17 +11342,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
 
             con.Dispose();
             return resp;
-        }
+            }
         public List<GetOldParasForComplianceReviewer> GetOldParasForReviewer()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11359,7 +11360,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForComplianceReviewer> list = new List<GetOldParasForComplianceReviewer>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.p_getoldparasforreviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11368,7 +11369,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasForComplianceReviewer chk = new GetOldParasForComplianceReviewer();
                     chk.AUDITEENAME = rdr["AUDITEENAME"].ToString();
 
@@ -11387,13 +11388,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["auditedby"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasForComplianceReviewer> GetOldParasForReviewerRef()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11401,7 +11402,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForComplianceReviewer> list = new List<GetOldParasForComplianceReviewer>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.p_getoldparasforreviewer_ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11410,7 +11411,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasForComplianceReviewer chk = new GetOldParasForComplianceReviewer();
                     chk.AUDITEENAME = rdr["AUDITEENAME"].ToString();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
@@ -11429,13 +11430,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["auditedby"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string AddOldParasComplianceReviewer(string Para_ID, string PARA_CAT, string Reply, string r_status, string OBS_ID, int PARENT_ID, string SEQUENCE, string AUDITED_BY)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11443,7 +11444,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_AddOldParasReviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11462,16 +11463,16 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public List<GetOldParasforComplianceSettlement> GetComplianceForImpZone()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11479,7 +11480,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11488,7 +11489,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasforComplianceSettlement chk = new GetOldParasforComplianceSettlement();
                     chk.ID = Convert.ToInt32(rdr["ID"].ToString());
                     chk.REF_P = rdr["ref_p"].ToString();
@@ -11506,13 +11507,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["auditedby"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasforComplianceSettlement> GetReferredBackParasComplianceForImpZone()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11520,7 +11521,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforsettlement_ref";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11529,7 +11530,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasforComplianceSettlement chk = new GetOldParasforComplianceSettlement();
                     chk.ID = Convert.ToInt32(rdr["ID"].ToString());
                     chk.REF_P = rdr["ref_p"].ToString();
@@ -11547,13 +11548,13 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["auditedby"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<GetOldParasforComplianceSettlement> GetOldParasBranchComplianceSubmission()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11561,7 +11562,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasforComplianceSettlement> list = new List<GetOldParasforComplianceSettlement>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11570,7 +11571,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasforComplianceSettlement chk = new GetOldParasforComplianceSettlement();
                     chk.ID = Convert.ToInt32(rdr["ID"].ToString());
                     chk.REF_P = rdr["ref_p"].ToString();
@@ -11588,13 +11589,13 @@ Dear {userFullName},
                     chk.C_STATUS = rdr["c_status"].ToString();
                     chk.VOL_I_II = rdr["c_status"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public bool AddOldParasReply(int ID, string REPLY)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11602,7 +11603,7 @@ Dear {userFullName},
             bool success = false;
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_AddOldParasReply";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11611,12 +11612,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("REPLY", OracleDbType.Clob).Value = REPLY;
                 cmd.ExecuteReader();
                 success = true;
-            }
+                }
             con.Dispose();
             return success;
-        }
+            }
         public List<GetOldParasForFinalSettlement> GetOldParasForFinalSettlement()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11624,7 +11625,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasForFinalSettlement> list = new List<GetOldParasForFinalSettlement>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParasforfinalsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11633,7 +11634,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasForFinalSettlement chk = new GetOldParasForFinalSettlement();
 
                     chk.REF_P = rdr["REF_P"].ToString();
@@ -11651,13 +11652,13 @@ Dear {userFullName},
                     chk.SEQUENCE = rdr["SEQUENCE"].ToString();
                     chk.AUDITED_BY = rdr["AUDITEDBY"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string AddOldParasStatusUpdate(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, string SEQUENCE, string AUDITED_BY)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11665,7 +11666,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_AddOldParasImpRemarks";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11682,15 +11683,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddOldParasStatusPartiallySettle(string OBS_ID, string REFID, string REMARKS, int NEW_STATUS, string PARA_CATEGORY, string SETTLE_INDICATOR, List<ObservationResponsiblePPNOModel> RESPONSIBLES_ARR, string SEQUENCE, string AUDITED_BY, string PARA_TEXT)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11698,7 +11699,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_AddOldParasImpRemarks_partial_comp";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11716,16 +11717,16 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
-                }
+                    }
 
                 if (RESPONSIBLES_ARR != null)
-                {
-                    if (RESPONSIBLES_ARR.Count > 0)
                     {
-                        foreach (ObservationResponsiblePPNOModel pp in RESPONSIBLES_ARR)
+                    if (RESPONSIBLES_ARR.Count > 0)
                         {
+                        foreach (ObservationResponsiblePPNOModel pp in RESPONSIBLES_ARR)
+                            {
                             cmd.CommandText = "pkg_hd.p_add_para_responsibility_partial_comp";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
@@ -11742,19 +11743,19 @@ Dear {userFullName},
                             cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                             OracleDataReader rdr2 = cmd.ExecuteReader();
                             while (rdr.Read())
-                            {
+                                {
                                 resp = resp + "<br/>" + rdr2["remarks"].ToString();
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddOldParasheadStatusUpdate(int PARA_ID, string REMARKS, int NEW_STATUS, string PARA_REF, string PARA_INDICATOR, string PARA_CATEGORY, int AU_OBS_ID, string SEQUENCE, string AUDITED_BY, string ENTITY_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11762,7 +11763,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_AddFinalsettlement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11780,16 +11781,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditeeOldParasModel> GetOldParasForMonitoring(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11797,7 +11798,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GET_ALL_PARAS_MONITORING";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11805,7 +11806,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasModel chk = new AuditeeOldParasModel();
                     chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
@@ -11815,17 +11816,17 @@ Dear {userFullName},
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.OBS_ID = rdr["OBS_ID"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string GetParaText(string ref_p)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetOldParastext";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11833,19 +11834,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["PARA_TEXT"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string GetAllParaText(string REF_P, string OBS_ID, string PARA_CATEGORY)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GET_ALL_PARA_TEXT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11855,15 +11856,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["PARA_TEXT"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<AuditeeOldParasPpnoModel> GetOldParasForMonitoringPpno(int ppno)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11871,7 +11872,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeOldParasPpnoModel> list = new List<AuditeeOldParasPpnoModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.p_ppno_para";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11882,7 +11883,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeOldParasPpnoModel chk = new AuditeeOldParasPpnoModel();
                     if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
                         chk.ID = Convert.ToInt32(rdr["ID"]);
@@ -11898,14 +11899,14 @@ Dear {userFullName},
                     chk.ANNEXURE = rdr["ANNEX"].ToString();
                     chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public string AddChangeStatusRequestForSettledPara(string REFID, string OBS_ID, string INDICATOR, int NEW_STATUS, string REMARKS)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11913,7 +11914,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.p_changestatusrequestforsettledpara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11926,16 +11927,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remark"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string ReviewerAddChangeStatusRequestForSettledPara(string REFID, string REMARKS)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11943,7 +11944,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_ChangeStatusRequestForSettledPara_new_reviewer";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11955,16 +11956,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remark"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string AuthorizerAddChangeStatusRequestForSettledPara(string REFID, int NEW_STATUS, string REMARKS)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11972,7 +11973,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_AuthorizeChangeStatusRequestForSettledPara_new";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -11984,16 +11985,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddChangeStatusRequestForCurrentPara(string REFID, int NEW_STATUS, string REMARKS)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12001,7 +12002,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_ChangeStatusRequestForSettledPara_new";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12014,17 +12015,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remark"].ToString();
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<ZoneBranchParaStatusModel> GetZoneBranchParaPositionStatus(int Entity_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12033,7 +12034,7 @@ Dear {userFullName},
             List<ZoneBranchParaStatusModel> list = new List<ZoneBranchParaStatusModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GetParaPositionForZoneBranches";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12042,7 +12043,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ZoneBranchParaStatusModel zb = new ZoneBranchParaStatusModel();
                     zb.Entity_Name = rdr["Branch_Name"].ToString();
                     zb.Total_Paras = Convert.ToInt32(rdr["Total_Paras"].ToString());
@@ -12050,14 +12051,14 @@ Dear {userFullName},
                     zb.Unsettled_Paras = Convert.ToInt32(rdr["UnSetteled_para"].ToString());
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string AddAuthorizeChangeStatusRequestForSettledPara(string REFID, string OBS_ID, string INDICATOR)
 
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12065,7 +12066,7 @@ Dear {userFullName},
             string resp = "";
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_authorizechangestatusrequestforsettledpara";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12078,15 +12079,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remark"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<OldParasAuthorizeModel> GetOldSettledParasForResponseAuthorize()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12094,7 +12095,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<OldParasAuthorizeModel> list = new List<OldParasAuthorizeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_getoldparasforresponseauthorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12104,7 +12105,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     OldParasAuthorizeModel chk = new OldParasAuthorizeModel();
                     chk.REF_P = rdr["REF_P"].ToString();
                     chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();
@@ -12124,14 +12125,14 @@ Dear {userFullName},
 
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<GetOldParasBranchComplianceModel> GetOldParasBranchComplianceTextupdate()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12139,7 +12140,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetAuditeeAllParasFAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12150,7 +12151,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetOldParasBranchComplianceModel chk = new GetOldParasBranchComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
@@ -12164,14 +12165,14 @@ Dear {userFullName},
                      chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
                      chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();*/
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public string AddObservationGistAndRecommendation(int OBS_ID = 0, string GIST_OF_PARA = "", string AUDITOR_RECOMMENDATION = "")
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12180,7 +12181,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 string _sql = "pkg_hd.P_audit_pre_Concluding";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12194,17 +12195,17 @@ Dear {userFullName},
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<AuditPlanReportModel> getauditplanreport()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12212,7 +12213,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 string _sql = "pkg_rpt.r_eng_plan";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12227,7 +12228,7 @@ Dear {userFullName},
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanReportModel plan = new AuditPlanReportModel();
 
 
@@ -12261,14 +12262,14 @@ Dear {userFullName},
                     plan.TEAMLEAD = rdr["TEAMLEAD"].ToString();
 
                     planList.Add(plan);
+                    }
                 }
-            }
             con.Dispose();
             return planList;
-        }
+            }
 
         public List<AuditeeAddressModel> GetAddress(int ENT_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12276,7 +12277,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditeeAddressModel> list = new List<AuditeeAddressModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.r_getauditeeaddress";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12285,7 +12286,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeAddressModel chk = new AuditeeAddressModel();
                     chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"]);
                     chk.CODE = Convert.ToInt32(rdr["CODE"]);
@@ -12320,14 +12321,14 @@ Dear {userFullName},
                     chk.OPEN_LOW = rdr["OPEN_LOW"].ToString().Trim() == "" ? "0" : rdr["OPEN_LOW"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<GetAuditeeParasModel> GetAuditeReportStatus(int eng_id)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12336,7 +12337,7 @@ Dear {userFullName},
 
             List<GetAuditeeParasModel> list = new List<GetAuditeeParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.r_getauditeeparas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12345,7 +12346,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetAuditeeParasModel chk = new GetAuditeeParasModel();
 
                     chk.MESSAGE = rdr["MESSAGE"].ToString();
@@ -12354,14 +12355,14 @@ Dear {userFullName},
 
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<AuditConcludingEntitiesModel> GetAuditConcludingEntities()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12369,7 +12370,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditConcludingEntitiesModel> list = new List<AuditConcludingEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.p_get_audit_concluding_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12380,7 +12381,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditConcludingEntitiesModel chk = new AuditConcludingEntitiesModel();
 
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -12388,14 +12389,14 @@ Dear {userFullName},
                     chk.ENG_ID = Convert.ToInt32(rdr["ENG_ID"].ToString());
                     chk.TYPE_ID = Convert.ToInt32(rdr["TYPE_ID"].ToString());
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<GetTeamDetailsModel> GetTeamDetails(int eng_id)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12403,7 +12404,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetTeamDetailsModel> list = new List<GetTeamDetailsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_getauditteams";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12412,7 +12413,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetTeamDetailsModel chk = new GetTeamDetailsModel();
 
                     chk.TEAM_NAME = rdr["TEAM_NAME"].ToString();
@@ -12423,14 +12424,14 @@ Dear {userFullName},
                     chk.AUDIT_END_DATE = Convert.ToDateTime(rdr["AUDIT_END_DATE"].ToString()).ToString("dd/MM/yyyy");
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<GetFinalReportModel> GetAuditeeParas(int eng_id)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12438,7 +12439,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GetFinalReportModel> list = new List<GetFinalReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.r_getauditeeparas";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12450,7 +12451,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     GetFinalReportModel chk = new GetFinalReportModel();
 
 
@@ -12471,14 +12472,14 @@ Dear {userFullName},
 
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public string CloseDraftAuditReport(int ENG_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12488,7 +12489,7 @@ Dear {userFullName},
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_CloseAudit";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12499,15 +12500,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string ConcludeDraftAuditReport(int ENG_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12517,7 +12518,7 @@ Dear {userFullName},
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_Audit_Concluding";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12528,16 +12529,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public string SubmitPreConcluding(int ENG_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12547,7 +12548,7 @@ Dear {userFullName},
             if (ENG_ID == 0)
                 ENG_ID = this.GetLoggedInUserEngId();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_audit_pre_submission";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12558,16 +12559,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<AuditPlanReportModel> GetFadAuditPlanReport(int ent_id, int z_id, int risk, int size)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12575,7 +12576,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditPlanReportModel> planList = new List<AuditPlanReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 string _sql = "pkg_rpt.r_eng_plan";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12590,7 +12591,7 @@ Dear {userFullName},
                 cmd.CommandText = _sql;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanReportModel plan = new AuditPlanReportModel();
 
 
@@ -12624,14 +12625,14 @@ Dear {userFullName},
                     plan.TEAMLEAD = rdr["TEAMLEAD"].ToString();
 
                     planList.Add(plan);
+                    }
                 }
-            }
             con.Dispose();
             return planList;
-        }
+            }
 
         public List<FADGetReportEntititiesModel> FADGetReportEntitities()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12641,7 +12642,7 @@ Dear {userFullName},
             List<FADGetReportEntititiesModel> list = new List<FADGetReportEntititiesModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_rpt.p_get_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12651,21 +12652,21 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADGetReportEntititiesModel nm = new FADGetReportEntititiesModel();
 
                     nm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     nm.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
 
                     list.Add(nm);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADGetReportZonesModel> FADGetReportZones()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12675,7 +12676,7 @@ Dear {userFullName},
             List<FADGetReportZonesModel> list = new List<FADGetReportZonesModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = " pkg_rpt.p_get_az";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12685,20 +12686,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADGetReportZonesModel nm = new FADGetReportZonesModel();
 
                     nm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     nm.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
 
                     list.Add(nm);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADEntitySizeModel> FADGetEntitySize()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12708,7 +12709,7 @@ Dear {userFullName},
             List<FADEntitySizeModel> list = new List<FADEntitySizeModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_rpt.p_get_entity_size";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12717,21 +12718,21 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADEntitySizeModel nm = new FADEntitySizeModel();
 
                     nm.ENTITY_SIZE = rdr["ENTITY_SIZE"].ToString();
                     nm.DESCRIPTION = rdr["DESCRIPTION"].ToString();
 
                     list.Add(nm);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADEntityRiskModel> FADGetEntityRisk()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -12741,7 +12742,7 @@ Dear {userFullName},
             List<FADEntityRiskModel> list = new List<FADEntityRiskModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_rpt.p_get_risk";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -12749,7 +12750,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADEntityRiskModel nm = new FADEntityRiskModel();
 
                     nm.R_ID = rdr["R_ID"].ToString();
@@ -12757,14 +12758,14 @@ Dear {userFullName},
                     nm.RATING = rdr["RATING"].ToString();
 
                     list.Add(nm);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<ObservationResponsiblePPNOModel> GetLegacyParaResponsiblePersons(int PARA_REF)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12772,7 +12773,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.p_get_legacy_para_responsibles";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12780,7 +12781,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
                     rp.LOAN_CASE = rdr["LOANCASE"].ToString(); ;
                     rp.EMP_NAME = rdr["EMP_NAME"].ToString();
@@ -12789,13 +12790,13 @@ Dear {userFullName},
                     rp.ACC_AMOUNT = rdr["ACAMOUNT"].ToString(); ;
                     rp.PP_NO = rdr["PP_NO"].ToString();
                     list.Add(rp);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ObservationResponsiblePPNOModel> GetLegacyParaResponsiblePersonsFAD(string PARA_REF)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12803,7 +12804,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_get_legacy_para_responsibles";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12811,7 +12812,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationResponsiblePPNOModel rp = new ObservationResponsiblePPNOModel();
 
                     rp.LOAN_CASE = rdr["LOAN_CASE"].ToString();
@@ -12821,14 +12822,14 @@ Dear {userFullName},
                     rp.ACC_AMOUNT = rdr["AC_AMOUNT"].ToString();
                     rp.PP_NO = rdr["PP_NO"].ToString();
                     list.Add(rp);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADNewParaPerformanceModel> GetFADNewParaPerformance()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12837,7 +12838,7 @@ Dear {userFullName},
             List<FADNewParaPerformanceModel> list = new List<FADNewParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_new_paras_performance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12846,7 +12847,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewParaPerformanceModel zb = new FADNewParaPerformanceModel();
                     zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -12858,14 +12859,14 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADNewOldParaPerformanceModel> GetFADNewOldParaPerformance(int AUDIT_ZONE_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12874,7 +12875,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_new_old_paras_performance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12883,7 +12884,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
                     zb.Checklist = rdr["Checklist"].ToString();
@@ -12896,13 +12897,13 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetRelationLegacyObservationForDashboard(int USER_ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12911,7 +12912,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_old";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12919,7 +12920,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Process"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -12931,13 +12932,13 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetRelationAISObservationForDashboard(int USER_ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12946,7 +12947,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_new";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12954,7 +12955,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Process"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -12966,13 +12967,13 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<FADNewOldParaPerformanceModel> GetRelationObservationForDashboard(int USER_ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -12981,7 +12982,7 @@ Dear {userFullName},
             List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -12989,7 +12990,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Process"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -13001,14 +13002,14 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADLagacyParaPerformanceModel> GetFADLagacyParaPerformance()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13017,7 +13018,7 @@ Dear {userFullName},
             List<FADLagacyParaPerformanceModel> list = new List<FADLagacyParaPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = " pkg_rpt.p_get_lagacy_paras_performance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13026,7 +13027,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADLagacyParaPerformanceModel zb = new FADLagacyParaPerformanceModel();
                     zb.Audit_Zone = rdr["AUDIT_ZONE"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -13038,14 +13039,14 @@ Dear {userFullName},
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public UserModel GetEmployeeNameFromPPNO(int PP_NO)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13055,7 +13056,7 @@ Dear {userFullName},
             UserModel um = new UserModel();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = " pkg_ar.P_get_employees_information";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13063,17 +13064,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     um.Name = rdr["emp_name"].ToString();
                     um.PPNumber = rdr["ppno"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return um;
-        }
+            }
 
         public List<LegacyZoneWiseOldParasPerformanceModel> GetLegacyZoneWiseOldParasPerformance(DateTime? FILTER_DATE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13084,7 +13085,7 @@ Dear {userFullName},
             List<LegacyZoneWiseOldParasPerformanceModel> list = new List<LegacyZoneWiseOldParasPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GetZoneWiseOldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13092,7 +13093,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LegacyZoneWiseOldParasPerformanceModel chk = new LegacyZoneWiseOldParasPerformanceModel();
                     chk.ZONEID = rdr["ID"].ToString();
                     chk.ZONENAME = rdr["ZONENAME"].ToString();
@@ -13101,13 +13102,13 @@ Dear {userFullName},
                     chk.PARA_TOTAL = rdr["PARA_TOTAL"].ToString();
 
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<LegacyUserWiseOldParasPerformanceModel> GetLegacyUserWiseOldParasPerformance(DateTime? FILTER_DATE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13117,7 +13118,7 @@ Dear {userFullName},
             List<LegacyUserWiseOldParasPerformanceModel> list = new List<LegacyUserWiseOldParasPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_Get_UserWise_OldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13126,7 +13127,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LegacyUserWiseOldParasPerformanceModel chk = new LegacyUserWiseOldParasPerformanceModel();
                     chk.AUDIT_ZONEID = rdr["AUDIT_ZONEID"].ToString();
                     chk.ZONENAME = rdr["ZONENAME"].ToString();
@@ -13135,14 +13136,14 @@ Dear {userFullName},
                     chk.DATE = rdr["updated_on"].ToString();
                     chk.EMP_NAME = rdr["EMP_NAME"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<FADHOUserLegacyParaUserWiseParasPerformanceModel> GetFADHOUserLegacyParaUserWiseOldParasPerformance(DateTime? FILTER_DATE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13152,7 +13153,7 @@ Dear {userFullName},
             List<FADHOUserLegacyParaUserWiseParasPerformanceModel> list = new List<FADHOUserLegacyParaUserWiseParasPerformanceModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_Get_FAD_UserWise_OldParasPerformance";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13161,7 +13162,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADHOUserLegacyParaUserWiseParasPerformanceModel chk = new FADHOUserLegacyParaUserWiseParasPerformanceModel();
                     chk.PP_NO = rdr["PPNO"].ToString();
                     chk.EMP_NAME = rdr["EMP_NAME"].ToString();
@@ -13170,13 +13171,13 @@ Dear {userFullName},
                     chk.PARA_UPDATED_WITHOUT_CHANGE = rdr["PARA_UPDATED_WITHOUT_CHANGES"].ToString();
                     chk.PARA_REFERRED_BACK = rdr["Refer_Back"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public string DeleteLegacyParaResponsibility(string PARA_REF, int PARA_ID, int PP_NO)
-        {
+            {
             string resp = "Failed to delete responsibility, Please try again";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13184,7 +13185,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.p_delete_para_responsibility";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13195,17 +13196,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     if (rdr["REMARKS"].ToString() != null && rdr["REMARKS"].ToString() != "")
                         resp = rdr["REMARKS"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<AuditEntitiesModel> GetAuditeeEntitiesType()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13215,7 +13216,7 @@ Dear {userFullName},
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetAuditEntitiestype";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13223,19 +13224,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.TYPE_ID = Convert.ToInt32(rdr["TYPEID"]);
                     entity.ENTITYTYPEDESC = rdr["E_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditEntitiesModel> GetAuditEntitiesByTypeId(int ENTITY_TYPE_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13245,7 +13246,7 @@ Dear {userFullName},
 
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetAuditEntities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13254,19 +13255,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.TYPE_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.ENTITYTYPEDESC = rdr["E_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditPeriodModel> GetAuditYearForAddLegacyPara()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13276,27 +13277,27 @@ Dear {userFullName},
 
             List<AuditPeriodModel> entitiesList = new List<AuditPeriodModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetAuditYear";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPeriodModel entity = new AuditPeriodModel();
                     entity.AUDITPERIODID = Convert.ToInt32(rdr["audit_year"]);
                     entity.DESCRIPTION = rdr["period"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditNatureModel> GetAuditNatureForAddLegacyPara()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13306,26 +13307,26 @@ Dear {userFullName},
 
             List<AuditNatureModel> entitiesList = new List<AuditNatureModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetAuditnature";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditNatureModel entity = new AuditNatureModel();
                     entity.N_ID = Convert.ToInt32(rdr["NID"]);
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public string AddNewLegacyPara(AddNewLegacyParaModel LEGACY_PARA)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13336,7 +13337,7 @@ Dear {userFullName},
 
             List<AuditNatureModel> entitiesList = new List<AuditNatureModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_add_legacy_Para";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13354,18 +13355,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
 
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string ReferBackLegacyPara(string PARA_REF, int PARA_ID)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13376,7 +13377,7 @@ Dear {userFullName},
 
             List<AuditNatureModel> entitiesList = new List<AuditNatureModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_referback_legacy_para";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13385,18 +13386,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AddNewLegacyParaModel> GetAddedLegacyParaForAuthorize()
-        {
+            {
             List<AddNewLegacyParaModel> list = new List<AddNewLegacyParaModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13406,7 +13407,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_get_legacy_para_to_authorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13414,7 +13415,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AddNewLegacyParaModel lpara = new AddNewLegacyParaModel();
                     lpara.PARA_REF = rdr["REF_P"].ToString();
                     lpara.ANNEXURE = rdr["ANNEXURE"].ToString();
@@ -13427,14 +13428,14 @@ Dear {userFullName},
                     lpara.E_NAME = rdr["E_NAME"].ToString();
                     lpara.AMOUNT = rdr["AMOUNT_INVOLVED"].ToString();
                     list.Add(lpara);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public List<AddNewLegacyParaModel> GetUpdatedGistParaOfLegacyParaForAuthorize()
-        {
+            {
             List<AddNewLegacyParaModel> list = new List<AddNewLegacyParaModel>();
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13444,7 +13445,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_legacy_para_to_authorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13452,7 +13453,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AddNewLegacyParaModel lpara = new AddNewLegacyParaModel();
                     lpara.PARA_REF = rdr["REF_P"].ToString();
                     lpara.ANNEXURE = rdr["ANNEXURE"].ToString();
@@ -13464,14 +13465,14 @@ Dear {userFullName},
                     lpara.NATURE = rdr["NATURE"].ToString();
                     lpara.E_NAME = rdr["E_NAME"].ToString();
                     list.Add(lpara);
+                    }
                 }
-            }
             con.Dispose();
             return list;
 
-        }
+            }
         public string AuthorizeLegacyParaAddition(string PARA_REF)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13481,26 +13482,26 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_Authorize_legacy_para_addition";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("REFP", OracleDbType.Varchar2).Value = PARA_REF;
                 cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-               
+
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string DeleteLegacyParaAdditionRequest(string PARA_REF)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13510,7 +13511,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_referedback_Del_para";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13519,16 +13520,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AuthorizeLegacyParaGistParaNoUpdate(string PARA_REF, string GIST_OF_PARA, string PARA_NO)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13538,7 +13539,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_Authorize_Para_Gist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13550,16 +13551,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string SettleLegacyParaHO(int NEW_STATUS, string PARA_REF, string SETTLEMENT_NOTES)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13567,7 +13568,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_Settel_Legacy_Para_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13578,15 +13579,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string DeleteLegacyParaHO(string PARA_REF)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -13594,7 +13595,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_Delete_Legacy_Para_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13603,15 +13604,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["Remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<NoEntitiesRiskBasePlan> GetEntitiesRiskBasePlanForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13620,14 +13621,14 @@ Dear {userFullName},
             List<NoEntitiesRiskBasePlan> list = new List<NoEntitiesRiskBasePlan>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.p_get_risk_baseplan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     NoEntitiesRiskBasePlan zb = new NoEntitiesRiskBasePlan();
                     zb.ENTITY_NAME = rdr["name"].ToString();
                     zb.ENTITY_DESC = rdr["entitytypedesc"].ToString();
@@ -13635,16 +13636,16 @@ Dear {userFullName},
                     zb.ENTITY_SIZE = rdr["entity_size"].ToString();
                     zb.ENTITY_NO = Convert.ToInt32(rdr["no_of_enitites"].ToString());
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         //get_audit_performance_for_dashboard
 
         public List<FADAuditPerformanceModel> GetAuditPerformanceForDashboard()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13653,14 +13654,14 @@ Dear {userFullName},
             List<FADAuditPerformanceModel> list = new List<FADAuditPerformanceModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_AUDIT_PERFORMANCE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADAuditPerformanceModel zb = new FADAuditPerformanceModel();
                     zb.Title = rdr["title"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -13671,13 +13672,13 @@ Dear {userFullName},
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditPerformanceChartDashboardModel> GetAuditPerformanceChartForDashboard()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13686,14 +13687,14 @@ Dear {userFullName},
             List<AuditPerformanceChartDashboardModel> list = new List<AuditPerformanceChartDashboardModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.p_get_dashborad_scorecard";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPerformanceChartDashboardModel zb = new AuditPerformanceChartDashboardModel();
                     zb.HEADING = rdr["heading"].ToString();
                     zb.NO_OF_ENTITIES = rdr["no_of_ent"].ToString();
@@ -13702,15 +13703,15 @@ Dear {userFullName},
                     zb.DEPARTMENT = rdr["department"].ToString();
                     zb.PERCENTAGE = rdr["pencent"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<ParaPositionReportModel> GetParaPositionReport(int P_ID = 0, int C_ID = 0)
 
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13719,7 +13720,7 @@ Dear {userFullName},
             List<ParaPositionReportModel> list = new List<ParaPositionReportModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_para_position";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13729,7 +13730,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ParaPositionReportModel zb = new ParaPositionReportModel();
                     zb.Total_Paras = rdr["Total_Para"].ToString();
                     zb.Setteled_Para = rdr["Setteled_Para"].ToString();
@@ -13739,14 +13740,14 @@ Dear {userFullName},
                     zb.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
 
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<RepetativeParaModel> GetRepetativeParaForDashboard(int P_ID = 0, int SP_ID = 0, int PD_ID = 0)
 
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13755,7 +13756,7 @@ Dear {userFullName},
             List<RepetativeParaModel> list = new List<RepetativeParaModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.p_get_dash_repetitive";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13766,7 +13767,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RepetativeParaModel zb = new RepetativeParaModel();
                     zb.PROCESS = rdr["PROCESS"].ToString();
                     zb.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
@@ -13786,13 +13787,13 @@ Dear {userFullName},
                     zb.Y2011 = rdr["YEAR_2011"].ToString();
                     zb.Y2010 = rdr["YEAR_2010"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ParaPositionDetailsModel> GetParaPositionParaDetails(int ENTITY_ID = 0, int AUDIT_PERIOD = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -13800,7 +13801,7 @@ Dear {userFullName},
             List<ParaPositionDetailsModel> list = new List<ParaPositionDetailsModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_para_position_details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13809,7 +13810,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ParaPositionDetailsModel zb = new ParaPositionDetailsModel();
                     zb.REMARKS = rdr["remarks"].ToString();
                     zb.PARA_STATUS = rdr["para_status"].ToString();
@@ -13817,17 +13818,17 @@ Dear {userFullName},
                     zb.HEADING = rdr["gist_of_paras"].ToString();
                     zb.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
                     list.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<ObservationReversalModel> GetAuditeeEngagements(int ENTITY_ID = 0, int PERIOD = 0)
-        {
+            {
             List<ObservationReversalModel> resp = new List<ObservationReversalModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_auditee_engagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13836,22 +13837,22 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationReversalModel os = new ObservationReversalModel();
                     os.ENG_ID = rdr["ENG_ID"].ToString();
                     os.STATUS = rdr["Eng_name"].ToString();
                     resp.Add(os);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<ObservationReversalModel> GetEngagementDetailsForStatusReversal(int ENTITY_ID = 0)
-        {
+            {
             List<ObservationReversalModel> resp = new List<ObservationReversalModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audit_engagement";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13859,7 +13860,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationReversalModel os = new ObservationReversalModel();
                     os.PLAN_ID = rdr["plan_id"].ToString();
                     os.ENG_ID = rdr["ENG_ID"].ToString();
@@ -13873,17 +13874,17 @@ Dear {userFullName},
                     os.STATUS_ID = rdr["STATUS_ID"].ToString();
                     os.STATUS = rdr["STATUS"].ToString();
                     resp.Add(os);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<EngagementObservationsForStatusReversalModel> GetObservationDetailsForStatusReversal(int ENG_ID = 0)
-        {
+            {
             List<EngagementObservationsForStatusReversalModel> resp = new List<EngagementObservationsForStatusReversalModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audit_observtion";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13891,7 +13892,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EngagementObservationsForStatusReversalModel os = new EngagementObservationsForStatusReversalModel();
                     os.ID = rdr["ID"].ToString();
                     os.MEMO_NO = rdr["MEMO_NO"].ToString();
@@ -13900,46 +13901,46 @@ Dear {userFullName},
                     os.ASSIGNED_TO = rdr["ASSIGNED_TO"].ToString();
                     os.STATUS = rdr["STATUS"].ToString();
                     resp.Add(os);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<ObservationStatusReversalModel> GetObservationReversalStatus()
-        {
+            {
 
             List<ObservationStatusReversalModel> stList = new List<ObservationStatusReversalModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audit_observtion_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationStatusReversalModel st = new ObservationStatusReversalModel();
                     st.STATUS_NAME = rdr["statusname"].ToString();
                     st.STATUS_ID = Convert.ToInt32(rdr["statusid"].ToString());
                     stList.Add(st);
+                    }
                 }
-            }
             con.Dispose();
             return stList;
 
-        }
+            }
 
         public List<ObservationStatusReversalModel> GetEngagementReversalStatus(int ENG_ID)
-        {
+            {
 
             List<ObservationStatusReversalModel> stList = new List<ObservationStatusReversalModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_audit_engagement_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13947,25 +13948,25 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationStatusReversalModel st = new ObservationStatusReversalModel();
                     st.STATUS_NAME = rdr["status"].ToString();
                     st.STATUS_ID = Convert.ToInt32(rdr["id"].ToString());
                     stList.Add(st);
+                    }
                 }
-            }
             con.Dispose();
             return stList;
 
-        }
+            }
 
         public string GetComplianceTextAuditee(int COMPLIANCE_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_auditee_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13973,21 +13974,21 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["reply"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string GetComplianceHistoryCountAuditee(string REF_P, string OBS_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_get_v_auditee_paras_compliance_history_num_auditee";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -13996,24 +13997,24 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["no_of_records"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public List<PostComplianceHistoryModel> GetComplianceHistory(string COM_ID)
-        {
+            {
 
             List<PostComplianceHistoryModel> stList = new List<PostComplianceHistoryModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForCompliancehistory";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14021,7 +14022,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     PostComplianceHistoryModel st = new PostComplianceHistoryModel();
                     st.HIST_ID = Convert.ToInt32(rdr["HIST_ID"].ToString());
                     st.COM_ID = Convert.ToInt32(rdr["COM_ID"].ToString());
@@ -14036,20 +14037,20 @@ Dear {userFullName},
                     st.COMMENTS = rdr["COMMENTS"].ToString();
                     st.COM_FLOW = rdr["COM_FLOW"].ToString();
                     stList.Add(st);
+                    }
                 }
-            }
             con.Dispose();
             return stList;
 
-        }
+            }
 
         public string GetNewParaText(string OBS_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_hd.P_GetnewParastext";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14057,16 +14058,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["text"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<FADNewOldParaPerformanceModel> GetTotalParasDetailsHO(int ENTITY_ID = 0, int PROCESS_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14074,7 +14075,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<FADNewOldParaPerformanceModel> pdetails = new List<FADNewOldParaPerformanceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_Dash_table_functionwise_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14085,7 +14086,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
                     zb.Process = rdr["Functional_owner"].ToString();
                     zb.Total_Paras = rdr["Total_Paras"].ToString();
@@ -14096,13 +14097,13 @@ Dear {userFullName},
                     zb.R2 = rdr["R2"].ToString();
                     zb.R3 = rdr["R3"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<AuditeeRiskModel> GetAuditeeRisk(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14110,7 +14111,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeRiskModel> pdetails = new List<AuditeeRiskModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditeeRisk";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14118,20 +14119,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeRiskModel zb = new AuditeeRiskModel();
                     zb.MAX_NUMBER = rdr["max_number"].ToString();
                     zb.RISK_AREAS = rdr["risk_areas"].ToString();
                     zb.MARKS = rdr["Marks"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<RiskAssessmentEntTypeModel> GetAuditeeRiskForEntTypes(int ENT_TYPE_ID = 0, int PERIOD = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14139,7 +14140,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RiskAssessmentEntTypeModel> pdetails = new List<RiskAssessmentEntTypeModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Entity_Risk";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14148,7 +14149,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskAssessmentEntTypeModel zb = new RiskAssessmentEntTypeModel();
                     zb.RISK_CATEGORY = rdr["risk_category"].ToString();
                     zb.RISK_RATING = rdr["risk_rating"].ToString();
@@ -14157,14 +14158,14 @@ Dear {userFullName},
                     zb.BRANCH_CODE = rdr["branch_code"].ToString();
 
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<AuditeeRiskModeldetails> GetAuditeeRiskDetails(int ENG_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14172,7 +14173,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<AuditeeRiskModeldetails> pdetails = new List<AuditeeRiskModeldetails>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetAuditeeRisk_details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14180,7 +14181,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeRiskModeldetails zb = new AuditeeRiskModeldetails();
                     zb.MAX_NUMBER = rdr["max_number"].ToString();
                     zb.RISK_AREAS = rdr["risk_areas"].ToString();
@@ -14190,14 +14191,14 @@ Dear {userFullName},
                     zb.W_AVG = rdr["weightage_average"].ToString();
                     zb.G_RISK = rdr["gravity_risk"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<RoleActivityLogModel> GetRoleActivityLog(int ROLE_ID, int DEPT_ID, int AZ_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14205,7 +14206,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_ACTIVITY_LOG";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14215,7 +14216,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RoleActivityLogModel zb = new RoleActivityLogModel();
                     zb.USER_NAME = rdr["E_NAME"].ToString();
                     zb.USER_PP_NUMBER = rdr["ppnum"].ToString();
@@ -14223,14 +14224,14 @@ Dear {userFullName},
                     zb.ACTIONS = rdr["action"].ToString();
                     zb.ACTIVITY = rdr["GROUP_ROLE"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<RoleActivityLogModel> GetUserActivityLog(int PP_NO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14238,7 +14239,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<RoleActivityLogModel> pdetails = new List<RoleActivityLogModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_ACTIVITY_LOG";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14248,7 +14249,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RoleActivityLogModel zb = new RoleActivityLogModel();
                     zb.USER_NAME = rdr["E_NAME"].ToString();
                     zb.USER_PP_NUMBER = rdr["ppnum"].ToString();
@@ -14258,14 +14259,14 @@ Dear {userFullName},
                     zb.ACTIONS = rdr["action"].ToString();
                     zb.ACTIVITY = rdr["page_id"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<ZoneModel> GetZonesForAnnexureAssignment()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14273,7 +14274,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<ZoneModel> zoneList = new List<ZoneModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_Get_Auditee_Parent_FAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14282,18 +14283,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ZoneModel z = new ZoneModel();
                     z.ZONEID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     z.ZONENAME = rdr["NAME"].ToString();
                     zoneList.Add(z);
+                    }
                 }
-            }
             con.Dispose();
             return zoneList;
-        }
+            }
         public List<BranchModel> GetZoneBranchesForAnnexureAssignment(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14301,7 +14302,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BranchModel> branchList = new List<BranchModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_Get_Auditee_Child_FAD";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14310,19 +14311,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BranchModel br = new BranchModel();
                     br.BRANCHID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     br.BRANCHNAME = rdr["NAME"].ToString();
                     branchList.Add(br);
+                    }
                 }
-            }
             con.Dispose();
             return branchList;
-        }
+            }
 
         public List<AllParaForAnnexureAssignmentModel> GetAllParasForAnnexureAssignment(int ENTITY_ID = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14330,7 +14331,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_Get_all_paras_fad";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14338,7 +14339,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AllParaForAnnexureAssignmentModel chk = new AllParaForAnnexureAssignmentModel();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.OBS_ID = rdr["OBS_ID"].ToString();
@@ -14352,14 +14353,14 @@ Dear {userFullName},
                     chk.ANNEX_ID = rdr["ID"].ToString();
                     chk.ANNEXURE = rdr["NAME"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
 
         public string AssignAnnexureWithPara(string OBS_ID, string REF_P, string ANNEX_ID, string PARA_CATEGORY)
-        {
+            {
             string resp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -14368,7 +14369,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AllParaForAnnexureAssignmentModel> list = new List<AllParaForAnnexureAssignmentModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_Update_paras_annex_fad";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14382,17 +14383,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public string MergeDuplicateProcesses(string PROCESS_ID, string M_PROC_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14400,7 +14401,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_merge_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14409,18 +14410,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
 
         public string MergeDuplicateSubProcesses(string PROCESS_ID, string SUB_PROCESS_ID, string M_SUB_PROC_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14428,7 +14429,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_merge_sub_checklist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14437,25 +14438,25 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["REMARKS"].ToString();
 
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
 
         public bool MergeDuplicateChecklists(string CHECKLIST_ID, string M_CHECKLIST_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
             var loggedInUser = sessionHandler.GetSessionUser();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_REMOVE_DUPLICATE_CHECKLIST_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14463,17 +14464,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("D_ID", OracleDbType.Varchar2).Value = M_CHECKLIST_ID;
                 cmd.ExecuteReader();
 
-            }
+                }
             con.Dispose();
             return true;
-        }
+            }
 
         public List<AuditChecklistModel> GetAuditProcessListForMergeDuplicate()
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<AuditChecklistModel> list = new List<AuditChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS_DROPDOWN";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14482,18 +14483,18 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditChecklistModel chk = new AuditChecklistModel();
                     chk.T_ID = Convert.ToInt32(rdr["ID"]);
                     chk.HEADING = rdr["Main_checklist"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<MergeDuplicateProcessModel> GetDuplicateProcesses(int PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14501,7 +14502,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MergeDuplicateProcessModel> list = new List<MergeDuplicateProcessModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.p_Get_Checklist_MERGER_FOR_REVIEW";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14514,19 +14515,19 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MergeDuplicateProcessModel chk = new MergeDuplicateProcessModel();
                     chk.ID = Convert.ToInt32(rdr["cid"]);
                     chk.M_ID = Convert.ToInt32(rdr["m_cid"]);
                     chk.HEADING = rdr["for_merger"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<MergeDuplicateProcessModel> GetDuplicateSubProcesses(int SUB_PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14534,7 +14535,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<MergeDuplicateProcessModel> list = new List<MergeDuplicateProcessModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.p_Get_sub_Checklist_MERGER_FOR_REVIEW";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14547,23 +14548,23 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MergeDuplicateProcessModel chk = new MergeDuplicateProcessModel();
                     chk.ID = Convert.ToInt32(rdr["sid"]);
                     chk.M_ID = Convert.ToInt32(rdr["m_sid"]);
                     chk.HEADING = rdr["for_merger"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<MergeDuplicateChecklistModel> GetDuplicateChecklists(int PROCESS_ID)
-        {
+            {
             var con = this.DatabaseConnection(); con.Open();
             List<MergeDuplicateChecklistModel> list = new List<MergeDuplicateChecklistModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14573,23 +14574,23 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
                     chk.ID = Convert.ToInt32(rdr["C_ID"]);
                     chk.HEADING = rdr["HEADING"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public MergeDuplicateChecklistModel GetDuplicateChecklistsCount(int PROCESS_ID)
-        {
+            {
             MergeDuplicateChecklistModel chk = new MergeDuplicateChecklistModel();
 
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_GET_DUPLICATE_CHECKLIST_DETAILS_COUNT";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14599,21 +14600,21 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     chk.NEW_COUNT = rdr["New"].ToString();
                     chk.OLD_COUNT = rdr["Old"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return chk;
-        }
+            }
 
         public string AuthorizeMergeDuplicateProcesses(int PROCESS_ID, int AUTH_P_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14624,20 +14625,20 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AuthorizeMergeDuplicateSubProcesses(int SUB_PROCESS_ID, int AUTH_S_P_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_AUTHORIZE_MERGER_CHECKLIST_SUB";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14648,20 +14649,20 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AuthorizeMergeDuplicateChecklists(int PROCESS_ID)
-        {
+            {
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ad.P_AUTHORIZE_DUPLICATE_CHECKLIST_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -14671,17 +14672,17 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         #region BAC PROCEDURE CALLS
         public List<BACAgendaModel> GetBACAgenda(int MEETING_NO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14689,7 +14690,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaModel> pdetails = new List<BACAgendaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_BAC_AGENDA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14697,7 +14698,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaModel zb = new BACAgendaModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.MEETING_NO = rdr["meeting_no"].ToString();
@@ -14705,14 +14706,14 @@ Dear {userFullName},
                     zb.SUBJECT = rdr["subject"].ToString();
                     zb.REMARKS = rdr["remarks"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<BACAgendaModel> GetBACAMeetingSummary(int MEETING_NO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14720,7 +14721,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaModel> pdetails = new List<BACAgendaModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_Bac_get_actionable_sum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14728,7 +14729,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaModel zb = new BACAgendaModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.MEETING_NO = rdr["meeting_no"].ToString();
@@ -14736,13 +14737,13 @@ Dear {userFullName},
                     zb.SUBJECT = rdr["subject"].ToString();
                     zb.REMARKS = rdr["remarks"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<BACAgendaActionablesSummaryModel> GetBACAgendaActionablesConsolidatedSummary()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14750,26 +14751,26 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_Bac_get_actionable_snap";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaActionablesSummaryModel zb = new BACAgendaActionablesSummaryModel();
                     zb.TOTAL = Convert.ToInt32(rdr["total"].ToString());
                     zb.COMPLETED = rdr["completed"].ToString();
                     zb.UN_COMPLETED = rdr["un_completed"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<BACAgendaActionablesSummaryModel> GetBACAgendaActionablesSummary()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14777,14 +14778,14 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesSummaryModel> pdetails = new List<BACAgendaActionablesSummaryModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_Bac_get_actionable_sum";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaActionablesSummaryModel zb = new BACAgendaActionablesSummaryModel();
                     zb.TOTAL = Convert.ToInt32(rdr["total"].ToString());
                     zb.MEETING_NO = rdr["meeting_number"].ToString();
@@ -14795,13 +14796,13 @@ Dear {userFullName},
                     zb.REFERENCE = rdr["BAC_DIRECTIVES"].ToString();
                     zb.CIA_REMARKS = rdr["CIA_REMARKS"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<BACAgendaActionablesModel> GetBACAgendaActionables(string STATUS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14809,7 +14810,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesModel> pdetails = new List<BACAgendaActionablesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_Bac_get_actionable";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14817,7 +14818,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaActionablesModel zb = new BACAgendaActionablesModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.MEETING_NO = rdr["meeting_number"].ToString();
@@ -14833,14 +14834,14 @@ Dear {userFullName},
                     zb.DELAY = rdr["delay"].ToString();
                     zb.STATUS = rdr["status"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<BACAgendaActionablesModel> GetBACAgendaActionablesWithMeetingNo(string STATUS, string MEETING_NO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14848,7 +14849,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<BACAgendaActionablesModel> pdetails = new List<BACAgendaActionablesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_Bac_get_actionable_meetings_with_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14857,7 +14858,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACAgendaActionablesModel zb = new BACAgendaActionablesModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.MEETING_NO = rdr["meeting_number"].ToString();
@@ -14873,13 +14874,13 @@ Dear {userFullName},
                     zb.DELAY = rdr["delay"].ToString();
                     zb.STATUS = rdr["status"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<BACCIAAnalysisOptionsModel> GetBACCIAAnalysisOptions()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14888,14 +14889,14 @@ Dear {userFullName},
 
             List<BACCIAAnalysisOptionsModel> pdetails = new List<BACCIAAnalysisOptionsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACCIAAnalysisOptionsModel zb = new BACCIAAnalysisOptionsModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.HEADING = rdr["heading"].ToString();
@@ -14903,14 +14904,14 @@ Dear {userFullName},
                     zb.MONITORING = rdr["monitoring"].ToString();
                     zb.AUTOMATION = rdr["automation"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<BACCIAAnalysisModel> GetBACCIAAnalysis(int processId)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14919,7 +14920,7 @@ Dear {userFullName},
 
             List<BACCIAAnalysisModel> pdetails = new List<BACCIAAnalysisModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14927,7 +14928,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     BACCIAAnalysisModel zb = new BACCIAAnalysisModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.COUNT = rdr["total"].ToString();
@@ -14938,15 +14939,15 @@ Dear {userFullName},
                     zb.NEWCOUNT = rdr["new_total"].ToString();
                     zb.AUDITCOMMENTS = rdr["audit_comments"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         #endregion
 
         public List<EntityWiseObservationModel> GetReportingOfficeWiseObservations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14955,7 +14956,7 @@ Dear {userFullName},
 
             List<EntityWiseObservationModel> pdetails = new List<EntityWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Functional_Reporting_office_WISE_ANALYSIS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14964,7 +14965,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntityWiseObservationModel zb = new EntityWiseObservationModel();
                     zb.ENTITY_ID = Convert.ToInt32(rdr["parent_id"].ToString());
                     zb.REPORTING_OFFICE = rdr["name"].ToString();
@@ -14975,13 +14976,13 @@ Dear {userFullName},
                     zb.R2 = rdr["r2"].ToString();
                     zb.R3 = rdr["r3"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<EntityWiseObservationModel> GetEntityWiseObservations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -14990,7 +14991,7 @@ Dear {userFullName},
 
             List<EntityWiseObservationModel> pdetails = new List<EntityWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Functional_ENTITY_WISE_ANALYSIS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -14999,7 +15000,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntityWiseObservationModel zb = new EntityWiseObservationModel();
                     zb.ENTITY_ID = Convert.ToInt32(rdr["entity_id"].ToString());
                     zb.REPORTING_OFFICE = rdr["REPORTING_OFFICE"].ToString();
@@ -15011,14 +15012,14 @@ Dear {userFullName},
                     zb.R2 = rdr["r2"].ToString();
                     zb.R3 = rdr["r3"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<AnnexWiseObservationModel> GetAnnexureWiseObservations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15027,7 +15028,7 @@ Dear {userFullName},
 
             List<AnnexWiseObservationModel> pdetails = new List<AnnexWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Functional_ANALYSIS_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15036,7 +15037,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AnnexWiseObservationModel zb = new AnnexWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.HEADING = rdr["Heading"].ToString();
@@ -15049,14 +15050,14 @@ Dear {userFullName},
                     zb.R2 = rdr["r2"].ToString();
                     zb.R3 = rdr["r3"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<AnnexWiseObservationModel> GetFunctionAnnexures()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15065,7 +15066,7 @@ Dear {userFullName},
 
             List<AnnexWiseObservationModel> pdetails = new List<AnnexWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Function_Annexure";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15074,18 +15075,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AnnexWiseObservationModel zb = new AnnexWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.HEADING = rdr["Heading"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<FunctionalAnnexureWiseObservationModel> GetEntityWiseObservationDetail(int ENTITY_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15094,7 +15095,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Functional_ENTITY_WISE_Paras";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15104,7 +15105,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["entity_id"].ToString());
                     zb.NAME = rdr["name"].ToString();
@@ -15115,13 +15116,13 @@ Dear {userFullName},
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     zb.PARA_GIST = rdr["gist_of_paras"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<FunctionalAnnexureWiseObservationModel> GetFunctionalObservations(int ANNEX_ID, int ENTITY_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15130,7 +15131,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Function_Annexure_Paras";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15140,7 +15141,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.NAME = rdr["name"].ToString();
@@ -15150,13 +15151,13 @@ Dear {userFullName},
                     zb.OBS_ID = rdr["au_obs_id"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public string GetFunctionalObservationText(int PARA_ID, string PARA_CATEGORY)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15165,7 +15166,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_Function_Annexure_Paras_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15174,16 +15175,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["para_text"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<FunctionalAnnexureWiseObservationModel> GetAnalysisDetailPara(int PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15192,7 +15193,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_DETAILS_PARA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15203,7 +15204,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.NAME = rdr["name"].ToString();
@@ -15211,13 +15212,13 @@ Dear {userFullName},
                     zb.PARA_NO = rdr["para_no"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<FunctionalAnnexureWiseObservationModel> GetFunctionalRespDetailPara(int PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15226,7 +15227,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_PARA";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15236,7 +15237,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
                     zb.ID = Convert.ToInt32(rdr["id"].ToString());
                     zb.NAME = rdr["name"].ToString();
@@ -15244,13 +15245,13 @@ Dear {userFullName},
                     zb.PARA_NO = rdr["para_no"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
         public List<FunctionalAnnexureWiseObservationModel> GetAnalysisSummaryPara(int PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15259,7 +15260,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_bac.P_CIA_ANALYSIS_SUMMARY";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15269,7 +15270,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
 
                     zb.P_NAME = rdr["p_name"].ToString();
@@ -15277,14 +15278,14 @@ Dear {userFullName},
                     zb.PARA_NO = rdr["para_no"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public List<FunctionalAnnexureWiseObservationModel> GetFunctionalRespSummaryPara(int PROCESS_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15293,7 +15294,7 @@ Dear {userFullName},
 
             List<FunctionalAnnexureWiseObservationModel> pdetails = new List<FunctionalAnnexureWiseObservationModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise_PARA_summary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15303,7 +15304,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FunctionalAnnexureWiseObservationModel zb = new FunctionalAnnexureWiseObservationModel();
 
                     zb.P_NAME = rdr["p_name"].ToString();
@@ -15311,14 +15312,14 @@ Dear {userFullName},
                     zb.PARA_NO = rdr["para_no"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     pdetails.Add(zb);
+                    }
                 }
-            }
             con.Dispose();
             return pdetails;
-        }
+            }
 
         public string UpdateObservationStatusForReversal(int OBS_ID, int NEW_STATUS_ID, int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15327,7 +15328,7 @@ Dear {userFullName},
             var resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_audit_observation_reversal";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15337,16 +15338,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<SettledParasMonitoringModel> GetSettledParasForMonitoring(int ENTITY_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -15355,7 +15356,7 @@ Dear {userFullName},
             List<SettledParasMonitoringModel> list = new List<SettledParasMonitoringModel>();
             using (OracleCommand cmd = con.CreateCommand())
 
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_GET_SETTLED_PARA_DETAILS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15366,7 +15367,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SettledParasMonitoringModel chk = new SettledParasMonitoringModel();
                     chk.REPORTING_OFFICE = rdr["REPORTING_OFFICE"].ToString();
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
@@ -15382,21 +15383,21 @@ Dear {userFullName},
                     chk.AUDITED_BY = rdr["AUDITEDBY"].ToString();
                     chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     list.Add(chk);
-                }
+                    }
 
-            }
+                }
             con.Dispose();
             return list;
-        }
+            }
 
         public List<ComplianceHistoryModel> GetSettledParaComplianceHistory(string REF_P, string OBS_ID)
-        {
+            {
 
             List<ComplianceHistoryModel> stList = new List<ComplianceHistoryModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_GET_SETTLED_PARA_DETAILS_PARA_COMPLIANCE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15405,7 +15406,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceHistoryModel st = new ComplianceHistoryModel();
 
                     st.REMARKS = rdr["remarks"].ToString();
@@ -15415,19 +15416,19 @@ Dear {userFullName},
                     st.DESIGNATION = rdr["DESIGNATION"].ToString();
                     st.COM_SEQ_NO = rdr["COMPLIANCE_CYCLE"].ToString();
                     stList.Add(st);
+                    }
                 }
-            }
             con.Dispose();
             return stList;
 
-        }
+            }
         public string SaveSettledParaCompliacne(string REF_P, string OBS_ID, string COMMENTS)
-        {
+            {
 
             string resp = "";
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_fad.P_GET_SETTLED_PARA_DETAILS_PARA_COMPLIANCE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15436,7 +15437,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceHistoryModel st = new ComplianceHistoryModel();
 
                     st.REMARKS = rdr["remarks"].ToString();
@@ -15446,15 +15447,15 @@ Dear {userFullName},
                     st.DESIGNATION = rdr["DESIGNATION"].ToString();
                     st.COM_SEQ_NO = rdr["COMPLIANCE_CYCLE"].ToString();
                     resp = "";
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<StatusWiseComplianceModel> GetStatusWiseCompliance(string AUDITEE_ID, string START_DATE, string END_DATE, string RELATION_CHECK)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15463,7 +15464,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<StatusWiseComplianceModel> respList = new List<StatusWiseComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_STATUS_WISE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15477,7 +15478,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     StatusWiseComplianceModel st = new StatusWiseComplianceModel();
                     st.parent_id = rdr["parent_id"].ToString();
                     st.parent_Office = rdr["parent_Office"].ToString();
@@ -15496,14 +15497,14 @@ Dear {userFullName},
 
 
 
+                    }
                 }
-            }
             con.Dispose();
             return respList;
 
-        }
+            }
         public List<AdminNewUsersAIS> AdminNewUsersInAIS()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15512,14 +15513,14 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AdminNewUsersAIS> resp = new List<AdminNewUsersAIS>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_new_user";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AdminNewUsersAIS rd = new AdminNewUsersAIS();
                     rd.ENTITY_NAME = rdr["name"].ToString();
                     rd.ENTITY_ID = rdr["entity_id"].ToString();
@@ -15532,15 +15533,15 @@ Dear {userFullName},
                     rd.CODE = rdr["code"].ToString();
                     resp.Add(rd);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AuditParaReconsillation> GetAuditParaRensillation()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15549,7 +15550,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditParaReconsillation> resp = new List<AuditParaReconsillation>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_FAD_audit_Para_Reconciliation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15559,7 +15560,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditParaReconsillation rd = new AuditParaReconsillation();
 
                     rd.AUDIT_ZONE = rdr["Audit_zone"].ToString();
@@ -15579,15 +15580,15 @@ Dear {userFullName},
                     rd.R3 = rdr["r3"].ToString();
                     resp.Add(rd);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<HREntitiesModel> GetHREntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15596,7 +15597,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<HREntitiesModel> resp = new List<HREntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_HR_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15605,7 +15606,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     HREntitiesModel mod = new HREntitiesModel();
                     mod.REPORTING_CODE = rdr["Rept_code"].ToString();
                     mod.REPORTING_NAME = rdr["Rept_name"].ToString();
@@ -15618,15 +15619,15 @@ Dear {userFullName},
                     mod.ENTITY_INDICATOR = rdr["ind"].ToString();
                     resp.Add(mod);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AISEntitiesModel> GetAISEntitiesForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE, int ENT_TYPE_ID = 0)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15635,7 +15636,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AISEntitiesModel> resp = new List<AISEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_AIS_ENTITIES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15645,7 +15646,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AISEntitiesModel mod = new AISEntitiesModel();
                     mod.ENTITY_ID = rdr["entity_id"].ToString();
                     mod.ENTITY_CODE = rdr["code"].ToString();
@@ -15658,15 +15659,15 @@ Dear {userFullName},
                     mod.AUDITABLE = rdr["auditable"].ToString();
                     resp.Add(mod);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string UpdateAISEntityForAdminPanelEntityAddition(string ENTITY_ID, string ENTITY_NAME, string ENTITY_CODE, string AUDITABLE, string AUDIT_BY_ID, string ENTITY_TYPE_ID, string ENT_DESC, string STATUS)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15675,7 +15676,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UpdateENTITIEES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15693,16 +15694,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddAISEntityForAdminPanelEntityAddition(string ENTITY_NAME, string ENTITY_CODE, string AUDITABLE, string AUDIT_BY_ID, string ENTITY_TYPE_ID, string ENT_DESC, string STATUS)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15711,7 +15712,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_InsertENTITIEES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15728,17 +15729,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<EntityMappingForEntityAddition> GetAISEntityMappingForAdminPanelEntityAddition(string ENTITY_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15747,7 +15748,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EntityMappingForEntityAddition> respOut = new List<EntityMappingForEntityAddition>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_auditee_entities_mapping";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15757,7 +15758,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntityMappingForEntityAddition resp = new EntityMappingForEntityAddition();
                     resp.PARENT_ID = rdr["parent_id"].ToString();
                     resp.PARENT_CODE = rdr["parent_code"].ToString();
@@ -15770,14 +15771,14 @@ Dear {userFullName},
                     resp.CHILD_TYPE_ID = rdr["c_type_id"].ToString();
                     resp.RELATION_TYPE_ID = rdr["relation_type_id"].ToString();
                     respOut.Add(resp);
+                    }
                 }
-            }
             con.Dispose();
             return respOut;
 
-        }
+            }
         public string UpdateAISEntityMappingForAdminPanelEntityAddition(string P_ENTITY_ID, string ENTITY_ID, string RELATION_TYPE_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15787,7 +15788,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_ENTITIES_MAPPING";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15797,17 +15798,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string AddAISEntityMappingForAdminPanelEntityAddition(string P_ENTITY_ID, string ENTITY_ID, string RELATION_TYPE_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15817,7 +15818,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_ENTITIES_MAPPING";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15827,17 +15828,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AuditPlanEngDetailReport> GetAuditPlanEngagementDetailedReport(string AUDITED_BY, string PERIOD_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15847,7 +15848,7 @@ Dear {userFullName},
             List<AuditPlanEngDetailReport> resp = new List<AuditPlanEngDetailReport>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_FAD_audit_Plan_Details";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15856,7 +15857,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditPlanEngDetailReport eng = new AuditPlanEngDetailReport();
                     eng.ENG_ID = rdr["eng_id"].ToString();
                     eng.REPORTING_OFFICE = rdr["reporting_office"].ToString();
@@ -15875,17 +15876,17 @@ Dear {userFullName},
                     eng.ENG_STATUS = rdr["status"].ToString();
                     resp.Add(eng);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
 
         public List<LoanCaseFileDetailsModel> GetWorkingPaperLoanCases(string ENGID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15895,7 +15896,7 @@ Dear {userFullName},
             List<LoanCaseFileDetailsModel> resp = new List<LoanCaseFileDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetLoanCaseFile";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15906,7 +15907,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LoanCaseFileDetailsModel eng = new LoanCaseFileDetailsModel();
                     eng.LC_ID = rdr["LC_ID"].ToString();
                     eng.LC_NUMBER = rdr["LC_NUMBER"].ToString();
@@ -15916,16 +15917,16 @@ Dear {userFullName},
                     eng.AMOUNT = rdr["AMOUNT"].ToString();
                     eng.PARA_NO = rdr["PARA_NO"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public string AddWorkingPaperLoanCases(string ENGID, string LCNUMBER, string LCAMOUNT, DateTime DISBDATE, string LCAT, string OBS, string PARA_NO)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15934,7 +15935,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddLoanCaseFile";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15951,18 +15952,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public List<VoucherCheckingDetailsModel> GetWorkingPaperVoucherChecking(string ENGID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -15972,7 +15973,7 @@ Dear {userFullName},
             List<VoucherCheckingDetailsModel> resp = new List<VoucherCheckingDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetVoucherChecking";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -15983,23 +15984,23 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     VoucherCheckingDetailsModel eng = new VoucherCheckingDetailsModel();
                     eng.V_ID = rdr["V_ID"].ToString();
                     eng.V_NUMBER = rdr["V_NUMBER"].ToString();
                     eng.OBSERVATION = rdr["OBSERVATION"].ToString();
                     eng.PARA_NO = rdr["PARA_NO"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public string AddWorkingVoucherChecking(string ENGID, string VNUMBER, string OBS, string PARA_NO)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16008,7 +16009,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddVoucherChecking";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16022,18 +16023,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public List<AccountOpeningDetailsModel> GetWorkingPaperAccountOpening(string ENGID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16043,7 +16044,7 @@ Dear {userFullName},
             List<AccountOpeningDetailsModel> resp = new List<AccountOpeningDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetAccountOpeningDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16054,7 +16055,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AccountOpeningDetailsModel eng = new AccountOpeningDetailsModel();
                     eng.A_ID = rdr["A_ID"].ToString();
                     eng.V_NUMBER = rdr["V_NUMBER"].ToString();
@@ -16062,16 +16063,16 @@ Dear {userFullName},
                     eng.OBSERVATION = rdr["OBSERVATION"].ToString();
                     eng.PARA_NO = rdr["PARA_NO"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public string AddWorkingAccountOpening(string ENGID, string VNUMBER, string ANATURE, string OBS, string PARA_NO)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16080,7 +16081,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddAccountOpeningDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16095,16 +16096,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<FixedAssetsDetailsModel> GetWorkingPaperFixedAssets(string ENGID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16114,7 +16115,7 @@ Dear {userFullName},
             List<FixedAssetsDetailsModel> resp = new List<FixedAssetsDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetFixedAssetsDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16125,7 +16126,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     FixedAssetsDetailsModel eng = new FixedAssetsDetailsModel();
                     eng.FA_ID = rdr["FA_ID"].ToString();
                     eng.ASSET_NAME = rdr["ASSET_NAME"].ToString();
@@ -16134,15 +16135,15 @@ Dear {userFullName},
                     eng.DIFFERENCE = rdr["DIFFERENCE"].ToString();
                     eng.REMARKS = rdr["REMARKS"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string AddWorkingFixedAssets(string ENGID, string A_NAME, string PHY_EX, string FAR, string DIFF, string REM)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16151,7 +16152,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddFixedAssetsDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16167,17 +16168,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<CashCountDetailsModel> GetWorkingPaperCashCounter(string ENGID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16187,7 +16188,7 @@ Dear {userFullName},
             List<CashCountDetailsModel> resp = new List<CashCountDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_GetCashCounterDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16198,7 +16199,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     CashCountDetailsModel eng = new CashCountDetailsModel();
                     eng.ID = rdr["ID"].ToString();
                     eng.DENOMINATION_VAULT = rdr["DENOMINATION_VAULT"].ToString();
@@ -16209,15 +16210,15 @@ Dear {userFullName},
                     eng.TOTAL_AMOUNT_SAFE_REGISTER = rdr["TOTAL_AMOUNT_SAFE_REGISTER"].ToString();
                     eng.DIFFERENCE = rdr["DIFFERENCE"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string AddWorkingCashCounter(string ENGID, string DVAULT, string NOVAULT, string TOTVAULT, string DSR, string NOSR, string TOTSR, string DIFF)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16226,7 +16227,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_AddCashCounterDetails";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16244,17 +16245,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AnnexureExerciseStatus> GetAnnexureExerciseStatus()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16264,14 +16265,14 @@ Dear {userFullName},
             List<AnnexureExerciseStatus> resp = new List<AnnexureExerciseStatus>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_FAD_ANNEXURE_REPORT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AnnexureExerciseStatus eng = new AnnexureExerciseStatus();
                     eng.PPNO = rdr["ppno"].ToString();
                     eng.NAME = rdr["name"].ToString();
@@ -16280,15 +16281,15 @@ Dear {userFullName},
                     eng.PENDING = rdr["Pending"].ToString();
                     eng.COMPLETED = rdr["Completed"].ToString();
                     resp.Add(eng);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string UpdateNewUsersAdminPanel(int PPNO)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16298,7 +16299,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_NEW_USER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16306,16 +16307,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<UserRoleDetailAdminPanelModel> GetUserDetailAdminPanel(string DESINATION_CODE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16325,7 +16326,7 @@ Dear {userFullName},
             List<UserRoleDetailAdminPanelModel> resp = new List<UserRoleDetailAdminPanelModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_user_role_type";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16333,20 +16334,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRoleDetailAdminPanelModel m = new UserRoleDetailAdminPanelModel();
                     m.GROUP_NAME = rdr["group_name"].ToString();
                     m.GROUP_ID = rdr["group_id"].ToString();
                     m.ROLE_ID = rdr["role_id"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
-        public List<ComplianceSummaryModel> GetComplianceSummary(int entityID )
-        {
+            }
+        public List<ComplianceSummaryModel> GetComplianceSummary(int entityID)
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16356,7 +16357,7 @@ Dear {userFullName},
             List<ComplianceSummaryModel> resp = new List<ComplianceSummaryModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_db.P_compliance_summary";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16367,7 +16368,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceSummaryModel m = new ComplianceSummaryModel();
                     m.ID = rdr["Region_id"].ToString();
                     m.NAME = rdr["Region"].ToString();
@@ -16379,14 +16380,14 @@ Dear {userFullName},
                     m.REJECTED = rdr["Rejected"].ToString();
                     m.ROLE_ID = loggedInUser.UserRoleID.ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<EntitiesShiftingDetailsModel> GetEntityShiftingDetails(string ENTITY_ID = "")
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16396,7 +16397,7 @@ Dear {userFullName},
             List<EntitiesShiftingDetailsModel> resp = new List<EntitiesShiftingDetailsModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_details_for_entity_shifting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16404,7 +16405,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntitiesShiftingDetailsModel m = new EntitiesShiftingDetailsModel();
                     m.NAME = rdr["NAME"].ToString();
                     m.E_SIZE = rdr["E_SIZE"].ToString();
@@ -16421,14 +16422,14 @@ Dear {userFullName},
                     m.AIS_CLOSE = rdr["AIS_CLOSE"].ToString();
                     m.COMP_SUB = rdr["COMP_SUB"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<AuditEntitiesModel> GetEntityTypes()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16438,14 +16439,14 @@ Dear {userFullName},
             List<AuditEntitiesModel> resp = new List<AuditEntitiesModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Entities_types";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel m = new AuditEntitiesModel();
                     m.AUTID = Convert.ToInt32(rdr["AUTID"].ToString());
                     m.ENTITYCODE = rdr["ENTITYCODE"].ToString();
@@ -16458,15 +16459,15 @@ Dear {userFullName},
                     m.AUDITED_BY_ENTITY = rdr["AUDITED_BY_ENITITY"].ToString();
                     m.AUDIT_TYPE = rdr["AUDIT_TYPE"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string UpdateEntityTypes(AuditEntitiesModel ENTITY_MODEL)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16476,7 +16477,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_update_Entities_types";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16491,16 +16492,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<AuditEntityRelationsModel> GetEntityRelations()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16508,7 +16509,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditEntityRelationsModel> resp = new List<AuditEntityRelationsModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Entities_Relationship";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16516,7 +16517,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditEntityRelationsModel m = new AuditEntityRelationsModel();
                     if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
                         m.ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -16532,13 +16533,13 @@ Dear {userFullName},
                     m.CHILD_NAME = rdr["chlid_name"].ToString();
 
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public List<EntitiesMappingModel> GetEntitiesMapping(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16548,7 +16549,7 @@ Dear {userFullName},
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ENTITIES_MAPPING";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16560,7 +16561,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntitiesMappingModel m = new EntitiesMappingModel();
                     m.PARENT_ID = rdr["PARENT_ID"].ToString();
                     m.PARENT_CODE = rdr["PARENT_CODE"].ToString();
@@ -16574,14 +16575,14 @@ Dear {userFullName},
                     m.C_TYPE_ID = rdr["C_TYPE_ID"].ToString();
                     m.RELATION_TYPE_ID = rdr["RELATION_TYPE_ID"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<EntitiesMappingModel> GetEntitiesMappingReporting(string ENT_ID, string P_TYPE, string C_TYPE, string RELATION_TYPE, string IND)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16591,7 +16592,7 @@ Dear {userFullName},
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ENTITIES_MAPPING_REPORTING";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16603,7 +16604,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntitiesMappingModel m = new EntitiesMappingModel();
                     m.PARENT_ID = rdr["PARENT_ID"].ToString();
                     m.PARENT_CODE = rdr["PARENT_CODE"].ToString();
@@ -16617,14 +16618,14 @@ Dear {userFullName},
                     m.C_TYPE_ID = rdr["C_TYPE_ID"].ToString();
                     m.RELATION_TYPE_ID = rdr["RELATION_TYPE_ID"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<EntitiesMappingModel> GetParentChildEntities(string P_TYPE_ID, string C_TYPE_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16634,7 +16635,7 @@ Dear {userFullName},
             List<EntitiesMappingModel> resp = new List<EntitiesMappingModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_entities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16643,19 +16644,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EntitiesMappingModel m = new EntitiesMappingModel();
                     m.PARENT_ID = rdr["PARENT_ID"].ToString();
                     m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string SubmitEntityShiftingFromAdminPanel(string FROM_ENT_ID, string TO_ENT_ID, string CIR_REF_NO, DateTime CIR_DATE, string CIR)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16665,7 +16666,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Add_Entity_shifting";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16680,16 +16681,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<GroupWiseUsersCountModel> GetGroupWiseUsersCount()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16699,7 +16700,7 @@ Dear {userFullName},
             List<GroupWiseUsersCountModel> resp = new List<GroupWiseUsersCountModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_GROUP_WISE_USERS_COUNT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16707,20 +16708,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GroupWiseUsersCountModel m = new GroupWiseUsersCountModel();
                     m.G_ID = rdr["G_ID"].ToString();
                     m.G_NAME = rdr["G_NAME"].ToString();
                     m.U_COUNT = rdr["U_COUNT"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<GroupWisePagesModel> GetGroupWisePages(string GROUP_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16730,7 +16731,7 @@ Dear {userFullName},
             List<GroupWisePagesModel> resp = new List<GroupWisePagesModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_GROUP_WISE_PAGES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16738,20 +16739,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GroupWisePagesModel m = new GroupWisePagesModel();
                     m.G_ID = rdr["G_ID"].ToString();
                     m.G_NAME = rdr["G_NAME"].ToString();
                     m.P_NAME = rdr["P_NAME"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<GroupModel> GetRolesForComplianceFlow()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16759,7 +16760,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_roles_for_compliance_flow";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16769,7 +16770,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GroupModel grp = new GroupModel();
                     grp.GROUP_ID = Convert.ToInt32(rdr["GROUP_ID"]);
                     grp.GROUP_NAME = rdr["GROUP_NAME"].ToString();
@@ -16777,13 +16778,13 @@ Dear {userFullName},
                     grp.GROUP_CODE = Convert.ToInt32(rdr["GROUP_ID"]);
                     grp.ISACTIVE = rdr["STATUS"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public List<GroupModel> GetHRDesignation()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16791,7 +16792,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             List<GroupModel> groupList = new List<GroupModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GetRoleResponsibilities";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16801,19 +16802,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GroupModel grp = new GroupModel();
                     grp.GROUP_ID = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
                     grp.GROUP_CODE = Convert.ToInt32(rdr["DESIGNATIONCODE"]);
                     grp.GROUP_NAME = rdr["DESCRIPTION"].ToString();
                     groupList.Add(grp);
+                    }
                 }
-            }
             con.Dispose();
             return groupList;
-        }
+            }
         public List<AuditeeEntitiesModel> GetEntityTypesForComplianceFlow()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16823,7 +16824,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_ent_types_for_compliance_flow";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16833,20 +16834,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["ENTITY_TYPE"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetEntityTypesForEntityWiseOutstandingObsPosition()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16856,7 +16857,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_ENTITY_TYPE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16866,20 +16867,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["ENTITY_TYPE"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetEntityTypesForHRDesignationWiseRole()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16889,7 +16890,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_ent_types_for_hr_designation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16899,19 +16900,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["ENTITY_TYPE"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entitycode"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetComplianceStatusesForComplianceFlow()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16921,26 +16922,26 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_compliance_statuses_for_compliance_flow";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["statusname"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["statusid"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<ComplianceFlowModel> GetComplianceFlowByEntityType(int ENTITY_TYPE_ID = 0, int GROUP_ID = 0)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -16950,7 +16951,7 @@ Dear {userFullName},
             List<ComplianceFlowModel> resp = new List<ComplianceFlowModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_get_entity_type_compliance_flow";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -16959,7 +16960,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceFlowModel cm = new ComplianceFlowModel();
 
                     cm.ENTITY_TYPE_ID = rdr["e_id"].ToString();
@@ -16979,15 +16980,15 @@ Dear {userFullName},
 
                     resp.Add(cm);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddComplianceFlow(string ID, string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID, string COM_UP_STATUS
             , string COM_DOWN_STATUS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -16996,7 +16997,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_UPDATE_COMPLIANCE_FLOW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17010,16 +17011,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateComplianceFlow(string ID, string ENTITY_TYPE_ID, string GROUP_ID, string PREV_GROUP_ID, string NEXT_GROUP_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17029,7 +17030,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_COMPLIANCE_FLOW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17041,17 +17042,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<DepttWiseOutstandingParasModel> GetOutstandingParasForEntityTypeId(string ENTITY_TYPE_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17061,7 +17062,7 @@ Dear {userFullName},
             List<DepttWiseOutstandingParasModel> resp = new List<DepttWiseOutstandingParasModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_DEPT_WISE_PARA_POSITION";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17072,7 +17073,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DepttWiseOutstandingParasModel cm = new DepttWiseOutstandingParasModel();
 
                     cm.ENTITY_ID = rdr["ENTITY_ID"].ToString();
@@ -17081,15 +17082,15 @@ Dear {userFullName},
                     cm.TOTAL_PARAS = rdr["TOTAL_PARAS"].ToString();
                     resp.Add(cm);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string SubmitNewTeamIdForPostChangesTeamEngReversal(int TEAM_ID, int ENG_ID, int AUDITED_BY_ID, string TEAM_NAME)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17099,7 +17100,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_audit_team_postchanges";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17111,17 +17112,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string AuditEngagementStatusReversal(int ENG_ID, int NEW_STATUS_ID, int PLAN_ID, string COMMENTS)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17130,7 +17131,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_audit_engagement_reversal";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17142,17 +17143,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
 
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AuditEngagementObsStatusReversal(int ENG_ID, int NEW_STATUS_ID, List<int> OBS_IDS)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17161,9 +17162,9 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             foreach (int obsId in OBS_IDS)
-            {
-                using (OracleCommand cmd = con.CreateCommand())
                 {
+                using (OracleCommand cmd = con.CreateCommand())
+                    {
                     cmd.CommandText = "pkg_ad.p_audit_observation_reversal";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
@@ -17174,19 +17175,19 @@ Dear {userFullName},
                     cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                     OracleDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
-                    {
+                        {
                         resp = rdr["remarks"].ToString();
+                        }
                     }
                 }
-            }
 
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<ObservationNumbersModel> GetObservationNumbersForStatusReversal(int OBS_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17195,7 +17196,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ObservationNumbersModel> resp = new List<ObservationNumbersModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_observvation_no";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17203,22 +17204,22 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ObservationNumbersModel om = new ObservationNumbersModel();
                     om.MEMO_NUMBER = rdr["MEMO_NUMBER"].ToString();
                     om.DRAFT_PARA_NUMBER = rdr["DRAFT_PARA_NO"].ToString();
                     om.FINAL_PARA_NUMBER = rdr["FINAL_PARA_NO"].ToString();
                     resp.Add(om);
+                    }
                 }
-            }
 
 
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateObservationNumbersForStatusReversal(ObservationNumbersModel onum)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17227,7 +17228,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Update_observation_no";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17238,17 +17239,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
 
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateEngagementDatesForStatusReversal(int ENG_ID, DateTime START_DATE, DateTime END_DATE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17257,7 +17258,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_ENG_DATE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17267,17 +17268,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
 
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<HRDesignationWiseRoleModel> GetHRDesignationWiseRoles()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17287,14 +17288,14 @@ Dear {userFullName},
             List<HRDesignationWiseRoleModel> resp = new List<HRDesignationWiseRoleModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_HR_DESIGNATION_RIGHT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     HRDesignationWiseRoleModel cm = new HRDesignationWiseRoleModel();
 
                     cm.ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -17305,14 +17306,14 @@ Dear {userFullName},
                     cm.ENTITY_TYPE = rdr["sub_entity_type"].ToString();
                     resp.Add(cm);
 
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddHRDesignationWiseRoleAssignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string ENTITY_TYPE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17321,7 +17322,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_HR_DESIGNATION_RIGHT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17331,16 +17332,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateHRDesignationWiseRoleAssignment(int ASSIGNMENT_ID, int DESIGNATION_ID, int GROUP_ID, string ENTITY_TYPE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17349,7 +17350,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_HR_DESIGNATION_RIGHT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17360,17 +17361,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
 
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<ManageObservationModel> GetManageObservationStatus()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17380,14 +17381,14 @@ Dear {userFullName},
             List<ManageObservationModel> resp = new List<ManageObservationModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Obs_Status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageObservationModel m = new ManageObservationModel();
                     m.STATUS_ID = rdr["STATUSID"].ToString();
                     m.STATUS_NAME = rdr["STATUSNAME"].ToString();
@@ -17395,14 +17396,14 @@ Dear {userFullName},
                     m.CODE = rdr["CODE"].ToString();
                     m.SATISFIED = rdr["SATISFIED"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17412,7 +17413,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_add_Obs_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17424,16 +17425,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateManageObservationStatus(ManageObservationModel OBS_STATUS_MODEL)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17443,7 +17444,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_update_Obs_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17456,16 +17457,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<ManageEntAuditDeptModel> GetManageEntityAuditDept()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17475,14 +17476,14 @@ Dear {userFullName},
             List<ManageEntAuditDeptModel> resp = new List<ManageEntAuditDeptModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_Get_Entities_Audit_Department";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ManageEntAuditDeptModel m = new ManageEntAuditDeptModel();
                     m.R_ID = rdr["id"].ToString();
                     m.D_ID = rdr["deptid"].ToString();
@@ -17494,14 +17495,14 @@ Dear {userFullName},
                     m.AUDITOR = rdr["auditor"].ToString();
                     m.STATUS = rdr["status"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddManageEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17511,7 +17512,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_add_Entities_Audit_Department";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17526,16 +17527,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateEntityAuditDepartment(ManageEntAuditDeptModel ENT_AUD_DEPT_MODEL)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17545,7 +17546,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_update_entities_audit_department";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17561,16 +17562,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<AuditeeEntitiesModel> GetLoanStatus()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -17580,27 +17581,27 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_loan_status";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["description"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["accountstatusid"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetLoanGLs()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -17610,27 +17611,27 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_loan_gl";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["glsubname"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["glsubcode"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetGMsList()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -17640,27 +17641,27 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_get_gm_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["name"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetRBHList(int REGION_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -17670,7 +17671,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.R_get_rbh_list";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17678,20 +17679,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["name"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public List<LoanDetailReportModel> GetLoanDetailsReport(int ENT_ID, int GLSUBID, int STATUSID, DateTime START_DATE, DateTime END_DATE)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17701,7 +17702,7 @@ Dear {userFullName},
             List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_loan_to_default";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17713,7 +17714,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LoanDetailReportModel pdsib = new LoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
                     pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
@@ -17729,14 +17730,14 @@ Dear {userFullName},
                     pdsib.PRINCIPLE = rdr["PRIN"].ToString();
                     pdsib.MARKUP = rdr["MARKUP"].ToString();
                     resp.Add(pdsib);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<LoanDetailReportModel> GetCNICLoanDetailsReport(string CNIC)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17746,7 +17747,7 @@ Dear {userFullName},
             List<LoanDetailReportModel> resp = new List<LoanDetailReportModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_all_loans_of_cnic";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17754,7 +17755,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     LoanDetailReportModel pdsib = new LoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
                     pdsib.LOAN_CASE_NO = rdr["LOAN_CASE_NO"].ToString();
@@ -17770,15 +17771,15 @@ Dear {userFullName},
                     pdsib.PRINCIPLE = rdr["PRIN"].ToString();
                     pdsib.MARKUP = rdr["MARKUP"].ToString();
                     resp.Add(pdsib);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<DefaultHisotryLoanDetailReportModel> GetDefaultCNICLoanDetailsReport(string CNIC, string LOAN_DISB_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17788,7 +17789,7 @@ Dear {userFullName},
             List<DefaultHisotryLoanDetailReportModel> resp = new List<DefaultHisotryLoanDetailReportModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_get_loan_to_default_history";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17797,7 +17798,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DefaultHisotryLoanDetailReportModel pdsib = new DefaultHisotryLoanDetailReportModel();
                     pdsib.CNIC = rdr["CNIC"].ToString();
                     //pdsib.BRANCHID = rdr["BRANCHID"].ToString();
@@ -17811,16 +17812,16 @@ Dear {userFullName},
                     pdsib.CNIC = rdr["cnic"].ToString();
                     pdsib.LOAN_DISB_ID = rdr["loan_disb_id"].ToString();
                     resp.Add(pdsib);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public List<MenuModel> GetAllMenusForAdminPanel()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17830,28 +17831,28 @@ Dear {userFullName},
             List<MenuModel> resp = new List<MenuModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ALL_MENU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuModel m = new MenuModel();
                     m.Menu_Id = Convert.ToInt32(rdr["menu_id"].ToString());
                     m.Menu_Name = rdr["menu_name"].ToString();
                     m.Menu_Order = rdr["menu_order"].ToString();
                     m.Menu_Description = rdr["menu_description"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<SubMenuModel> GetSubMenusForAdminPanel(int M_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17861,7 +17862,7 @@ Dear {userFullName},
             List<SubMenuModel> resp = new List<SubMenuModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_SUB_MENUS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17869,7 +17870,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SubMenuModel m = new SubMenuModel();
                     m.SUB_MENU_ID = rdr["SUB_MENU_ID"].ToString();
                     m.MENU_ID = rdr["MENU_ID"].ToString();
@@ -17878,14 +17879,14 @@ Dear {userFullName},
                     m.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     m.STATUS = rdr["STATUS"].ToString();
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string AddSubMenuForAdminPanel(SubMenuModel sm)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17895,7 +17896,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_NEW_SUB_MENU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17907,16 +17908,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateSubMenuForAdminPanel(SubMenuModel sm)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17926,7 +17927,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_SUB_MENU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17940,18 +17941,18 @@ Dear {userFullName},
 
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public List<MenuPagesAssignmentModel> GetMenuPagesForAdminPanel(int M_ID, int SM_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -17961,7 +17962,7 @@ Dear {userFullName},
             List<MenuPagesAssignmentModel> resp = new List<MenuPagesAssignmentModel>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ALL_PAGES";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -17970,7 +17971,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     MenuPagesAssignmentModel m = new MenuPagesAssignmentModel();
                     m.P_ID = rdr["id"].ToString();
                     m.M_ID = rdr["menu_id"].ToString();
@@ -17983,16 +17984,16 @@ Dear {userFullName},
                     m.P_HIDE_MENU = rdr["hide_menu"].ToString();
 
                     resp.Add(m);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public string AddMenuPageForAdminPanel(MenuPagesAssignmentModel pageModel)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18002,7 +18003,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_NEW_PAGE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18016,16 +18017,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string UpdateMenuPageForAdminPanel(MenuPagesAssignmentModel pageModel)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18035,7 +18036,7 @@ Dear {userFullName},
             string resp = "";
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_PAGE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18050,17 +18051,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<DraftDSAGuidelines> GetDraftDSAGuidelines()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18070,27 +18071,27 @@ Dear {userFullName},
             List<DraftDSAGuidelines> resp = new List<DraftDSAGuidelines>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_get_dsa_guidline";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DraftDSAGuidelines d = new DraftDSAGuidelines();
                     d.ID = Convert.ToInt32(rdr["ID"].ToString());
                     d.PARTICULARS = rdr["PATRICULARS"].ToString();
                     d.STATUS = rdr["STATUS"].ToString();
                     resp.Add(d);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<Object> DraftDSA(int OBS_ID, string PPNO, string DSA_CONTENT)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18102,7 +18103,7 @@ Dear {userFullName},
             List<Object> outRec = new List<object>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_draft_dsa";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18114,19 +18115,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
                     DSA_ID = Convert.ToInt32(rdr["DSA_ID"].ToString());
                     outRec.Add(resp);
                     outRec.Add(DSA_ID);
+                    }
                 }
-            }
             con.Dispose();
             return outRec;
 
-        }
+            }
         public void AddDraftDSAGuideline(string D_ID, string G_ID)
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18135,7 +18136,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ar.P_add_dsa_checkilist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18144,12 +18145,12 @@ Dear {userFullName},
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.ExecuteReader();
 
-            }
+                }
             con.Dispose();
 
-        }
+            }
         public List<DraftDSAList> GetDraftDSAList()
-        {
+            {
 
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -18159,7 +18160,7 @@ Dear {userFullName},
             List<DraftDSAList> resp = new List<DraftDSAList>();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
 
                 cmd.CommandText = "pkg_ar.P_get_dsa_list";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -18171,7 +18172,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     DraftDSAList dlist = new DraftDSAList();
 
                     dlist.ID = Convert.ToInt32(rdr["ID"].ToString());
@@ -18180,13 +18181,13 @@ Dear {userFullName},
                     dlist.CREATED_AT = Convert.ToDateTime(rdr["CREATED_AT"].ToString());
                     dlist.DSA_BODY = rdr["DSA_BODY"].ToString();
                     resp.Add(dlist);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, string COMP_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18194,7 +18195,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_ENTITY_COMP";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18205,17 +18206,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<GISTWiseReportParas> GetAuditReportParaByGistKeyword(string GIST)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18223,7 +18224,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<GISTWiseReportParas> resp = new List<GISTWiseReportParas>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_find_gist";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18231,7 +18232,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     GISTWiseReportParas mp = new GISTWiseReportParas();
                     mp.REGION = rdr["region"].ToString();
                     mp.AUDIT_ZONE = rdr["AUDIT_ZONE"].ToString();
@@ -18244,14 +18245,14 @@ Dear {userFullName},
                     mp.NO_OF_INSTANCES = rdr["no_of_instances"].ToString();
                     mp.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
                     resp.Add(mp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public string AddAnnexure(string ANNEX_CODE = "", string HEADING = "", int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18259,7 +18260,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_ANNEXURE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18277,18 +18278,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
 
         public string UpdateAnnexure(int ANNEX_ID = 0, string HEADING = "", int PROCESS_ID = 0, int FUNCTION_OWNER_ID = 0, int RISK_ID = 0, string MAX_NUMBER = "", string GRAVITY = "", string WEIGHTAGE = "")
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18296,7 +18297,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_update_annexure";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18314,17 +18315,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AuditeeEntitiesModel> GetEntityForAuditReconsilition()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18334,7 +18335,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_GET_ENTITY_FOR_PARA_Reconsilation";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18343,20 +18344,20 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
                     entity.NAME = rdr["name"].ToString();
                     entity.CODE = Convert.ToInt32(rdr["entity_id"].ToString());
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
 
         public string GenerateTraditionalRiskRatingofEngagement(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18364,7 +18365,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_add_branch_risk_rating";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18372,16 +18373,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<TraditionalRiskRatingModel> ViewTraditionalRiskRatingofEngagement(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18389,7 +18390,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<TraditionalRiskRatingModel> resp = new List<TraditionalRiskRatingModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_traditional_risk_rating";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18397,7 +18398,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     TraditionalRiskRatingModel r = new TraditionalRiskRatingModel();
                     r.MAIN_PROCESS = rdr["MAIN_PROCESS"].ToString();
                     r.MAX_NUMBER = rdr["MAX_NUMBER"].ToString();
@@ -18409,14 +18410,14 @@ Dear {userFullName},
                     r.RISK_BASED_MARKS = rdr["RISK_BASED_MARKS"].ToString();
                     r.CIA_MARKS = rdr["CIA_MARKS"].ToString();
                     resp.Add(r);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public string GenerateAnnexureRiskRatingofEngagement(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18424,7 +18425,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_add_branch_annex_risk_rating";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18432,16 +18433,16 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<TraditionalRiskRatingModel> ViewAnnexureRiskRatingofEngagement(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18449,7 +18450,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<TraditionalRiskRatingModel> resp = new List<TraditionalRiskRatingModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_annexure_risk_rating";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18457,7 +18458,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     TraditionalRiskRatingModel r = new TraditionalRiskRatingModel();
                     r.MAIN_PROCESS = rdr["MAIN_PROCESS"].ToString();
                     r.MAX_NUMBER = rdr["MAX_NUMBER"].ToString();
@@ -18467,15 +18468,15 @@ Dear {userFullName},
                     r.GRAVITY_RISK = rdr["GRAVITY_RISK"].ToString();
                     r.RISK_BASED_MARKS = rdr["RISK_BASED_MARKS"].ToString();
                     resp.Add(r);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<RiskRatingModelForBranchesWorking> GetRiskRatingModelForBranchesWorking(int ENG_ID)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18483,7 +18484,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<RiskRatingModelForBranchesWorking> resp = new List<RiskRatingModelForBranchesWorking>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_new_risk_model ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18491,7 +18492,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     RiskRatingModelForBranchesWorking auditChecklist = new RiskRatingModelForBranchesWorking();
                     auditChecklist.MainProcessRiskSequence = rdr["risk_sequence"].ToString();
                     auditChecklist.MainProcess = rdr["Main_process"].ToString();
@@ -18515,15 +18516,15 @@ Dear {userFullName},
                     auditChecklist.WeightedAverageScoreOverall = rdr["WEIGHTED_AVERAGE_SCORE_OVERALL"].ToString();
 
                     resp.Add(auditChecklist);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<ComplianceHierarchyModel> GetComplianceHierarchies()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18531,14 +18532,14 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceHierarchyModel> resp = new List<ComplianceHierarchyModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.p_get_compliance_hierarchy ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceHierarchyModel complianceHierarchyModel = new ComplianceHierarchyModel();
                     complianceHierarchyModel.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     complianceHierarchyModel.COMPLIANCE_UNIT = rdr["COMPLIANCE_UNIT"].ToString();
@@ -18548,15 +18549,15 @@ Dear {userFullName},
                     complianceHierarchyModel.REVIEWER_NAME = rdr["REVIEWER_NAME"].ToString();
                     complianceHierarchyModel.COM_KEY = rdr["COM_KEY"].ToString();
                     resp.Add(complianceHierarchyModel);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<ComplianceProgressReportModel> GetComplianceProgressReport(string ROLE_TYPE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18564,7 +18565,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceProgressReportModel> resp = new List<ComplianceProgressReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_COM_PROGREE_REPORT ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18572,7 +18573,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceProgressReportModel cp = new ComplianceProgressReportModel();
                     cp.PPNO = rdr["PP_NO"].ToString();
                     cp.NAME = rdr["Name"].ToString();
@@ -18580,14 +18581,14 @@ Dear {userFullName},
                     cp.REFERRED_BACK = rdr["Referred_Back"].ToString();
                     cp.RECOMMENDED = rdr["Recommended"].ToString();
                     resp.Add(cp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
         public List<ComplianceProgressReportDetailModel> GetComplianceProgressReportDetails(string ROLE_TYPE, string PP_NO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18595,7 +18596,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceProgressReportDetailModel> resp = new List<ComplianceProgressReportDetailModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_COM_PROGREE_REPORT_DETAIL ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18604,7 +18605,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceProgressReportDetailModel cp = new ComplianceProgressReportDetailModel();
                     cp.COMPLIANCE_UNIT = rdr["Compliance_Unit"].ToString();
                     cp.PARENT_ID = rdr["parent_id"].ToString();
@@ -18619,13 +18620,13 @@ Dear {userFullName},
                     cp.REFERRED_BACK = rdr["Refered_back"].ToString();
                     cp.RECOMMENDED = rdr["Satisfied"].ToString();
                     resp.Add(cp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public string AddComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18633,7 +18634,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_ADD_COM_OFFICER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18643,17 +18644,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public string UpdateComplianceHierarchy(int ENTITY_ID, string REVIEWER_PP, string AUTHORIZER_PP, string COMPLIANCE_KEY)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18661,7 +18662,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ad.P_UPDATE_COM_OFFICER";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18672,17 +18673,17 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
 
-        }
+            }
 
         public List<AuditEntitiesModel> GetEntityTypesForSettlementReport()
-        {
+            {
 
             var con = this.DatabaseConnection(); con.Open();
             sessionHandler = new SessionHandler();
@@ -18691,7 +18692,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<AuditEntitiesModel> entitiesList = new List<AuditEntitiesModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_ENTITY_TYPE_FOR_SETTLEMENT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18702,19 +18703,19 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     AuditEntitiesModel entity = new AuditEntitiesModel();
                     entity.AUTID = Convert.ToInt32(rdr["autid"]);
                     entity.ENTITYTYPEDESC = rdr["entitytypedesc"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<SettledParasModel> GetSettledParasForComplianceReport(int ENTITY_TYPE_ID, DateTime? DATE_FROM, DateTime? DATE_TO)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18722,7 +18723,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<SettledParasModel> resp = new List<SettledParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_COMPLIANCE_REPORT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18735,7 +18736,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     SettledParasModel cp = new SettledParasModel();
                     cp.ENTITY_ID = rdr["entity_id"].ToString();
                     cp.PARENT_ID = rdr["parent_id"].ToString();
@@ -18747,15 +18748,15 @@ Dear {userFullName},
                     cp.SETTLED_ON = rdr["stelled_on"].ToString();
                     cp.AUDITED_BY = rdr["auditedby"].ToString();
                     resp.Add(cp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
 
         public List<ComplianceOSParasModel> GetParasForComplianceSummaryReport()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18763,7 +18764,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<ComplianceOSParasModel> resp = new List<ComplianceOSParasModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.P_GET_PARA_POSITION_SUM";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18773,7 +18774,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     ComplianceOSParasModel cp = new ComplianceOSParasModel();
                     cp.ENTITY_ID = rdr["entity_id"].ToString();
                     cp.PARENT_ID = rdr["parent_id"].ToString();
@@ -18787,14 +18788,14 @@ Dear {userFullName},
                     cp.COMPLIANCE_PENDING_OS_PARAS = "0";//rdr["cos_paras"].ToString();
                     cp.ZERO_COMPLIANCE_PARAS = rdr["z_cos_paras"].ToString();
                     resp.Add(cp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         // -------------- CAU PARAS FOR SUBMISSION TO BRANCH -----------
         public List<CAUParaForComplianceModel> GetCAUParasForPostCompliance()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18802,7 +18803,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18813,7 +18814,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
@@ -18828,13 +18829,13 @@ Dear {userFullName},
 
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<EngPlanDelayAnalysisReportModel> GetEngagementPlanDelayAnalysisReport()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18842,7 +18843,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<EngPlanDelayAnalysisReportModel> resp = new List<EngPlanDelayAnalysisReportModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_rpt.p_delay_audits";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18852,7 +18853,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     EngPlanDelayAnalysisReportModel cp = new EngPlanDelayAnalysisReportModel();
                     cp.ENTITY_ID = rdr["entity_id"].ToString();
                     cp.REPORTING_OFFICE = rdr["p_name"].ToString();
@@ -18863,39 +18864,39 @@ Dear {userFullName},
                     cp.STATUS = rdr["status"].ToString();
                     cp.DELAY_DAYS = rdr["no_of_days"].ToString();
                     resp.Add(cp);
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
 
         public List<UserRelationshipModel> GetrealtionshiptypeForCAU()
-        {
+            {
 
             List<UserRelationshipModel> entitiesList = new List<UserRelationshipModel>();
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetrealtionshiptypeforCAU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.FIELD_NAME = rdr["FIELD_NAME"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetParentRelationshipForCAU(int r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18906,7 +18907,7 @@ Dear {userFullName},
 
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetparentrepofficeforCAU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18915,7 +18916,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_REALTION_ID = Convert.ToInt32(rdr["ENTITY_REALTION_ID"]);
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
@@ -18923,14 +18924,14 @@ Dear {userFullName},
                     entity.DESCRIPTION = rdr["DESCRIPTION"].ToString();
                     entity.ENTITYTYPEDESC = rdr["ENTITYTYPEDESC"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public List<UserRelationshipModel> GetChildRelationshipForCAU(int e_r_id = 0)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18943,7 +18944,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetchildpostingforCAU";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18951,7 +18952,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     UserRelationshipModel entity = new UserRelationshipModel();
                     entity.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"]);
                     entity.C_NAME = rdr["C_NAME"].ToString();
@@ -18959,14 +18960,14 @@ Dear {userFullName},
                     entity.COMPLICE_BY = rdr["COMPLICE_BY"].ToString();
                     entity.AUDIT_BY = rdr["AUDIT_BY"].ToString();
                     entitiesList.Add(entity);
+                    }
                 }
-            }
             con.Dispose();
             return entitiesList;
 
-        }
+            }
         public string SubmitCAUParaToBranch(string COM_ID, string BR_ENT_ID, string CAU_COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -18975,7 +18976,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_FORWARD_CAU_PARA_TO_BRANCH";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -18988,15 +18989,15 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         public ParaTextModel GetCAUParaToBranchParaText(string COM_ID, string INDICATOR)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -19005,7 +19006,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForCompliance_CAU_para_text";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -19014,19 +19015,19 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp.MEMO_TXT = rdr["para_text"].ToString();
                     resp.BRANCH_REPLY = rdr["reply"].ToString();
                     resp.CAU_INSTRUCTION = rdr["cau_instructions"].ToString();
                     resp.TEXT_ID = Convert.ToInt32(rdr["text_id"].ToString());
+                    }
                 }
-            }
             con.Dispose();
             return resp;
-        }
+            }
         // -------------- CAU PARAS FOR REPLY BY BRANCH -----------
         public List<CAUParaForComplianceModel> GetCAUParasForPostComplianceSubmittedToBranch()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -19034,7 +19035,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU_BY_BRANCH";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -19045,7 +19046,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
@@ -19057,13 +19058,13 @@ Dear {userFullName},
                     chk.CAU_NAME = rdr["CAU_NAME"].ToString();
                     chk.COM_ID = rdr["com_id"].ToString();
                     list.Add(chk);
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public async Task<string> SubmitCAUParaByBranch(string COM_ID, string TEXT_ID, string BR_COMMENTS)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -19072,7 +19073,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
 
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_BY_BRANCH";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -19085,18 +19086,18 @@ Dear {userFullName},
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
-                {
+                    {
                     resp = rdr["remarks"].ToString();
-                }
+                    }
                 List<AuditeeResponseEvidenceModel> EVIDENCE_LIST = new List<AuditeeResponseEvidenceModel>();
                 EVIDENCE_LIST = await this.GetAttachedCAUEvidencesFromDirectory(COM_ID);
                 int index = 1;
                 if (EVIDENCE_LIST != null)
-                {
-                    if (EVIDENCE_LIST.Count > 0)
                     {
-                        foreach (var item in EVIDENCE_LIST)
+                    if (EVIDENCE_LIST.Count > 0)
                         {
+                        foreach (var item in EVIDENCE_LIST)
+                            {
                             string fileName = item.FILE_NAME;
                             cmd.CommandText = "pkg_ae.P_SubmitPostAuditCompliance_Evidence_By_BRANCH";
                             cmd.CommandType = CommandType.StoredProcedure;
@@ -19112,18 +19113,18 @@ Dear {userFullName},
                             index++;
 
 
+                            }
                         }
                     }
-                }
 
                 this.DeleteSubFolderDirectoryInCAUEvidenceFromServer(COM_ID);
-            }
+                }
             con.Dispose();
             return resp;
-        }
+            }
         // -------------- CAU PARAS REVIEW OF BRANCH REPLY -----------
         public List<CAUParaForComplianceModel> GetCAUParasForPostComplianceForReview()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -19131,7 +19132,7 @@ Dear {userFullName},
             var loggedInUser = sessionHandler.GetSessionUser();
             List<CAUParaForComplianceModel> list = new List<CAUParaForComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
-            {
+                {
                 cmd.CommandText = "pkg_ae.P_GetParasForComplianceByCAU_FOR_REVIEW";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -19142,7 +19143,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
-                {
+                    {
                     CAUParaForComplianceModel chk = new CAUParaForComplianceModel();
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
@@ -19157,23 +19158,23 @@ Dear {userFullName},
 
                     list.Add(chk);
 
+                    }
                 }
-            }
             con.Dispose();
             return list;
-        }
+            }
         public List<AuditeeResponseEvidenceModel> GetCAUAllComplianceEvidence(string textId)
-        {
+            {
             var list = new List<AuditeeResponseEvidenceModel>();
 
             try
-            {
-                using (var con = this.DatabaseConnection())
                 {
+                using (var con = this.DatabaseConnection())
+                    {
                     con.Open();
 
                     using (var cmd = con.CreateCommand())
-                    {
+                        {
                         cmd.CommandText = "pkg_ae.P_GetAllCompliance_Evidence_CAU";
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -19181,49 +19182,49 @@ Dear {userFullName},
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                         using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
                             {
-                                var usr = new AuditeeResponseEvidenceModel
+                            while (rdr.Read())
                                 {
+                                var usr = new AuditeeResponseEvidenceModel
+                                    {
                                     IMAGE_NAME = rdr["FILE_NAME"].ToString(),
                                     IMAGE_DATA = "",
                                     SEQUENCE = Convert.ToInt32(rdr["SEQUENCE"]),
                                     LENGTH = Convert.ToInt32(rdr["LENGTH"]),
                                     FILE_ID = (rdr["id"].ToString())
-                                };
+                                    };
 
 
                                 list.Add(usr);
+                                }
                             }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 throw;
-            }
+                }
 
             return list;
-        }
+            }
         //------------------- FAD Monthly Review Report 
         public List<FADMonthlyReviewParasModel> GetFADMonthlyReviewParasForEntityTypeId(string ENT_TYPE_ID, DateTime? S_DATE, DateTime? E_DATE)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var list = new List<FADMonthlyReviewParasModel>();
             try
-            {
-                using (var con = this.DatabaseConnection())
                 {
+                using (var con = this.DatabaseConnection())
+                    {
                     con.Open();
 
                     using (var cmd = con.CreateCommand())
-                    {
+                        {
                         cmd.CommandText = "pkg_rpt.R_FAD_MONTHLY_REVIEW";
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -19235,9 +19236,9 @@ Dear {userFullName},
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                         using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
                             {
+                            while (rdr.Read())
+                                {
                                 var review = new FADMonthlyReviewParasModel
                                     {
                                     REPORTING_OFFICE = rdr["P_NAME"].ToString(),
@@ -19254,50 +19255,50 @@ Dear {userFullName},
 
 
                                 list.Add(review);
+                                }
                             }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 throw;
-            }
+                }
 
             return list;
-        }
+            }
 
         //------------------- Special Audit Plan 
         public List<SpecialAuditPlanModel> GetSaveSpecialAuditPlan()
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var list = new List<SpecialAuditPlanModel>();
             try
-            {
-                using (var con = this.DatabaseConnection())
                 {
+                using (var con = this.DatabaseConnection())
+                    {
                     con.Open();
 
                     using (var cmd = con.CreateCommand())
-                    {
+                        {
                         cmd.CommandText = "pkg_pg.P_GET_Specical_Audit_for_Approval";
                         cmd.CommandType = CommandType.StoredProcedure;
-                        
+
                         cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                         using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
                             {
-                                var review = new SpecialAuditPlanModel
+                            while (rdr.Read())
                                 {
+                                var review = new SpecialAuditPlanModel
+                                    {
                                     REPORTING_OFFICE = rdr["reporting"].ToString(),
                                     REPORTING_OFFICE_ID = rdr["reporting_id"].ToString(),
                                     ENTITY_NAME = rdr["auditee"].ToString(),
@@ -19315,21 +19316,21 @@ Dear {userFullName},
 
 
                                 list.Add(review);
+                                }
                             }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
 
                 throw;
-            }
+                }
 
             return list;
-        }
+            }
         public string AddSpecialAuditPlan(string NATURE, string PERIOD, string ENTITY_ID, string NO_DAYS, string PLAN_ID, string INDICATOR)
-        {
+            {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -19337,13 +19338,13 @@ Dear {userFullName},
             string resp = "";
             var list = new List<SpecialAuditPlanModel>();
             try
-            {
-                using (var con = this.DatabaseConnection())
                 {
+                using (var con = this.DatabaseConnection())
+                    {
                     con.Open();
 
                     using (var cmd = con.CreateCommand())
-                    {
+                        {
                         cmd.CommandText = "pkg_pg.P_ADD_Special_Audit_Plan";
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("P_ID", OracleDbType.Int32).Value = PLAN_ID;
@@ -19353,36 +19354,36 @@ Dear {userFullName},
                         cmd.Parameters.Add("ENTITYID", OracleDbType.Int32).Value = ENTITY_ID;
                         cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                    
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
                         using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
                             {
+                            while (rdr.Read())
+                                {
                                 resp = rdr["remarks"].ToString();
+                                }
                             }
                         }
                     }
                 }
-            }
             catch (Exception)
-            {
+                {
 
-                throw ;
-            }
+                throw;
+                }
 
             return resp;
-        }
-        public string DeleteSpecialAuditPlan( string PLAN_ID, string INDICATOR)
+            }
+        public string DeleteSpecialAuditPlan(string PLAN_ID, string INDICATOR)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             string resp = "";
-           
+
             try
                 {
                 using (var con = this.DatabaseConnection())
@@ -19397,7 +19398,7 @@ Dear {userFullName},
                         cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                         cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                        
+
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
@@ -19463,7 +19464,7 @@ Dear {userFullName},
 
             return resp;
             }
-        public string RequestDeleteDuplicatePara(int NEW_PARA_ID=0, int OLD_PARA_ID=0, string INDICATOR="")
+        public string RequestDeleteDuplicatePara(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "")
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -19538,7 +19539,7 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-        //
+
         public List<SeriousFraudulentObsGM> GetSeriousFraudulentObsGMOverview()
             {
             sessionHandler = new SessionHandler();
@@ -19556,7 +19557,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("R_T", OracleDbType.Int32).Value = 0;
-                cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value =new DateTime();
+                cmd.Parameters.Add("S_DATE", OracleDbType.Date).Value = new DateTime();
                 cmd.Parameters.Add("E_DATE", OracleDbType.Date).Value = new DateTime();
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -19564,14 +19565,50 @@ Dear {userFullName},
                 while (rdr.Read())
                     {
                     SeriousFraudulentObsGM chk = new SeriousFraudulentObsGM();
-                    chk.PARENT_ID = Convert.ToInt32(rdr["PARENT_ID"].ToString()); 
+                    chk.PARENT_ID = Convert.ToInt32(rdr["PARENT_ID"].ToString());
                     chk.P_NAME = rdr["P_NAME"].ToString();
                     chk.TOTAL_NO = rdr["TOTAL_NO"].ToString();
                     chk.A1 = rdr["A1"].ToString();
                     chk.C_AMOUNT = rdr["C_AMOUNT"].ToString();
                     chk.PER_INV = rdr["PER_INV"].ToString();
-                  
+
                     list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+        public List<ObservationResponsiblePPNOModel> GetResponsiblePersonsList(int PARA_ID, string INDICATOR)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ObservationResponsiblePPNOModel> list = new List<ObservationResponsiblePPNOModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_Get_responsibility";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Para_ID", OracleDbType.Int32).Value = PARA_ID;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;             
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                        ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
+                        usr.EMP_NAME = rdr["emp_name"].ToString();
+                        usr.PP_NO = rdr["PP_NO"].ToString();
+                        usr.LOAN_CASE = rdr["loan_case"].ToString();
+                        usr.LC_AMOUNT = rdr["lc_amount"].ToString();
+                        usr.ACCOUNT_NUMBER = rdr["account_number"].ToString();
+                        usr.ACC_AMOUNT = rdr["ac_amount"].ToString();
+                        list.Add(usr);
                     }
                 }
             con.Dispose();

@@ -9,6 +9,7 @@ namespace AIS.Models
         public string OLD_PARA_ID { get; set; }
         public string NEW_PARA_ID { get; set; }        
         public string PARA_NO { get; set; }
+        public string PARA_TEXT { get; set; }
         public string OBS_GIST { get; set; }
         public string OBS_RISK { get; set; }
         public string OBS_RISK_ID { get; set; }
