@@ -9,6 +9,7 @@
     var g_allObs = [];
     var g_respUser = [];
     var g_respUsersArr = [];
+    var g_index=0;
     $(document).ready(function () {
         $('#entitySelectField').select2();
         $('#paraTextViewer').richText({
@@ -51,6 +52,7 @@
     }
 
     function ObservationViewerPanel(index) {
+        g_index=index;
         $('#viewMemoModel').modal('show');
         var v = g_allObs[index];
         g_np_id = v.neW_PARA_ID;
@@ -66,6 +68,7 @@
     }
 
     function ObservationTextPanel(index) {
+        g_index=index;
         $('#viewMemoTextModel').modal('show');
         var v = g_allObs[index];
         g_np_id = v.neW_PARA_ID;
@@ -140,6 +143,7 @@
         });
     }
     function ObservationResponsibles(index) {
+        g_index=index;
         var v = g_allObs[index];
         g_np_id = v.neW_PARA_ID;
         g_op_id = v.olD_PARA_ID;
@@ -159,7 +163,7 @@
                 $.each(data, function (i, v) {
                     $('#listofRespPersons tbody').append('<tr id="tr_' + v.pP_NO + '"><td>' + ++i + '</td><td>' + v.pP_NO + '</td><td>' + v.emP_NAME + '</td><td>' + v.loaN_CASE + '</td><td>' + v.lC_AMOUNT + '</td><td>' + v.accounT_NUMBER + '</td><td>' + v.acC_AMOUNT + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();deleteRespRow(this);">Delete</a></td></tr>');
                 });
-              
+
             },
             dataType: "json",
         });
@@ -184,7 +188,7 @@
             success: function (data) {
                 g_respUser.push(data);
                 if (data.ppNumber > 0) {
-                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
+                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>Remarks/Reason </label></div><div class="col-md-8"><input id="resp_remarks" class="form-control" type="text" /></div></div></div></div>');
                 }
                 else
                     $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
@@ -206,6 +210,42 @@
                 srNo++;
                 $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();deleteRespRow(this);">Delete</a></td></tr>');
                 g_respUsersArr.push(g_respUser[0]);
+
+                var v = g_allObs[g_index];
+                g_np_id = v.neW_PARA_ID;
+                g_op_id = v.olD_PARA_ID;
+                g_ind = v.indicator;
+
+                   $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/add_responsible_to_observation",
+            type: "POST",
+            data: {
+                'PP_NO': g_respUser[0].ppNumber,
+                'LOAN_CASE':$('#resp_loan_case').val(),
+                'LC_AMOUNT':$('#resp_loan_amount').val(),
+                'ACCOUNT_NUMBER':$('#resp_account_number').val(),
+                'ACC_AMOUNT':$('#resp_account_amount').val(),
+                'EMP_NAME':g_respUser[0].name,
+                'REMARKS':$('#resp_remarks').val(),
+                'NEW_PARA_ID':g_np_id,
+                'OLD_PARA_ID':g_op_id,
+                'INDICATOR':g_ind,
+
+
+            },
+            cache: false,
+            success: function (data) {
+                g_respUser.push(data);
+                if (data.ppNumber > 0) {
+                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>Remarks/Reason </label></div><div class="col-md-8"><input id="resp_remarks" class="form-control" type="text" /></div></div></div></div>');
+                }
+                else
+                    $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
+            },
+            dataType: "json",
+        });
+
+
             }
             else {
                 alert("Please Check checkbox to proceed"); return false;
@@ -238,7 +278,7 @@
                         {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                             {
-                                    <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
+                                                                                    <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                             }
                         }
                 }
@@ -304,7 +344,7 @@
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                         {
-                                                <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
+                                                                    <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                         }
 
                                     }
@@ -323,7 +363,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                         {
-                                                <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                                                    <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                         }
 
                                     }

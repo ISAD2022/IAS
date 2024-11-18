@@ -19614,7 +19614,42 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-
+        public string AddResponsiblePersonsToObservation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR,ObservationResponsiblePPNOModel RESPONSIBLE)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_Update_responsibility";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("O_Para_ID", OracleDbType.Int32).Value = NEW_PARA_ID;
+                cmd.Parameters.Add("N_PARA_ID", OracleDbType.Int32).Value = OLD_PARA_ID;
+                cmd.Parameters.Add("PPNO", OracleDbType.Int32).Value = RESPONSIBLE.PP_NO;
+                cmd.Parameters.Add("L_CASE", OracleDbType.Int32).Value = RESPONSIBLE.LOAN_CASE;
+                cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = RESPONSIBLE.LC_AMOUNT;
+                cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = RESPONSIBLE.ACC_AMOUNT;
+                cmd.Parameters.Add("NO_ACCOUNT", OracleDbType.Int32).Value = RESPONSIBLE.ACCOUNT_NUMBER;                
+                cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = RESPONSIBLE.REMARKS;
+                cmd.Parameters.Add("E_NAME", OracleDbType.Varchar2).Value = RESPONSIBLE.EMP_NAME;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                        resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
         }
 
     }
