@@ -73,11 +73,11 @@
         //  getrelation();
 
     }
-    function getStatusWiseCompliance() {     
+    function getStatusWiseCompliance() {
         var aud_id = 0;
         var R_C = "N";
         if ($('#controlingsearch').val() != 0) {
-           
+
             aud_id = $('#controlingsearch').val();
             R_C = "P";
         }
@@ -163,12 +163,12 @@
 
                 @{
                     if (ViewData["Userrelationship"] != null)
-                    {
-                        foreach (var item in (dynamic)(ViewData["Userrelationship"]))
                         {
-                                        <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                        foreach (var item in (dynamic)(ViewData["Userrelationship"]))
+                            {
+                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
+                            }
                         }
-                    }
                 }
 
 

@@ -20,7 +20,7 @@
         destroyDatatable('manageObsPanel');
         if ($('#entitySelectField option:selected').val() != 0) {
             $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/get_observations_for_manage_paras",
+                url: g_asiBaseURL + "/ApiCalls/get_duplicate_paras_for_authorize",
                 type: "POST",
                 data: {
                     'ENTITY_ID': $('#entitySelectField option:selected').val()
@@ -29,7 +29,7 @@
                 success: function (data) {
                     g_allObs = data;
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + ++i + '</td><td class="text-center">' + v.audiT_PERIOD + '</td><td>' + v.parA_NO + '</td><td>' + v.annex + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_GIST + '</td><td>' + v.updateD_BY + '</td><td>' + v.updateD_ON + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.indicator + '\')" href="#" class="text-hover">View Para</a></td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.indicator + '\')" href="#" class="text-hover">Update Para</a></td><td class="text-center"><a onclick="event.preventDefault();DeleteDuplicatePara(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.p_TYPE_IND + '\')" href="#" class="text-hover">Delete Duplicate Para</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + ++i + '</td><td class="text-center">' + v.auditPeriod + '</td><td>' + v.paraNo + '</td><td>' + v.annex + '</td><td>' + v.risk + '</td><td>' + v.paraGist + '</td><td>' + v.remarks + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.newParaId + '\',\'' + v.oldParaId + '\', \'' + v.ind + '\')" href="#" class="text-hover">Reject</a></td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.newparaid + '\',\'' + v.oldparaid + '\', \'' + v.ind + '\')" href="#" class="text-hover">Authorize</a></td></tr>');
                     });
 
                     initializeDataTable('manageObsPanel');
@@ -175,6 +175,7 @@
                     <th class="col-md-auto">Annexure</th>
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Gist of Para</th>
+                    <th class="col-md-auto">Remarks/Justification</th>
                     <th class="col-md-auto text-center">Action</th>
                     <th class="col-md-auto text-center">Action</th>
                 </tr>

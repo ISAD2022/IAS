@@ -15,5 +15,7 @@ namespace AIS.Models
         public string ACC_AMOUNT { get; set; }
         public string RESP_ACTIVE { get; set; }
         public string REMARKS { get; set; }
+        public string ACTION { get; set; }
+        public string INDICATOR { get; set; }
     }
 }

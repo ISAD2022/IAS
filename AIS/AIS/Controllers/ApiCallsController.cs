@@ -310,12 +310,28 @@ namespace AIS.Controllers
             {
             return dBConnection.GetObservationsForMangeAuditParas(ENTITY_ID, OBS_ID);
             }
-
+        [HttpPost]
+        public List<ManageAuditParasModel> get_observations_for_manage_paras_auth()
+            {
+            return dBConnection.GetObservationsForMangeAuditParasForAuthorization();
+            }
+        [HttpPost]
+        public List<ManageAuditParasModel> get_proposed_changes_in_manage_paras_auth(int PARA_ID)
+            {
+            return dBConnection.GetProposedChangesInManageParasAuth(PARA_ID);
+            }
         [HttpPost]
         public string update_para_for_manage_audit_paras(ManageAuditParasModel pm)
             {
             string response = "";
             response = dBConnection.UpdateAuditObservationStatus(pm);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+            }
+        [HttpPost]
+        public string authorize_para_for_manage_audit_paras(ManageAuditParasModel pm)
+            {
+            string response = "";
+            response = dBConnection.AuthorizedAuditObservationStatus(pm);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
             }
 
@@ -2491,9 +2507,9 @@ namespace AIS.Controllers
 
         //
         [HttpPost]
-        public string request_delete_duplicate_para(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "")
+        public string request_delete_duplicate_para(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "", string REMARKS="")
             {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.RequestDeleteDuplicatePara(NEW_PARA_ID, OLD_PARA_ID, INDICATOR) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RequestDeleteDuplicatePara(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, REMARKS) + "\"}";
             }
         [HttpPost]
         public List<ObservationResponsiblePPNOModel> get_responsible_person_list(int PARA_ID, string INDICATOR)
@@ -2506,7 +2522,11 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsiblePersonsToObservation(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, RESPONSIBLE) + "\"}";
 
             }
-
+        [HttpPost]
+        public List<DuplicateDeleteManageParaModel> get_duplicate_paras_for_authorize()
+            {
+            return dBConnection.GetDuplicateParasForAuthorization();
+            }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

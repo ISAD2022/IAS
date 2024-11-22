@@ -353,7 +353,8 @@ namespace AIS.Controllers
             ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["EntitiesList"] = dBConnection.GetEntitiesForManageAuditParas();
-           
+            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -368,6 +369,27 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult manage_audit_paras_authorized(int engId = 0)
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+            }
         public IActionResult auth_del_dup_para()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
