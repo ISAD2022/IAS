@@ -19837,6 +19837,7 @@ Dear {userFullName},
                     chk.P_NAME = rdr["P_NAME"].ToString();
                     chk.TOTAL_NO = rdr["TOTAL_NO"].ToString();
                     chk.A1 = rdr["A1"].ToString();
+                    chk.C_A1 = "0";//rdr["C_A1"].ToString();
                     chk.C_AMOUNT = rdr["C_AMOUNT"].ToString();
                     chk.PER_INV = rdr["PER_INV"].ToString();
 

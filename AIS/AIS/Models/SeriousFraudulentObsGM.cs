@@ -9,6 +9,7 @@ namespace AIS.Models
         public string P_NAME { get; set; }
         public string TOTAL_NO { get; set; }
         public string A1 { get; set; }
+        public string C_A1 { get; set; }
         public string C_AMOUNT { get; set; }
         public string PER_INV { get; set; }
 

@@ -3,6 +3,14 @@
     Layout = "_Layout";
 }
 
+<script type="text/javascript">
+
+    function getDetails(tag, pId){
+        //getDetails
+        $('#DetailsA1Paras').modal('show');
+
+    }
+</script>
 <div class="row col-md-12">
     <h3 style="color: rgb(186 113 46) !important;">Serious/Fraudulent Observations General Manager Overview</h3>
 </div>
@@ -31,16 +39,26 @@
                             </div>
                             <div class="card-body p-1">
                                 <div class="row">
-                                    <div class="col-10" style="border-right: 1px solid #ccc;">
+                                    <div class="col-8" style="border-right: 1px solid #ccc;">
+                                        <p class="mb-0"></p>
                                         <p class="mb-0">Serious Observations</p>
-                                        <p class="mb-0">Fraudulent (A-1)</p>
+                                        <p class="mb-0">Fraudulent (A-1) Total</p>                                   
                                         <p class="mb-0">Amount</p>
                                         <p class="mb-0">Person Involved</p>
                                     </div>
                                     <div class="col-2 text-right">
+                                        <p class="mb-0">Previous</p>
                                         <p class="mb-0">@rec.TOTAL_NO</p>
-                                        <p class="mb-0">@rec.A1</p>
-                                        <p class="mb-0">@rec.C_AMOUNT</p>
+                                        <p class="mb-0"><a style="text-decoration:underline;" href="#" onclick="getDetails('complete', @rec.PARENT_ID)">@rec.A1</a></p>
+                                        <p class="mb-0"><a style="text-decoration:underline;" href="#" onclick="getDetails('current' @rec.PARENT_ID);">@rec.C_A1</a></p>
+                                     
+                                        <p class="mb-0">@rec.PER_INV</p>
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <p class="mb-0">Current</p>
+                                        <p class="mb-0">@rec.TOTAL_NO</p>
+                                        <p class="mb-0"><a style="text-decoration:underline;" href="#" onclick="getDetails('complete', @rec.PARENT_ID)">@rec.A1</a></p>
+                                                                            
                                         <p class="mb-0">@rec.PER_INV</p>
                                     </div>
                                 </div>
@@ -53,3 +71,48 @@
     </div>
 
 </div>
+
+
+<div id="DetailsA1Paras" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Details of Fraudulent A1 Para</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="row col-sm-12">
+                            <table id="paraDetailsGrid" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">Reporting Office</th>
+                                        <th class="col-md- auto font-weight-bold">Entity Name</th>
+                                        <th class="col-md- auto font-weight-bold">Audit Period</th>
+                                        <th class="col-md- auto font-weight-bold">Para No.</th>
+                                        <th class="col-md- auto font-weight-bold">Annexure</th>
+                                        <th class="col-md- auto font-weight-bold">Risk Category</th>
+                                        <th class="col-md- auto font-weight-bold">Gist of Para</th>
+                                        <th class="col-md- auto font-weight-bold">Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
