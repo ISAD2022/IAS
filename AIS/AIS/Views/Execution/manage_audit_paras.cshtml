@@ -31,7 +31,7 @@
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/getparentrel",
+            url: g_asiBaseURL + "/ApiCalls/getparentrelForParaPositionReport",
             type: "POST",
             data: {
                 'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
@@ -68,7 +68,7 @@
         $('#childposting').empty();
 
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/getpostplace",
+            url: g_asiBaseURL + "/ApiCalls/getpostplaceForParaPositionReport",
             type: "POST",
             data: {
                 'E_R_ID': $('#controlingsearch option:selected').val()
