@@ -207,10 +207,12 @@
             data: {
                 'NEW_PARA_ID': g_np_id,
                 'OLD_PARA_ID': g_op_id,
-                'INDICATOR': g_ind
+                'INDICATOR': g_ind,
+                'REMARKS': $('#textarea_justification').val()
             },
             cache: false,
             success: function (data) {
+                $("#DuplicateParaModel").modal('hide');
                 alert(data.Message);
                 onAlertCallback(getEntityObservation);
             },
@@ -637,7 +639,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="addResponsibleButton" onclick="addResponsibilityToMainTable('A');" type="button" class="btn btn-danger">Request Deletion</button>
+                <button id="addResponsibleButton" onclick="ProceedDeleteDuplicatePara();" type="button" class="btn btn-danger">Request Deletion</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

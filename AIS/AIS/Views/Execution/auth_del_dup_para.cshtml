@@ -8,10 +8,7 @@
     var g_ind = "";
     var g_allObs = [];
     $(document).ready(function () {
-        $('#entitySelectField').select2();
-        const currentYear = new Date().getFullYear();
-        document.getElementById('auditPara_Period').setAttribute('max', currentYear);
-        document.getElementById('auditPara_Period').setAttribute('length', 4);
+       getEntityObservation();
     });
     function reloadLocation() {
         getEntityObservation();
@@ -29,7 +26,7 @@
                 success: function (data) {
                     g_allObs = data;
                     $.each(data, function (i, v) {
-                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + ++i + '</td><td class="text-center">' + v.auditPeriod + '</td><td>' + v.paraNo + '</td><td>' + v.annex + '</td><td>' + v.risk + '</td><td>' + v.paraGist + '</td><td>' + v.remarks + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.newParaId + '\',\'' + v.oldParaId + '\', \'' + v.ind + '\')" href="#" class="text-hover">Reject</a></td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + v.newparaid + '\',\'' + v.oldparaid + '\', \'' + v.ind + '\')" href="#" class="text-hover">Authorize</a></td></tr>');
+                        $('#manageObsPanel tbody').append('<tr><td class="text-center">' + ++i + '</td><td class="text-center">' + v.entityName + '</td><td class="text-center">' + v.auditPeriod + '</td><td>' + v.paraNo + '</td><td>' + v.annex + '</td><td>' + v.risk + '</td><td>' + v.paraGist + '</td><td>' + v.remarks + '</td><td class="text-center"><a onclick="event.preventDefault();rejectDeleteDuplicateRequest(\'' + v.dId + '\')" href="#" class="text-hover">Reject</a></td><td class="text-center"><a onclick="event.preventDefault();authorizeDeleteDuplicateRequest(\'' + v.dId + '\')" href="#" class="text-hover">Authorize</a></td></tr>');
                     });
 
                     initializeDataTable('manageObsPanel');
@@ -38,131 +35,47 @@
             });
         }
     }
-    function ObservationViewerPanel(np_id, op_id, ind) {
-        $('#viewMemoModel').modal('show');
-        g_np_id = np_id;
-        g_op_id = op_id;
-        g_ind = ind;
-        $.each(g_allObs, function (i, v) {
-            if (g_ind == "N") {
-                if (v.neW_PARA_ID == g_np_id) {
-
-                    //const yearMatch = v.audiT_PERIOD.match(/\d{4}/);
-                    $('#auditPara_Period').val("");
-                    $('#auditPara_Period').parent().hide();
-                    $('#auditPara_ParaNO').val(v.parA_NO);
-                    $('#auditPara_Gist').val(v.obS_GIST);
-                    $('#auditPara_Risk').val(v.obS_RISK_ID);
-                    $('#auditPara_Annex').val(v.anneX_ID);
-
-                }
-            } else {
-                if (v.olD_PARA_ID == g_op_id) {
-                    $('#auditPara_Period').parent().show();
-                    const yearMatch = v.audiT_PERIOD.match(/\d{4}/);
-                    $('#auditPara_Period').val(yearMatch);
-                    $('#auditPara_ParaNO').val(v.parA_NO);
-                    $('#auditPara_Gist').val(v.obS_GIST);
-                    $('#auditPara_Risk').val(v.obS_RISK_ID);
-                    $('#auditPara_Annex').val(v.anneX_ID);
-                }
-            }
-        });
-    }
-    function updateObservationStatus() {
-        if (g_ind != "N") {
-            if ($('#auditPara_Period').val() == "") {
-                alert("Please enter Audit Period");
-                return false;
-            }
-        }
-
-        if ($('#auditPara_Risk').val() == "0") {
-            alert("Please select Audit Risk");
-            return false;
-        }
-        if ($('#auditPara_Annex').val() == "") {
-            alert("Please select Annexure");
-            return false;
-        }
-        if ($('#auditPara_ParaNO').val() == "") {
-            alert("Please enter Para No");
-            return false;
-        }
-        if ($('#auditPara_Gist').val() == "") {
-            alert("Please enter Para Gist");
-            return false;
-        }
-
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/update_para_for_manage_audit_paras",
-            type: "POST",
-            data: {
-                'NEW_PARA_ID': g_np_id,
-                'OLD_PARA_ID': g_op_id,
-                'INDICATOR': g_ind,
-                'AUDIT_PERIOD': g_ind == "N" ? "" : $('#auditPara_Period').val(),
-                'OBS_GIST': $('#auditPara_Gist').val(),
-                'OBS_RISK_ID': $('#auditPara_Risk').val(),
-                'PARA_NO': $('#auditPara_ParaNO').val(),
-                'ANNEX_ID': $('#auditPara_Annex').val()
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemoModel').modal('hide');
-                alert(data.Message);
-                onAlertCallback(getEntityObservation);
-            },
-            dataType: "json",
-        });
+    function rejectDeleteDuplicateRequest(did) {
+           $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/reject_delete_duplicate_para",
+                type: "POST",
+                data: {
+                    'D_ID':did
+                },
+                cache: false,
+                success: function (data) {
+                  alert(data.Message);
+                      onAlertCallback(getEntityObservation)
+                },
+                dataType: "json",
+            });
 
     }
-    function DeleteDuplicatePara(np_id, op_id, ind) {
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/request_delete_duplicate_para",
-            type: "POST",
-            data: {
-                'NEW_PARA_ID': np_id,
-                'OLD_PARA_ID': op_id,
-                'INDICATOR': ind
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(getEntityObservation);
-            },
-            dataType: "json",
-        });
+
+      function authorizeDeleteDuplicateRequest(did) {
+
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/authorize_delete_duplicate_para",
+                type: "POST",
+                data: {
+                    'D_ID':did
+                },
+                cache: false,
+                success: function (data) {
+                  alert(data.Message);
+                      onAlertCallback(getEntityObservation)
+                },
+                dataType: "json",
+            });
+
+
     }
-
-
 
 </script>
 
 <div class="row">
     <div class="col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">Update Audit Paras</h3>
-    </div>
-    <div class="row col-md-12 mt-3">
-        <div class="col-md-2">
-            <label><b>Entity:</b></label>
-        </div>
-        <div class="col-md-10">
-            <input id="entityNameField" disabled="disabled" class="form-control ml-1 d-none" type="text" />
-            <select id="entitySelectField" onchange="getEntityObservation()" class="form-control form-select">
-                <option value="0" id="0">--Select Audit Entity--</option>
-                @{
-                    if (ViewData["DupParasEntList"] != null)
-                        {
-                        foreach (var item in (dynamic)(ViewData["DupParasEntList"]))
-                            {
-                            <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
-                            }
-                        }
-                }
-
-            </select>
-        </div>
+        <h3 style=" display:block;color: #45c545;">Authorize/Reject Delete Duplicate Paras</h3>
     </div>
 
     <div class="row col-md-12 mt-3">
@@ -170,6 +83,7 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr. No.</th>
+                    <th class="col-md-auto">Entity Name</th>
                     <th class="col-md-auto">Audit Period</th>
                     <th class="col-md-auto">Para No.</th>
                     <th class="col-md-auto">Annexure</th>
@@ -186,74 +100,4 @@
         </table>
     </div>
 
-</div>
-<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Update Audit Para</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="auditPara_Period" class="font-weight-bold">Audit Period (YYYY)</label>
-                        <input id="auditPara_Period" class="form-control" type="number" max="" />
-                    </div>
-                    <div class="form-group">
-                        <label for="auditPara_ParaNO" class="font-weight-bold">Para No</label>
-                        <input id="auditPara_ParaNO" class="form-control" type="text" />
-                    </div>
-                    <div class="form-group">
-                        <label for="auditPara_Annex" class="font-weight-bold">Annexure</label>
-                        <select id="auditPara_Annex" class="form-select form-control">
-                            <option selected="selected" value="" id="">--Select Annexure--</option>
-                            @{
-                                if (ViewData["AnnexList"] != null)
-                                    {
-
-                                    foreach (var item in (dynamic)(ViewData["AnnexList"]))
-                                        {
-                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
-                                        }
-
-                                    }
-                            }
-
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="auditPara_Risk" class="font-weight-bold">Risk</label>
-                        <select id="auditPara_Risk" class="form-control">
-                            <option value="0" id="0" selected>--Select Risk Category--</option>
-                            @{
-                                if (ViewData["RiskList"] != null)
-                                    {
-
-                                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                                        {
-                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                                        }
-
-                                    }
-                            }
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="auditPara_Gist" class="font-weight-bold">Gist of Para</label>
-                        <textarea id="auditPara_Gist" class="form-control"></textarea>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="updateParaStatus" onclick="updateObservationStatus();" type="button" data-dismiss="modal" class="btn btn-danger">Update</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
 </div>

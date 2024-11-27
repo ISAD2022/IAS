@@ -353,7 +353,7 @@ namespace AIS.Controllers
             ViewData["RiskList"] = dBConnection.GetRisks();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["EntitiesList"] = dBConnection.GetEntitiesForManageAuditParas();
-            ViewData["Userrelationship"] = dBConnection.Getrealtionshiptype();
+            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForParaPositionReport();
 
             if (!sessionHandler.IsUserLoggedIn())
             {

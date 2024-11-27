@@ -2505,28 +2505,39 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitSpecialAuditPlan(PLAN_ID, INDICATOR) + "\"}";
             }
 
-        //
         [HttpPost]
-        public string request_delete_duplicate_para(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "", string REMARKS="")
+        public List<DuplicateDeleteManageParaModel> get_duplicate_paras_for_authorize()
+            {
+            return dBConnection.GetDuplicateParasForAuthorization();
+            }
+        [HttpPost]
+        public string request_delete_duplicate_para(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "", string REMARKS = "")
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.RequestDeleteDuplicatePara(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, REMARKS) + "\"}";
+            }
+        [HttpPost]
+        public string reject_delete_duplicate_para(int D_ID = 0)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RejectDeleteDuplicatePara(D_ID) + "\"}";
+            }
+        [HttpPost]
+        public string authorize_delete_duplicate_para(int D_ID=0)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthDeleteDuplicatePara(D_ID) + "\"}";
             }
         [HttpPost]
         public List<ObservationResponsiblePPNOModel> get_responsible_person_list(int PARA_ID, string INDICATOR)
             {
             return dBConnection.GetResponsiblePersonsList(PARA_ID, INDICATOR);
             }
+
         [HttpPost]
         public string add_responsible_to_observation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR, ObservationResponsiblePPNOModel RESPONSIBLE)
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsiblePersonsToObservation(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, RESPONSIBLE) + "\"}";
 
             }
-        [HttpPost]
-        public List<DuplicateDeleteManageParaModel> get_duplicate_paras_for_authorize()
-            {
-            return dBConnection.GetDuplicateParasForAuthorization();
-            }
+      
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

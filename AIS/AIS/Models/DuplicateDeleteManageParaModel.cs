@@ -16,6 +16,7 @@ namespace AIS.Models
 
         
         public string EntityId { get; set; }
+        public string EntityName { get; set; }
 
         
         public string EntityCode { get; set; }

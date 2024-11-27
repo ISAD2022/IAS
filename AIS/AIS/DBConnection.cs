@@ -5883,7 +5883,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_ar.P_GET_Para_details_for_Authorize";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                
+
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -19602,7 +19602,7 @@ Dear {userFullName},
 
             return resp;
             }
-        public string RequestDeleteDuplicatePara(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "", string REMARKS="")
+        public string RequestDeleteDuplicatePara(int NEW_PARA_ID = 0, int OLD_PARA_ID = 0, string INDICATOR = "", string REMARKS = "")
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -19620,8 +19620,8 @@ Dear {userFullName},
                         {
                         cmd.CommandText = "pkg_hd.P_ADD_DUPLICATE_PARAS";
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.Add("old_paraid", OracleDbType.Int32).Value = OLD_PARA_ID;
-                        cmd.Parameters.Add("new_paraid", OracleDbType.Int32).Value = NEW_PARA_ID;
+                        cmd.Parameters.Add("o_para_id", OracleDbType.Int32).Value = OLD_PARA_ID;
+                        cmd.Parameters.Add("n_para_id", OracleDbType.Int32).Value = NEW_PARA_ID;
                         cmd.Parameters.Add("p_ind", OracleDbType.Varchar2).Value = INDICATOR;
                         cmd.Parameters.Add("r_remarks", OracleDbType.Varchar2).Value = REMARKS;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -19704,10 +19704,11 @@ Dear {userFullName},
                     chk.DId = Convert.ToInt32(rdr["d_id"]);
                     chk.OldParaId = Convert.ToInt32(rdr["old_para_id"]);
                     chk.NewParaId = Convert.ToInt32(rdr["new_para_id"]);
-                    chk.EntityId = rdr["entity_id"].ToString() ;                  
-                    chk.AuditPeriod = rdr["audit_period"].ToString();                    
+                    chk.EntityId = rdr["entity_id"].ToString();
+                    chk.EntityName = rdr["EntityName"].ToString();
+                    chk.AuditPeriod = rdr["audit_period"].ToString();
                     chk.ParaGist = rdr["gist_of_paras"].ToString();
-                    chk.ParaNo = rdr["para_no"].ToString();                    
+                    chk.ParaNo = rdr["para_no"].ToString();
                     chk.Ind = rdr["ind"].ToString();
                     chk.Risk = rdr["risk"].ToString();
                     chk.Instances = rdr["instances"].ToString();
@@ -19722,6 +19723,91 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
+        public string RejectDeleteDuplicatePara(int D_PARA_ID = 0)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            try
+                {
+                using (var con = this.DatabaseConnection())
+                    {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                        {
+                        cmd.CommandText = "pkg_hd.P_REJECT_DUPLICATE_PARAS";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("did", OracleDbType.Int32).Value = D_PARA_ID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                            {
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+
+            return resp;
+            }
+        public string AuthDeleteDuplicatePara(int D_PARA_ID = 0, string INDICATOR = "", string REMARKS = "")
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            try
+                {
+                using (var con = this.DatabaseConnection())
+                    {
+                    con.Open();
+
+                    using (var cmd = con.CreateCommand())
+                        {
+                        cmd.CommandText = "pkg_hd.P_AUTH_DUPLICATE_PARAS";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("did", OracleDbType.Int32).Value = D_PARA_ID;
+                        cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                        cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                        cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                        cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                        using (var rdr = cmd.ExecuteReader())
+                            {
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+
+                throw;
+                }
+
+            return resp;
+            }
+
         public List<SeriousFraudulentObsGM> GetSeriousFraudulentObsGMOverview()
             {
             sessionHandler = new SessionHandler();
@@ -19775,29 +19861,29 @@ Dear {userFullName},
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("Para_ID", OracleDbType.Int32).Value = PARA_ID;
                 cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID; 
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;                
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;             
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                     {
-                        ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
-                        usr.EMP_NAME = rdr["emp_name"].ToString();
-                        usr.PP_NO = rdr["PP_NO"].ToString();
-                        usr.LOAN_CASE = rdr["loan_case"].ToString();
-                        usr.LC_AMOUNT = rdr["lc_amount"].ToString();
-                        usr.ACCOUNT_NUMBER = rdr["account_number"].ToString();
-                        usr.ACC_AMOUNT = rdr["ac_amount"].ToString();
-                        usr.REMARKS = rdr["remarks"].ToString();
-                        usr.INDICATOR = rdr["r_ind"].ToString();
-                        list.Add(usr);
+                    ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
+                    usr.EMP_NAME = rdr["emp_name"].ToString();
+                    usr.PP_NO = rdr["PP_NO"].ToString();
+                    usr.LOAN_CASE = rdr["loan_case"].ToString();
+                    usr.LC_AMOUNT = rdr["lc_amount"].ToString();
+                    usr.ACCOUNT_NUMBER = rdr["account_number"].ToString();
+                    usr.ACC_AMOUNT = rdr["ac_amount"].ToString();
+                    usr.REMARKS = rdr["remarks"].ToString();
+                    usr.INDICATOR = rdr["r_ind"].ToString();
+                    list.Add(usr);
                     }
                 }
             con.Dispose();
             return list;
             }
-        public string AddResponsiblePersonsToObservation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR,ObservationResponsiblePPNOModel RESPONSIBLE)
+        public string AddResponsiblePersonsToObservation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR, ObservationResponsiblePPNOModel RESPONSIBLE)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -19817,7 +19903,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("L_CASE", OracleDbType.Int32).Value = RESPONSIBLE.LOAN_CASE;
                 cmd.Parameters.Add("LC_AMOUNT", OracleDbType.Int32).Value = RESPONSIBLE.LC_AMOUNT;
                 cmd.Parameters.Add("AC_AMOUNT", OracleDbType.Int32).Value = RESPONSIBLE.ACC_AMOUNT;
-                cmd.Parameters.Add("NO_ACCOUNT", OracleDbType.Int32).Value = RESPONSIBLE.ACCOUNT_NUMBER;                
+                cmd.Parameters.Add("NO_ACCOUNT", OracleDbType.Int32).Value = RESPONSIBLE.ACCOUNT_NUMBER;
                 cmd.Parameters.Add("Remarks", OracleDbType.Varchar2).Value = RESPONSIBLE.REMARKS;
                 cmd.Parameters.Add("U_D_action", OracleDbType.Varchar2).Value = RESPONSIBLE.ACTION;
                 cmd.Parameters.Add("E_NAME", OracleDbType.Varchar2).Value = RESPONSIBLE.EMP_NAME;
@@ -19828,7 +19914,7 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                     {
-                        resp = rdr["remarks"].ToString();
+                    resp = rdr["remarks"].ToString();
                     }
                 }
             con.Dispose();
