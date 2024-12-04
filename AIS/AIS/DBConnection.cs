@@ -10898,7 +10898,7 @@ Dear {userFullName},
             List<GetOldParasBranchComplianceModel> list = new List<GetOldParasBranchComplianceModel>();
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_ae.P_GetParasForCompliancereview";
+                cmd.CommandText = "pkg_ae.P_GetParasForCompliancereview ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -16827,6 +16827,35 @@ Dear {userFullName},
             return resp;
 
             }
+
+        public string SubmitEntityConvToIslamicFromAdminPanel(string FROM_ENT_ID, string TO_ENT_ID)
+            {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_Shift_BR_to_islamic";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("Old_br", OracleDbType.Int32).Value = FROM_ENT_ID;
+                cmd.Parameters.Add("new_br", OracleDbType.Int32).Value = TO_ENT_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+
+            }
         public List<GroupWiseUsersCountModel> GetGroupWiseUsersCount()
             {
 
@@ -18718,6 +18747,10 @@ Dear {userFullName},
                     cp.TOTAL = rdr["Total"].ToString();
                     cp.REFERRED_BACK = rdr["Referred_Back"].ToString();
                     cp.RECOMMENDED = rdr["Recommended"].ToString();
+                    if (rdr["last_login"] != DBNull.Value && rdr["last_login"] != null)
+                    {
+                        cp.LAST_LOGIN_ON = rdr["last_login"].ToString();
+                    }
                     resp.Add(cp);
                     }
                 }
@@ -19834,12 +19867,56 @@ Dear {userFullName},
                     {
                     SeriousFraudulentObsGM chk = new SeriousFraudulentObsGM();
                     chk.PARENT_ID = Convert.ToInt32(rdr["PARENT_ID"].ToString());
-                    chk.P_NAME = rdr["P_NAME"].ToString();
-                    chk.TOTAL_NO = rdr["TOTAL_NO"].ToString();
-                    chk.A1 = rdr["A1"].ToString();
-                    chk.C_A1 = "0";//rdr["C_A1"].ToString();
-                    chk.C_AMOUNT = rdr["C_AMOUNT"].ToString();
+                    chk.P_NAME = rdr["P_NAME"].ToString();  
+                    chk.TOTAL_NO = rdr["total_before_current_year"].ToString();
+                    chk.C_TOTAL_NO = rdr["total_in_current_year"].ToString() ; // Total no of Serious Observation in CURRENT
+                    chk.A1 = rdr["a1_before_current_year"].ToString();
+                    chk.C_A1 = rdr["a1_in_current_year"].ToString();
+                    chk.AMOUNT = rdr["c_amount_before_current_year"].ToString();
+                    chk.C_AMOUNT = rdr["c_amount_in_current_year"].ToString();
                     chk.PER_INV = rdr["PER_INV"].ToString();
+                    chk.C_PER_INV = rdr["C_PER_INV"].ToString();
+
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+          public List<SeriousFraudulentObsGMDetails> GetSeriousFraudulentObsGMDetails(string INDICATOR, int PARENT_ENT_ID, string ANNEX_IND)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<SeriousFraudulentObsGMDetails> list = new List<SeriousFraudulentObsGMDetails>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GET_GM_WISE_SERIOUS_PARAS_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("PARENT_ENT_ID", OracleDbType.Int32).Value = PARENT_ENT_ID;
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("P_ANNEX", OracleDbType.Varchar2).Value = ANNEX_IND;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+             
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                    SeriousFraudulentObsGMDetails chk = new SeriousFraudulentObsGMDetails();
+                    chk.P_NAME = rdr["p_name"].ToString();
+                    chk.C_NAME = rdr["c_name"].ToString();
+                    chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
+                    chk.PARA_NO = rdr["para_no"].ToString(); 
+                    chk.ANNEX_HEADING = rdr["heading"].ToString();
+                    chk.RISK = rdr["risk"].ToString();
+                    chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
+                    chk.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
 
                     list.Add(chk);
                     }

@@ -32,7 +32,7 @@
 
           reader.onload = function (readerEvent) {
             g_uploadedAttachment = readerEvent.target.result;
-         
+
           };
 
           // Read the file as Data URL (base64)
@@ -263,7 +263,7 @@
         });
     }
 
-  
+
     function updateAISEntity(entId) {
         g_entIdToUpdate = entId;
         $('#updateEntityModal').modal('show');
@@ -471,6 +471,26 @@
         $('#proceedToEntityShift').modal('show');
     }
 
+    function proceedConvToIslamic(){
+      
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/submit_entity_conv_to_islamic_from_admin_panel",
+            type: "POST",
+            data: {
+               'FROM_ENT_ID': $('#inputFromEntityId').val(),
+                'TO_ENT_ID': $('#inputToEntityId').val(),
+
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+
+            },
+            dataType: "json",
+        });
+
+    }
+
     function saveInsertAISEntityShifting() {
 
         $.ajax({
@@ -676,8 +696,12 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <button class="col-md-3 offset-md-9 btn btn-danger" onclick="proceedToEntityShifting();">Proceed to Shift Entity</button>
+    <button class="col-md-3 offset-md-4 btn btn-danger" onclick="proceedToEntityShifting();">Proceed to Shift Entity</button>
+    <button class="col-md-4 offset-md-1 btn btn-danger" onclick="proceedConvToIslamic();">Convert Conventional Branch to Islamic</button> 
+
 </div>
+
+
 
 <div id="buttonsPanel" class="row col-md-12 mt-3 d-none">
     <center class="w-100 row col-md-12">

@@ -6,6 +6,7 @@
 <script type="text/javascript">
 
     function getActivityLog() {
+         destroyDatatable('userWiseActivityLog');
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_user_activity_log",
@@ -18,9 +19,10 @@
                 $('#userWiseActivityLog tbody').empty();
                 var sr = 1;
                 $.each(data, function (i, v) {
-                    $('#userWiseActivityLog tbody').append('<tr><td>' + sr + '</td><td>' + v.useR_PP_NUMBER + '</td><td>' + v.useR_NAME + '</td><td>' + v.starT_DATE + '</td><td>' + v.enD_DATE + '</td><td>' + v.activity + '</td><td>' + v.actions + '</td><td>' + v.duration + '</td></tr>');
+                    $('#userWiseActivityLog tbody').append('<tr><td>' + sr + '</td><td>' + v.useR_PP_NUMBER + '</td><td>' + v.useR_NAME + '</td><td>' + v.starT_DATE + '</td><td>' + v.enD_DATE + '</td><td>' + v.actions + '</td><td>' + v.duration + '</td></tr>');
                     sr++;
                 });
+                 initializeDataTable('userWiseActivityLog');
 
             },
             dataType: "json",
@@ -51,14 +53,13 @@
         <table id="userWiseActivityLog" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
-                    <th class="col-md-1">Sr. No</th>
-                    <th class="col-md-2">P.P</dr>Number</th>
-                    <th class="col-md-2">Name</th>
-                    <th class="col-md-auto">Start Date &</dr> Time</th>
-                    <th class="col-md-auto">End Date &</dr> Time</th>
-                    <th class="col-md-5">Activity</th>
-                    <th class="col-md-5">Actions</th>
-                    <th class="col-md-auto">Duration</th>
+                    <th class="col-md-auto">Sr. No</th>
+                    <th class="col-md-auto">P.P</dr>Number</th>
+                    <th class="col-md-auto">Name</th>
+                    <th class="col-md-auto">Start Time</th>
+                    <th class="col-md-auto">End Time</th>                    
+                    <th class="col-md-auto">Actions</th>
+                    <th class="col-md-auto">Duration (Mins)</th>
                 </tr>
             </thead>
             <tbody>

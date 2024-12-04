@@ -106,6 +106,9 @@
                 success: function (data) {
                     g_allObs = data;
                     $.each(data, function (i, v) {
+                        if($('#userGroupField').val()==1)
+                        $('#manageObsPanel tbody').append('<tr index="'+i+'"><td class="text-center">' + (i + 1) + '</td><td class="text-center">' + v.audiT_PERIOD + '</td><td>' + v.parA_NO + '</td><td>' + v.annex + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_GIST + '</td><td>' + v.updateD_BY + '</td><td>' + v.updateD_ON + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + i + '\')" href="#" class="text-hover">Update Para Details</a></td><td class="text-center"><a onclick="event.preventDefault();DeleteDuplicatePara(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.p_TYPE_IND + '\')" href="#" class="text-hover">Delete Duplicate Para</a></td><td><input type="checkbox" class="selectedParasToShift"</td></tr>');
+                        else
                         $('#manageObsPanel tbody').append('<tr><td class="text-center">' + (i + 1) + '</td><td class="text-center">' + v.audiT_PERIOD + '</td><td>' + v.parA_NO + '</td><td>' + v.annex + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_GIST + '</td><td>' + v.updateD_BY + '</td><td>' + v.updateD_ON + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(\'' + i + '\')" href="#" class="text-hover">Update Para Details</a></td><td class="text-center"><a onclick="event.preventDefault();DeleteDuplicatePara(\'' + v.neW_PARA_ID + '\',\'' + v.olD_PARA_ID + '\', \'' + v.p_TYPE_IND + '\')" href="#" class="text-hover">Delete Duplicate Para</a></td></tr>');
                     });
                     initializeDataTable('manageObsPanel');
@@ -113,6 +116,16 @@
                 dataType: "json",
             });
         }
+    }
+
+    function selectAllParasShift(){
+        if($('#selectAllChkBox').is("checked"))
+        {
+            $('.selectedParasToShift').attr("checked",true);
+        }else{
+            $('.selectedParasToShift').attr("checked",true);
+        }
+        
     }
 
     function ObservationViewerPanel(index) {
@@ -361,6 +374,7 @@
 </script>
 
 <div class="row">
+    <input type="hidden" value="@ViewData["LoggedInUserGroupId"]" id="userGroupField" />
     <div class="col-md-12 mt-3">
         <h3 style=" display:block;color: #45c545;">Update Audit Paras</h3>
     </div>
@@ -427,12 +441,24 @@
                     <th class="col-md-auto">Last Updated Date</th>
                     <th class="col-md-auto text-center">Action</th>
                     <th class="col-md-auto text-center">Action</th>
+                    @{
+                        if ((dynamic)ViewData["LoggedInUserGroupId"] == 1)
+                        {
+                            <th class="col-md-auto text-center"><input type="checkbox" id="selectAllChkBox" onclick="selectAllParasShift();" /></th>
+                        }
+                    }
                 </tr>
             </thead>
             <tbody>
             </tbody>
 
         </table>
+        @{
+            if ((dynamic)ViewData["LoggedInUserGroupId"] == 1)
+            {
+                <button class="col-md-3 offset-md-9 btn btn-danger">Shift Selected Paras</button>
+            }
+        }
     </div>
 
 </div>

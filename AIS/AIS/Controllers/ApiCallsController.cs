@@ -2084,6 +2084,11 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitEntityShiftingFromAdminPanel(FROM_ENT_ID, TO_ENT_ID, CIR_REF, CIR_DATE, CIR) + "\"}";
             }
         [HttpPost]
+        public string submit_entity_conv_to_islamic_from_admin_panel(string FROM_ENT_ID, string TO_ENT_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitEntityConvToIslamicFromAdminPanel(FROM_ENT_ID, TO_ENT_ID) + "\"}";
+            }
+        [HttpPost]
         public List<GroupWiseUsersCountModel> get_group_wise_users_count()
             {
             return dBConnection.GetGroupWiseUsersCount();
@@ -2521,7 +2526,7 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"" + dBConnection.RejectDeleteDuplicatePara(D_ID) + "\"}";
             }
         [HttpPost]
-        public string authorize_delete_duplicate_para(int D_ID=0)
+        public string authorize_delete_duplicate_para(int D_ID = 0)
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AuthDeleteDuplicatePara(D_ID) + "\"}";
             }
@@ -2532,12 +2537,17 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
+        public List<SeriousFraudulentObsGMDetails> get_serious_entities_details(string INDICATOR, int PARENT_ENT_ID, string ANNEX_IND)
+            {
+            return dBConnection.GetSeriousFraudulentObsGMDetails(INDICATOR, PARENT_ENT_ID, ANNEX_IND);
+            }
+        [HttpPost]
         public string add_responsible_to_observation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR, ObservationResponsiblePPNOModel RESPONSIBLE)
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsiblePersonsToObservation(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, RESPONSIBLE) + "\"}";
 
             }
-      
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

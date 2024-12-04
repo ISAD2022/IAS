@@ -6,14 +6,14 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-       
+
     })
 
     function getComplianceProgressReport() {
         destroyDatatable('progressReport_panel');
         if($('#roleSelectionField').val()=="0"){
             return false;
-        }  
+        }
         if ($('#roleSelectionField').val() == "R") {
             $('#theadTitle').html("Recommended for Settlement");
         } else if ($('#roleSelectionField').val() == "A") {
@@ -36,14 +36,14 @@
                     t_c+= parseInt(v.total);
                     t_rb += parseInt(v.referreD_BACK);
                     t_s += parseInt(v.recommended);
-                   
+
                     var pending = parseInt(v.total) - (parseInt(v.referreD_BACK) + parseInt(v.recommended));
                     t_p += parseInt(pending);
-                    $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.ppno + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-right">' + pending + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();getComplianceProgressDetails(' + v.ppno + ');">Details</a></td></tr>');
-                    
+                    $('#progressReport_panel tbody').append('<tr><td class="text-center"> ' + ++i + '</td><td class="text-center">' + v.ppno + '</td><td class="text-left" >' + v.name + '</td><td class="text-right">' + v.total + '</td><td class="text-right">' + v.referreD_BACK + '</td><td class="text-right">' + v.recommended + '</td><td class="text-right">' + pending + '</td>><td class="text-right">' + v.lasT_LOGIN_ON + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();getComplianceProgressDetails(' + v.ppno + ');">Details</a></td></tr>');
+
                     });
 
-                $('#progressReport_panel tbody').append('<tr><td></td><td></td><td><b>Total</b></td><td class="text-right">' + t_c + '</td><td class="text-right">' + t_rb + '</td><td class="text-right">' + t_s + '</td><td class="text-right">' + t_p + '</td><td class="text-center"></td></tr>');
+                $('#progressReport_panel tbody').append('<tr><td></td><td></td><td><b>Total</b></td><td class="text-right">' + t_c + '</td><td class="text-right">' + t_rb + '</td><td class="text-right">' + t_s + '</td><td class="text-right">' + t_p + '</td><td class="text-right"></td><td class="text-center"></td></tr>');
                 initializeDataTable('progressReport_panel');
 
             },
@@ -77,7 +77,7 @@
 
                 });
                 initializeDataTable('progressReportdetails_panel');
-              
+
             },
             dataType: "json",
         });
@@ -101,7 +101,7 @@
         </select>
     </div>
     <div class="row mt-3 col-md-12">
-        
+
         <table id="progressReport_panel" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important;">
                 <tr>
@@ -112,7 +112,8 @@
                     <th class="col-md-auto">Referred Back</th>
                     <th id="theadTitle" class="col-md-auto">Recommended for Settlement</th>
                     <th class="col-md-auto">Under Consideration</th>
-                    <th class="col-md-auto"></th>                    
+                    <th class="col-md-auto">Last Login On</th>
+                    <th class="col-md-auto"></th>
                 </tr>
             </thead>
             <tbody>
@@ -139,7 +140,7 @@
                                 <th class="col-md-auto">Sr. No.</th>
                                 <th class="col-md-auto">Reporting Office</th>
                                 <th class="col-md-auto">Entity Code</th>
-                                <th class="col-md-auto">Entity Name</th>                                
+                                <th class="col-md-auto">Entity Name</th>
                                 <th class="col-md-auto">Total Compliances Received</th>
                                 <th class="col-md-auto">Referred Back</th>
                                 <th class="col-md-auto">Found Satisfactory</th>
@@ -150,7 +151,7 @@
                         </tbody>
                     </table>
                 </div>
-               
+
 
                 <div class="modal-footer mt-2">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
