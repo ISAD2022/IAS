@@ -10924,7 +10924,7 @@ Dear {userFullName},
                     chk.AUDITOR_REMARKS = rdr["audit_reply"].ToString();
                     chk.STATUS_DOWN = rdr["c_status_down"].ToString();
                     chk.PREV_ROLE = "Referred Back";
-                    chk.NEXT_ROLE = loggedInUser.UserRoleID == 44 ? "Settle" : "Recommend";
+                    chk.NEXT_ROLE = (loggedInUser.UserRoleID == 44 || loggedInUser.UserRoleID == 41) ? "Settle" : "Recommend";
                     chk.RECEIVED_FROM = rdr["rec_from"].ToString();
                     chk.INDICATOR = rdr["ind"].ToString();
                     chk.COM_ID = rdr["COM_ID"].ToString();
