@@ -17,8 +17,10 @@
 
 <script type="text/javascript">
     var g_obsId = 0;
+    var g_entityID = 0;
     var g_newStatusId = 0;
     var g_riskId = 0;
+    var g_annexId = 0;
     var g_currentStatus = 0;
     var g_obsList = [];
     $(document).ready(function () {
@@ -27,7 +29,6 @@
         $('#entityNameField').val(entName);
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
-
 
         $('#updateMemoContent').richText({
             imageUpload: false,
@@ -38,6 +39,38 @@
     });
     function reloadLocation() {
         getEntityObservation();
+    }
+    function getEntityObservation() {
+        destroyDatatable('manageObsPanel');
+        if ($('#entitySelectField option:selected').val() != 0) {
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/get_observation_branches",
+                type: "POST",
+                data: {
+                    'ENG_ID': $('#entitySelectField option:selected').val()
+                },
+                cache: false,
+                success: function (data) {
+                    g_obsList = data;
+                    $.each(data, function (i, v) {
+                        g_entityID=v.entitY_ID;
+                        $('#auditPeriodNameField').val(v.period);
+                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.annexurE_CODE + '</td><td>' + v.heading + '</td><td>' + v.nO_OF_INSTANCES + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ', ' + v.annexurE_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
+                    });
+
+                    initializeDataTable('manageObsPanel');
+
+                    setTimeout(function () {
+                        if (g_obsId != 0) {
+                            var rowpos = $('#manageObsPanel tbody tr#' + g_obsId).position();
+                            $('html').scrollTop(rowpos.top);
+                        }
+                    }, 200)
+                },
+                dataType: "json",
+            });
+
+        }
     }
     function getSubProcessList() {
         if ($('#updateMemo_process option:selected').val() == 0) {
@@ -91,10 +124,10 @@
 
 
     }
-
-    function ObservationViewerPanel(obs_id, status_id, risk_id) {
+    function ObservationViewerPanel(obs_id, status_id, risk_id, anxId) {
         g_obsId = obs_id;
         g_riskId = risk_id;
+        g_annexId=anxId;
         g_currentStatus = status_id;
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
@@ -116,42 +149,39 @@
                 $('#viewMemo_subprocess').html(data[0].suB_PROCESS);
                 $('#viewMemo_violation').html(data[0].checklist_Details);
                 $('#listofRespPersons tbody').empty();
-                if (data[0].responsiblE_PPs.length > 0) {
+                if(data[0].responsiblE_PPs != null){
+                    if (data[0].responsiblE_PPs.length > 0) {
                     $.each(data[0].responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons tbody tr').length;
                         srNo++;
                         $('#listofRespPersons tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
                 }
-
+                }
                 if (g_currentStatus == 1) {
                     $('#dropButton_memoReply').removeClass('d-none');
                     $('#submitAuditeeButton_memoReply').removeClass('d-none');
-
                 }
                 else if (g_currentStatus == 3) {
                     if (g_riskId == 3) {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
-
                     }
                     else {
                         $('#dropButton_memoReply').addClass('d-none');
                         $('#submitAuditeeButton_memoReply').addClass('d-none');
                     }
-
                 }
                 else {
                     $('#dropButton_memoReply').addClass('d-none');
                     $('#submitAuditeeButton_memoReply').addClass('d-none');
                 }
                 $('#complianceCycleEvidences').empty();
+                if(data[0].attacheD_EVIDENCES != null){
                 if (data[0].attacheD_EVIDENCES.length > 0) {
                     $.each(data[0].attacheD_EVIDENCES, function (i, pp) {
-
                         var extension = pp.imagE_NAME.split('.').pop().toLowerCase();
                         const contentType = getContentType(extension);
-
                         // Create and append the attachment item
                         const container = document.createElement('div');
                         container.className = 'evidence-link';
@@ -178,7 +208,7 @@
                         $('#complianceCycleEvidences').append(container);
                     });
                 }
-                else {
+                }else {
                     $('#complianceCycleEvidences').append("<i>No evidence is attached </i>");
                 }
             },
@@ -244,7 +274,6 @@
         g_riskId = risk_id;
         $('#commentsBox').modal('show');
         $('#commentAreaInCommentsBox').val('');
-
     }
     function dropObservation(obs_id, new_status_id, risk_id) {
         g_obsId = obs_id;
@@ -267,26 +296,95 @@
         });
     }
     function submitObservationToAuditee(obs_id, new_status_id, risk_id) {
-        $('#submitAuditeeButton_memoReply').attr('disabled', 'disabled');
         g_obsId = obs_id;
         g_newStatusId = new_status_id;
         g_riskId = risk_id;
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/submit_observation_to_auditee",
-            type: "POST",
-            data: {
-                'OBS_ID': g_obsId,
-                'NEW_STATUS_ID': g_newStatusId,
-                'RISK_ID': g_riskId
-            },
-            cache: false,
-            success: function (data) {
-                alert(data.Message);
-                onAlertCallback(reloadLocation);
-                $('#submitAuditeeButton_memoReply').removeAttr('disabled');
-            },
-            dataType: "json",
-        });
+        if(g_annexId==1)
+        {
+            $('#DSAModel').modal('show');
+            $.each(g_obsList, function(i,v){
+                if(v.obS_ID=obs_id){
+                    $('#dsaHeading').val(v.heading);
+                       $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
+                type: "POST",
+                data: {
+                    'OBS_ID': obs_id
+                },
+                cache: false,
+                success: function (data) {
+                    $('#dsaContent').html(data[0].obS_TEXT);
+                    $('#dsaResponsibles tbody').empty();
+                    if (data[0].responsiblE_PPs.length > 0) {
+                        $.each(data[0].responsiblE_PPs, function (j, pp) {
+                            var srNo = $('#dsaResponsibles tbody tr').length;
+                            srNo++;
+                            $('#dsaResponsibles tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td><input class="chk_dsaissued" resp_row_id="'+pp.resP_ROW_ID+'" id="'+pp.pP_NO+'" type="checkbox"  /></td></tr>');
+                        });
+                    }
+
+
+                },
+                dataType: "json",
+            });
+                }
+            })
+        }else{
+           finalSubmissionParasToAuditee();
+        }
+    }
+    function submitObservationToAuditeeAfterDSAIssuance(){
+        var dsaArr=[];
+
+        $.each($('.chk_dsaissued'), function(i,v){
+            if($(v).is(":checked"))
+            {
+                dsaArr.push({"RESP_ROW_ID":$(v).attr("resp_row_id"),"RESP_PP_NO":$(v).attr("id")});
+            }
+    });
+       
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/submit_dsa_to_auditee",
+                type: "POST",
+                data: {
+                    'OBS_ID': g_obsId,
+                    'ENTITY_ID': g_entityID,
+                    'ENG_ID': $('#entitySelectField').val(),
+                    "RespDSAModel":dsaArr
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                   onAlertCallback(finalSubmissionParasToAuditee);
+                    $('#DSAModel').modal('hide');
+                    $('#viewMemoModel').modal('hide');
+                    $('#submitAuditeeButton_memoReply').removeAttr('disabled');
+                },
+                dataType: "json",
+            });
+        finalSubmissionParasToAuditee();
+    }
+    function finalSubmissionParasToAuditee(){
+
+         $('#submitAuditeeButton_memoReply').attr('disabled', 'disabled');
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/submit_observation_to_auditee",
+                type: "POST",
+                data: {
+                    'OBS_ID': g_obsId,
+                    'NEW_STATUS_ID': g_newStatusId,
+                    'RISK_ID': g_riskId
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                    onAlertCallback(reloadLocation);
+                    $('#DSAModel').modal('hide');
+                    $('#viewMemoModel').modal('hide');
+                    $('#submitAuditeeButton_memoReply').removeAttr('disabled');
+                },
+                dataType: "json",
+            });
     }
     function finalUpdateMemoContent(obs_id) {
         g_obsId = obs_id;
@@ -312,45 +410,6 @@
         });
 
     }
-    function getEntityObservation() {
-        destroyDatatable('manageObsPanel');
-        if ($('#entitySelectField option:selected').val() != 0) {
-            $.ajax({
-                url: g_asiBaseURL + "/ApiCalls/get_observation_branches",
-                type: "POST",
-                data: {
-                    'ENG_ID': $('#entitySelectField option:selected').val()
-                },
-                cache: false,
-                success: function (data) {
-                    g_obsList = data;
-                    $.each(data, function (i, v) {
-                        $('#auditPeriodNameField').val(v.period);
-                        $('#manageObsPanel tbody').append(' <tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td>' + v.heading + '</td><td>' + v.nO_OF_INSTANCES + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="text-center"><a onclick="event.preventDefault();ObservationViewerPanel(' + v.obS_ID + ',' + v.obS_STATUS_ID + ', ' + v.obS_RISK_ID + ')" href="#" class="text-hover">View Memo</a></td><td><a onclick="ObservationUpdatePanel(' + v.obS_ID + ')" href="#" class="text-hover">Update Memo</a></td></tr>');
-                    });
-
-                    initializeDataTable('manageObsPanel');
-
-                    setTimeout(function () {
-                        if (g_obsId != 0) {
-                            var rowpos = $('#manageObsPanel tbody tr#' + g_obsId).position();
-                            $('html').scrollTop(rowpos.top);
-                        }
-                    }, 200)
-
-
-
-                },
-                dataType: "json",
-            });
-
-        }
-    }
-
-    function createDSA(obsId) {
-        window.location.href = g_asiBaseURL + "/Execution/create_dsa?obsId=" + g_obsId;
-    }
-
     function downloadFile(id) {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_auditee_evidence_data",
@@ -462,39 +521,16 @@
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
+                    <th class="col-md-auto">Annexure</th>
                     <th class="col-md-auto">Title of Observation</th>
                     <th class="col-md-auto">No. of Instances</th>
-
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Status</th>
-
                     <th class="col-md-auto text-center"></th>
                     <th class="col-md-auto text-center"></th>
                 </tr>
             </thead>
             <tbody>
-                @{
-                    if (ViewData["ManageObservations"] != null)
-                    {
-
-                        foreach (var item in (dynamic)(ViewData["ManageObservations"]))
-                        {
-                            <tr id="@item.OBS_ID">
-                                <td class="text-center">@item.MEMO_NO</td>
-                                <td>@item.PROCESS</td>
-                                <td>@item.SUB_PROCESS</td>
-                                <td>@item.Checklist_Details</td>
-                                <td>@item.NO_OF_INSTANCES</td>
-                                <td class="d-none entity_name_field">@item.ENTITY_NAME</td>
-                                <td class="d-none period_name_field">@item.PERIOD</td>
-                                <td>@item.OBS_RISK</td>
-                                <td>@item.OBS_STATUS</td>
-                                <td class="text-center"><a onclick="ObservationViewerPanel(@item.OBS_ID,@item.OBS_STATUS_ID, @item.OBS_RISK_ID)" href="#" class="text-hover">View Memo</a></td>
-                                <td class="text-center"><a onclick="ObservationUpdatePanel(@item.OBS_ID )" href="#" class="text-hover">Edit Memo</a></td>
-                            </tr>
-                        }
-                    }
-                }
             </tbody>
 
         </table>
@@ -525,7 +561,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
@@ -628,8 +663,6 @@
             <div class="modal-footer">
                 <button id="dropButton_memoReply" onclick="dropObservation(g_obsId,7,g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Drop Observation</button>
                 <button id="submitAuditeeButton_memoReply" onclick="submitObservationToAuditee(g_obsId, 2, g_riskId);" type="button" data-dismiss="modal" class="btn btn-danger d-none">Submit to Auditee</button>
-                @*  <button id="createDSAButton_memoReply" onclick="createDSA(g_obsId);" type="button" data-dismiss="modal" class="btn btn-success">Create DSA</button> *@
-
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -734,3 +767,67 @@
         </div>
     </div>
 </div>
+
+<div id="DSAModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" style="width:95% !important;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Creation of DSA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <label for="viewMemo_memo">DSA Heading</label>
+
+                        <textarea id="dsaHeading" readonly="readonly" class="form-control">
+
+                          </textarea>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">DSA Content</label>
+                        <div class="w-100">
+                            <div id="dsaContent" class="w-100" style="border: 1px solid grey; border-radius:10px; height:200px; background:#e9ecef; padding:10px;">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <center><h6>Assigment of DSA to responsibles </h6></center>
+                        <div class="w-100">
+                            <table id="dsaResponsibles" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">DSA Issue to</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="submitObservationToAuditeeAfterDSAIssuance();" type="button" class="btn btn-danger">Issue DSA to selected Responsibles</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

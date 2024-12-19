@@ -7,6 +7,7 @@ namespace AIS.Models
     public class ObservationResponsiblePPNOModel
     {
 
+        public int RESP_ROW_ID { get; set; }
         public string EMP_NAME { get; set; }
         public string PP_NO { get; set; }
         public string LOAN_CASE { get; set; }

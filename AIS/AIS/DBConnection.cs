@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Org.BouncyCastle.Asn1.X500;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Org.BouncyCastle.Ocsp;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace AIS.Controllers
     {
@@ -5082,6 +5083,7 @@ Dear {userFullName},
                 cmd.Parameters.Add("SUBCHECKLISTID", OracleDbType.Varchar2).Value = ob.SUBCHECKLIST_ID;
                 cmd.Parameters.Add("CHECKLISTDETAILID", OracleDbType.Int32).Value = ob.CHECKLISTDETAIL_ID;
                 cmd.Parameters.Add("TEXT_DATA", OracleDbType.Clob).Value = ob.OBSERVATION_TEXT;
+                cmd.Parameters.Add("TITLE", OracleDbType.Varchar2).Value = ob.HEADING;
                 cmd.Parameters.Add("BRANCHID", OracleDbType.Int32).Value = ob.BRANCH_ID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
@@ -5320,6 +5322,7 @@ Dear {userFullName},
                 while (rdr.Read())
                     {
                     ObservationResponsiblePPNOModel usr = new ObservationResponsiblePPNOModel();
+                    usr.RESP_ROW_ID = Convert.ToInt32(rdr["RESP_ROW_ID"].ToString());
                     usr.EMP_NAME = rdr["EMP_NAME"].ToString();
                     usr.PP_NO = rdr["PP_NO"].ToString();
                     usr.LOAN_CASE = rdr["LOANCASE"].ToString();
@@ -6239,13 +6242,14 @@ Dear {userFullName},
                     chk.SUB_PROCESS = rdr["SUB_PROCESS"].ToString();
                     chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
                     chk.HEADING = rdr["HEADINGS"].ToString();
-                    //chk.OBS_REPLY = this.GetLatestAuditeeResponse(chk.OBS_ID);
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.ENTITY_ID = rdr["ENTITY_ID"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
+                    chk.ANNEXURE_ID = rdr["ANNEX_ID"].ToString();
+                    chk.ANNEXURE_CODE = rdr["ANNEX_CODE"].ToString();
                     chk.PPNO_TEST = loggedInUser.PPNumber;
-                    //chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
                     }
                 }
@@ -6321,8 +6325,7 @@ Dear {userFullName},
                         chk.HEADING = rdr["HEADINGS"].ToString();
                         if (rdr["RISK_ID"].ToString() != null && rdr["RISK_ID"].ToString() != "")
                             chk.OBS_RISK_ID = Convert.ToInt32(rdr["RISK_ID"].ToString());
-                        if (rdr["ANNEXURE_ID"].ToString() != null && rdr["ANNEXURE_ID"].ToString() != "")
-                            chk.ANNEXURE_ID = Convert.ToInt32(rdr["ANNEXURE_ID"].ToString());
+                        chk.ANNEXURE_ID = rdr["ANNEXURE_ID"].ToString();
                         chk.Checklist_Details = rdr["Check_List_Detail"].ToString();
                         chk.Checklist_Details_Id = rdr["Check_List_Detail_Id"].ToString();
                         chk.OBS_TEXT = rdr["OBS_TEXT"].ToString();
@@ -18316,43 +18319,7 @@ Dear {userFullName},
             con.Dispose();
 
             }
-        public List<DraftDSAList> GetDraftDSAList()
-            {
-
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<DraftDSAList> resp = new List<DraftDSAList>();
-
-            using (OracleCommand cmd = con.CreateCommand())
-                {
-
-                cmd.CommandText = "pkg_ar.P_get_dsa_list";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    {
-                    DraftDSAList dlist = new DraftDSAList();
-
-                    dlist.ID = Convert.ToInt32(rdr["ID"].ToString());
-                    dlist.ENTITY_ID = Convert.ToInt32(rdr["ENTITY_ID"].ToString());
-                    dlist.AUDITED_BY = Convert.ToInt32(rdr["AUDITED_BY"].ToString());
-                    dlist.CREATED_AT = Convert.ToDateTime(rdr["CREATED_AT"].ToString());
-                    dlist.DSA_BODY = rdr["DSA_BODY"].ToString();
-                    resp.Add(dlist);
-                    }
-                }
-            con.Dispose();
-            return resp;
-            }
+        
         public string UpdateComplianceUnit(int ENT_ID, int AUD_ID, string COMP_ID)
             {
             sessionHandler = new SessionHandler();
@@ -19998,6 +19965,244 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
+        public string SubmitDSAToAuditee(int ENTITY_ID, int OBS_ID, int ENG_ID, int RESP_PPNO, int RESP_ROW_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_draft_dsa";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("EID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("OBSID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("RESP_PPNO", OracleDbType.Int32).Value = RESP_PPNO;
+                cmd.Parameters.Add("RESP_ROW_ID", OracleDbType.Int32).Value = RESP_ROW_ID;
+                cmd.Parameters.Add("ENGAGEMENT_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public List<DraftDSAList> GetDraftDSAList()
+            {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<DraftDSAList> resp = new List<DraftDSAList>();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+
+                cmd.CommandText = "pkg_ar.P_get_dsa_list";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    var dm = new DraftDSAList
+                        {
+                        ID = rdr["ID"].ToString(),
+                        DSA_NO = rdr["D_NO"].ToString(),
+                        ENTITY_ID = rdr["entity_id"].ToString(),
+                        ENTITY_NAME = rdr["ENTITY_NAME"].ToString(),
+                        AZ_NAME = rdr["AZ_NAME"].ToString(),
+                        HEADING = rdr["HEADING"].ToString(),
+                        ENG_ID = rdr["ENG_ID"].ToString(),
+                        OBS_ID = rdr["OBS_ID"].ToString(),
+                        ROW_RESP_ID = rdr["ROW_RESP_ID"].ToString(),
+                        RESP_PP_NO = rdr["pp_no"].ToString(),
+                        EMP_NAME = rdr["EMP_NAME"].ToString(),
+                        LOAN_CASE = rdr["LOANCASE"].ToString(),
+                        LC_AMOUNT = rdr["LCAMOUNT"].ToString(),
+                        AC_NUMBER = rdr["ACCNUMBER"].ToString(),
+                        AC_AMOUNT = rdr["ACAMOUNT"].ToString(),
+                        CREATED_BY_TEAM = rdr["TeamName"].ToString(),
+                        STATUS_UP = rdr["STATUS_UP"].ToString(),
+                        STATUS_DOWN = rdr["STATUS_DOWN"].ToString(),
+                        };
+                    resp.Add(dm);
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public DSAContentModel GetDraftDSAContent(int DSA_ID)
+            {
+
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            DSAContentModel resp = new DSAContentModel();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+
+                cmd.CommandText = "pkg_ar.P_get_dsa_content";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = new DSAContentModel
+                        {
+                        ID = rdr["ID"].ToString(),
+                        NO = rdr["D_NO"].ToString(),
+                        TEXT = rdr["TEXT"].ToString(),
+                        HEADING = rdr["HEADING"].ToString(),                        
+                        };
+                   
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string SubmitDSAToHeadFAD(int DSA_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_submit_dsa_to_head_fad";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string ReferredBackDSAByHeadFad(int DSA_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_reffered_back_dsa_by_head_fad";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string SubmitDSAToDPD(int DSA_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_submit_dsa_by_head_fad_to_dpd";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string ReferredBackDSAByDPD(int DSA_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_reffered_back_dsa_by_dpd";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string SubmitDSAToCommittee(int DSA_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_submit_dsa_by_dpd_to_committee";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+      
         }
 
     }

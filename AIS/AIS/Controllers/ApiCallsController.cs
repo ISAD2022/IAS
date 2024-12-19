@@ -2312,11 +2312,7 @@ namespace AIS.Controllers
                 }
             return "{\"Status\":true,\"Message\":\"" + resp + "\"}";
             }
-        [HttpPost]
-        public List<DraftDSAList> get_draft_dsa_list()
-            {
-            return dBConnection.GetDraftDSAList();
-            }
+
         [HttpPost]
         public string update_compliance_office(List<int> ENT_ID_ARR, int AUD_ID, string COMP_ID)
             {
@@ -2545,6 +2541,63 @@ namespace AIS.Controllers
         public string add_responsible_to_observation(int NEW_PARA_ID, int OLD_PARA_ID, string INDICATOR, ObservationResponsiblePPNOModel RESPONSIBLE)
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AddResponsiblePersonsToObservation(NEW_PARA_ID, OLD_PARA_ID, INDICATOR, RESPONSIBLE) + "\"}";
+
+            }
+        [HttpPost]
+        public string submit_dsa_to_auditee(int ENTITY_ID, int OBS_ID, int ENG_ID, List<RespDSAModel> RespDSAModel)
+            {
+            string out_resp = "";
+            foreach (RespDSAModel rm in RespDSAModel)
+                {
+                out_resp += dBConnection.SubmitDSAToAuditee(ENTITY_ID, OBS_ID, ENG_ID, rm.RESP_PP_NO, rm.RESP_ROW_ID) + "<br/>";
+                }
+            return "{\"Status\":true,\"Message\":\"" + out_resp + "\"}";
+
+            }
+        [HttpPost]
+        public List<DraftDSAList> get_draft_dsa_list()
+            {
+            return dBConnection.GetDraftDSAList();
+            }
+        [HttpPost]
+        public DSAContentModel get_dsa_content(int DSA_ID)
+            {
+            return dBConnection.GetDraftDSAContent(DSA_ID);
+            }
+        [HttpPost]
+
+        //SVP AZ ACTION
+        public string submit_dsa_to_head_fad(int DSA_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitDSAToHeadFAD(DSA_ID) + "\"}";
+
+            }
+        [HttpPost]
+
+        //HEAD FAD ACTION
+        public string reffered_back_by_head_fad(int DSA_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.ReferredBackDSAByHeadFad(DSA_ID) + "\"}";
+
+            }
+        [HttpPost]
+        public string submit_dsa_to_dpd(int DSA_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitDSAToDPD(DSA_ID) + "\"}";
+
+            }
+        [HttpPost]
+
+        //SVP DPD ACTION
+        public string reffered_back_by_dpd(int DSA_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.ReferredBackDSAByDPD(DSA_ID) + "\"}";
+
+            }
+        [HttpPost]
+        public string submit_dsa_to_committee(int DSA_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitDSAToCommittee(DSA_ID) + "\"}";
 
             }
 

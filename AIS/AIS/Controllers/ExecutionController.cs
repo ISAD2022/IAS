@@ -88,6 +88,8 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["USER_ROLE_ID"] = sessionHandler.GetSessionUser().UserRoleID;
+            ViewData["USER_ENT_ID"] = sessionHandler.GetSessionUser().UserEntityID;
 
             if (!sessionHandler.IsUserLoggedIn())
                 {
@@ -95,7 +97,15 @@ namespace AIS.Controllers
                 }
             else
                 {
-                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                if(sessionHandler.GetSessionUser().UserRoleID == 12 && sessionHandler.GetSessionUser().UserEntityID== 112259)
+                    {
+                    return View();
+                    }
+                else if (sessionHandler.GetSessionUser().UserRoleID == 12 && sessionHandler.GetSessionUser().UserEntityID == 112259)
+                    {
+                    return View();
+                    }
+                else if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
                     {
                     return RedirectToAction("Index", "PageNotFound");
                     }
@@ -460,7 +470,6 @@ namespace AIS.Controllers
             ViewData["ProcessList"] = dBConnection.GetAuditChecklistCAD();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["RiskList"] = dBConnection.GetRisks();
-            ViewData["ManageObservations"] = "";
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
