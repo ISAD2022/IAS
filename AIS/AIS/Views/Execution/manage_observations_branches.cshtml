@@ -342,6 +342,11 @@
                 dsaArr.push({"RESP_ROW_ID":$(v).attr("resp_row_id"),"RESP_PP_NO":$(v).attr("id")});
             }
     });
+
+    if(dsaArr.length==0){
+        alert("This Observation is marked with A-1 annexure, therefore, please select at least one responsible from the list to issue DSA");
+        return false;
+    }
        
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/submit_dsa_to_auditee",
@@ -362,7 +367,7 @@
                 },
                 dataType: "json",
             });
-        finalSubmissionParasToAuditee();
+       
     }
     function finalSubmissionParasToAuditee(){
 
@@ -614,7 +619,6 @@
                             @{
                                 if (ViewData["RiskList"] != null)
                                 {
-
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
                                         <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
@@ -790,14 +794,11 @@
                     </div>
                     <div class="form-group">
                         <label for="viewMemo_memo">DSA Content</label>
-                        <div class="w-100">
-                            <div id="dsaContent" class="w-100" style="border: 1px solid grey; border-radius:10px; height:200px; background:#e9ecef; padding:10px;">
-                            </div>
-
-                        </div>
+                        <div id="dsaContent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
+                   
                     <div class="form-group">
-                        <center><h6>Assigment of DSA to responsibles </h6></center>
+                        <center style="padding-top:10px; height:40px;" class="bg-danger text-light" ><h6>Assigment of DSA to responsibles </h6></center>
                         <div class="w-100">
                             <table id="dsaResponsibles" class="table table-hover table-bordered table-hover mt-3 table-striped">
                                 <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
@@ -828,6 +829,3 @@
         </div>
     </div>
 </div>
-
-
-

@@ -24,6 +24,9 @@ label.heading{
             urls: false
         });
 
+        $('#updatedAnnexlist').select2();
+
+
     });
 
 
@@ -230,7 +233,28 @@ label.heading{
             dataType: "json",
         });
     }
-
+    function getLCDetails(){
+         $('#matchedPPNoPanels').empty();
+        g_respUser = [];
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_lc_details",
+            type: "POST",
+            data: {
+                'LC_NO': $('#responsibleLCNoEntryField').val(),
+                'BR_CODE': $('#responsibleBrCodeEntryField').val()
+            },
+            cache: false,
+            success: function (data) {
+                g_respUser.push(data);
+                if (data.ppNumber > 0) {
+                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
+                }
+                else
+                    $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
+            },
+            dataType: "json",
+        });
+    }
 
     function deleteRespRow(e) {
         $(e).parent().parent().remove();
@@ -428,13 +452,19 @@ label.heading{
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_memo">P.P No.</label>
+                        
                         <div class="row col-sm-12">
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="responsiblePPNoEntryField" />
+                            <div class="col-sm-5">
+                                <label for="viewMemo_memo">Loan Case No.</label>
+                                <input type="text" class="form-control" id="responsibleLCNoEntryField" />
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="viewMemo_memo">Branch Code</label>
+                                <input type="text" class="form-control" id="responsibleBrCodeEntryField" />
                             </div>
                             <div class="col-sm-2 w-100">
-                                <button onclick="getMatchedPP();" type="button" class="btn btn-danger">Find</button>
+                                <label for="viewMemo_memo"></label>
+                                <button onclick="getLCDetails();" type="button" class="btn btn-danger">Find</button>
                             </div>
                         </div>
                     </div>

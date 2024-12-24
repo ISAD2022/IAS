@@ -20024,6 +20024,8 @@ Dear {userFullName},
                         {
                         ID = rdr["ID"].ToString(),
                         DSA_NO = rdr["D_NO"].ToString(),
+                        AUDIT_PERIOD = rdr["A_PERIOD"].ToString(),
+                        REPORTING_OFFICE = rdr["REPO_OFFICE"].ToString(),
                         ENTITY_ID = rdr["entity_id"].ToString(),
                         ENTITY_NAME = rdr["ENTITY_NAME"].ToString(),
                         AZ_NAME = rdr["AZ_NAME"].ToString(),
@@ -20038,6 +20040,7 @@ Dear {userFullName},
                         AC_NUMBER = rdr["ACCNUMBER"].ToString(),
                         AC_AMOUNT = rdr["ACAMOUNT"].ToString(),
                         CREATED_BY_TEAM = rdr["TeamName"].ToString(),
+                        DSA_STATUS = rdr["DSA_STATUS"].ToString(),
                         STATUS_UP = rdr["STATUS_UP"].ToString(),
                         STATUS_DOWN = rdr["STATUS_DOWN"].ToString(),
                         };
@@ -20096,6 +20099,34 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("D_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string UpdateDSAHeading(int DSA_ID, string DSA_HEADING)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_update_dsa_heading";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("d_ID", OracleDbType.Int32).Value = DSA_ID;
+                cmd.Parameters.Add("U_HEADING", OracleDbType.Varchar2).Value = DSA_HEADING;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -20178,7 +20209,7 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-        public string SubmitDSAToCommittee(int DSA_ID)
+        public string AcknowledgeDSA(int DSA_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -20202,7 +20233,55 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-      
+
+        public List<LoanCaseDetailModel> GetLoanCaseDetailsWithBRCode(int LC, int BR_CODE)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanCaseDetailModel> list = new List<LoanCaseDetailModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ar.P_GET_LC_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("LC_NO", OracleDbType.Int32).Value = LC;
+                cmd.Parameters.Add("B_CODE", OracleDbType.Int32).Value = BR_CODE;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    LoanCaseDetailModel lcm = new LoanCaseDetailModel
+                        {
+                        Name = rdr["NAME"]?.ToString(),
+                        Cnic = rdr["CNIC"]?.ToString(),
+                        LoanCaseNo = rdr["LOAN_CASE_NO"]?.ToString(),
+                        DisbDate = rdr["DISB_DATE"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["DISB_DATE"]),
+                        AppDate = rdr["APP_DATE"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["APP_DATE"]),
+                        CadReceiveDate = rdr["CAD_RECEIVE_DATE"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["CAD_RECEIVE_DATE"]),
+                        SanctionDate = rdr["SANCTION_DATE"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["SANCTION_DATE"]),
+                        DisbursedAmount = rdr["DISBURSED_AMOUNT"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["DISBURSED_AMOUNT"]),
+                        OutstandingAmount = rdr["OUTSTANDING_AMOUNT"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["OUTSTANDING_AMOUNT"]),
+                        McoPpno = rdr["MCO_PPNO"]?.ToString(),
+                        ManagerPpno = rdr["MANAGER_PPNO"]?.ToString(),
+                        RgmPpno = rdr["RGM_PPNO"]?.ToString(),
+                        CadReviewerPreS = rdr["CAD_REVIEWER_PRE_S"]?.ToString(),
+                        SanctionedByPpno = rdr["SANCTIONED_BY_PPNO"]?.ToString()
+                        };
+
+                    list.Add(lcm);
+
+
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+
         }
 
     }

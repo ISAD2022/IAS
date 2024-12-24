@@ -2574,6 +2574,14 @@ namespace AIS.Controllers
             }
         [HttpPost]
 
+        //SVP AZ ACTION
+        public string update_dsa_heading(int DSA_ID, string DSA_HEADING)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateDSAHeading(DSA_ID, DSA_HEADING) + "\"}";
+
+            }
+        [HttpPost]
+
         //HEAD FAD ACTION
         public string reffered_back_by_head_fad(int DSA_ID)
             {
@@ -2595,9 +2603,9 @@ namespace AIS.Controllers
 
             }
         [HttpPost]
-        public string submit_dsa_to_committee(int DSA_ID)
+        public string acknowledge_dsa_by_dpd(int DSA_ID)
             {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.SubmitDSAToCommittee(DSA_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AcknowledgeDSA(DSA_ID) + "\"}";
 
             }
 

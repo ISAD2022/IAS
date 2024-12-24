@@ -7,6 +7,8 @@ namespace AIS.Models
     {
         public string ID { get; set; }
         public string DSA_NO { get; set; } 
+        public string AUDIT_PERIOD { get; set; } 
+        public string REPORTING_OFFICE { get; set; } 
         public string ENTITY_ID { get; set; }
         public string ENTITY_NAME { get; set; }
         public string AZ_NAME { get; set; }
@@ -23,5 +25,6 @@ namespace AIS.Models
         public string CREATED_BY_TEAM { get; set; }
         public string STATUS_UP { get; set; }
         public string STATUS_DOWN { get; set; }
+        public string DSA_STATUS { get; set; }
         }
 }
