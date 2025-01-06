@@ -92,6 +92,16 @@
             alert("Please Select Risk");
             return false;
         }
+         if($('#viewMemo_amountInv').val()  == ""){
+            alert('Please Enter Amount Involved, in case of blank please enter 0');
+
+            return;
+        }
+
+         if($('#viewMemo_noinstances').val()  ==""){
+            alert('Please Enter No. of Instances, in case of blank please enter 0');
+            return;
+        }
         var resP = [];
         $.each($('#listofRespPersons tbody tr'), function (i, v) {
             resP.push({
@@ -111,6 +121,7 @@
             'ID': g_observationId,
             'DAYS': $('#viewMemo_replydays option:selected').val(),
             'NO_OF_INSTANCES': $('#viewMemo_noinstances').val(),
+            'AMOUNT_INVOLVED': $('#viewMemo_amountInv').val(),
             'LOANCASE': $('#viewMemo_loancase').val(),
             'ATTACHMENTS': $('#viewMemo_attachments').val(),
             'RESPONSIBLE_PPNO': resP,
@@ -127,6 +138,7 @@
                 g_memoObj[i].ID = memo.ID;
                 g_memoObj[i].LOANCASE = memo.LOANCASE;
                 g_memoObj[i].NO_OF_INSTANCES = memo.NO_OF_INSTANCES;
+                g_memoObj[i].AMOUNT_INVOLVED = memo.AMOUNT_INVOLVED;
                 g_memoObj[i].DAYS = memo.DAYS;
                 g_memoObj[i].ATTACHMENTS = memo.ATTACHMENTS;
                 g_memoObj[i].RESPONSIBLE_PPNO = memo.RESPONSIBLE_PPNO;
@@ -151,7 +163,8 @@
             'RISK': '',
             'DAYS': '',
             'LOANCASE': '',
-            'NO_OF_INSTANCES': '1',
+            'NO_OF_INSTANCES': '0',
+            'AMOUNT_INVOLVED': '0',
             'ATTACHMENTS': '',
             'RESPONSIBLE_PPNO': [],
             'RESP_TABLE_ROWS': [],
@@ -172,6 +185,7 @@
             $('#viewMemo_replydays').val(tempobj.DAYS);
             $('#viewMemo_loancase').val(tempobj.LOANCASE);
             $('#viewMemo_noinstances').val(tempobj.NO_OF_INSTANCES);
+            $('#viewMemo_amountInv').val(tempobj.AMOUNT_INVOLVED);
             $('#viewMemo_attachments').val(tempobj.ATTACHMENTS);
             if (tempobj.RESPONSIBLE_PPNO.length > 0) {
                 $.each(tempobj.RESPONSIBLE_PPNO, function (j, pp) {
@@ -188,47 +202,131 @@
     function openResponsiblePPs() {
         $('#ResponsiblePPModel').modal('show');
         $('#matchedPPNoPanels').empty();
+        $('#findBYPPNOPanel').addClass('d-none');
         return false;
     }
     function getMatchedPP() {
-        $('#matchedPPNoPanels').empty();
-        g_respUser = [];
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
-            type: "POST",
-            data: {
-                'PP_NO': $('#responsiblePPNoEntryField').val()
-            },
-            cache: false,
-            success: function (data) {
-                g_respUser.push(data);
-                if (data.ppNumber > 0) {
-                    $('#matchedPPNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
-                }
-                else
-                    $('#matchedPPNoPanels').append('<div class="row"><span>No record found..</span></div>');
-            },
-            dataType: "json",
-        });
-    }
+          //$('#matchedPPNoPanels').empty();
+          g_respUser = [];
+          $.ajax({
+              url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
+              type: "POST",
+              data: {
+                  'PP_NO': $('#responsiblePPNoEntryField').val()
+              },
+              cache: false,
+              success: function (data) {
+                  g_respUser.push(data);
+                  if (data.ppNumber > 0) {
+                       $('.loan-case-panel').append(`
+          <div class="row col-md-12 mt-2">
+              <div class="col-sm-3"><label>${$('#responsibleRoleEntryField').val()}</label></div>
+              <div class="col-sm-3"><span>${$('#responsiblePPNoEntryField').val()}</span></div>
+              <div class="col-sm-3"><span>${data.name}</span></div>
+              <div class="col-sm-3">
+                  <input style="margin-left:10px;" class="respCheckBOX" type="checkbox" />
+              </div>
+          </div>
+      `);
+                  }
 
-    function getMatchedLCs() {
-        $('#matchedLCNoPanels').empty();
+              },
+              dataType: "json",
+          });
+      }
+
+    function getLCDetails(){
+         $('#matchedPPNoPanels').empty();
+         $('#findBYPPNOPanel').removeClass('d-none');
         g_respUser = [];
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_loan_details_from_lc",
+            url: g_asiBaseURL + "/ApiCalls/get_lc_details",
             type: "POST",
             data: {
-                'LC_NO': $('#responsibleLCNoEntryField').val()
+                'LC_NO': $('#responsibleLCNoEntryField').val(),
+                'BR_CODE': $('#responsibleBrCodeEntryField').val()
             },
             cache: false,
             success: function (data) {
-                g_respUser.push(data);
-                if (data.ppNumber > 0) {
-                    $('#matchedLCNoPanels').append('<div class="row"><div class="row col-md-12 mt-2"><div class="col-sm-4"><label>Responsible</label></div><div class="col-sm-8"><span>' + data.name + ' (' + data.ppNumber + ') </span> <input style="margin-left:10px;" id="respCheckBOX" type="checkbox" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Loan Case </label></div><div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> LC Amount </label></div><div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label> Account Number </label></div><div class="col-md-8"><input id="resp_account_number" class="form-control" type="text" /></div></div><div class="row col-md-12 mt-2"><div class="col-md-4"><label>ACC Amount </label></div><div class="col-md-8"><input id="resp_account_amount" class="form-control" type="text" /></div></div></div>');
-                }
-                else
-                    $('#matchedLCNoPanels').append('<div class="row"><span>No record found..</span></div>');
+                var response =data;
+
+                      response.forEach((data) => {
+        const responsiblePersons = [
+            { label: "MCO", ppno: data.mcoPPNo, name:data.mcoName },
+            { label: "Manager", ppno: data.managerPPNo, name:data.managerName },
+            { label: "RGM", ppno: data.rgmPPNo, name:data.rgmName },
+            { label: "CAD Reviewer", ppno: data.cadReviewerPPNo, name:data.cadReviewerName },
+            { label: "CAD Authorizer", ppno: data.cadAuthorizerPPNo , name:data.cadAuthorizerName }
+        ].filter(person => person.ppno);
+          const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const [year, month, day] = dateString.split("T")[0].split("-");
+        return `${day}/${month}/${year}`;
+    };
+
+        $('#matchedPPNoPanels').append(`
+        <hr class="row col-md-12 mt-1"/> <div class="row loan-case-panel">
+            <!-- Loan Case Details -->
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Name</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${data.name}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>CNIC</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${data.cnic}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Loan Case No</label></div>
+                <div class="col-md-8"><input id="resp_loan_case" class="form-control" type="text" value="${data.loanCaseNo}" readonly /></div>
+            </div>
+
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Application Date</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.appDate)}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>CAD Receive Date</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.cadReceiveDate)}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Sanction Date</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.sanctionDate)}" readonly /></div>
+            </div>
+             <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Disbursed Date</label></div>
+                <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.disbDate)}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Disbursed Amount</label></div>
+                <div class="col-md-8"><input  class="form-control" type="text" value="${data.disbursedAmount}" readonly /></div>
+            </div>
+            <div class="row col-md-12 mt-2">
+                <div class="col-md-4"><label>Outstanding Amount</label></div>
+                <div class="col-md-8"><input id="resp_loan_amount" class="form-control" type="text" value="${data.outstandingAmount}" readonly /></div>
+            </div>
+            <hr class="row col-md-12 mt-3" />
+            <!-- Responsible Persons Heading -->
+            <div class="row col-md-12 mt-2">
+                <div class="col-sm-3 font-weight-bold">Role</div>
+                <div class="col-sm-3 font-weight-bold">P.P. No</div>
+                <div class="col-sm-3 font-weight-bold">Name</div>
+                <div class="col-sm-3 font-weight-bold">Action</div>
+            </div>
+            <hr class="row col-md-12 mt-3" />
+            <!-- Responsible Persons -->
+            ${responsiblePersons.map(person => `
+                <div class="row col-md-12 mt-2">
+                    <div class="col-sm-3"><label>${person.label}</label></div>
+                    <div class="col-sm-3"><span>${person.ppno}</span></div>
+                    <div class="col-sm-3"><span>${person.name}</span></div>
+                    <div class="col-sm-3">
+                        <input style="margin-left:10px;" class="respCheckBOX" type="checkbox" />
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `);
+    });
             },
             dataType: "json",
         });
@@ -237,29 +335,32 @@
         $(e).parent().parent().remove();
     }
     function addResponsibilityToMainTable() {
-        if (g_respUser[0].ppNumber > 0) {
-            if ($('#respCheckBOX').is(':checked')) {
+        g_respUser = []; // Clear the existing user array for fresh addition
 
-                /*if ($('#resp_loan_case').val() == "" && $('#resp_account_number').val() == ""){
-                     alert("Please either Loan Case No. or Account No. to proceed"); return false;
-                }*/
+        // Loop through each checked checkbox
+        $('.respCheckBOX:checked').each(function() {
+            const row = $(this).closest('.row'); // Get the closest row to the checkbox
+            const ppNumber = row.find('span').eq(0).text(); // Get P.P. No (second span)
+            const name = row.find('span').eq(1).text(); // Get Name (third span)
 
+            var srNo = $('#listofRespPersons tbody tr').length + 1; // Increment Serial Number
+                $('#listofRespPersons tbody').append(`
+                    <tr id="tr_${ppNumber}">
+                        <td>${srNo}</td>
+                        <td>${ppNumber}</td>
+                        <td>${name}</td>
+                        <td>${$('#resp_loan_case').val()}</td>
+                        <td>${$('#resp_loan_amount').val()}</td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center">
+                            <a href="#" onclick="event.preventDefault(); deleteRespRow(this);">Delete</a>
+                        </td>
+                    </tr>
+                `);
+                g_respUser.push({ ppNumber, name }); // Store the user details if needed
 
-                var lc = $('#resp_loan_case').val();
-                var acc = $('#resp_account_number').val();
-                if (lc == "" && acc == "") {
-                    alert("Please enter Either Loan Case Or Account Number to Proceed"); return false;
-                }
-                var srNo = $('#listofRespPersons tbody tr').length;
-                srNo++;
-                $('#listofRespPersons tbody').append('<tr id="tr_' + g_respUser[0].ppNumber + '"><td>' + srNo + '</td><td>' + g_respUser[0].ppNumber + '</td><td>' + g_respUser[0].name + '</td><td>' + $('#resp_loan_case').val() + '</td><td>' + $('#resp_loan_amount').val() + '</td><td>' + $('#resp_account_number').val() + '</td><td>' + $('#resp_account_amount').val() + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();deleteRespRow(this);">Delete</a></td></tr>');
-                g_respUsersArr.push(g_respUser[0]);               
-               }
-            else {
-                alert("Please Check checkbox to proceed"); return false;
-            }
-        }
-
+        });
     }
     function getSubCheckListStatus() {
         $.ajax({
@@ -311,13 +412,15 @@
                 $('#viewMemo_violation_ObSent').html(data[0].checklist_Details);
                 $('#viewMemo_risk_ObSent').val(data[0].obS_RISK_ID);
                 $('#listofRespPersons_ObSent tbody').empty();
-                if (data[0].responsiblE_PPs.length > 0) {
+                  if(data[0].responsiblE_PPs != null){
+                       if (data[0].responsiblE_PPs.length > 0) {
                     $.each(data[0].responsiblE_PPs, function (j, pp) {
                         var srNo = $('#listofRespPersons_ObSent tbody tr').length;
                         srNo++;
                         $('#listofRespPersons_ObSent tbody').append('<tr id="tr__ObSent_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
-                }               
+                }   
+                }
             },
             dataType: "json",
         });
@@ -434,13 +537,16 @@
 
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-6">
-                                <label for="viewMemo_noinstances">No of Instances</label>
-                                <input id="viewMemo_noinstances" class="form-control" type="number" min="1" value="1" />
-
-
+                            <div class="col-md-4">
+                                <label for="viewMemo_amountInv">Amount Involved</label>
+                                <input id="viewMemo_amountInv" class="form-control" type="number" min="0" value="1" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="viewMemo_noinstances">No of Instances</label>
+                                <input id="viewMemo_noinstances" class="form-control" type="number" min="0" value="1" />
+                            </div>
+                          
+                            <div class="col-md-4">
                                 <label for="viewMemo_replydays">No of Days to reply</label>
                                 <select id="viewMemo_replydays" class="form-control form-select">
                                     <option id="1" value="1">1</option>
@@ -472,7 +578,7 @@
 
 
 <div id="ResponsiblePPModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" style="min-width:95% !important" role="document">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">Responsible Person</h5>
@@ -483,48 +589,47 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="viewMemo_memo">L.C No.</label>
+
                         <div class="row col-sm-12">
                             <div class="col-sm-5">
+                                <label for="viewMemo_memo">Loan Case No.</label>
                                 <input type="text" class="form-control" id="responsibleLCNoEntryField" />
                             </div>
                             <div class="col-sm-5">
-                                <input type="text" class="form-control" id="responsibleBrCNoEntryField" />
+                                <label for="viewMemo_memo">Branch Code</label>
+                                <input type="text" class="form-control" id="responsibleBrCodeEntryField" />
                             </div>
                             <div class="col-sm-2 w-100">
-                                <button onclick="getMatchedLCs();" type="button" class="btn btn-danger">Find</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="viewMemo_memo">P.P No.</label>
-                        <div class="row col-sm-12">
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="responsiblePPNoEntryField" />
-                            </div>
-                            <div class="col-sm-2 w-100">
-                                <button onclick="getMatchedPP();" type="button" class="btn btn-danger">Find</button>
+                                <label for="viewMemo_memo"></label>
+                                <button onclick="getLCDetails();" type="button" class="btn btn-danger">Find</button>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div id="matchedPPNoPanels" style="padding:20px;">
-
                         </div>
-                        <div id="matchedLCNoPanels" style="padding:20px;">
+                        <div id="findBYPPNOPanel" class="d-none row col-md-12">
+                            <div class="col-md-4">
+                                <input id="responsibleRoleEntryField" class="form-control" type="text" placeholder="Enter Role" />
+                            </div>
+                            <div class="col-md-4">
+                                <input id="responsiblePPNoEntryField" class="form-control" type="text" placeholder="Enter PP. No." />
+                            </div>
+                            <button type="button" onclick="getMatchedPP();" class="col-md-4 btn btn-success">Add More Responsible by PP.No </button>
+
                         </div>
                     </div>
 
                 </form>
             </div>
             <div class="modal-footer">
-                <button onclick="addResponsibilityToMainTable();" type="button" class="btn btn-danger">Add Responsibility</button>
+                <button onclick="addResponsibilityToMainTable();" type="button" data-dismiss="modal" class="btn btn-danger">Add Responsibility</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <div id="viewMemoModel_ObSent" class="modal" tabindex="-1" role="dialog">

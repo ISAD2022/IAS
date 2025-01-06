@@ -112,9 +112,9 @@
     }
 
 
-    function updateObservationStatus() {
-
-        if ($('#p_auditPara_Period').val() == "") {
+    function updateObservationStatus(type) {
+        if(type=='A'){
+            if ($('#p_auditPara_Period').val() == "") {
             alert("Please enter Audit Period");
             return false;
         }
@@ -173,6 +173,36 @@
             },
             dataType: "json",
         });
+
+        }
+        else {
+             $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/referredback_para_for_manage_audit_paras",
+            type: "POST",
+            data: {
+                'NEW_PARA_ID': g_np_id,
+                'OLD_PARA_ID': g_op_id,
+                'PARA_ID': g_p_id,
+                'INDICATOR': g_ind,
+                'AUDIT_PERIOD': $('#p_auditPara_Period').val(),
+                'OBS_GIST': $('#p_auditPara_Gist').val(),
+                'OBS_RISK_ID': $('#p_auditPara_Risk').val(),
+                'PARA_NO': $('#p_auditPara_ParaNO').val(),
+                'PARA_TEXT': $('#p_paraTextViewer').val(),
+                'ANNEX_ID': $('#p_auditPara_Annex').val(),
+                'AMOUNT_INV': $('#p_auditPara_AmountInv').val(),
+                'NO_INSTANCES': $('#p_auditPara_InstNO').val(),
+            },
+            cache: false,
+            success: function (data) {
+                $('#viewMemoModel').modal('hide');
+                alert(data.Message);
+                onAlertCallback(getEntityObservation);
+            },
+            dataType: "json",
+        });
+        }
+        
 
     }
     function DeleteDuplicatePara(np_id, op_id, ind) {
@@ -566,7 +596,8 @@
 
             </div>
             <div class="modal-footer">
-                <button id="updateParaStatus" onclick="updateObservationStatus();" type="button" class="btn btn-success">Authorized</button>
+                <button id="updateParaStatus" onclick="updateObservationStatus('R');" type="button" class="btn btn-danger">Reffered Back</button>
+                <button id="updateParaStatus" onclick="updateObservationStatus('A');" type="button" class="btn btn-success">Authorized</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

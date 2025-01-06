@@ -185,7 +185,9 @@
     }
 
     function getReivewParasForCompliance() {
+
         $('#manageObsPanel2 tbody').empty();
+          $('#wait').show();
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_settled_post_compliances_for_monitoring",
             type: "POST",
@@ -194,43 +196,11 @@
             },
             cache: false,
             success: function (data) {
+                $('#wait').hide();
                 g_obsList = data;
                 $.each(data, function (index, child) {
                     $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td>' + child.compliancE_UNIT + '</td><td>' + child.compliancE_SETTLEMENT_OFFICER + '</td><td>' + child.compliancE_UNIT_INCHARGE + '</td><td>' + child.entitY_NAME + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.parA_RISK + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.settleD_ON + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-                });
-
-                $('#manageObsPanel2').DataTable({
-                    dom: '<"top"lfB>rt<"bottom"ip><"clear">',
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            text: 'Export to Excel',
-                            className: 'btn btn-success',
-                            exportOptions: {
-                                columns: function (idx, data, node) {
-                                    // Exclude columns with the class 'hide-export'
-                                    return !$(node).hasClass('hide-export');
-                                }
-                            }
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            text: 'Export To PDF',
-                            className: 'btn btn-danger',
-                            exportOptions: {
-                                columns: function (idx, data, node) {
-                                    // Exclude columns with the class 'hide-export'
-                                    return !$(node).hasClass('hide-export');
-                                }
-                            }
-                        }
-                    ],
-                    lengthMenu: [
-                        [10, 50, 100, -1],
-                        [10, 50, 100, "All"]
-                    ]
-                });
-
+                });             
 
             },
 

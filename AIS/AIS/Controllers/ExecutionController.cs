@@ -487,7 +487,7 @@ namespace AIS.Controllers
         public IActionResult manage_draft_report_paras(int engId = 0)
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();     
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             if (!sessionHandler.IsUserLoggedIn())
                 {
@@ -527,8 +527,9 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
-
-            //ViewData["ManageObservations"] = dBConnection.GetManagedDraftObservations(engId);
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -1036,7 +1037,7 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            //ViewData["ObservationsList"] = dBConnection.GetManagedObservations();
+            
             ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
             if (!sessionHandler.IsUserLoggedIn())
                 {
@@ -1056,8 +1057,10 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            //ViewData["ObservationsList"] = dBConnection.GetManagedObservations();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

@@ -14,11 +14,16 @@ namespace AIS.Models
         public DateTime? SanctionDate { get; set; }
         public decimal DisbursedAmount { get; set; }
         public decimal OutstandingAmount { get; set; }
-        public string McoPpno { get; set; }
-        public string ManagerPpno { get; set; }
-        public string RgmPpno { get; set; }
-        public string CadReviewerPreS { get; set; }
-        public string SanctionedByPpno { get; set; }
+        public string McoPPNo { get; set; }
+        public string McoName { get; set; }
+        public string ManagerPPNo { get; set; }
+        public string ManagerName { get; set; }
+        public string RgmPPNo { get; set; }
+        public string RgmName { get; set; }
+        public string CadReviewerPPNo { get; set; }
+        public string CadReviewerName { get; set; }
+        public string CadAuthorizerPPNo { get; set; }
+        public string CadAuthorizerName { get; set; }
 
         }
 }

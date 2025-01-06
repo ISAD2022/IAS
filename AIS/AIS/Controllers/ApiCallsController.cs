@@ -232,6 +232,7 @@ namespace AIS.Controllers
                 ob.NO_OF_INSTANCES = m.NO_OF_INSTANCES;
                 ob.OTHER_ENTITY_ID = OTHER_ENTITY_ID;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
+                ob.AMOUNT_INVOLVED = m.AMOUNT_INVOLVED;
                 ob.STATUS = 1;
                 responses += dBConnection.SaveAuditObservation(ob);
 
@@ -254,6 +255,8 @@ namespace AIS.Controllers
                 ob.HEADING = m.HEADING;
                 ob.SEVERITY = m.RISK;
                 ob.BRANCH_ID = BRANCH_ID;
+                ob.AMOUNT_INVOLVED = m.AMOUNT_INVOLVED;
+                ob.NO_OF_INSTANCES = m.NO_OF_INSTANCES;
                 ob.RESPONSIBLE_PPNO = m.RESPONSIBLE_PPNO;
                 ob.STATUS = 1;
                 responses += dBConnection.SaveAuditObservationCAU(ob);
@@ -327,6 +330,14 @@ namespace AIS.Controllers
             response = dBConnection.UpdateAuditObservationStatus(pm);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
             }
+        [HttpPost]
+        public string referredback_para_for_manage_audit_paras(ManageAuditParasModel pm)
+            {
+            string response = "";
+            response = dBConnection.ReferredBackAuditObservationStatus(pm);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+            }
+
         [HttpPost]
         public string authorize_para_for_manage_audit_paras(ManageAuditParasModel pm)
             {
@@ -1182,6 +1193,13 @@ namespace AIS.Controllers
             {
             string response = "";
             response = dBConnection.SubmitPreConcluding(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+            }
+        [HttpPost]
+        public string update_audit_para_for_finalization(int OBS_ID, string ANNEX_ID, string PROCESS_ID, int SUB_PROCESS_ID, int PROCESS_DETAIL_ID, int RISK_ID, string GIST_OF_PARA, string TEXT_PARA, string AMOUNT_INV, string NO_INST)
+            {
+            string response = "";
+            response = dBConnection.UpdateAuditParaForFinalization(OBS_ID, ANNEX_ID, PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID, RISK_ID, GIST_OF_PARA, TEXT_PARA, AMOUNT_INV, NO_INST);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
             }
         [HttpPost]
@@ -2607,6 +2625,19 @@ namespace AIS.Controllers
             {
             return "{\"Status\":true,\"Message\":\"" + dBConnection.AcknowledgeDSA(DSA_ID) + "\"}";
 
+            }
+
+        [HttpPost]
+        public List<LoanCaseDetailModel> get_lc_details(int LC_NO, int BR_CODE)
+            {
+            return dBConnection.GetLoanCaseDetailsWithBRCode(LC_NO, BR_CODE);
+            }
+
+
+        [HttpPost]
+        public ObservationModel get_obs_details_by_id(int OBS_ID)
+            {
+            return dBConnection.GetObservationDetailsById(OBS_ID);
             }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

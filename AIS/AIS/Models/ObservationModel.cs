@@ -19,7 +19,7 @@ namespace AIS.Models
         public DateTime ENTEREDDATE { get; set; }
         public int LASTUPDATEDBY { get; set; }
         public DateTime LASTUPDATEDDATE { get; set; }
-        public float AMOUNT_INVOLVED { get; set; }
+        public string AMOUNT_INVOLVED { get; set; }
         public int REPLYBY { get; set; }
         public DateTime REPLYDATE { get; set; }
         public int LASTREPLYBY { get; set; }
@@ -30,13 +30,16 @@ namespace AIS.Models
         public string RESPONSIBILITY_ASSIGNED { get; set; }
         public int TRANSACTION_ID { get; set; }
         public int RISKMODEL_ID { get; set; }
-        public int SUBCHECKLIST_ID { get; set; }
-        public int CHECKLISTDETAIL_ID { get; set; }
+        public int? PROCESS_ID { get; set; }
+        public int? SUBCHECKLIST_ID { get; set; }
+        public int? CHECKLISTDETAIL_ID { get; set; }
         public int V_CAT_ID { get; set; }
-        public int NO_OF_INSTANCES { get; set; }
+        public string NO_OF_INSTANCES { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
         public int? OTHER_ENTITY_ID { get; set; }
         public string TEAM_LEAD { get; set; }
+        public string AUDITEE_REPLY { get; set; }
+        public string AUDITOR_RECOM { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }
 
     }
