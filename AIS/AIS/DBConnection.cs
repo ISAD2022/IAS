@@ -6470,17 +6470,12 @@ Dear {userFullName},
 
                     if (rdr["FINAL_PARA"].ToString() != null && rdr["FINAL_PARA"].ToString() != "")
                         chk.FINAL_PARA_NO = Convert.ToInt32(rdr["FINAL_PARA"]);
-
-                    chk.VIOLATION = rdr["VIOLATION"].ToString();
-                    chk.NATURE = rdr["NATURE"].ToString();
-
-                    chk.AUD_REPLY = this.GetLatestAuditorResponse(chk.OBS_ID);
-                    chk.HEAD_REPLY = this.GetLatestDepartmentalHeadResponse(chk.OBS_ID);
+                  
                     chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.HEADING = rdr["TITLE"].ToString();
                     chk.OBS_STATUS = rdr["OBS_STATUS"].ToString();
                     chk.OBS_RISK = rdr["OBS_RISK"].ToString();
                     chk.PERIOD = rdr["PERIOD"].ToString();
-                    // chk.RESPONSIBLE_PPs = this.GetObservationResponsiblePPNOs(chk.OBS_ID);
                     list.Add(chk);
 
                     }
@@ -11007,7 +11002,7 @@ Dear {userFullName},
             return list;
             }
 
-        public List<SettledPostCompliancesModel> GetSettledPostCompliancesForMonitoring()
+        public List<SettledPostCompliancesModel> GetSettledPostCompliancesForMonitoring(string MONTH_NAME, string YEAR)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -11019,10 +11014,12 @@ Dear {userFullName},
                 {
                 cmd.CommandText = "pkg_hd.P_GetSettledParasForReview";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
+                cmd.Parameters.Clear();                
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("MON", OracleDbType.Varchar2).Value = MONTH_NAME;
+                cmd.Parameters.Add("YR", OracleDbType.Varchar2).Value = YEAR;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -12800,6 +12797,39 @@ Dear {userFullName},
                 cmd.Parameters.Add("NO_INST", OracleDbType.Int32).Value = NO_INST;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber; 
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;                
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string UpdateAuditParaForFinalizationHO(int OBS_ID, string VIOLATION_ID, int VIOLATION_NATURE_ID,  int RISK_ID, string GIST_OF_PARA, string TEXT_PARA)
+            {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_hd.P_audit_para_update_head_dept";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("OBID", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("VID", OracleDbType.Int32).Value = VIOLATION_ID;
+                cmd.Parameters.Add("VNATURE_ID", OracleDbType.Int32).Value = VIOLATION_NATURE_ID;                
+                cmd.Parameters.Add("RISKID", OracleDbType.Int32).Value = RISK_ID;
+                cmd.Parameters.Add("PARA_GIST", OracleDbType.Varchar2).Value = GIST_OF_PARA;
+                cmd.Parameters.Add("TEXT_OF_PARA", OracleDbType.Clob).Value = TEXT_PARA;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
@@ -20430,7 +20460,43 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
+        public ObservationModel GetObservationDetailsByIdHO(int OBS_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ObservationModel resp = new ObservationModel();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_hd.P_GET_OBSERVATION_DETAILS_FROM_ID_HO";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
 
+                    if (!string.IsNullOrEmpty(rdr["control_violation"].ToString()))
+                        resp.PROCESS_ID = Convert.ToInt32(rdr["control_violation"].ToString());
+                    if (!string.IsNullOrEmpty(rdr["nature_id"].ToString()))
+                        resp.SUBCHECKLIST_ID = Convert.ToInt32(rdr["nature_id"].ToString());
+                    resp.RISKMODEL_ID = Convert.ToInt32(rdr["severity"].ToString());
+                    resp.HEADING = rdr["headings"].ToString();
+                    resp.OBSERVATION_TEXT = rdr["text"].ToString();
+                    resp.AUDITEE_REPLY = rdr["reply"].ToString();
+                    resp.AUDITOR_RECOM = rdr["recommendation"].ToString();
+
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
         }
 
     }

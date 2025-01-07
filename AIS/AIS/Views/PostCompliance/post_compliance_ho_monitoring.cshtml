@@ -28,7 +28,6 @@
     var btnClick = "review";
 
     $(document).ready(function () {
-        getReivewParasForCompliance();
         $('#viewMemo_compliance').richText({
             imageUpload: false,
             fileUpload: false,
@@ -36,82 +35,41 @@
             urls: false
         });
 
-        $("aks-file-upload").aksFileUpload({
-            fileUpload: "#uploadfile", // With target [input]file or [type]json you can save the data of loaded items
-            fileType: ["pdf", "zip", "jpg", "jpeg", "png", "doc", "docx", "jpg", "csv", "xls", "xlsx"], // allowed file formats
-            dragDrop: true, // drag & drop upload
-            maxSize: "2.5 MB", // maximum uploaded file size
-            multiple: true, // multiple file upload
-            maxFile: 100, // maximum number of uploaded files
-            maxFileError: "File exceeds upload limit. - Max limit:", // error text
-            maxSizeError: "File exceeds size. - Max limit:", // error text
-            fileTypeError: "Disallowed file format.", // error text
-            label: "Drag & Drop your files or Browse" // label text
 
-        });
+          const monthSelect = document.getElementById('month-select');
+    const months = [
+        { short: 'Jan', full: 'January' },
+        { short: 'Feb', full: 'February' },
+        { short: 'Mar', full: 'March' },
+        { short: 'Apr', full: 'April' },
+        { short: 'May', full: 'May' },
+        { short: 'Jun', full: 'June' },
+        { short: 'Jul', full: 'July' },
+        { short: 'Aug', full: 'August' },
+        { short: 'Sep', full: 'September' },
+        { short: 'Oct', full: 'October' },
+        { short: 'Nov', full: 'November' },
+        { short: 'Dec', full: 'December' }
+    ];
 
-        document.getElementById('aksfileupload').addEventListener('change', function () {
+    months.forEach(month => {
+        const option = document.createElement('option');
+        option.value = month.full;
+        option.textContent = month.short;
+        monthSelect.appendChild(option);
+    });
 
-            var g_imgFiles = this.files;
+    // Populate the Year Dropdown
+    const yearSelect = document.getElementById('year-select');
+    const currentYear = new Date().getFullYear();
+    const startYear = 2024;
 
-            function readFileAsDataURL(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]); // get Base64 string without prefix
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            async function processFiles(files) {
-                const productImagesArr = [];
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if (file.size > 2621440)
-                        continue;
-                    var ext = getFileExtension(file);
-                    if (!g_allowedFormats.includes(ext))
-                        continue;
-                    try {
-                        const base64Data = await readFileAsDataURL(file);
-                        var fileNameGen = generateUniqueTimestamp();
-                        var extension = getFileExtension(file);
-                        const ProductObject = {
-                            'TEXT_ID': g_comId,
-                            'IMAGE_NAME': file.name,
-                            'FILE_NAME': fileNameGen + "." + extension,
-                            'IMAGE_DATA': base64Data,
-                            'IMAGE_TYPE': extension,
-                            'LENGTH': file.size,
-                            'SEQUENCE': i
-                        };
-                        productImagesArr.push(ProductObject);
-                        g_allAttachedImages.push(ProductObject);
-                    } catch (error) {
-
-                    }
-                }
-                uploadFiles(productImagesArr);
-            }
-
-            function uploadFiles(productImagesArr) {
-
-                $.each($(".aks-file-upload .aks-file-upload-delete"), function (i, v) {
-                    var filename = $(v).attr("data-delete");
-                    for (var i = 0; i < g_allAttachedImages.length; i++) {
-                        if (g_allAttachedImages[i].IMAGE_NAME == filename) {
-                            $(v).attr("file-name", g_allAttachedImages[i].FILE_NAME);
-                        }
-                    }
-                });
-                $(".aks-file-upload .aks-file-upload-delete").on("click", function (e) {
-                    var filename = $(this).attr("file-name");
-                    deleteFileFromServer(filename);
-                });
-
-            }
-            processFiles(g_imgFiles);
-        });
+    for (let year = startYear; year <= currentYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
 
     });
     function getFileExtension(file) {
@@ -186,13 +144,15 @@
 
     function getReivewParasForCompliance() {
 
-        $('#manageObsPanel2 tbody').empty();
+        destroyDatatable('manageObsPanel2');
+
           $('#wait').show();
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_settled_post_compliances_for_monitoring",
             type: "POST",
             data: {
-
+                "MONTH_NAME":$('#month-select').val(),
+                "YEAR":$('#year-select').val()
             },
             cache: false,
             success: function (data) {
@@ -200,7 +160,8 @@
                 g_obsList = data;
                 $.each(data, function (index, child) {
                     $('#manageObsPanel2 tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td>' + child.compliancE_UNIT + '</td><td>' + child.compliancE_SETTLEMENT_OFFICER + '</td><td>' + child.compliancE_UNIT_INCHARGE + '</td><td>' + child.entitY_NAME + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.parA_RISK + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.settleD_ON + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-                });             
+                });
+                initializeDataTable('manageObsPanel2');
 
             },
 
@@ -245,8 +206,6 @@
             dataType: "json",
         });
     }
-
-
     function clearEvidencesLog() {
         $('.aks-file-upload-delete').click();
         $('.aks-file-upload-error').remove();
@@ -348,7 +307,6 @@
             dataType: "json",
         });
     }
-
     function downloadFile(id) {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_post_compliance_evidence_data",
@@ -373,33 +331,57 @@
 
 
     }
+
 </script>
 
-<div class="row">
-    <div id="complianceReviewPanel" class="row col-md-12 mt-3">
-        <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANDING COMPLIANCES FOR REVIEW</h3>
-        <table id="manageObsPanel2" class="table table-hover table-bordered table-hover mt-3 table-striped">
-            <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
-                <tr>
-                    <th class="col-md-auto">Sr No.</th>
-                    <th class="col-md-auto">Compliance Unit</th>
-                    <th class="col-md-auto">Compliance Settlement Officer (Approver)</th>
-                    <th class="col-md-auto">Compliance Incharge (Reviewer)</th>
-                    <th class="col-md-auto">Entity Name</th>
-                    <th class="col-md-auto">Audit Year</th>
-                    <th class="col-md-auto">Para No.</th>
-                    <th class="col-md-auto">Risk</th>
-                    <th class="col-md-auto">Title / Gist</th>
-                    <th class="col-md-auto">Settled On</th>
-                    <th class="col-md-auto hide-export">Compliance History</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
 
-        </table>
-    </div>
+<div id="complianceReviewPanel" class="row col-md-12 mt-3">
+    <h3 style=" display:block;color: #45c545;">LIST OF OUTSTANDING COMPLIANCES FOR REVIEW</h3>
 </div>
 
+
+<div class="row">
+    <div id="month-year-dropdown" class="col-md-12">
+        <div class="mt-1 row col-md-12">
+            <label for="month-select">Month</label>
+            <select id="month-select" class="form-control">
+                <!-- Month options will be added dynamically -->
+            </select>
+        </div>
+        <div class="mt-1 col-md-12 row">
+            <label for="year-select">Year</label>
+            <select id="year-select" class="form-control">
+                <!-- Year options will be added dynamically -->
+            </select>
+        </div>
+        <div class="mt-3 row col-md-12">
+            <button onclick="getReivewParasForCompliance();" class="btn btn-success col-md-3 offset-md-9" id="submit-button" type="button">
+                Submit
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row col-md-12 mt-3">
+    <table id="manageObsPanel2" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+            <tr>
+                <th class="col-md-auto">Sr No.</th>
+                <th class="col-md-auto">Compliance Unit</th>
+                <th class="col-md-auto">Compliance Settlement Officer (Approver)</th>
+                <th class="col-md-auto">Compliance Incharge (Reviewer)</th>
+                <th class="col-md-auto">Entity Name</th>
+                <th class="col-md-auto">Audit Year</th>
+                <th class="col-md-auto">Para No.</th>
+                <th class="col-md-auto">Risk</th>
+                <th class="col-md-auto">Title / Gist</th>
+                <th class="col-md-auto">Settled On</th>
+                <th class="col-md-auto hide-export">Compliance History</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
+</div>
 <div id="viewParaComplianceModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document" style="min-width:95% !important;">
         <div class="modal-content">

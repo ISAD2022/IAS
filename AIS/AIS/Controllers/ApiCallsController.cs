@@ -924,9 +924,9 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<SettledPostCompliancesModel> get_settled_post_compliances_for_monitoring()
+        public List<SettledPostCompliancesModel> get_settled_post_compliances_for_monitoring(string MONTH_NAME, string YEAR)
             {
-            return dBConnection.GetSettledPostCompliancesForMonitoring();
+            return dBConnection.GetSettledPostCompliancesForMonitoring(MONTH_NAME, YEAR);
             }
         [HttpPost]
         public List<GetOldParasBranchComplianceModel> get_old_para_br_compliance_ref()
@@ -1200,6 +1200,14 @@ namespace AIS.Controllers
             {
             string response = "";
             response = dBConnection.UpdateAuditParaForFinalization(OBS_ID, ANNEX_ID, PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID, RISK_ID, GIST_OF_PARA, TEXT_PARA, AMOUNT_INV, NO_INST);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+            }
+
+        [HttpPost]
+        public string update_audit_para_for_finalization_ho(int OBS_ID, string VIOLATION_ID, int VIOLATION_NATURE_ID, int RISK_ID, string GIST_OF_PARA, string TEXT_PARA)
+            {
+            string response = "";
+            response = dBConnection.UpdateAuditParaForFinalizationHO(OBS_ID, VIOLATION_ID, VIOLATION_NATURE_ID, RISK_ID, GIST_OF_PARA, TEXT_PARA);
             return "{\"Status\":true,\"Message\":\"" + response + "\"}";
             }
         [HttpPost]
@@ -2638,6 +2646,11 @@ namespace AIS.Controllers
         public ObservationModel get_obs_details_by_id(int OBS_ID)
             {
             return dBConnection.GetObservationDetailsById(OBS_ID);
+            }
+        [HttpPost]
+        public ObservationModel get_obs_details_by_id_ho(int OBS_ID)
+            {
+            return dBConnection.GetObservationDetailsByIdHO(OBS_ID);
             }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

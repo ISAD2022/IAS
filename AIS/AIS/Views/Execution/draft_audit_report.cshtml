@@ -20,6 +20,8 @@
     var g_newStatusId = 0;
     var g_riskId = 0;
     var g_obsList = [];
+     var g_procId = 0;
+    var g_subProcId=0;
     $(document).ready(function () {
         $('#entitySelectField').select2();
         var entName = $('#manageObsPanel tbody .entity_name_field:first').text();
@@ -27,44 +29,20 @@
         var periodName = $('#manageObsPanel tbody .period_name_field:first').text();
         $('#auditPeriodNameField').val(periodName);
 
+           $('#viewMemo_memo_ObSent').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+
     });
+
     function reloadLocation() {
         getEntityObservation();
     }
 
-    function ViewObservation(id) {
-        $('#viewMemoModel').modal('show');
-        $('#viewMemo_panel').html("");
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_observations_draft_text",
-            type: "POST",
-            data: {
-                'OBS_ID': id
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemo_panel').html(data[0].obS_TEXT);
-            },
-            dataType: "json",
-        });
-    }
-    function ViewObservationResponse(id) {
-        $('#viewMemoResponseModel').modal('show');
-        $('#viewMemoRes_panel').html("");
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_observations_draft_auditee_reply",
-            type: "POST",
-            data: {
-                'OBS_ID': id
-            },
-            cache: false,
-            success: function (data) {
-                $('#viewMemoRes_panel').html(data[0].obS_REPLY);
-                ViewAuditeeAttachedEvidences(id);
-            },
-            dataType: "json",
-        });
-    }
+
     function ViewAuditeeAttachedEvidences(id) {
         $('#viewMemoResponseModel').modal('show');
         $.ajax({
@@ -132,18 +110,13 @@
                 success: function (data) {
                     $('#entitySelectField').removeAttr('disabled');
                     g_obsList = data;
-                    var isbranch = false;
-                    $.each(data, function (i, v) {
 
-                        console.log('status', v.obS_STATUS_ID);
+                    $.each(data, function (i, v) {
                         $('#auditPeriodNameField').val(v.period);
-                        if (v.violation == null && v.nature == null) {
-                            isbranch = true;
-                        }
                         if (v.obS_STATUS_ID == 5)
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="event.preventDefault();ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();updateObservationStatus(' + v.obS_ID + ', 9,' + v.obS_RISK_ID + ',\'' + v.auD_REPLY + '\');" class="text-hover text-danger mr-5px"><small>Settle</small></a></td><td><a href="#" onclick="event.preventDefault();updateObservationStatus(' + v.obS_ID + ',8,' + v.obS_RISK_ID + ',\'' + v.auD_REPLY + '\');" class="text-hover text-primary ml-5px"><small>Add to Final Report</small></a></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="branchfield">' + v.heading + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td><a href="#" onclick="viewObservationDetails(' + v.obS_ID + ', '+v.obS_STATUS_ID+');" class="text-hover text-success ml-5px"><small>View Details</small></a></td></tr></tr>');
                         else
-                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="deptfield">' + v.violation + '</td><td class="deptfield">' + v.nature + '</td><td class="text-center"><a onclick="event.preventDefault();ViewObservation(' + v.obS_ID + ');" href="#" class="text-primary">View Observation</a></td><td class="obs_reply"><a onclick="ViewObservationResponse(' + v.obS_ID + ');" href="#" class="text-primary">View Response</a></td><td>' + v.auD_REPLY + '</td><td>' + v.heaD_REPLY + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td class="d-none entity_name_field">' + v.entitY_NAME + '</td><td class="d-none period_name_field">' + v.period + '</td><td class="text-center"><small>-</small></td><td class="text-center"><small>-</small></td></tr>');
+                            $('#manageObsPanel tbody').append('<tr id="' + v.obS_ID + '"><td class="text-center">' + v.memO_NO + '</td><td class="text-center">' + v.drafT_PARA_NO + '</td><td class="text-center">' + v.finaL_PARA_NO + '</td><td class="branchfield">' + v.heading + '</td><td>' + v.obS_RISK + '</td><td>' + v.obS_STATUS + '</td><td>-</td></tr></tr>');
 
                     });
 
@@ -154,15 +127,93 @@
             getReportSummary();
         }
     }
+
+    function getViolationNatureOfProcess() {
+        $('#viewMemo_subprocess_ObSent').empty();
+        $.ajax({
+           url: g_asiBaseURL + "/Execution/sub_voilation",
+            type: "POST",
+            data: {
+                'V_ID': $('#viewMemo_process_ObSent').val()
+            },
+            cache: false,
+            success: function (data) {
+                $('#viewMemo_subprocess_ObSent').append('<option value="0">--Select Violation Nature--</option>');
+                $.each(data, function (i, v) {
+                    $('#viewMemo_subprocess_ObSent').append('<option value="' + v.id + '">' + v.suB_V_NAME + '</option>');
+                });
+                if(g_subProcId!=0)
+                    {
+                        $('#viewMemo_subprocess_ObSent').val(g_subProcId);
+                    }
+
+
+            },
+            dataType: "json",
+        });
+
+    }
+
+     function viewObservationDetails(obsId,status_id){
+        g_obsId=obsId;
+        $('#viewMemoDetailsModel').modal('show');
+
+
+        if(status_id !=5){
+            $('#update_audit_obs_button').addClass("d-none");
+            $('#un_settle_audit_obs_button').addClass("d-none");
+            $('#settle_audit_obs_button').addClass("d-none");
+
+        }else{
+            $('#update_audit_obs_button').removeClass("d-none");
+            $('#un_settle_audit_obs_button').removeClass("d-none");
+            $('#settle_audit_obs_button').removeClass("d-none");
+        }
+
+         $('#viewMemo_heading_ObSent').val('');
+         $('#viewMemo_memo_ObSent').val('').trigger('change');
+         $('#viewMemo_response_ObSent').html('');
+         $('#viewMemo_aud_reply_ObSent').html('');
+         $('#viewMemo_head_reply_ObSent').html('');
+         $('#viewMemo_risk_ObSent').val(0);
+         $('#viewMemo_process_ObSent').val(0);
+
+          $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_obs_details_by_id_ho",
+            type: "POST",
+            data: {
+                'OBS_ID': g_obsId
+            },
+            cache: false,
+            success: function (data) {
+         $('#viewMemo_heading_ObSent').val(data.heading);
+         $('#viewMemo_memo_ObSent').val(data.observatioN_TEXT).trigger('change');
+         $('#viewMemo_response_ObSent').html(data.auditeE_REPLY);
+         ViewAuditeeAttachedEvidences();
+         $('#viewMemo_aud_reply_ObSent').html(data.auditoR_RECOM);
+         $('#viewMemo_risk_ObSent').val(data.riskmodeL_ID);
+         $('#viewMemo_process_ObSent').val(data.procesS_ID);
+         g_procId=data.procesS_ID;
+         g_subProcId=data.subchecklisT_ID;
+         getViolationNatureOfProcess();
+
+               },
+            dataType: "json",
+        });
+    }
+
+
     function getReportSummary() {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/draft_report_summary",
             type: "POST",
-            data: {
+            data:
+            {
                 'ENG_ID': $('#entitySelectField option:selected').val()
             },
             cache: false,
-            success: function (data) {
+            success: function (data)
+            {
                 g_obsList = data;
                 $('#totalObsLabel').text(data.total);
                 $('#highObsLabel').text(data.high);
@@ -170,9 +221,6 @@
                 $('#lowObsLabel').text(data.low);
                 $('#resolvedObsLabel').text(data.settled);
                 $('#addToDraftLabel').text(data.addtoDraft);
-                //  $('#downloadReport').html('<a  target="_blank" href="/Audit_Reports/' + data.reportName+'">Download Draft Report</a>');
-
-
             },
             dataType: "json",
         });
@@ -307,6 +355,30 @@
         const blob = new Blob(byteArrays, { type: contentType });
         return blob;
     }
+      function updateObservationDetails(obsId){
+
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/update_audit_para_for_finalization_ho",
+            type: "POST",
+            data: {
+                'OBS_ID': obsId,
+                'ANNEX_ID': $('#viewMemo_annex_ObSent').val(),
+                'VIOLATION_ID': $('#viewMemo_process_ObSent').val(),
+                'VIOLATION_NATURE_ID': $('#viewMemo_subprocess_ObSent').val(),
+                'RISK_ID': $('#viewMemo_risk_ObSent').val(),
+                'GIST_OF_PARA': $('#viewMemo_heading_ObSent').val(),
+                'TEXT_PARA': $('#viewMemo_memo_ObSent').val()
+
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                 onAlertCallback(getEntityObservation);
+            },
+            dataType: "json",
+        });
+        return;
+    }
 
 </script>
 
@@ -364,19 +436,14 @@
                     <th class="col-md-auto">Memo No.</th>
                     <th class="col-md-auto">Draft Para No.</th>
                     <th class="col-md-auto">Final Para No.</th>
-                    <th class="col-md-auto deptfield">Violation</th>
-                    <th class="col-md-auto deptfield">Nature</th>
-                    <th class="col-md-auto">Observation</th>
-                    <th class="col-md-auto">Auditee Response</th>
-                    <th class="col-md-auto">Auditor Response</th>
-                    <th class="col-md-auto">Recommendations to Audit Head</th>
+
+                    <th class="col-md-auto branchfield">Title of Para</th>
+
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Status</th>
-                    <th class="d-none"></th>
-                    <th class="d-none"></th>
-                    <th class="col-md-auto">Action</th>
                     <th class="col-md-auto">Action</th>
                 </tr>
+
             </thead>
             <tbody>
             </tbody>
@@ -416,7 +483,7 @@
 
 
 
-<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+<div id="viewMemoDetailsModel" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -427,33 +494,61 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="viewMemo_memo">Memo</label>
-                        <div class="col-md-12" style="max-height:500px; overflow-y:auto;" id="viewMemo_panel"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div id="viewMemoResponseModel" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">Auditee Response</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
                     <div class="form-group">
-                        <label for="viewMemoRes_panel">Reponse</label>
-                        <div class="col-md-12" style="max-height:500px; overflow-y:auto;" id="viewMemoRes_panel"></div>
+                        <label for="viewMemo_process_ObSent" class="font-weight-bold">Violation</label>
+                        <select id="viewMemo_process_ObSent" onchange="getViolationNatureOfProcess();" class="form-select form-control">
+                            <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
+                            @{
+                                if (ViewData["Voilation_Cat"] != null)
+                                {
+                                    foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
+                                    {
+                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                    }
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_subprocess_ObSent" class="font-weight-bold">Sub Process</label>
+                        <select id="viewMemo_subprocess_ObSent" onchange="getCheckListDetailOfSubProcess();" class="form-select form-control">
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="viewMemo_risk">Risk</label>
+                        <select id="viewMemo_risk_ObSent" class="form-select form-control" aria-label="Default select example">
+                            <option value="0" id="0" selected>--Select Risk Category--</option>
+                            @{
+                                if (ViewData["RiskList"] != null)
+                                {
+
+                                    foreach (var risk in (dynamic)(ViewData["RiskList"]))
+                                    {
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                    }
+
+                                }
+                            }
+                        </select>
+
+
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_heading_ObSent" class="font-weight-bold">Gist of Para</label>
+                        <input id="viewMemo_heading_ObSent" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo_ObSent" class="font-weight-bold">Para Text</label>
+                        <input id="viewMemo_memo_ObSent" type="text" class="form-control" />
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="viewMemo_response_ObSent" class="font-weight-bold">Auditee Response</label>
+                        <div id="viewMemo_response_ObSent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
                     </div>
                     <div id="evidenceViewer" class="input-field">
                         <label class="font-weight-bold">Evidences</label>
@@ -462,9 +557,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="viewMemo_aud_reply_ObSent" class="font-weight-bold">Auditor Reply</label>
+                        <div id="viewMemo_aud_reply_ObSent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
+                <button id="update_audit_obs_button" onclick="updateObservationDetails(g_obsId);" type="button" class="btn btn-primary">Update Para Details</button>
+                <button id="un_settle_audit_obs_button" onclick="updateObservationStatus(g_obsId,8);" type="button" data-dismiss="modal" class="btn btn-danger">Add to Final Report</button>
+                <button id="settle_audit_obs_button" onclick="updateObservationStatus(g_obsId, 9);" type="button" data-dismiss="modal" class="btn btn-success">Settle</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

@@ -203,7 +203,8 @@
 
     function getOwnParasForCompliance() {
 
-        $('#manageObsPanel tbody').empty();
+       
+        destroyDatatable("manageObsPanel");
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_paras_for_compliance_by_auditee",
             type: "POST",
@@ -216,7 +217,9 @@
                 $.each(data, function (index, child) {
 
                     $('#manageObsPanel tbody').append('<tr id="div_' + child.id + '"><td>' + ++index + '</td><td><p class="fw-normal mb-1">' + child.audiT_PERIOD + '</p></td><td><p class="fw-normal mb-1">' + child.parA_NO + '</p></td><td><p class="fw-normal mb-1">' + child.audiT_DATE + '</p></td><td><p class="fw-normal mb-1">' + child.gisT_OF_PARAS + '</p></td><td>' + child.receiveD_FROM + '</td><td>' + child.auditoR_REMARKS + '</td><td class="text-center"><a href="#" onclick="event.preventDefault();viewParaDetails(' + child.neW_PARA_ID + ',' + child.olD_PARA_ID + ',\'' + child.indicator + '\', \'' + child.parA_NO + '\', \'' + child.preV_ROLE + '\', \'' + child.nexT_ROLE + '\', \'' + child.coM_ID + '\'  );" class="text-hover text-danger mr-5px"><small>Compliance</small></a></td></tr>');
-                });            
+                });    
+                
+                initializeDataTable("manageObsPanel");
 
             },
 

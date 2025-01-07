@@ -131,7 +131,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult search_checklistdetails()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -150,7 +149,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult Authorize_Change_Settle_Para_Status()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -225,7 +223,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult auditee_position_outlook()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -246,7 +243,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult engagement_plan()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -286,8 +282,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
-
         public IActionResult staff_pos_info()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -308,9 +302,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
-
-
         public IActionResult loan_case_document()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -741,8 +732,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
-
         public IActionResult branch_deposit_info()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -761,7 +750,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult deposit_account()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -823,9 +811,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
-
-
         public IActionResult Concluding_Closing_Audit()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -1032,12 +1017,13 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult draft_audit_report()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntities();
             if (!sessionHandler.IsUserLoggedIn())
                 {
@@ -1075,7 +1061,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

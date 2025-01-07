@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap-image-uploader/jquery.imagesloader.css" />
     <link rel="stylesheet" href="~/lib/file-uploader/style.css" />
     <link rel="stylesheet" href="~/lib/select2/select2.min.css" />
-    <link href="https://cdn.datatables.net/v/dt/dt-2.1.3/datatables.min.css" rel="stylesheet">
+    <link href="~/lib/datatable/datatables.min.css" rel="stylesheet">
     <!-- Buttons CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="~/lib/datatable/buttons.dataTables.min.css">
     <link rel="icon" type="image/x-icon" href="~/Images/ztbllogo.png">
 
 
@@ -25,19 +25,19 @@
     <script type="text/javascript" src="~/lib/print-preview/print_preview.js"></script>
     <script type="text/javascript" src="~/lib/select2/select2.min.js"></script>
     <script src="~/lib/draggable/jquery-ui.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdn.datatables.net/v/dt/dt-2.1.3/datatables.min.js"></script>
+    <script src="~/lib/crypto/crypto-js.min.js"></script>
+    <script src="~/lib/datatable/datatables.min.js"></script>
     <!-- Buttons JS -->
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatable/dataTables.buttons.min.js"></script>
+    <script src="~/lib/datatable/buttons.html5.min.js"></script>
 
     <!-- JSZip for Excel export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="~/lib/datatable/jszip.min.js"></script>
     <!-- pdfmake for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+    <script src="~/lib/datatable/pako.min.js"></script>
     <style type="text/css">
         navImg .dropdown-toggle::after {
             display: none !important;
@@ -184,12 +184,10 @@
                 </ul>
             </div>
         </nav>
-
     </header>
 
     <div class="container-fluid">
         <main role="main" class="p-3">
-
             @RenderBody()
         </main>
 
@@ -199,7 +197,7 @@
         <div class="row col-md-12">
             <div class="container text-center">
                 &copy; ZTBL INTERNAL AUDIT DIVISION (Developed By A.A.A)
-                <i style="float:right;">Version No:  25.0101</i>
+                <i style="float:right;">Version No:  25.0107</i>
             </div>
         </div>
 
