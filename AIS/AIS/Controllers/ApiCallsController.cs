@@ -2653,6 +2653,11 @@ namespace AIS.Controllers
             return dBConnection.GetObservationDetailsByIdForPreConcluding(OBS_ID);
             }
         [HttpPost]
+        public ObservationModel get_obs_details_by_id_pre_con_ho(int OBS_ID)
+            {
+            return dBConnection.GetObservationDetailsByIdForPreConcludingHO(OBS_ID);
+            }
+        [HttpPost]
         public ObservationModel get_obs_details_by_id_ho(int OBS_ID)
             {
             return dBConnection.GetObservationDetailsByIdHO(OBS_ID);

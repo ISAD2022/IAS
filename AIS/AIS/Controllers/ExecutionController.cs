@@ -42,7 +42,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult obs_management(int engId = 0)
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -852,7 +851,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult Authorize_Adding_Legacy_Para()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
@@ -963,6 +961,28 @@ namespace AIS.Controllers
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
             ViewData["ProcessList"] = dBConnection.GetAuditChecklist();            
             ViewData["RiskList"] = dBConnection.GetRisks();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+            }
+        public IActionResult pre_concluding_audit_ho()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding();
+            ViewData["RiskList"] = dBConnection.GetRisks();
+            ViewData["ProcessList"] = dBConnection.GetRiskProcessDefinition();
+            ViewData["Voilation_Cat"] = dBConnection.GetAuditVoilationcats();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

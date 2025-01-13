@@ -20527,6 +20527,50 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
+
+        public ObservationModel GetObservationDetailsByIdForPreConcludingHO(int OBS_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ObservationModel resp = new ObservationModel();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_hd.P_GET_OBSERVATION_DETAILS_FROM_ID_PRE_CON_HO";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obid", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+
+                    resp.ANNEXURE_ID = rdr["annex_id"].ToString();
+                    resp.PROCESS_ID = Convert.ToInt32(rdr["t_id"].ToString());
+                    resp.SUBCHECKLIST_ID = Convert.ToInt32(rdr["s_id"].ToString());
+                    resp.CHECKLISTDETAIL_ID = Convert.ToInt32(rdr["d_id"].ToString());
+                    resp.RISKMODEL_ID = Convert.ToInt32(rdr["severity"].ToString());
+                    resp.HEADING = rdr["headings"].ToString();
+                    resp.OBSERVATION_TEXT = rdr["text"].ToString();
+                    resp.AUDITEE_REPLY = rdr["reply"].ToString();
+                    resp.AUDITOR_RECOM = rdr["recommendation"].ToString();
+                    resp.HEAD_RECOM = rdr["head_recom"].ToString();
+                    resp.QA_RECOM = rdr["qa_recom"].ToString();
+                    resp.QA_GIST = rdr["qa_gist"].ToString();
+                    resp.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
+                    resp.NO_OF_INSTANCES = rdr["no_of_instances"].ToString();
+                    resp.RESPONSIBLE_PPNO = this.GetObservationResponsiblePPNOs(OBS_ID);
+
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
         }
 
     }
