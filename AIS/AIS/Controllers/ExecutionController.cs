@@ -960,6 +960,9 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding();
+            ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();            
+            ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

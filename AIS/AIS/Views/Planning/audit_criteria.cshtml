@@ -106,17 +106,13 @@
          */
 
     }
-    function CountCriteriaRecordFromGrid(e, period, entity_type, risk, size, freq) {
+    function CountCriteriaRecordFromGrid(e, cId, entity_type, risk, size, freq) {
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/GetAuditEntitiesCount",
             type: "POST",
             data: {
-                'RISK_ID': risk,
-                'SIZE_ID': size,
-                'ENTITY_TYPE_ID': entity_type,
-                'PERIOD_ID': period,
-                'FREQUENCY_ID': freq
+                'CRITERIA_ID': cId
             },
             cache: false,
             success: function (data) {
@@ -340,7 +336,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["AuditEntities"]))
                         {
-                            <option d-risk="@item.D_RISK" value="@item.ENTITYCODE" id="@item.ENTITYCODE">@item.ENTITYTYPEDESC</option>
+                            <option d-risk="@item.D_RISK" value="@item.AUTID" id="@item.AUTID">@item.ENTITYTYPEDESC</option>
                         }
                     }
                 }

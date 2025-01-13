@@ -40,6 +40,9 @@ namespace AIS.Models
         public string TEAM_LEAD { get; set; }
         public string AUDITEE_REPLY { get; set; }
         public string AUDITOR_RECOM { get; set; }
+        public string HEAD_RECOM { get; set; }
+        public string QA_RECOM { get; set; }
+        public string QA_GIST { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }
 
     }

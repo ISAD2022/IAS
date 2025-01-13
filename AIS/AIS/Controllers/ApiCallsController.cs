@@ -472,9 +472,9 @@ namespace AIS.Controllers
             return dBConnection.GetIncomeExpenceDetails(b_id, ENG_ID);
             }
         [HttpPost]
-        public int GetAuditEntitiesCount(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
+        public int GetAuditEntitiesCount(int CRITERIA_ID)
             {
-            return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
+            return dBConnection.GetExpectedCountOfAuditEntitiesOnCriteria(CRITERIA_ID);
             }
         [HttpPost]
         public bool DeletePendingCriteria(int CID = 0)
@@ -907,7 +907,7 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<AuditChecklistDetailsModel> get_obs_for_pre_concluding(int ENG_ID)
+        public List<PreConcludingModel> get_obs_for_pre_concluding(int ENG_ID)
             {
             return dBConnection.GetEntityObservationDetails(ENG_ID);
             }
@@ -2646,6 +2646,11 @@ namespace AIS.Controllers
         public ObservationModel get_obs_details_by_id(int OBS_ID)
             {
             return dBConnection.GetObservationDetailsById(OBS_ID);
+            }
+        [HttpPost]
+        public ObservationModel get_obs_details_by_id_pre_con(int OBS_ID)
+            {
+            return dBConnection.GetObservationDetailsByIdForPreConcluding(OBS_ID);
             }
         [HttpPost]
         public ObservationModel get_obs_details_by_id_ho(int OBS_ID)

@@ -12,9 +12,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Asn1.X500;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Org.BouncyCastle.Ocsp;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace AIS.Controllers
@@ -1437,7 +1435,7 @@ namespace AIS.Controllers
                     acr.VISIT = rdr["VISIT"].ToString();
                     acr.ENTITY_NAME = rdr["NAME"].ToString();
                     acr.COMMENTS = rdr["REMARKS"].ToString();// this.GetAuditCriteriaLogLastStatus(acr.ID);
-                    acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.RISK_ID, acr.SIZE_ID, acr.ENTITY_TYPEID, acr.AUDITPERIODID, acr.FREQUENCY_ID);
+                    acr.ENTITIES_COUNT = this.GetExpectedCountOfAuditEntitiesOnCriteria(acr.ID);
                     criteriaList.Add(acr);
                     }
                 }
@@ -4602,14 +4600,14 @@ Dear {userFullName},
             return list;
             }
 
-        public List<AuditChecklistDetailsModel> GetEntityObservationDetails(int ENG_ID = 0)
+        public List<PreConcludingModel> GetEntityObservationDetails(int ENG_ID = 0)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
-            List<AuditChecklistDetailsModel> list = new List<AuditChecklistDetailsModel>();
+            List<PreConcludingModel> list = new List<PreConcludingModel>();
             using (OracleCommand cmd = con.CreateCommand())
                 {
                 cmd.CommandText = "pkg_hd.P_get_audit_pre_Concluding";
@@ -4623,12 +4621,13 @@ Dear {userFullName},
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                     {
-                    AuditChecklistDetailsModel chk = new AuditChecklistDetailsModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"]);
-                    chk.HEADING = rdr["check_list"].ToString();
-                    chk.S_NAME = rdr["Process"].ToString();
-                    chk.OB_STATUS = rdr["ob_status"].ToString();
+                    PreConcludingModel chk = new PreConcludingModel();
+                    chk.OBS_ID = rdr["id"].ToString();                 
+                    chk.OBS_STATUS = rdr["ob_status"].ToString();
+                    chk.FINAL_PARA_NO = rdr["final_para_no"].ToString();
+                    chk.HEADING = rdr["headings"].ToString();
                     chk.STATUS = rdr["STATUS"].ToString();
+                    chk.OBS_RISK = rdr["severity"].ToString();
                     list.Add(chk);
                     }
                 }
@@ -7472,31 +7471,22 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-        public int GetExpectedCountOfAuditEntitiesOnCriteria(int RISK_ID, int SIZE_ID, int ENTITY_TYPE_ID, int PERIOD_ID, int FREQUENCY_ID)
+        public int GetExpectedCountOfAuditEntitiesOnCriteria(int CRITERIA_ID)
             {
             var con = this.DatabaseConnection(); con.Open();
             int count = 0;
-            int criteria_id = 0;
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = sqlParams.GetCriteriaIdQueryFromParams(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    {
-                    if (rdr["ID"].ToString() != null && rdr["ID"].ToString() != "")
-                        criteria_id = Convert.ToInt32(rdr["ID"]);
-                    }
+                
 
                 cmd.CommandText = "pkg_pg.P_get_Criteria_ent_count";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = criteria_id;
+                cmd.Parameters.Add("CID", OracleDbType.Int32).Value = CRITERIA_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr2 = cmd.ExecuteReader();
 
-                //cmd.Parameters.Clear();
-                //cmd.CommandText = sqlParams.GetCriteriaEntitiesQueryFromParams(RISK_ID, SIZE_ID, ENTITY_TYPE_ID, PERIOD_ID, FREQUENCY_ID);
-                //cmd.CommandType = CommandType.Text;
-                //OracleDataReader rdr2 = cmd.ExecuteReader();
+                
                 while (rdr2.Read())
                     {
                     if (rdr2["NO_OF_ENTITY"].ToString() != null && rdr2["NO_OF_ENTITY"].ToString() != "")
@@ -12749,9 +12739,7 @@ Dear {userFullName},
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            if (ENG_ID == 0)
-                ENG_ID = this.GetLoggedInUserEngId();
+            var loggedInUser = sessionHandler.GetSessionUser();         
             using (OracleCommand cmd = con.CreateCommand())
                 {
                 cmd.CommandText = "pkg_hd.P_audit_pre_submission";
@@ -19714,7 +19702,6 @@ Dear {userFullName},
                         cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                         cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                         cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-
                         cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                         cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
@@ -20433,7 +20420,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_hd.P_GET_OBSERVATION_DETAILS_FROM_ID";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("obid", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -20473,7 +20460,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_hd.P_GET_OBSERVATION_DETAILS_FROM_ID_HO";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("obs_id", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("obid", OracleDbType.Int32).Value = OBS_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -20491,6 +20478,49 @@ Dear {userFullName},
                     resp.OBSERVATION_TEXT = rdr["text"].ToString();
                     resp.AUDITEE_REPLY = rdr["reply"].ToString();
                     resp.AUDITOR_RECOM = rdr["recommendation"].ToString();
+
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public ObservationModel GetObservationDetailsByIdForPreConcluding(int OBS_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            ObservationModel resp = new ObservationModel();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_hd.P_GET_OBSERVATION_DETAILS_FROM_ID_PRE_CON";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("obid", OracleDbType.Int32).Value = OBS_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+
+                    resp.ANNEXURE_ID = rdr["annex_id"].ToString();
+                    resp.PROCESS_ID = Convert.ToInt32(rdr["t_id"].ToString());
+                    resp.SUBCHECKLIST_ID = Convert.ToInt32(rdr["s_id"].ToString());
+                    resp.CHECKLISTDETAIL_ID = Convert.ToInt32(rdr["d_id"].ToString());
+                    resp.RISKMODEL_ID = Convert.ToInt32(rdr["severity"].ToString());
+                    resp.HEADING = rdr["headings"].ToString();
+                    resp.OBSERVATION_TEXT = rdr["text"].ToString();
+                    resp.AUDITEE_REPLY = rdr["reply"].ToString();
+                    resp.AUDITOR_RECOM = rdr["recommendation"].ToString();
+                    resp.HEAD_RECOM = rdr["head_recom"].ToString();
+                    resp.QA_RECOM = rdr["qa_recom"].ToString();
+                    resp.QA_GIST = rdr["qa_gist"].ToString();
+                    resp.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
+                    resp.NO_OF_INSTANCES = rdr["no_of_instances"].ToString();
+                    resp.RESPONSIBLE_PPNO = this.GetObservationResponsiblePPNOs(OBS_ID);
 
                     }
                 }
