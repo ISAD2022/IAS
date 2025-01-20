@@ -18,6 +18,11 @@
               videoEmbed: false,
               urls: false
           });
+
+            document.getElementById('viewMemo_amount_ObSent').addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D|^0(?=\d)/g, ''); // Removes decimals and leading zeros
+    });
+
      });
 
      function getEntityObservations() {
@@ -542,7 +547,7 @@
                         <input id="viewMemo_memo_ObSent" type="text" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_memo_ObSent" class="font-weight-bold">Amount Involved</label>
+                        <label for="viewMemo_amount_ObSent">Amount Involved <small class="text-danger fw-bold">(Non Decimal Numbers only) </small></label>
                         <input id="viewMemo_amount_ObSent" type="text" class="form-control" />
                     </div>
                     <div class="form-group">

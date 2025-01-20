@@ -28,6 +28,7 @@ namespace AIS.Models
         public int SEVERITY { get; set; }
         public int MEMO_NUMBER { get; set; }
         public string RESPONSIBILITY_ASSIGNED { get; set; }
+        public string DSA_ISSUED { get; set; }
         public int TRANSACTION_ID { get; set; }
         public int RISKMODEL_ID { get; set; }
         public int? PROCESS_ID { get; set; }

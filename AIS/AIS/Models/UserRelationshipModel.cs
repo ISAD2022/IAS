@@ -28,6 +28,8 @@ namespace AIS.Models
         public string COMPLICE_BY { get; set; }
 
         public string AUDIT_BY { get; set; }
+        public string GM_OFFICE{ get; set; }
+        public string REPORTING { get; set; }
 
         public string ACTIVE { get; set; }
 

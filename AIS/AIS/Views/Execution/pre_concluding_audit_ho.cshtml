@@ -122,7 +122,7 @@
            g_subProcId=data.subchecklisT_ID;
            g_procDetailId=data.checklistdetaiL_ID;
            getViolationNatureOfProcess();
-           
+
                  },
               dataType: "json",
           });
@@ -274,33 +274,30 @@
           const blob = new Blob(byteArrays, { type: contentType });
           return blob;
       }
-      function updateObservationDetails(obsId){
+       function updateObservationDetails(obsId){
 
-          $.ajax({
-              url: g_asiBaseURL + "/ApiCalls/update_audit_para_for_finalization",
-              type: "POST",
-              data: {
-                  'OBS_ID': obsId,
-                  'ANNEX_ID': $('#viewMemo_annex_ObSent').val(),
-                  'PROCESS_ID': $('#viewMemo_process_ObSent').val(),
-                  'SUB_PROCESS_ID': $('#viewMemo_subprocess_ObSent').val(),
-                  'PROCESS_DETAIL_ID': $('#viewMemo_checklist_ObSent').val(),
-                  'RISK_ID': $('#viewMemo_risk_ObSent').val(),
-                  'GIST_OF_PARA': $('#viewMemo_heading_ObSent').val(),
-                  'TEXT_PARA': $('#viewMemo_memo_ObSent').val(),
-                  'AMOUNT_INV': $('#viewMemo_amount_ObSent').val(),
-                  'NO_INST': $('#viewMemo_inst_ObSent').val()
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/update_audit_para_for_finalization_ho",
+            type: "POST",
+            data: {
+                'OBS_ID': obsId,
+                'ANNEX_ID': $('#viewMemo_annex_ObSent').val(),
+                'VIOLATION_ID': $('#viewMemo_process_ObSent').val(),
+                'VIOLATION_NATURE_ID': $('#viewMemo_subprocess_ObSent').val(),
+                'RISK_ID': $('#viewMemo_risk_ObSent').val(),
+                'GIST_OF_PARA': $('#viewMemo_heading_ObSent').val(),
+                'TEXT_PARA': $('#viewMemo_memo_ObSent').val()
 
-              },
-              cache: false,
-              success: function (data) {
-                  alert(data.Message);
-                   onAlertCallback(reloadModel);
-              },
-              dataType: "json",
-          });
-          return;
-      }
+            },
+            cache: false,
+            success: function (data) {
+                alert(data.Message);
+                 onAlertCallback(reloadModel);
+            },
+            dataType: "json",
+        });
+        return;
+    }
 
       function reloadModel(){
           getEntityObservations();

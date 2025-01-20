@@ -2663,6 +2663,32 @@ namespace AIS.Controllers
             return dBConnection.GetObservationDetailsByIdHO(OBS_ID);
             }
 
+        [HttpPost]
+        public string update_gm_office(int GM_OFF_ID, int ENTITY_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateGMOffice(GM_OFF_ID,ENTITY_ID) + "\"}";
+
+            }
+        [HttpPost]
+        public string update_reporting_line(int REP_OFF_ID, int ENTITY_ID)
+            {
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateReportingLine(REP_OFF_ID,ENTITY_ID) + "\"}";
+
+            }
+
+        public string update_gm_reporting_line_office(List<int> ENT_ID_ARR, int GM_OFF_ID, int REP_OFF_ID)
+            {
+            string res = "";
+            if (ENT_ID_ARR.Count > 0)
+                {
+                foreach (int ENT_ID in ENT_ID_ARR)
+                    {
+                    res = dBConnection.UpdateGMAndReportingLineOffice(ENT_ID, GM_OFF_ID, REP_OFF_ID);
+                    }
+                }
+            return "{\"Status\":true,\"Message\":\"GM Office and Reporting Line Updated Successfully\"}";
+
+            }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

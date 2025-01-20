@@ -318,24 +318,10 @@ namespace AIS.Controllers
             var loggedInUser=sessionHandler.GetSessionUser();
             if (loggedInUser.UserRoleID == 1)
             {
-                ViewData["AZOfficeList"] = dBConnection.GetAuditZones();
-                ViewData["ComplianceUnitsList"] = dBConnection.GetComplianceUnits();
+                ViewData["GMOffList"] = dBConnection.GetGMOffices();
+                ViewData["ReportingOffList"] = dBConnection.GetReportingOffices();
             }
-            else if (loggedInUser.UserRoleID == 2)
-            {
-                ViewData["AZOfficeList"] = dBConnection.GetAuditZones();
-                ViewData["ComplianceUnitsList"] = new List<AuditeeEntitiesModel>();
-            }
-            else if (loggedInUser.UserRoleID == 41)
-            {
-                ViewData["ComplianceUnitsList"] = dBConnection.GetComplianceUnits();
-                ViewData["AZOfficeList"] = new List<AuditZoneModel>();
-            }
-            else
-            {
-                ViewData["ComplianceUnitsList"] = new List<AuditeeEntitiesModel>();
-                ViewData["AZOfficeList"] = new List<AuditZoneModel>();
-            }
+           
 
             if (!sessionHandler.IsUserLoggedIn())
             {

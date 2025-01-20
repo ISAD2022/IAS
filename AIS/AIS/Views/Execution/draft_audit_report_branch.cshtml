@@ -17,6 +17,7 @@
 <script type="text/javascript">
     var g_obsId = 0;
     var g_newStatusId = 0;
+    var g_entityID = 0;
     var g_riskId = 0;
     var g_obsList = [];
     var g_procId = 0;
@@ -34,6 +35,10 @@
             videoEmbed: false,
             urls: false
         });
+
+         document.getElementById('viewMemo_amount_ObSent').addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D|^0(?=\d)/g, ''); // Removes decimals and leading zeros
+    });
 
     });
     function reloadLocation() {
@@ -53,10 +58,12 @@
                 },
                 cache: false,
                 success: function (data) {
+                   
                     $('#entitySelectField').removeAttr('disabled');
                     g_obsList = data;
                     var isbranch = false;
                     $.each(data, function (i, v) {
+                          g_entityID=v.entitY_ID;
                         $('#auditPeriodNameField').val(v.period);
                         if (v.violation == null && v.nature == null) {
                             isbranch = true;
@@ -185,11 +192,13 @@
             $('#update_audit_obs_button').addClass("d-none");
             $('#un_settle_audit_obs_button').addClass("d-none");
             $('#settle_audit_obs_button').addClass("d-none");
+            $('#dsa_audit_obs_button').addClass("d-none");
 
         }else{
             $('#update_audit_obs_button').removeClass("d-none");
             $('#un_settle_audit_obs_button').removeClass("d-none");
             $('#settle_audit_obs_button').removeClass("d-none");
+            $('#dsa_audit_obs_button').removeClass("d-none");
         }
 
          $('#viewMemo_heading_ObSent').val('');
@@ -211,6 +220,12 @@
             },
             cache: false,
             success: function (data) {
+
+                if(data.dsA_ISSUED=="Y"){
+                     $('#settle_audit_obs_button').addClass("d-none");
+                }else{
+                        $('#settle_audit_obs_button').removeClass("d-none");
+                }
          $('#viewMemo_heading_ObSent').val(data.heading);
          $('#viewMemo_memo_ObSent').val(data.observatioN_TEXT).trigger('change');
          $('#viewMemo_response_ObSent').html(data.auditeE_REPLY);
@@ -440,6 +455,80 @@
         return;
     }
 
+    function dsaObservationDetails(obs_id){
+        $('#viewMemoDetailsModel').modal('hide');
+        $('#DSAModel').modal('show');
+         $('#DSAModel').modal('show');
+            $.each(g_obsList, function(i,v){
+                if(v.obS_ID=obs_id){
+                    $('#dsaHeading').val(v.heading);
+                       $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/get_observation_text_branches",
+                type: "POST",
+                data: {
+                    'OBS_ID': obs_id
+                },
+                cache: false,
+                success: function (data) {
+                    $('#dsaContent').html(data[0].obS_TEXT);
+                    $('#dsaResponsibles tbody').empty();
+                    if (data[0].responsiblE_PPs.length > 0) {
+                        $.each(data[0].responsiblE_PPs, function (j, pp) {
+                            var srNo = $('#dsaResponsibles tbody tr').length;
+                            srNo++;
+                            $('#dsaResponsibles tbody').append('<tr id="tr_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td><td><input class="chk_dsaissued" resp_row_id="'+pp.resP_ROW_ID+'" id="'+pp.pP_NO+'" type="checkbox"  /></td></tr>');
+                        });
+                    }
+
+
+                },
+                dataType: "json",
+            });
+                }
+            })
+    }
+
+     function submitObservationToAuditeeAfterDSAIssuance(){
+        var dsaArr=[];
+
+        $.each($('.chk_dsaissued'), function(i,v){
+            if($(v).is(":checked"))
+            {
+                dsaArr.push({"RESP_ROW_ID":$(v).attr("resp_row_id"),"RESP_PP_NO":$(v).attr("id")});
+            }
+    });
+
+    if(dsaArr.length==0){
+        alert("Please select at least one responsible from the list to issue DSA");
+        return false;
+    }
+
+            $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/submit_dsa_to_auditee",
+                type: "POST",
+                data: {
+                    'OBS_ID': g_obsId,
+                    'ENTITY_ID': g_entityID,
+                    'ENG_ID': $('#entitySelectField').val(),
+                    "RespDSAModel":dsaArr
+                },
+                cache: false,
+                success: function (data) {
+                    alert(data.Message);
+                   onAlertCallback(submissionOfDSA);
+                  
+                },
+                dataType: "json",
+            });
+
+    }
+
+    function submissionOfDSA(){
+          $('#DSAModel').modal('hide');
+                    $('#viewMemoDetailsModel').modal('show');
+                   
+    }
+
 </script>
 
 <div class="row">
@@ -495,15 +584,8 @@
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
                     <th class="col-md-auto">Draft Para No.</th>
-                    <th class="col-md-auto">Final Para No.</th>
-                    @* <th class="col-md-auto branchfield">Process</th> *@
-                    @* <th class="col-md-auto branchfield">Sub Process</th> *@
-                    @* <th class="col-md-auto branchfield">Checklist Detail</th> *@
-                    <th class="col-md-auto branchfield">Title of Para</th>
-                    @* <th class="col-md-auto">Observation</th> *@
-                    @* <th class="col-md-auto">Auditee Response</th> *@
-                    @* <th class="col-md-auto">Auditor Response</th> *@
-                    @* <th class="col-md-auto">Recommendations to Audit Head</th> *@
+                    <th class="col-md-auto">Final Para No.</th>                  
+                    <th class="col-md-auto branchfield">Title of Para</th>                 
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Status</th>
                     <th class="col-md-auto">Action</th>
@@ -567,7 +649,6 @@
                             @{
                                 if (ViewData["AnnexList"] != null)
                                 {
-
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
                                     {
                                         <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
@@ -585,7 +666,6 @@
                             @{
                                 if (ViewData["ProcessList"] != null)
                                 {
-
                                     foreach (var item in (dynamic)(ViewData["ProcessList"]))
                                     {
                                         <option id="@item.T_ID" value="@item.T_ID">@item.HEADING</option>
@@ -614,7 +694,6 @@
                             @{
                                 if (ViewData["RiskList"] != null)
                                 {
-
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
                                         <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
@@ -635,7 +714,7 @@
                         <input id="viewMemo_memo_ObSent" type="text" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label for="viewMemo_memo_ObSent" class="font-weight-bold">Amount Involved</label>
+                        <label for="viewMemo_amount_ObSent">Amount Involved <small class="text-danger fw-bold">(Non Decimal Numbers only) </small></label>
                         <input id="viewMemo_amount_ObSent" type="text" class="form-control" />
                     </div>
                     <div class="form-group">
@@ -681,9 +760,69 @@
                 </form>
             </div>
             <div class="modal-footer">
+                <button id="dsa_audit_obs_button" onclick="dsaObservationDetails(g_obsId);" type="button" class="btn btn-warning">Create DSA</button> 
                 <button id="update_audit_obs_button" onclick="updateObservationDetails(g_obsId);" type="button" class="btn btn-primary">Update Para Details</button>
                 <button id="un_settle_audit_obs_button" onclick="updateObservationStatus(g_obsId,8);" type="button" data-dismiss="modal" class="btn btn-danger">Add to Final Report</button>
                 <button id="settle_audit_obs_button" onclick="updateObservationStatus(g_obsId, 9);" type="button" data-dismiss="modal" class="btn btn-success">Settle</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="DSAModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" style="width:95% !important;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Creation of DSA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <label for="viewMemo_memo">DSA Heading</label>
+
+                        <textarea id="dsaHeading" readonly="readonly" class="form-control">
+
+                          </textarea>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="viewMemo_memo">DSA Content</label>
+                        <div id="dsaContent" disabled="disabled" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <center style="padding-top:10px; height:40px;" class="bg-danger text-light"><h6>Assigment of DSA to responsibles </h6></center>
+                        <div class="w-100">
+                            <table id="dsaResponsibles" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md- auto font-weight-bold">Sr.No</th>
+                                        <th class="col-md- auto font-weight-bold">P.P. No</th>
+                                        <th class="col-md- auto font-weight-bold">Name</th>
+                                        <th class="col-md- auto font-weight-bold">Loan Case</th>
+                                        <th class="col-md- auto font-weight-bold">LC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">Account No.</th>
+                                        <th class="col-md- auto font-weight-bold">ACC Amount</th>
+                                        <th class="col-md- auto font-weight-bold">DSA Issue to</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="submitObservationToAuditeeAfterDSAIssuance();" type="button" class="btn btn-danger">Issue DSA to selected Responsibles</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

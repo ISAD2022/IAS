@@ -9645,6 +9645,8 @@ Dear {userFullName},
                     entity.C_TYPE_ID = rdr["TYPEID"].ToString();
                     entity.COMPLICE_BY = rdr["COMPLICE_BY"].ToString();
                     entity.AUDIT_BY = rdr["AUDIT_BY"].ToString();
+                    entity.GM_OFFICE = rdr["GM_OFFICE"].ToString();
+                    entity.REPORTING = rdr["REPORTING"].ToString();
                     entitiesList.Add(entity);
                     }
                 }
@@ -20440,6 +20442,7 @@ Dear {userFullName},
                     resp.AUDITOR_RECOM = rdr["recommendation"].ToString();
                     resp.AMOUNT_INVOLVED = rdr["amount_involved"].ToString();
                     resp.NO_OF_INSTANCES = rdr["no_of_instances"].ToString();
+                    resp.DSA_ISSUED = rdr["DSA"].ToString();
                     resp.RESPONSIBLE_PPNO = this.GetObservationResponsiblePPNOs(OBS_ID);
 
                     }
@@ -20571,6 +20574,126 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
+
+        public List<AuditeeEntitiesModel> GetGMOffices()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeEntitiesModel> AZList = new List<AuditeeEntitiesModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+          
+           
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_GET_GM_OFFICE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    AuditeeEntitiesModel z = new AuditeeEntitiesModel();
+                    z.ENTITY_ID = Convert.ToInt32(rdr["entity_id"]);
+                    z.NAME = rdr["name"].ToString();
+                    AZList.Add(z);
+                    }
+                }
+            con.Dispose();
+            return AZList;
+            }
+        public List<AuditeeEntitiesModel> GetReportingOffices()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditeeEntitiesModel> AZList = new List<AuditeeEntitiesModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+         
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_GET_RPT_OFFICE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    AuditeeEntitiesModel z = new AuditeeEntitiesModel();
+                    z.ENTITY_ID = Convert.ToInt32(rdr["entity_id"]);
+                    z.NAME = rdr["name"].ToString();
+                    AZList.Add(z);
+                    }
+                }
+            con.Dispose();
+            return AZList;
+            }
+        public string UpdateGMOffice(int GM_OFFICE_ID, int ENTITY_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_UPDATE_GM_OFFICE_RELATIONSHIP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("GM", OracleDbType.Int32).Value = GM_OFFICE_ID;
+                cmd.Parameters.Add("ENT", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string UpdateReportingLine(int REP_OFFICE_ID, int ENTITY_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_UPDATE_RPT_OFFICE_RELATIONSHIP";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("RPT", OracleDbType.Int32).Value = REP_OFFICE_ID;
+                cmd.Parameters.Add("ENT", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+
+        public string UpdateGMAndReportingLineOffice(int ENTITY_ID, int GM_OFF_ID, int REP_OFF_ID)
+            {
+            string resp = "";
+            if (GM_OFF_ID > 0)
+                this.UpdateGMOffice(GM_OFF_ID, ENTITY_ID);
+
+            if (REP_OFF_ID > 0)
+                this.UpdateReportingLine(REP_OFF_ID, ENTITY_ID);
+
+            return resp;
+            }
+        
         }
 
     }

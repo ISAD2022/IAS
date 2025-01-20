@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Entities Audit/Compliance Office Management";
+    ViewData["Title"] = "Entites GM/Reporting Line Management";
     Layout = "_Layout";
 
 }
@@ -63,8 +63,7 @@
             cache: false,
             success: function (data) {
                 $.each(data, function (index, gpp) {
-
-                    $('#childposting tbody').append('<tr><td>' + ++index + '</td><td>' + gpp.c_NAME + '</td><td>' + gpp.complicE_BY + '</td><td>' + gpp.audiT_BY + '</td><td class="text-center"><input type="checkbox" class="selectallMini" entId="' + gpp.entitY_ID + '" name="selectall" /></td></tr>');
+                    $('#childposting tbody').append('<tr><td>' + ++index + '</td><td>' + gpp.c_NAME + '</td><td>' + gpp.gM_OFFICE + '</td><td>' + gpp.reporting + '</td><td class="text-center"><input type="checkbox" class="selectallMini" entId="' + gpp.entitY_ID + '" name="selectall" /></td></tr>');
                 });
                 if (data.length > 0) {
                     $('#complianceUnitArea').removeClass('d-none');
@@ -77,7 +76,7 @@
 
 
     }
-    function updateComplianceOffice() {
+    function updateGMOffice() {
 
         var entIdArr = [];
         $.each($('.selectallMini'), function (i, v) {
@@ -86,23 +85,29 @@
             }
         });
 
+
         if (entIdArr.length == 0) {
-            alert("please select entity to proceed");
+            alert("please select atleast one entity to proceed");
+            return false;
+        }
+        if($('#GMOfficeUnitField').val()=="0" && $('#RepOfficeUnitField').val()=="0" )
+        {
+            alert("Please select at least either GM Office or Reporting Line to proceed ");
             return false;
         }
 
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/update_compliance_office",
+            url: g_asiBaseURL + "/ApiCalls/update_gm_reporting_line_office",
             type: "POST",
             data: {
-                'COMP_ID': $('#ComplianceUnitField option:selected').val(),
-                'AUD_ID': $('#AZOfficeField option:selected').val(),
+                'GM_OFF_ID': $('#GMOfficeUnitField option:selected').val(),
+                'REP_OFF_ID': $('#RepOfficeUnitField option:selected').val(),
                 'ENT_ID_ARR': entIdArr
             },
             cache: false,
             success: function (data) {
                 alert(data.Message);
-                //onAlertCallback(reloadToLocation);
+                onAlertCallback(reloadToLocation);
 
             },
             dataType: "json",
@@ -119,7 +124,7 @@
         }
     }
     function reloadToLocation() {
-
+        getplacepost();
     }
 </script>
 
@@ -175,14 +180,14 @@
         <h5>GM Office</h5>
     </div>
     <div class="col-md-4">
-        <select id="ComplianceUnitField" class="form-control form-select">
+        <select id="GMOfficeUnitField" class="form-control form-select">
             <option id="0" value="0" selected="selected">--Select GM Office--</option>
             @{
-                if (ViewData["ComplianceUnitsList"] != null)
+                if (ViewData["GMOffList"] != null)
                 {
-                    foreach (var item in (dynamic)(ViewData["ComplianceUnitsList"]))
+                    foreach (var item in (dynamic)(ViewData["GMOffList"]))
                     {
-                            <option value="@item.COM_BY" id="@item.COM_BY">@item.NAME</option>
+                        <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                     }
                 }
             }
@@ -196,14 +201,14 @@
         <h5>Reporting Line</h5>
     </div>
     <div class="col-md-4">
-        <select id="AZOfficeField" class="form-control form-select">
+        <select id="RepOfficeUnitField" class="form-control form-select">
             <option id="0" value="0" selected="selected">--Select Reporting Line--</option>
             @{
-                if (ViewData["AZOfficeList"] != null)
+                if (ViewData["ReportingOffList"] != null)
                 {
-                    foreach (var item in (dynamic)(ViewData["AZOfficeList"]))
+                    foreach (var item in (dynamic)(ViewData["ReportingOffList"]))
                     {
-                            <option value="@item.ID" id="@item.ID">@item.ZONENAME</option>
+                        <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.NAME</option>
                     }
                 }
             }
@@ -212,5 +217,5 @@
 </div>
 
 <div class="row col-md-12 mr-3">
-    <button onclick="updateComplianceOffice();" class="btn btn-danger offset-md-10 col-md-2">Update</button>
+    <button onclick="updateGMOffice();" class="btn btn-danger offset-md-10 col-md-2">Update</button>
 </div>

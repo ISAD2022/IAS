@@ -33,7 +33,6 @@
                     sr++;
                 });
                 getSubCheckListStatus();
-
             },
             dataType: "json",
         });
@@ -43,6 +42,9 @@
             videoEmbed: false,
             urls: false
         });
+            document.getElementById('viewMemo_amountInv').addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D|^0(?=\d)/g, ''); // Removes decimals and leading zeros
+    });
     });
     function showObservationArea(value, id) {
         g_observationId = id;
@@ -202,11 +204,16 @@
     function openResponsiblePPs() {
         $('#ResponsiblePPModel').modal('show');
         $('#matchedPPNoPanels').empty();
-        $('#findBYPPNOPanel').addClass('d-none');
+        $('#matchedPPNoPanelsBYPP').empty();
+      //  $('#findBYPPNOPanel').addClass('d-none');
         return false;
     }
     function getMatchedPP() {
-          //$('#matchedPPNoPanels').empty();
+          $('#matchedPPNoPanelsBYPP').empty();
+          if($('#responsiblePPNoEntryField')==""){
+              alert("Please enter PP Number to proceed");
+              return;
+          }
           g_respUser = [];
           $.ajax({
               url: g_asiBaseURL + "/ApiCalls/get_employee_name_from_pp",
@@ -218,26 +225,39 @@
               success: function (data) {
                   g_respUser.push(data);
                   if (data.ppNumber > 0) {
-                       $('.loan-case-panel').append(`
+                       $('#matchedPPNoPanelsBYPP').append(`
+                        <!-- Responsible Persons Heading -->
+            <div class="row col-md-12 mt-2">
+                <div class="col-sm-1 font-weight-bold">P.P. No</div>
+                <div class="col-sm-3 font-weight-bold">Name</div>
+                <div class="col-sm-2 font-weight-bold">Acc No.</div>
+                <div class="col-sm-2 font-weight-bold">Acc Amount</div>
+                <div class="col-sm-1 font-weight-bold">LC No.</div>
+                <div class="col-sm-2 font-weight-bold">LC Amount</div>
+                <div class="col-sm-1 font-weight-bold">Action</div>
+            </div>
+            <hr class="row col-md-12 mt-3" />
           <div class="row col-md-12 mt-2">
-              <div class="col-sm-3"><label>${$('#responsibleRoleEntryField').val()}</label></div>
-              <div class="col-sm-3"><span>${$('#responsiblePPNoEntryField').val()}</span></div>
+           <div class="col-sm-1"><span>${$('#responsiblePPNoEntryField').val()}</span></div>
               <div class="col-sm-3"><span>${data.name}</span></div>
-              <div class="col-sm-3">
-                  <input style="margin-left:10px;" class="respCheckBOX" type="checkbox" />
+              <div class="col-sm-2"><span>${$('#responsibleAccountNumberEntryField').val()}</span></div>
+              <div class="col-sm-2"><span>${$('#responsibleAccountAmountEntryField').val()}</span></div>
+              <div class="col-sm-1"><span>${$('#responsibleLoanNumberEntryField').val()}</span></div>
+              <div class="col-sm-2"><span>${$('#responsibleLoanAmountEntryField').val()}</span></div>
+              <div class="col-sm-1">
+                  <input style="margin-left:10px;" class="respCheckBOXBYPP" type="checkbox" />
               </div>
           </div>
-      `);
-                  }
+      `);                  }
 
               },
               dataType: "json",
           });
       }
-
-    function getLCDetails(){
+    
+      function getLCDetails(){
          $('#matchedPPNoPanels').empty();
-         $('#findBYPPNOPanel').removeClass('d-none');
+        // $('#findBYPPNOPanel').removeClass('d-none');
         g_respUser = [];
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_lc_details",
@@ -292,10 +312,7 @@
                 <div class="col-md-4"><label>Sanction Date</label></div>
                 <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.sanctionDate)}" readonly /></div>
             </div>
-             <div class="row col-md-12 mt-2">
-                <div class="col-md-4"><label>Disbursed Date</label></div>
-                <div class="col-md-8"><input class="form-control" type="text" value="${formatDate(data.disbDate)}" readonly /></div>
-            </div>
+          
             <div class="row col-md-12 mt-2">
                 <div class="col-md-4"><label>Disbursed Amount</label></div>
                 <div class="col-md-8"><input  class="form-control" type="text" value="${data.disbursedAmount}" readonly /></div>
@@ -361,6 +378,33 @@
                 g_respUser.push({ ppNumber, name }); // Store the user details if needed
 
         });
+
+         $('.respCheckBOXBYPP:checked').each(function() {
+            const row = $(this).closest('.row'); 
+            const ppNumber = row.find('span').eq(0).text(); 
+            const name = row.find('span').eq(1).text(); 
+            const acc_no = row.find('span').eq(2).text(); 
+            const acc_amt = row.find('span').eq(3).text(); 
+            const lc_no = row.find('span').eq(4).text(); 
+            const lc_amt = row.find('span').eq(5).text(); 
+            var srNo = $('#listofRespPersons tbody tr').length + 1; // Increment Serial Number
+                $('#listofRespPersons tbody').append(`
+                    <tr id="tr_${ppNumber}">
+                        <td>${srNo}</td>
+                        <td>${ppNumber}</td>
+                        <td>${name}</td>                       
+                        <td>${lc_no}</td>
+                        <td>${lc_amt}</td>                       
+                         <td>${acc_no}</td>
+                        <td>${acc_amt}</td>
+                        <td class="text-center">
+                            <a href="#" onclick="event.preventDefault(); deleteRespRow(this);">Delete</a>
+                        </td>
+                    </tr>
+                `);
+                g_respUser.push({ ppNumber, name }); // Store the user details if needed
+
+        });
     }
     function getSubCheckListStatus() {
         $.ajax({
@@ -377,7 +421,7 @@
                         $('#checklistaction_' + v.cD_ID).val(1);
                         $('#checklistaction_' + v.cD_ID).attr('disabled', true);
                         $('#actionTd_'+v.cD_ID).empty();
-                        $('#actionTd_' + v.cD_ID).append('<a class="text-center text-danger" onclick = "ObservationViewerPanel(' + v.obS_ID + ')"> View Memo </a>');                       
+                        $('#actionTd_' + v.cD_ID).append('<a class="text-center text-danger" onclick = "ObservationViewerPanel(' + v.obS_ID + ')"> View Memo </a>');
 
                     }
                     else if (v.status == 'N') {
@@ -419,7 +463,7 @@
                         srNo++;
                         $('#listofRespPersons_ObSent tbody').append('<tr id="tr__ObSent_' + pp.pP_NO + '"><td>' + srNo + '</td><td>' + pp.pP_NO + '</td><td>' + pp.emP_NAME + '</td><td>' + pp.loaN_CASE + '</td><td>' + pp.lC_AMOUNT + '</td><td>' + pp.accounT_NUMBER + '</td><td>' + pp.acC_AMOUNT + '</td></tr>');
                     });
-                }   
+                }
                 }
             },
             dataType: "json",
@@ -442,7 +486,7 @@
                 <th class="col-md-3 font-weight-bold">Voilation</th>
                 <th class="col-md-3 font-weight-bold">Heading/Sublist Detail</th>
                 <th class="col-md-2 font-weight-bold text-center">Yes/No</th>
-                <th class="col-md-2 font-weight-bold"></th>                
+                <th class="col-md-2 font-weight-bold"></th>
             </tr>
         </thead>
         <tbody>
@@ -473,14 +517,14 @@
                                 <option selected="selected" value="0" id="0">--Select Annexure--</option>
                                 @{
                                     if (ViewData["AnnexList"] != null)
-                                        {
+                                    {
 
                                         foreach (var item in (dynamic)(ViewData["AnnexList"]))
-                                            {
-                                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
-                                            }
-
+                                        {
+                                            <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                         }
+
+                                    }
                                 }
 
                             </select>
@@ -501,14 +545,14 @@
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
-                                    {
+                                {
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                                        {
-                                                    <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                                        }
-
+                                    {
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
+
+                                }
                             }
                         </select>
                     </div>
@@ -538,14 +582,14 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="viewMemo_amountInv">Amount Involved</label>
+                                <label for="viewMemo_amountInv">Amount Involved <small class="text-danger fw-bold">(Non Decimal Numbers only) </small></label>
                                 <input id="viewMemo_amountInv" class="form-control" type="number" min="0" value="1" />
                             </div>
                             <div class="col-md-4">
                                 <label for="viewMemo_noinstances">No of Instances</label>
                                 <input id="viewMemo_noinstances" class="form-control" type="number" min="0" value="1" />
                             </div>
-                          
+
                             <div class="col-md-4">
                                 <label for="viewMemo_replydays">No of Days to reply</label>
                                 <select id="viewMemo_replydays" class="form-control form-select">
@@ -560,7 +604,7 @@
 
                             </div>
                         </div>
-                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="viewMemo_attachments">Attachments</label>
                         <input id="viewMemo_attachments" class="form-control" type="file" multiple="multiple" style="padding-top:3px;" />
@@ -590,6 +634,8 @@
                 <form>
                     <div class="form-group">
 
+                        <label class="form-control text-bold fw-bold text-center">Search Responsible By LC Number</label>
+
                         <div class="row col-sm-12">
                             <div class="col-sm-5">
                                 <label for="viewMemo_memo">Loan Case No.</label>
@@ -599,27 +645,44 @@
                                 <label for="viewMemo_memo">Branch Code</label>
                                 <input type="text" class="form-control" id="responsibleBrCodeEntryField" />
                             </div>
-                            <div class="col-sm-2 w-100">
-                                <label for="viewMemo_memo"></label>
-                                <button onclick="getLCDetails();" type="button" class="btn btn-danger">Find</button>
+                            <div class="col-sm-2 d-flex align-items-end">
+                                <button onclick="getLCDetails();" type="button" class="btn btn-danger w-100">Find</button>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div id="matchedPPNoPanels" style="padding:20px;">
                         </div>
-                        <div id="findBYPPNOPanel" class="d-none row col-md-12">
-                            <div class="col-md-4">
-                                <input id="responsibleRoleEntryField" class="form-control" type="text" placeholder="Enter Role" />
-                            </div>
-                            <div class="col-md-4">
+                    </div>
+                    <div class="form-group">
+
+                        <label class="form-control text-bold fw-bold text-center">Search Responsible By PP No.</label>
+
+                        <div id="findBYPPNOPanel" class="mt-2 row col-md-12">
+                            <div class="col-md-2">
                                 <input id="responsiblePPNoEntryField" class="form-control" type="text" placeholder="Enter PP. No." />
                             </div>
-                            <button type="button" onclick="getMatchedPP();" class="col-md-4 btn btn-success">Add More Responsible by PP.No </button>
+                            <div class="col-md-2">
+                                <input id="responsibleAccountNumberEntryField" class="form-control" type="number" placeholder="Enter Account Number" />
+                            </div>
+                            <div class="col-md-2">
+                                <input id="responsibleAccountAmountEntryField" class="form-control" type="number" placeholder="Enter Account Amount" />
+                            </div>
+                            <div class="col-md-2">
+                                <input id="responsibleLoanNumberEntryField" class="form-control" type="text" placeholder="Enter LC No." />
+                            </div>
+                            <div class="col-md-2">
+                                <input id="responsibleLoanAmountEntryField" class="form-control" type="text" placeholder="Enter LC Amount" />
+                            </div>
+
+                            <button type="button" onclick="getMatchedPP();" class="col-md-2 btn btn-success">Search</button>
 
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <div id="matchedPPNoPanelsBYPP" style="padding:20px;">
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -649,14 +712,14 @@
                             <option selected="selected" value="0" id="0">--Select Annexure--</option>
                             @{
                                 if (ViewData["AnnexList"] != null)
-                                    {
+                                {
 
                                     foreach (var item in (dynamic)(ViewData["AnnexList"]))
-                                        {
-                                                    <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
-                                        }
-
+                                    {
+                                        <option id="@item.ID" value="@item.ID">@item.ANNEX</option>
                                     }
+
+                                }
                             }
 
                         </select>
@@ -703,14 +766,14 @@
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
-                                    {
+                                {
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
-                                        {
-                                                    <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
-                                        }
-
+                                    {
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
+
+                                }
                             }
                         </select>
 
