@@ -340,7 +340,67 @@ namespace AIS.Controllers
             return user;
             }
         #endregion
+        public async Task<List<AuditeeResponseEvidenceModel>> GetUploadedAuditReportsFromDirectory(string subfolder)
+            {
+            var filesData = new List<AuditeeResponseEvidenceModel>();
+            try
+                {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Audit_Report", subfolder);
 
+                if (!Directory.Exists(uploadPath))
+                    {
+                    return filesData;
+                    }
+
+                var files = Directory.GetFiles(uploadPath);
+
+                foreach (var filePath in files)
+                    {
+                    var fileName = Path.GetFileName(filePath);
+                    var fileType = Path.GetExtension(filePath).TrimStart('.'); // Get the file extension without the dot
+                    var fileLength = new FileInfo(filePath).Length;
+
+                    string mimeType = GetMimeType(filePath); // Get MIME type
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous))
+                        {
+                        using (var memoryStream = new MemoryStream())
+                            {
+                            await fileStream.CopyToAsync(memoryStream);
+                            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+
+                            // Sanitize the Base64 string
+                            base64String = base64String.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+
+                            // Ensure proper padding
+                            while (base64String.Length % 4 != 0)
+                                {
+                                base64String += "=";
+                                }
+
+                            // Fix URL-safe Base64 (if applicable)
+                            base64String = base64String.Replace('-', '+').Replace('_', '/');
+
+                            filesData.Add(new AuditeeResponseEvidenceModel
+                                {
+                                FILE_NAME = fileName,
+                                IMAGE_NAME=fileName,
+                                IMAGE_LENGTH = Convert.ToInt64(fileLength),
+                                IMAGE_TYPE = mimeType, // Store MIME type instead of just file extension
+                                IMAGE_DATA = base64String
+                                });
+                            }
+                        }
+                    }
+                }
+            catch (Exception)
+                {
+                // Handle exception (e.g., log error)
+                return new List<AuditeeResponseEvidenceModel>();
+                }
+
+            return filesData;
+            }
         public async Task<List<AuditeeResponseEvidenceModel>> GetAttachedFilesFromDirectory(string subfolder)
             {
             var filesData = new List<AuditeeResponseEvidenceModel>();
@@ -520,6 +580,31 @@ namespace AIS.Controllers
                 }
 
             return filesData;
+            }
+        public bool DeleteAuditReportSubFolderDirectoryFromServer(string subfolder)
+            {
+            try
+                {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Audit_Report", subfolder);
+
+                if (Directory.Exists(uploadPath))
+                    {
+                    // Delete the directory and all its contents
+                    Directory.Delete(uploadPath, true);
+
+                    return true;
+                    }
+                else
+                    {
+
+                    return false;
+                    }
+                }
+            catch (Exception)
+                {
+
+                return false;
+                }
             }
         public bool DeleteSubFolderDirectoryFromServer(string subfolder)
             {
@@ -20693,7 +20778,166 @@ Dear {userFullName},
 
             return resp;
             }
-        
+
+
+        public async Task<string> UploadAuditReport(int ENG_ID)
+            {
+            
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            List<AuditeeResponseEvidenceModel> AUDIT_REPORT = new List<AuditeeResponseEvidenceModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                AUDIT_REPORT = await this.GetUploadedAuditReportsFromDirectory(ENG_ID.ToString());
+                int index = 1;
+                if (AUDIT_REPORT != null)
+                    {
+                    if (AUDIT_REPORT.Count > 0)
+                        {
+                        foreach (var item in AUDIT_REPORT)
+                            {
+                            cmd.CommandText = "pkg_ad.P_UPLOAD_AUDIT_REPORT";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                            cmd.Parameters.Add("AREP", OracleDbType.Clob).Value = item.IMAGE_DATA;
+                            cmd.Parameters.Add("REP_TYPE", OracleDbType.Varchar2).Value = item.IMAGE_TYPE;
+                            cmd.Parameters.Add("REP_NAME", OracleDbType.Varchar2).Value = item.FILE_NAME;
+                            cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                            cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                            cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                            cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                            OracleDataReader rdr = cmd.ExecuteReader();
+                            while (rdr.Read())
+                                {
+                                resp = rdr["remarks"].ToString();
+                                }
+                            index++;
+                            }
+                        }
+                    }
+
+                this.DeleteAuditReportSubFolderDirectoryFromServer(ENG_ID.ToString());
+                }
+            
+            con.Dispose();
+            return resp;
+            }
+
+        public List<FinalAuditReportModel> GetAuditReports(int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            List<FinalAuditReportModel> repList = new List<FinalAuditReportModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_GET_FINAL_AUDIT_REPORT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    FinalAuditReportModel z = new FinalAuditReportModel();
+                    z.ID = rdr["ID"].ToString();
+                    z.ENTITY_ID = rdr["ENTITY_ID"].ToString();
+                    z.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    z.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    repList.Add(z);
+                    }
+                }
+            con.Dispose();
+            return repList;
+            }
+
+        public AuditeeResponseEvidenceModel GetAuditReportContent(string FILE_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var resp = new AuditeeResponseEvidenceModel();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_GET_AUDIT_REPORT_CONTENT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = new AuditeeResponseEvidenceModel
+                        {
+                       
+                        FILE_ID = (rdr["id"].ToString()),
+                        IMAGE_TYPE = (rdr["doc_type"].ToString()),
+                        IMAGE_NAME = (rdr["doc_name"].ToString())
+                        };
+
+                    // Handle CLOB data
+                    var clob = rdr.GetOracleClob(rdr.GetOrdinal("FILE_DATA"));
+                    if (clob != null)
+                        {
+                        resp.IMAGE_DATA = clob.Value; // Get the entire CLOB data as a string
+                        }
+
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+
+        public FinalAuditReportModel GetCheckAuditReportExisits(int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            FinalAuditReportModel resp = new FinalAuditReportModel();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_ad.P_GET_CHECK_AUDIT_REPORT_UPLOADED";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                        resp.ID = rdr["ID"].ToString();                    
+                        resp.DOC_TYPE = rdr["doc_type"].ToString();                    
+                        resp.DOC_NAME = rdr["doc_name"].ToString();                    
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+
+
         }
 
     }

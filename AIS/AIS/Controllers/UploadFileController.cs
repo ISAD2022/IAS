@@ -16,6 +16,7 @@ namespace AIS.Controllers
         private readonly ILogger<UploadFileController> _logger;
         private readonly IConfiguration _configuration;
         private readonly string _uploadPath;
+        private readonly string _uploadReportPath;
         private readonly string _uploadPathAuditee;
         private readonly string _uploadPathCAU;
 
@@ -25,6 +26,7 @@ namespace AIS.Controllers
             _configuration = configuration;
             // Set the directory path where files will be uploaded
             _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/PostCompliance_Evidences");
+            _uploadReportPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Audit_Report");
             _uploadPathAuditee = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Auditee_Evidences");
             _uploadPathCAU = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/CAU_Evidences");
         }
@@ -204,6 +206,7 @@ namespace AIS.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        
         [HttpPost]
         public async Task<List<AuditeeResponseEvidenceModel>> GetFilesData(string subfolder)
         {
@@ -301,6 +304,64 @@ namespace AIS.Controllers
                 return filesData;
             }
         }
+
+        public async Task<IActionResult> UploadAuditReport([FromForm] List<IFormFile> files)
+            {
+            try
+                {
+                var subfolder = Request.Form["subfolder"];
+                var uploadPath = Path.Combine(_uploadReportPath, subfolder);
+                if (!Directory.Exists(uploadPath))
+                    {
+                    Directory.CreateDirectory(uploadPath);
+                    }
+
+                foreach (var file in files)
+                    {
+                    if (file.Length > 0)
+                        {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var filePath = Path.Combine(uploadPath, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                            await file.CopyToAsync(stream);
+                            }
+                        }
+                    }
+
+                return Json(new { success = true, message = "Audit Report Uploaded successfully" });
+                }
+            catch (Exception ex)
+                {
+                _logger.LogError(ex, "Error uploading audit report");
+                return Json(new { success = false, message = ex.Message });
+                }
+            }
+
+        [HttpPost]
+        public IActionResult DeleteAuditReport(string subFolder, string fileName)
+            {
+            try
+                {
+                var uploadPath = Path.Combine(_uploadReportPath, subFolder);
+                var filePath = Path.Combine(uploadPath, fileName);
+                if (System.IO.File.Exists(filePath))
+                    {
+                    System.IO.File.Delete(filePath);
+                    return Json(new { success = true, Message = "Audit Report deleted successfully." });
+                    }
+                else
+                    {
+                    return Json(new { success = false, Message = "" });
+                    }
+                }
+            catch (Exception ex)
+                {
+                _logger.LogError(ex, "Error deleting Audit Report");
+                return Json(new { success = false, message = ex.Message });
+                }
+            }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -7,7 +7,7 @@
 
 
     function getEntityObservation() {
-        $('#manageObsPanel tbody').empty();
+        destroyDatatable('manageObsPanel');
         if ($('#branchSelectField option:selected').val() != 0) {
             $.ajax({
                 url: g_asiBaseURL + "/ApiCalls/get_old_paras_for_monitoring_ppno",
@@ -25,7 +25,6 @@
                 },
                 dataType: "json",
             });
-
         }
     }
 
@@ -74,8 +73,6 @@
             }
         });
     }
-
-
 
 
 </script>

@@ -52,6 +52,7 @@
     }
 
     function getEntityObservation() {
+        destroyDatatable('observation_panel');
 
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_violation_wise_paras_for_dashboard",
@@ -64,7 +65,7 @@
             cache: false,
             success: function (data) {
                 g_obsList = data;
-                destroyDatatable('observation_panel');
+              
                 var sr = 1;
                 var t_tparas = 0;
                 var t_sparas = 0;

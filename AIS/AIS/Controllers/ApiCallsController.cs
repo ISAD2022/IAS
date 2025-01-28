@@ -2676,6 +2676,7 @@ namespace AIS.Controllers
 
             }
 
+        [HttpPost]
         public string update_gm_reporting_line_office(List<int> ENT_ID_ARR, int GM_OFF_ID, int REP_OFF_ID)
             {
             string res = "";
@@ -2689,6 +2690,34 @@ namespace AIS.Controllers
             return "{\"Status\":true,\"Message\":\"GM Office and Reporting Line Updated Successfully\"}";
 
             }
+
+        [HttpPost]
+        public async Task<string> upload_audit_report(int ENG_ID)
+            {
+            string response = await dBConnection.UploadAuditReport(ENG_ID);
+            return "{\"Status\":true,\"Message\":\"" + response + "\"}";
+            }
+
+        [HttpPost]
+        public List<FinalAuditReportModel> get_audit_reports(int ENG_ID)
+            {
+            return dBConnection.GetAuditReports(ENG_ID);
+            }
+
+        [HttpPost]
+        public AuditeeResponseEvidenceModel get_audit_report_content(string FILE_ID)
+            {
+            return dBConnection.GetAuditReportContent(FILE_ID);
+            }
+
+        //
+        [HttpPost]
+        public FinalAuditReportModel get_check_report_exist_for_engId(int ENG_ID)
+            {
+            return dBConnection.GetCheckAuditReportExisits(ENG_ID);
+            }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

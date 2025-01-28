@@ -16,7 +16,7 @@
 
     
     function getEntityObservation() {
-
+        destroyDatatable('observation_panel');
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_risk_base_plan_for_dashboard",
             type: "POST",

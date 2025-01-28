@@ -5,6 +5,7 @@
 
 <style type="text/css">
 
+
     .widget-chart {
         text-align: center;
         padding: 1rem;
@@ -343,35 +344,35 @@
         }
 
         .progress.yellow .progress-right .progress-bar {
-            animation: loading-3 1.0s linear forwards !important;
+            animation: loading-1 1.0s linear forwards !important;
         }
 
         .progress.yellow .progress-left .progress-bar {
-            animation: loading-3b 2.5s linear forwards !important;
+            animation: loading-2 2.5s linear forwards !important;
         }
 
         .progress.blue .progress-right .progress-bar {
-            animation: loading-4 1.8s linear forwards !important;
+            animation: loading-1 1.8s linear forwards !important;
         }
 
         .progress.blue .progress-left .progress-bar {
-            animation: loading-4b 1.8s linear forwards !important;
+            animation: loading-2 1.8s linear forwards !important;
         }
 
         .progress.sky .progress-right .progress-bar {
-            animation: loading-5 1.8s linear forwards !important;
+            animation: loading-1 1.8s linear forwards !important;
         }
 
         .progress.sky .progress-left .progress-bar {
-            animation: loading-5b 1.8s linear forwards !important;
+            animation: loading-2 1.8s linear forwards !important;
         }
 
         .progress.green .progress-right .progress-bar {
-            animation: loading-6 1.8s linear forwards !important;
+            animation: loading-1 1.8s linear forwards !important;
         }
 
         .progress.green .progress-left .progress-bar {
-            animation: loading-6b 1.8s linear forwards !important;
+            animation: loading-2 1.8s linear forwards !important;
         }
 
         .progress.red .progress-bar {
@@ -420,6 +421,7 @@
                         $($('small.remarks_field_span')[i]).html(v.remarks);
 
                     $($('div.progress-value')[i]).html(v.percentage);
+                     $('div.progress .progress-bar').css('animation', 'none');
 
                 });
 
@@ -574,40 +576,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-4 mt-3">
-                <div class="widget-chart widget-chart2 text-left mb-3 card-btm-border card-shadow-success border-success card">
-                    <div class="widget-chat-wrapper-outer w-100">
-                        <div class="widget-chart-content">
-                            <div class="widget-title opacity-5 text-uppercase">
-                            </div>
-                            <div class="widget-numbers mt-2 fsize-4 mb-0 w-100">
-                                <div class="row widget-chart-flex align-items-center">
-                                    <div class="col-md-6" style="top:-23px !important;">
-                                        <span class="opacity-10 text-success pr-2">
-                                            <i class="fa fa-angle-up"></i>
-                                        </span><br />
-                                        <span class="ent_count_filed"></span>
-                                        <small style="font-size:15px; color:red;" class="opacity-5 pl-1 remarks_field_span"></small>
 
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="progress green">
-                                            <span class="progress-left">
-                                                <span class="progress-bar"></span>
-                                            </span>
-                                            <span class="progress-right">
-                                                <span class="progress-bar"></span>
-                                            </span>
-                                            <div class="progress-value"></div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </center>
 </div>
