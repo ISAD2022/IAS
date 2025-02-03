@@ -20937,6 +20937,162 @@ Dear {userFullName},
             return resp;
             }
 
+        public List<BiometSamplingModel> GetBiometSamplingDetails(int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            sessionHandler._configuration = this._configuration;
+
+            var con = this.DatabaseConnection();
+            con.Open();
+
+            List<BiometSamplingModel> responseList = new List<BiometSamplingModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_get_Biomet";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                using (OracleDataReader rdr = cmd.ExecuteReader())
+                    {
+                    while (rdr.Read())
+                        {
+                        BiometSamplingModel record = new BiometSamplingModel()
+                            {
+                            ID = rdr["ID"] != DBNull.Value ? Convert.ToInt32(rdr["ID"]) : 0,
+                            EngId = rdr["ENG_ID"] != DBNull.Value ? Convert.ToInt32(rdr["ENG_ID"]) : 0,
+                            AcNo = rdr["AC_NO"].ToString(),
+                            AcTitle = rdr["AC_TITLE"].ToString(),
+                            CustName = rdr["CUT_NAME"].ToString(),
+                            Dob = rdr["DOB"].ToString(),
+                            Cell = rdr["CELL"].ToString(),
+                            Cnic = rdr["CNIC"].ToString(),
+                            CnicExpiry = rdr["CNIC_EXPIRY"].ToString(),
+                            AcType = rdr["AC_TYPE"].ToString(),
+                            AcCat = rdr["AC_CAT"].ToString(),
+                            AcOpeningDate = rdr["AC_OPENING_DATE"].ToString(),
+                            BmVeriDate = rdr["BM_VERI_DATE"].ToString(),
+                            LastTransaction = rdr["LAST_TRANSACTION"].ToString(),
+                            BmVerified = rdr["BM_VERIFIED"].ToString(),
+                            Observation = rdr["OBSERVATION"].ToString(),
+                            CheckBy = rdr["CHECK_BY"].ToString(),
+                            CheckedOn = rdr["CHECKED_ON"].ToString(),
+                            NName = rdr["N_NAME"].ToString(),
+                            FName = rdr["F_NAME"].ToString(),
+                            NDob = rdr["N_DOB"].ToString(),
+                            NCell = rdr["N_CELL"].ToString(),
+                            NExpiry = rdr["N_EXPIRY"].ToString()
+                            };
+                        responseList.Add(record);
+                        }
+                    }
+                }
+            con.Dispose();
+            return responseList;
+            }
+        public List<AccountTransactionSampleModel> GetBiometAccountTransactionSamplingDetails(int ENG_ID, string AC_NO)
+                {
+                sessionHandler = new SessionHandler();
+                sessionHandler._httpCon = this._httpCon;
+                sessionHandler._session = this._session;
+                sessionHandler._configuration = this._configuration;
+
+                var con = this.DatabaseConnection();
+                con.Open();
+
+                List<AccountTransactionSampleModel> responseList = new List<AccountTransactionSampleModel>();
+                var loggedInUser = sessionHandler.GetSessionUser();
+
+                using (OracleCommand cmd = con.CreateCommand())
+                    {
+                    cmd.CommandText = "pkg_sm.p_get_account_transcations";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                    cmd.Parameters.Add("AC_number", OracleDbType.Int32).Value = AC_NO;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    using (OracleDataReader rdr = cmd.ExecuteReader())
+                        {
+                        while (rdr.Read())
+                            {
+                            AccountTransactionSampleModel record = new AccountTransactionSampleModel()
+                                {
+                                TransactionMasterCode = rdr["transactionmastercode"].ToString(),
+                                Description = rdr["description"].ToString(),
+                                Remarks = rdr["REMARKS"].ToString(),
+                                TransactionDate = rdr["transactiondate"].ToString(),
+                                AuthorizationDate = rdr["authorizationdate"].ToString(),
+                                DrAmount = rdr["dramount"].ToString(),
+                                CrAmount = rdr["cramount"].ToString(),
+                                ToAccountId = rdr["toaccountid"].ToString(),
+                                ToAccountTitle = rdr["toaccounttitle"].ToString(),
+                                ToAccountNo = rdr["toaccountno"].ToString(),
+                                ToAccBranchId = rdr["to_acc_branchid"].ToString(),
+                                InstrumentNo = rdr["instrumentno"].ToString()
+                                };
+                            responseList.Add(record);
+                            }
+                        }
+                    }
+                con.Dispose();
+                return responseList;
+                }
+
+        public List<AccountDocumentBiometSamplingModel> GetBiometAccountDocumentsSamplingDetails(string AC_NO)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            sessionHandler._configuration = this._configuration;
+
+            var con = this.DatabaseConnection();
+            con.Open();
+
+            List<AccountDocumentBiometSamplingModel> responseList = new List<AccountDocumentBiometSamplingModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.P_GET_ACCOUNT_DOC ";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("AC_number", OracleDbType.Int32).Value = AC_NO;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                using (OracleDataReader rdr = cmd.ExecuteReader())
+                    {
+                    while (rdr.Read())
+                        {
+                        AccountDocumentBiometSamplingModel record = new AccountDocumentBiometSamplingModel()
+                            {
+                            OldAccountNo = rdr["OLDACCOUNTNO"].ToString(),
+                            PageNo = rdr["PAGENO"].ToString(),
+                            Name = rdr["NAME"].ToString(),
+                            DocImage = rdr["DOC_IMAGE"] as byte[], // Assuming DOC_IMAGE is a BLOB in the database
+                            DocRemarks = rdr["DOC_REMARKS"].ToString()
+                            };
+                        responseList.Add(record);
+                        }
+                    }
+                }
+            con.Dispose();
+            return responseList;
+            }
 
         }
 

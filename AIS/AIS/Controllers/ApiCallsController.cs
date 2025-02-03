@@ -2716,6 +2716,21 @@ namespace AIS.Controllers
             {
             return dBConnection.GetCheckAuditReportExisits(ENG_ID);
             }
+        [HttpPost]
+        public List<BiometSamplingModel> get_biomet_sampling_details(int ENG_ID)
+            {
+            return dBConnection.GetBiometSamplingDetails(ENG_ID);
+            }
+        [HttpPost]
+        public List<AccountTransactionSampleModel> get_biomet_account_transaction_sampling_details(int ENG_ID, string AC_NO)
+            {
+            return dBConnection.GetBiometAccountTransactionSamplingDetails(ENG_ID,AC_NO);
+            }
+        [HttpPost]
+        public List<AccountDocumentBiometSamplingModel> get_biomet_account_documents_sampling_details(string AC_NO)
+            {
+            return dBConnection.GetBiometAccountDocumentsSamplingDetails(AC_NO);
+            }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

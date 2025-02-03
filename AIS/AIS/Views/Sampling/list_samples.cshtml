@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "List of Samples";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    
+    var g_engID = 0;
+    $(document).ready(function () {
+        var url_string = window.location;
+        var url = new URL(url_string);
+        g_engID = url.searchParams.get("engId");
+     
+    });
+
+
+    function redirectToBiomet(){
+        
+        window.location.href = g_asiBaseURL + "/Sampling/biomet?engId="+g_engID;
+    }
+      function redirectToLoan(){
+
+        window.location.href = g_asiBaseURL + "/Sampling/loans?engId="+g_engID;
+    }
+
+</script>
+
+<div class="row col-md-12 mt-3">
+
+    <h3 style="color: #45c545;">List of Samples</h3>
+
+    <div class="row col-md-12 mt-3">
+
+        <button onclick="redirectToBiomet();" class="btn btn-danger col-md-3">BIOMET</button>
+        <button onclick="redirectToLoan();" class="btn btn-danger col-md-3">BIOMET</button>
+    </div>
+
+  
+</div>

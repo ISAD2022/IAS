@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Account Document List";
+    Layout = "_Layout";
+}
+
+<script type="text/javascript">
+    var g_engId = 0;
+    var g_accountNo = 0;
+
+    $(document).ready(function () {
+        var url_string = window.location.href;
+        var url = new URL(url_string);
+        g_engId = url.searchParams.get("engId");
+        g_accountNo = url.searchParams.get("acNo");
+        loadAccountDocuments();
+    });
+
+    function loadAccountDocuments() {
+        destroyDatatable('account_document_list');
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_biomet_account_documents_sampling_details",
+            type: "POST",
+            data: {
+                'AC_NO': g_accountNo
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    populateTable(data);
+                }
+            },
+            dataType"json"
+        });
+    }
+
+    function populateTable(data) {
+        var tableBody = $("#account_document_list tbody");
+        tableBody.empty(); // Clear existing rows
+
+        $.each(data, function (index, item) {
+            var row = `<tr>
+                <td>${index + 1}</td>
+                <td>${item.oldAccountNo}</td>
+                <td>${item.pageNo}</td>
+                <td>${item.name}</td>
+                <td>${item.docRemarks}</td>
+                <td>
+                    <a href="javascript:void(0);" onclick="viewDocument('${item.docImage}')" class="btn btn-info btn-sm">View Document</a>
+                </td>
+            </tr>`;
+            tableBody.append(row);
+        });
+
+        initializeDataTable('account_document_list');
+    }
+
+         function viewDocument(docImage) {
+        let win = window.open("", "_blank");
+        if (!win) {
+            console.error("Popup blocked");
+            alert("Please allow popups to view the document.");
+            return;
+        }
+
+        // Check if the base64 string represents a JPEG image
+        if (docImage.startsWith("/9j/")) {
+            let imageSrc = "data:image/jpeg;base64," + docImage;
+            win.document.write(`
+                <html>
+                <head><title>Document Viewer</title></head>
+                <body style="margin:0; text-align:center; background:#f8f8f8;">
+                    <img src="${imageSrc}" style="max-width:90vw; max-height:90vh; object-fit:contain;" />
+                </body>
+                </html>
+            `);
+        }
+        // Check if the base64 string represents a PDF
+        else if (docImage.startsWith("JVBERi0xL")) {
+            let pdfSrc = "data:application/pdf;base64," + docImage;
+
+            // More reliable way to open PDFs
+            win.location.href = pdfSrc; // Opens the PDF in the browser's built-in viewer
+        }
+        // Handle unknown or unsupported document types
+        else {
+            console.error("Unsupported document type");
+            alert("The document type is not supported.");
+            win.close();
+        }
+    }
+
+
+
+
+
+</script>
+
+<div class="row col-md-12 mt-3">
+    <h3 style="color: #45c545;">Account Document List</h3>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <table id="account_document_list" class="table table-hover table-bordered table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+            <tr>
+                <th>Sr No</th>
+                <th>Old Account No</th>
+                <th>Page No</th>
+                <th>Name</th>
+                <th>Document Remarks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
