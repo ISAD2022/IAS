@@ -2732,6 +2732,12 @@ namespace AIS.Controllers
             return dBConnection.GetBiometAccountDocumentsSamplingDetails(AC_NO);
             }
 
+        public List<YearWiseOutstandingObservationsModel> get_year_wise_outstanding_observations(int ENTITY_ID)
+            {
+            return dBConnection.GetYearWiseOutstandingParas(ENTITY_ID);
+            }
+        
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

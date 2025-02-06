@@ -8,8 +8,8 @@
     var g_procId = 0;
     var g_subprocId = 0;
     var g_procDetailId = 0;
-    var g_entType="";  
-    var g_paraRef="";
+    var g_entType = "";
+    var g_paraRef = "";
 
     $(document).ready(function () {
         $('#responseAuditee').richText({
@@ -18,6 +18,15 @@
             videoEmbed: false,
             urls: false
         });
+
+        $('#text_selectBox').richText({
+            imageUpload: false,
+            fileUpload: false,
+            videoEmbed: false,
+            urls: false
+        });
+
+        //
     });
     function getReportDropdownContents() {
         if ($('#entitySelectField').val() == 0) {
@@ -85,7 +94,7 @@
                     $('#nature_selectBox').append("<option value=\"0\" id=\"0\">--Select Sub Group--</option>");
                     $.each(data, function (index, item) {
                         var className = "";
-                        if (g_subprocId!=0 && g_subprocId == item.id) {
+                        if (g_subprocId != 0 && g_subprocId == item.id) {
                             className = 'selected = "selected"';
                         }
                         $('#nature_selectBox').append("<option " + className + " value=\"" + item.id + "\"> " + item.suB_V_NAME + " </option> ");
@@ -109,19 +118,20 @@
                 $('#violation_selectBox').val(v.process);
                 $('#risk_selectBox').val(v.risK_ID);
                 $('#responseAuditee').val(v.parA_TEXT).trigger('change');
+                $('#text_selectBox').val(v.parA_TEXT).trigger('change');
+                //
                 getViolationNature();
             }
         });
 
     }
-   
+
     function updateParaStatusToSettle(ref_p, memo_no, paraId) {
         g_paraRef = ref_p;
         $('#settleRemarksModel').modal('show');
         $('#Reason_settlement').val('');
     }
-    function submitSettlementofLegacyPara()
-    {
+    function submitSettlementofLegacyPara() {
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/settle_legacy_para_HO",
             type: "POST",
@@ -133,7 +143,7 @@
             cache: false,
             success: function (data) {
 
-                alert(data.Message);  
+                alert(data.Message);
                 $('#settleRemarksModel').modal('hide');
                 getLegacyPara();
             },
@@ -170,132 +180,36 @@
             dataType: "json",
         });
 
-    }  
-       
+    }
+
     function reloadLocation() {
         getLegacyPara();
     }
-    function submitLegacyParaUpdates(){
+    function submitLegacyParaUpdates() {
 
-        if(g_entType=="B"){
+        if (g_entType == "B") {
 
-        
-        if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
-            alert("There are pending responsibilities, please add all pending responsibilities to proceed");
-            return;
-        } 
 
-        if ($('#listofRespPersons tbody tr .ibtnAdded').length==0){
-            confirmAlert("Do you confirm this Legacy Para has no responsibility");
-            onconfirmAlertCallback(confirm_submitLegacyParaUpdates);
-            return;
-        }else{
-            confirm_submitLegacyParaUpdates();
-        }
-        }else{
+            if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
+                alert("There are pending responsibilities, please add all pending responsibilities to proceed");
+                return;
+            }
+
+            if ($('#listofRespPersons tbody tr .ibtnAdded').length == 0) {
+                confirmAlert("Do you confirm this Legacy Para has no responsibility");
+                onconfirmAlertCallback(confirm_submitLegacyParaUpdates);
+                return;
+            } else {
+                confirm_submitLegacyParaUpdates();
+            }
+        } else {
             confirm_submitLegacyParaUpdates();
         }
 
     }
-    function confirm_submitLegacyParaUpdates(){
+    function confirm_submitLegacyParaUpdates() {
         var resP = [];
         $('#PublishParaText').attr('disabled', true);
-        if(g_entType!="D"){
-            if ($('#updateMemo_process').val() == 0) {
-                alert("Please select Process");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-
-            if ($('#updateMemo_subprocess').val() == 0) {
-                alert("Please select Sub Process");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-
-            if ($('#updateMemo_violation').val() == 0) {
-                alert("Please select Checklist Detail");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-
-            if ($('#auditCriteriaRiskField').val() == 0) {
-                alert("Please select Risk");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-        }
-        else{
-            if ($('#riskGroupSelectBox').val() == 0) {
-                alert("Please select Violation");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-
-            if ($('#riskSubGroupSelectBox').val() == 0) {
-                alert("Please select Nature");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }          
-
-            if ($('#auditCriteriaRiskField').val() == 0) {
-                alert("Please select Risk");
-                $('#PublishParaText').attr('disabled', false);
-                return;
-            }
-
-        }
-      
-        var add_leg_data = {
-            'PARA_TEXT': $('.richText-editor').html(),
-            'ID': g_paraId,
-            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#riskGroupSelectBox').val(),
-            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#riskSubGroupSelectBox').val(),
-            'CHECKLIST_DETAIL_ID': g_entType == "B" ? $('#updateMemo_violation').val():0,
-            'RISK_ID': $('#auditCriteriaRiskField').val(),
-            'REF_P': g_paraRef,
-            'RESP_PP': resP
-        };
-        $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/update_legacy_para_with_responsibilities",
-            type: "POST",
-            data: add_leg_data,
-            cache: false,
-            success: function (data) {
-                $('#PublishParaText').attr('disabled', false);
-                alert(data.Message);
-                getLegacyPara();
-            },
-
-            dataType: "json",
-        });
-    }
-    function submitLegacyParaUpdatesWithNoChanges() {
-        if(g_entType=="B"){
-
-        
-
-        if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
-            alert("There are pending responsibilities, please add all pending responsibilities to proceed");
-            return;
-        }
-
-        if ($('#listofRespPersons tbody tr .ibtnAdded').length == 0) {
-            confirmAlert("Do you confirm this Legacy Para has no responsibility");
-            onconfirmAlertCallback(confirm_submitLegacyParaUpdatesWithNoChanges);
-            return;
-        }else{
-            confirm_submitLegacyParaUpdatesWithNoChanges();
-        }
-        }else{
-            confirm_submitLegacyParaUpdatesWithNoChanges();
-        }
-
-    }
-    function confirm_submitLegacyParaUpdatesWithNoChanges() {      
-
-        var resP = [];
-        
         if (g_entType != "D") {
             if ($('#updateMemo_process').val() == 0) {
                 alert("Please select Process");
@@ -315,7 +229,103 @@
                 return;
             }
 
-            if ($('#auditCriteriaRiskField').val() == 0) {
+            if ($('#risk_selectBox').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+        }
+        else {
+            if ($('#violation_selectBox').val() == 0) {
+                alert("Please select Violation");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#nature_selectBox').val() == 0) {
+                alert("Please select Nature");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#risk_selectBox').val() == 0) {
+                alert("Please select Risk");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+        }
+
+        var add_leg_data = {
+            'PARA_TEXT': $('#text_selectBox').val(),
+            'ID': g_paraId,
+            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#violation_selectBox').val(),
+            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#nature_selectBox').val(),
+            'CHECKLIST_DETAIL_ID': g_entType == "B" ? $('#updateMemo_violation').val() : 0,
+            'RISK_ID': $('#risk_selectBox').val(),
+            'REF_P': g_paraRef,
+            'RESP_PP': resP
+        };
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/update_legacy_para_with_responsibilities",
+            type: "POST",
+            data: add_leg_data,
+            cache: false,
+            success: function (data) {
+                $('#PublishParaText').attr('disabled', false);
+                alert(data.Message);
+                getLegacyPara();
+            },
+
+            dataType: "json",
+        });
+    }
+    function submitLegacyParaUpdatesWithNoChanges() {
+        if (g_entType == "B") {
+
+
+
+            if ($('#listofRespPersons tbody tr .ibtnAdd').length > 0) {
+                alert("There are pending responsibilities, please add all pending responsibilities to proceed");
+                return;
+            }
+
+            if ($('#listofRespPersons tbody tr .ibtnAdded').length == 0) {
+                confirmAlert("Do you confirm this Legacy Para has no responsibility");
+                onconfirmAlertCallback(confirm_submitLegacyParaUpdatesWithNoChanges);
+                return;
+            } else {
+                confirm_submitLegacyParaUpdatesWithNoChanges();
+            }
+        } else {
+            confirm_submitLegacyParaUpdatesWithNoChanges();
+        }
+
+    }
+    function confirm_submitLegacyParaUpdatesWithNoChanges() {
+
+        var resP = [];
+
+        if (g_entType != "D") {
+            if ($('#updateMemo_process').val() == 0) {
+                alert("Please select Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_subprocess').val() == 0) {
+                alert("Please select Sub Process");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#updateMemo_violation').val() == 0) {
+                alert("Please select Checklist Detail");
+                $('#PublishParaText').attr('disabled', false);
+                return;
+            }
+
+            if ($('#risk_selectBox').val() == 0) {
                 alert("Please select Risk");
                 $('#PublishParaText').attr('disabled', false);
                 return;
@@ -324,19 +334,19 @@
 
         }
         else {
-            if ($('#riskGroupSelectBox').val() == 0) {
+            if ($('#violation_selectBox').val() == 0) {
                 alert("Please select Violation");
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
 
-            if ($('#riskSubGroupSelectBox').val() == 0) {
+            if ($('#nature_selectBox').val() == 0) {
                 alert("Please select Nature");
                 $('#PublishParaText').attr('disabled', false);
                 return;
             }
 
-            if ($('#auditCriteriaRiskField').val() == 0) {
+            if ($('#risk_selectBox').val() == 0) {
                 alert("Please select Risk");
                 $('#PublishParaText').attr('disabled', false);
                 return;
@@ -347,10 +357,10 @@
 
         var add_leg_data = {
             'ID': g_paraId,
-            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#riskGroupSelectBox').val(),
-            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#riskSubGroupSelectBox').val(),
+            'PROCESS_ID': g_entType == "B" ? $('#updateMemo_process').val() : $('#violation_selectBox').val(),
+            'SUB_PROCESS_ID': g_entType == "B" ? $('#updateMemo_subprocess').val() : $('#nature_selectBox').val(),
             'CHECKLIST_DETAIL_ID': g_entType == "B" ? $('#updateMemo_violation').val() : 0,
-            'RISK_ID': $('#auditCriteriaRiskField').val(),
+            'RISK_ID': $('#risk_selectBox').val(),
             'REF_P': g_paraRef,
             'RESP_PP': resP
         };
@@ -372,7 +382,7 @@
 <div class="row col-md-12 mt-3">
     <h3 style=" display:block;color: #45c545;">Update Legacy Paras</h3>
 </div>
-<div class="row col-md-12">   
+<div class="row col-md-12">
     <div class="row col-md-12 mt-3">
         <div class="row col-md-2">
             <label><b>Entity:</b></label>
@@ -385,7 +395,7 @@
                     {
                         foreach (var item in (dynamic)(ViewData["EntitiesList"]))
                         {
-                                            <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
+                            <option value="@item.ID" id="@item.ID">@item.ENTITY_NAME</option>
                         }
                     }
                 }
@@ -431,17 +441,18 @@
                 </button>
             </div>
             <div class="mt-3 modal-body">
-                <form>                  
+                <form>
                     <div class="form-group">
                         <label for="violation_selectBox" class="font-weight-bold">Violation</label>
-                        <select id="violation_selectBox" onchange="getViolationNature();" class="form-select form-control" aria-label="">
+                        <select id="violation_selectBox" onchange="getViolationNature();"
+                            class="form-select form-control" aria-label="">
                             <option value="0" id="0" selected="selected">--Select Voilation Category--</option>
                             @{
                                 if (ViewData["Voilation_Cat"] != null)
                                 {
                                     foreach (var item in (dynamic)(ViewData["Voilation_Cat"]))
                                     {
-                                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
+                                        <option id="@item.ID" value="@item.ID">@item.V_NAME</option>
                                     }
                                 }
                             }
@@ -449,15 +460,17 @@
                     </div>
                     <div class="form-group">
                         <h5>Nature/Area</h5>
-                        <select id="nature_selectBox" class="form-select form-control" aria-label="Default select example">
-                           
+                        <select id="nature_selectBox" class="form-select form-control"
+                            aria-label="Default select example">
+
                         </select>
-                    </div>                  
+                    </div>
 
                     <div class="form-group">
 
                         <label class="font-weight-bold">Risk Category </label>
-                        <select id="risk_selectBox" class="form-select form-control" aria-label="Default select example">
+                        <select id="risk_selectBox" class="form-select form-control"
+                            aria-label="Default select example">
                             <option value="0" id="0" selected>--Select Risk Category--</option>
                             @{
                                 if (ViewData["RiskList"] != null)
@@ -465,7 +478,7 @@
 
                                     foreach (var risk in (dynamic)(ViewData["RiskList"]))
                                     {
-                                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
+                                        <option id="@risk.R_ID" value="@risk.R_ID">@risk.DESCRIPTION</option>
                                     }
 
                                 }
@@ -480,20 +493,22 @@
                     <div class="form-group">
                         <textarea class="form-control" id="text_selectBox"></textarea>
                     </div>
-                  
+
                 </form>
 
-              
+
             </div>
 
             <div class="mt-3 modal-footer">
-                
-                <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button" class="btn btn-danger">Save All Changes</button>
-                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaTextWithNoChanges" type="button" class="btn btn-primary d-none">No change in Para Text</button>
+
+                <button onclick="submitLegacyParaUpdates();" id="PublishParaText" type="button"
+                    class="btn btn-danger">Save All Changes</button>
+                <button onclick="submitLegacyParaUpdatesWithNoChanges();" id="PublishParaTextWithNoChanges"
+                    type="button" class="btn btn-primary d-none">No change in Para Text</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                
+
             </div>
-           
+
         </div>
     </div>
 </div>
@@ -517,7 +532,8 @@
                     </div>
 
                     <div class="mt-3 col-md-12">
-                        <label class="font-weight-bold">Please provide reference letter number through which complaince is received and on what date</label>
+                        <label class="font-weight-bold">Please provide reference letter number through which complaince
+                            is received and on what date</label>
 
                     </div>
                     <div class="mt-2 col-md-12">
@@ -531,8 +547,9 @@
 
             <div class="mt-3 modal-footer">
 
-                <button onclick="submitSettlementofLegacyPara();" id="PublishParaText" type="button" class="btn btn-danger">Submit</button>
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="submitSettlementofLegacyPara();" id="PublishParaText" type="button"
+                    class="btn btn-danger">Submit</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
             </div>
 

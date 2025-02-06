@@ -21093,6 +21093,51 @@ Dear {userFullName},
             con.Dispose();
             return responseList;
             }
+        public List<YearWiseOutstandingObservationsModel> GetYearWiseOutstandingParas(int ENTITY_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            sessionHandler._configuration = this._configuration;
+
+            var con = this.DatabaseConnection();
+            con.Open();
+
+            List<YearWiseOutstandingObservationsModel> responseList = new List<YearWiseOutstandingObservationsModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GET_YEAR_WISE_AUDIT_OUTSTANDING_PARAS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                using (OracleDataReader rdr = cmd.ExecuteReader())
+                    {
+                    while (rdr.Read())
+                        {
+                        YearWiseOutstandingObservationsModel record = new YearWiseOutstandingObservationsModel()
+                            {
+                            AUDIT_PERIOD = rdr["audit_period"].ToString(),
+                            ENTITY_ID = rdr["entity_id"].ToString(),
+                            TOTAL_PARAS = rdr["Total_Paras"].ToString(),
+                            SETTLED_PARA = rdr["Settled_para"].ToString(),
+                            UN_SETTLED_PARA = rdr["Un_Settled_para"].ToString(),
+                            R1 = rdr["R1"].ToString(),
+                            R2 = rdr["R2"].ToString(),
+                            R3 = rdr["R3"].ToString()                         
+                            };
+                        responseList.Add(record);
+                        }
+                    }
+                }
+            con.Dispose();
+            return responseList;
+            }
 
         }
 

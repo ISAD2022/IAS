@@ -44,6 +44,26 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult year_wise_outstanding_paras()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForDashboardPanel();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+            }
+
         public IActionResult annexure_exercise_status()
         {
             ViewData["TopMenu"] = tm.GetTopMenus();

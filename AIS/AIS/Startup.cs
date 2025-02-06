@@ -13,6 +13,7 @@ using AIS;
 using AIS.Controllers;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace AIS
 {
@@ -25,7 +26,6 @@ namespace AIS
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -37,8 +37,9 @@ namespace AIS
             services.AddScoped<SessionHandler>();
             services.AddScoped<DBConnection>();
             services.AddScoped<TopMenus>();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(); // AddRazorRuntimeCompilation();
             services.AddHttpContextAccessor();
+            
 
             // Configure form options globally
             services.Configure<FormOptions>(options =>
@@ -46,21 +47,18 @@ namespace AIS
                 options.MultipartBodyLengthLimit = 104857600; // 100 MB
             });
 
-            // Configure Kestrel server options
             services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = 104857600; // 100 MB
             });
 
-            // If hosting in IIS, configure IIS server options as well
             services.Configure<IISServerOptions>(options =>
             {
                 options.MaxRequestBodySize = 104857600; // 100 MB
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UsePathBase("/ZTBLAIS/");
             if (env.IsDevelopment() || env.IsProduction())
