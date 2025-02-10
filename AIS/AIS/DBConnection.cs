@@ -4443,7 +4443,7 @@ Dear {userFullName},
             con.Dispose();
             return jm;
             }
-        public string AddJoiningReport(AddJoiningModel jm)
+        public string AddJoiningReport(AddJoiningModel jm, string ENT_EMAIL_ADD, string ENT_PHONE_NO)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -4463,6 +4463,8 @@ Dear {userFullName},
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("COMPLETION_DATE", OracleDbType.Date).Value = jm.COMPLETION_DATE;
+                cmd.Parameters.Add("ENT_EMAIL_ADD", OracleDbType.Varchar2).Value = ENT_EMAIL_ADD;
+                cmd.Parameters.Add("ENT_PHONE_NO", OracleDbType.Varchar2).Value = ENT_PHONE_NO;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -12438,14 +12440,7 @@ Dear {userFullName},
                     chk.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     chk.NAME = rdr["name"].ToString();
                     chk.PARA_NO = rdr["para_no"].ToString();
-                    /* chk.ID = rdr["id"].ToString();
-                     chk.REF_P = rdr["ref_p"].ToString();
-                     chk.GIST_OF_PARAS = rdr["gist_of_paras"].ToString();
-                     chk.REVIEWER_REMARKS = rdr["reviewer_remarks"].ToString();
-                     chk.AMOUNT = rdr["amount"].ToString();
-                     chk.VOL_I_II = rdr["vol_i_ii"].ToString();
-                     chk.PARA_CATEGORY = rdr["Para_Category"].ToString();
-                     chk.AU_OBS_ID = rdr["AU_OBS_ID"].ToString();*/
+                 
                     list.Add(chk);
                     }
                 }
@@ -20800,7 +20795,7 @@ Dear {userFullName},
                         {
                         foreach (var item in AUDIT_REPORT)
                             {
-                            cmd.CommandText = "pkg_ad.P_UPLOAD_AUDIT_REPORT";
+                            cmd.CommandText = "pkg_hd.P_UPLOAD_AUDIT_REPORT";
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.Clear();
                             cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -20840,7 +20835,7 @@ Dear {userFullName},
 
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_ad.P_GET_FINAL_AUDIT_REPORT";
+                cmd.CommandText = "pkg_hd.P_GET_FINAL_AUDIT_REPORT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -20873,7 +20868,7 @@ Dear {userFullName},
             var resp = new AuditeeResponseEvidenceModel();
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_ad.P_GET_AUDIT_REPORT_CONTENT";
+                cmd.CommandText = "pkg_hd.P_GET_AUDIT_REPORT_CONTENT";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("FILE_ID", OracleDbType.Varchar2).Value = FILE_ID;
@@ -20917,7 +20912,7 @@ Dear {userFullName},
 
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_ad.P_GET_CHECK_AUDIT_REPORT_UPLOADED";
+                cmd.CommandText = "pkg_hd.P_GET_CHECK_AUDIT_REPORT_UPLOADED";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = ENG_ID;
@@ -21137,6 +21132,42 @@ Dear {userFullName},
                 }
             con.Dispose();
             return responseList;
+            }
+        public List<AuditeeOldParasModel> GetYearWiseOutstandingParasDetails(int ENTITY_ID = 0, int AUDIT_PERIOD=0)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeOldParasModel> list = new List<AuditeeOldParasModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GET_YEAR_WISE_AUDIT_OUTSTANDING_PARAS_DETAILS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENTITY_ID;
+                cmd.Parameters.Add("A_PERIOD", OracleDbType.Int32).Value = AUDIT_PERIOD;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    AuditeeOldParasModel chk = new AuditeeOldParasModel();
+                    chk.AUDIT_PERIOD = rdr["AUDIT_PERIOD"].ToString();
+                    chk.PARA_CATEGORY = rdr["PARA_CATEGORY"].ToString();
+                    chk.MEMO_NO = rdr["PARA_NO"].ToString();
+                    chk.GIST_OF_PARAS = rdr["GIST_OF_PARAS"].ToString();
+                    chk.ENTITY_NAME = rdr["ENTITY_NAME"].ToString();
+                    chk.REF_P = rdr["REF_P"].ToString();
+                    chk.OBS_ID = rdr["OBS_ID"].ToString();
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
             }
 
         }

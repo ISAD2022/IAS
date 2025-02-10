@@ -41,6 +41,15 @@
     });
 
     function publishJoinReport() {
+        if($('#ent_email_field').val()==""){
+            alert("Please enter entity Email Address to proceed");
+            return true;
+        }
+
+        if($('#ent_phone_field').val()==""){
+            alert("Please enter entity Contact No to proceed");
+            return true;
+        }
         $.ajax({
             url: g_asiBaseURL + "/Engagement/add_joining_report",
             type: "POST",
@@ -49,7 +58,9 @@
                 'ENG_PLAN_ID': g_joinRes.enG_PLAN_ID,
                 'TEAM_MEM_PPNO': g_joinRes.teaM_DETAILS[0].pP_NO,
                 'JOINING_DATE': $('#joiningDateFieldValue').text(),
-                'COMPLETION_DATE': $('#completionDateFieldValue').text()
+                'COMPLETION_DATE': $('#completionDateFieldValue').text(),
+                'ENT_EMAIL_ADD': $('#ent_email_field').text(),
+                'ENT_PHONE_NO': $('#ent_phone_field').text(),
             },
             cache: false,
             success: function (data) {
@@ -109,6 +120,16 @@
                 <tr>
                     <td>Audit Conducted by</td>
                     <td id="ent_team_name_field"></td>
+                </tr>
+
+                <tr>
+                    <td>Entity Email Address</td>
+                    <td> <input id="ent_email_field" class="form-control" type="email" /> </td>
+                </tr>
+
+                <tr>
+                    <td>Entity Phone No.</td>
+                    <td> <input id="ent_phone_field" class="form-control" type="tel" /> </td>
                 </tr>
             </tbody>
         </table>

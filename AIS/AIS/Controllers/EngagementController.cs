@@ -241,9 +241,9 @@ namespace AIS.Controllers
           return dBConnection.GetJoiningDetails(engId);
         }
         [HttpPost]
-        public string add_joining_report(AddJoiningModel jm)
+        public string add_joining_report(AddJoiningModel jm, string ENT_EMAIL_ADD, string ENT_PHONE_NO)
         {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddJoiningReport(jm) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.AddJoiningReport(jm, ENT_EMAIL_ADD,ENT_PHONE_NO) + "\"}";
 
         }
         public IActionResult acceptance()

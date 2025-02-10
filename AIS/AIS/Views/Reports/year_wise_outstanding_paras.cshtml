@@ -103,10 +103,51 @@
 
     }
 
-    function getEntityWiseDetails(period){
-        alert("In progress");
-        return;
+
+       function getEntityWiseDetails(period) {
+             $('#viewObservationDetailsModel').modal('show');
+
+           destroyDatatable('observation_detail_model');
+          $.ajax({
+                url: g_asiBaseURL + "/ApiCalls/get_year_wise_outstanding_observations_detials",
+                type: "POST",
+                data: {
+                    'ENTITY_ID': $('#childposting option:selected').val(),
+                    'AUDIT_PERIOD': period
+                },
+                cache: false,
+                success: function (data) {
+                    $.each(data, function (i, v) {
+                        $('#observation_detail_model tbody').append('<tr id="assignedObRow_' + v.id + '"><td>' + ++i + '</td><td>' + v.entitY_NAME + '</td><td>' + v.audiT_PERIOD + '</td><td>' + v.memO_NO + '</td><td>' + v.gisT_OF_PARAS + '</td><td><a hre="#" class="text-danger text-center" style="cursor:pointer;" onclick="event.preventDefault();viewParaText(\'' + v.reF_P + '\',\'' + v.obS_ID + '\',\'' + v.parA_CATEGORY + '\')"> View Para</a></td></tr>');
+
+                    });
+                    initializeDataTable('observation_detail_model');
+                },
+                dataType: "json",
+            });
+
+        
     }
+
+    function viewParaText(refP, obsId, paraCat) {
+        $('#viewMemoModel').modal('show');
+        $('#viewMemo_memo').html("");
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_all_para_text",
+            type: "POST",
+            data: {
+                'REF_P': refP,
+                'OBS_ID': obsId,
+                'PARA_CATEGORY': paraCat
+            },
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $('#viewMemo_memo').html(data);
+            }
+        });
+    }
+
    
 </script>
 <div class="row w-100">
@@ -186,4 +227,84 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+<div id="viewObservationDetailsModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" style="width:90%; min-width:90%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Observations Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                   
+                  
+                    <div class="form-group">
+                        <div class="col-md-12 pl-0 pr-0">
+                            <table id="observation_detail_model" class="table table-hover table-bordered table-hover mt-3 table-striped">
+                                <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+                                    <tr>
+                                        <th class="col-md-1">Sr. No.</th>
+                                        <th class="col-md-2">Entity Name</th>
+                                        <th class="col-md-1">Audit Year</th>
+                                        <th class="col-md-1">Para Number</th>
+                                        <th class="col-md-5">Heading</th>
+                                        <th class="col-md-2 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="viewMemoModel" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="min-width:90%;">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Para Text</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+
+                    <div class="form-group">
+                        <div id="viewMemo_memo" style="height: auto; overflow-y: auto;" class="form-control"></div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 

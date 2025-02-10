@@ -2731,13 +2731,17 @@ namespace AIS.Controllers
             {
             return dBConnection.GetBiometAccountDocumentsSamplingDetails(AC_NO);
             }
-
+        [HttpPost]
         public List<YearWiseOutstandingObservationsModel> get_year_wise_outstanding_observations(int ENTITY_ID)
             {
             return dBConnection.GetYearWiseOutstandingParas(ENTITY_ID);
             }
-        
 
+        [HttpPost]
+        public List<AuditeeOldParasModel> get_year_wise_outstanding_observations_detials(int ENTITY_ID, int AUDIT_PERIOD)
+            {
+            return dBConnection.GetYearWiseOutstandingParasDetails(ENTITY_ID, AUDIT_PERIOD);
+            }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
