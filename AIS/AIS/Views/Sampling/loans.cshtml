@@ -9,18 +9,23 @@
         var url_string = window.location;
         var url = new URL(url_string);
         g_engId = url.searchParams.get("engId");
-        loadBIOMETSamples();
+        loadLoanSamples();
     });
 
 
-    function loadBIOMETSamples() {
-       destroyDatatable('biomet_sample_list');
+    function loadLoanSamples() {
+     
         $.ajax({
-             url: g_asiBaseURL + "/ApiCalls/get_biomet_sampling_details",
+             url: g_asiBaseURL + "/ApiCalls/get_loan_samples",
             type: "POST",
                cache: false,
 
-            data: { ENG_ID: g_engId },
+            data: { 
+                'ENG_ID': g_engId,
+                'INDICATOR':'',
+                'STATUS_ID':0
+
+            },
             success: function (data) {
                 if (data.length > 0) {
                     populateTable(data);
@@ -29,41 +34,42 @@
             dataType: "json",
         });
     }
-    function populateTable(data) {
-        var tableBody = $("#biomet_sample_list tbody");
+      function populateTable(data) {
+        var tableBody = $("#loan_sample_list tbody");
+        destroyDatatable('loan_sample_list'); // Clear existing DataTable
+
         tableBody.empty(); // Clear existing rows
 
         $.each(data, function (index, item) {
             var row = `<tr>
                 <td>${index + 1}</td>
-                <td>${item.acNo}</td>
-                <td>${item.acTitle}</td>
-                <td>${item.custName}</td>
-                <td>${formatDate(item.dob)}</td>
-                <td>${item.cell}</td>
+                <td>${item.type}</td>
+                <td>${item.scheme}</td>
+                <td>${item.l_PURPOSE}</td>
                 <td>${item.cnic}</td>
-                <td>${formatDate(item.cnicExpiry)}</td>
-                <td>${item.acType}</td>
-                <td>${item.acCat}</td>
-                <td>
-                    <a href="./account_document?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-primary btn-sm">Documents</a>
-                </td>
-                <td>
-                    <a href="./account_transaction?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-success btn-sm">Transactions</a>
-                </td>
-                <td>
-                    <a href="./account_transaction_master?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-warning btn-sm">Master</a>
-                </td>
+                <td>${item.customername}</td>
+                <td>${formatDate(item.apP_DATE)}</td>
+                <td>${formatDate(item.disB_DATE)}</td>
+                <td>${formatCurrency(item.deV_AMOUNT)}</td>
+                <td>${formatCurrency(item.outstanding)}</td>
             </tr>`;
             tableBody.append(row);
         });
 
-        initializeDataTable('biomet_sample_list');
+        initializeDataTable('loan_sample_list'); // Reinitialize DataTable
     }
+
+    // Function to format dates properly
     function formatDate(dateString) {
-        if (!dateString || dateString.trim() === "") return "";
+        if (!dateString || dateString.trim() === "") return "N/A";
         let date = new Date(dateString);
-        return date.toLocaleDateString();
+        return date.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
+    }
+
+    // Function to format amounts properly
+    function formatCurrency(amount) {
+        if (isNaN(amount) || amount === null) return "0.00";
+        return parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     }
 
 </script>
@@ -74,7 +80,7 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <table id="biomet_sample_list" class="table table-hover table-bordered table-striped">
+    <table id="loan_sample_list" class="table table-hover table-bordered table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
                 <th>Sr No</th>
@@ -87,9 +93,7 @@
                 <th>Disbursement Date</th>
                 <th>Disbursement Amount</th>
                 <th>Current Outstanding</th>
-                <th></th>
-                <th></th>
-                <th></th>
+             
             </tr>
         </thead>
         <tbody></tbody>

@@ -4447,36 +4447,83 @@ Dear {userFullName},
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
-            jm.ENTEREDDATE = System.DateTime.Now;
-            string response = "";
-            using (OracleCommand cmd = con.CreateCommand())
-                {
-                cmd.CommandText = "pkg_ar.P_AddJoiningReport";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = jm.ENG_PLAN_ID;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("COMPLETION_DATE", OracleDbType.Date).Value = jm.COMPLETION_DATE;
-                cmd.Parameters.Add("ENT_EMAIL_ADD", OracleDbType.Varchar2).Value = ENT_EMAIL_ADD;
-                cmd.Parameters.Add("ENT_PHONE_NO", OracleDbType.Varchar2).Value = ENT_PHONE_NO;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    {
-                    this.SetEngIdOnHold();
-                    response = rdr["remarks"].ToString();
-                    }
+            sessionHandler._session = this._session;
+            sessionHandler._configuration = this._configuration;
 
+            string response = "";
+            string toEmail = "";
+            string ccEmail = "";
+            string auditEntity = "";
+            string teamMembers = "";
+            string email = "";
+            string teamLead = "";
+
+            using (var con = this.DatabaseConnection())
+                {
+                con.Open();
+                var loggedInUser = sessionHandler.GetSessionUser();
+                jm.ENTEREDBY = Convert.ToInt32(loggedInUser.PPNumber);
+                jm.ENTEREDDATE = DateTime.Now;
+
+                using (OracleCommand cmd = con.CreateCommand())
+                    {
+                    cmd.CommandText = "pkg_ar.P_AddJoiningReport";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add("ENGID", OracleDbType.Int32).Value = jm.ENG_PLAN_ID;
+                    cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                    cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                    cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                    cmd.Parameters.Add("COMPLETION_DATE", OracleDbType.Date).Value = jm.COMPLETION_DATE;
+                    cmd.Parameters.Add("ENT_EMAIL_ADD", OracleDbType.Varchar2).Value = ENT_EMAIL_ADD;
+                    cmd.Parameters.Add("ENT_PHONE_NO", OracleDbType.Varchar2).Value = ENT_PHONE_NO;
+                    cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                    using (OracleDataReader rdr = cmd.ExecuteReader())
+                        {
+                        while (rdr.Read())
+                            {
+                            this.SetEngIdOnHold();
+                            response = rdr["remarks"].ToString();
+                            toEmail = rdr["to_email"].ToString();
+                            ccEmail = rdr["cc_email"].ToString();
+                            auditEntity = rdr["auditee_name"].ToString();
+                            teamLead = rdr["team_lead"]?.ToString();
+                            teamMembers = rdr["team_members"]?.ToString();
+                            email = rdr["email"]?.ToString();
+                            }
+                        }
+                    }
                 }
-            con.Dispose();
+            if (email == "Y")
+                {
+                string emailSubject = $"IAS~Notification: Audit Team has Joined for {auditEntity}";
+
+                string emailBody = $@"
+            Dear Sir,
+
+            This is to notify you that the audit team has officially joined for the audit of '{auditEntity}'.  
+
+            Please coordinate with the team for any necessary assistance during the audit process.  
+
+          
+            Audit Team Details 
+              {teamLead}  {teamMembers} 
+
+            If you have any questions or require further information, please feel free to reach out.  
+
+            Best Regards,  
+            Internal Audit System (IAS)
+            ";
+
+                EmailConfiguration econ = new EmailConfiguration();
+                econ.ConfigEmail(toEmail, ccEmail, emailSubject, emailBody);
+                }
+
+           
             return response;
             }
+
         public List<AuditChecklistModel> GetAuditChecklist()
             {
             var con = this.DatabaseConnection(); con.Open();
@@ -21165,6 +21212,75 @@ Dear {userFullName},
                     chk.OBS_ID = rdr["OBS_ID"].ToString();
                     list.Add(chk);
                     }
+                }
+            con.Dispose();
+            return list;
+            }
+
+        public List<ListOfSamplesModel> GetListOfSamples()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ListOfSamplesModel> list = new List<ListOfSamplesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_fad.P_GET_SAMPLE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();           
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    ListOfSamplesModel chk = new ListOfSamplesModel();
+                    chk.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.SAMPLE_TYPE = rdr["SAMPLE_TYPE"].ToString();
+                    chk.SAMPLE_PERCENTAGE = rdr["SAMPLE_PERCENTAGE"].ToString();
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+
+        public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanCaseSampleModel> list = new List<LoanCaseSampleModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.P_GET_LOANS_SAMPLE";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("Status", OracleDbType.Int32).Value = STATUS_ID;
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    LoanCaseSampleModel chk = new LoanCaseSampleModel();
+                    chk.TYPE = rdr["TYPE"].ToString();
+                    chk.SCHEME = rdr["SCHEME"].ToString();
+                    chk.L_PURPOSE = rdr["L_PURPOSE"].ToString();
+                    chk.CNIC = rdr["CNIC"].ToString();
+                    chk.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
+                    chk.APP_DATE = Convert.ToDateTime(rdr["APP_DATE"]);
+                    chk.DISB_DATE = Convert.ToDateTime(rdr["DISB_DATE"]);
+                    chk.DEV_AMOUNT = Convert.ToDecimal(rdr["DEV_AMOUNT"]);
+                    chk.OUTSTANDING = Convert.ToDecimal(rdr["OUTSTANDING"]);
+                    list.Add(chk);
+                    }
+
                 }
             con.Dispose();
             return list;

@@ -1,5 +1,4 @@
 ﻿
-
 var g_asiBaseURL ="/ZTBLAIS";
 var g_secretKey="";
 var activeRequests = 0;

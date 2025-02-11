@@ -10,8 +10,56 @@
         var url_string = window.location;
         var url = new URL(url_string);
         g_engID = url.searchParams.get("engId");
+        listSamples();
      
     });
+    function listSamples(){
+
+
+        $.ajax({
+             url: g_asiBaseURL + "/ApiCalls/get_list_of_samples",
+            type: "POST",
+               cache: false,
+
+            data: {  },
+            success: function (data) {
+                if (data.length > 0) {
+                    populateTable(data);
+                }
+            },
+            dataType: "json",
+        });
+    }
+        function populateTable(data) {
+        let tableBody = $("#listOfSamples").find("tbody");
+                  destroyDatatable('listOfSamples');
+
+        data.forEach((item, index) => {
+            let row = `<tr>
+                <td>${index + 1}</td>
+                <td>${item.samplE_TYPE}</td>
+                <td class="text-center">${item.samplE_PERCENTAGE}%</td>
+                <td>--</td>  <!-- Placeholder for Total Count -->
+                <td>--</td>  <!-- Placeholder for Sample Count -->
+                <td class="text-center">
+                    <button class="btn btn-danger btn-sm" onclick="viewSample(${item.id})">
+                        View
+                    </button>
+                </td>
+            </tr>`;
+            tableBody.append(row);
+        });
+
+        // Reinitialize DataTable after populating data
+        initializeDataTable("listOfSamples");
+    }
+
+    function viewSample(sampleId) {
+        alert("Viewing sample with ID: " + sampleId);
+        // Implement the logic to open a modal or navigate to another page
+    }
+
+
 
 
     function redirectToBiomet(){
@@ -31,7 +79,7 @@
 
     <div class="row col-md-12 mt-3">
 
-        <table id="manageObsPanel" class="table table-hover table-bordered table-hover mt-3 table-striped">
+        <table id="listOfSamples" class="table table-hover table-bordered table-hover mt-3 table-striped">
             <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
                 <tr>
                     <th class="col-md-auto">Sr. No.</th>

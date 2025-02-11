@@ -2743,6 +2743,19 @@ namespace AIS.Controllers
             return dBConnection.GetYearWiseOutstandingParasDetails(ENTITY_ID, AUDIT_PERIOD);
             }
 
+        [HttpPost]
+        public List<ListOfSamplesModel> get_list_of_samples()
+            {
+            return dBConnection.GetListOfSamples();
+            }
+        [HttpPost]
+        public List<LoanCaseSampleModel> get_loan_samples(string INDICATOR, int STATUS_ID, int ENG_ID)
+            {
+            return dBConnection.GetLoanSamples(INDICATOR, STATUS_ID, ENG_ID);
+            }
+
+        //get_list_of_samples
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

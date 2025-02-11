@@ -59,8 +59,8 @@
                 'TEAM_MEM_PPNO': g_joinRes.teaM_DETAILS[0].pP_NO,
                 'JOINING_DATE': $('#joiningDateFieldValue').text(),
                 'COMPLETION_DATE': $('#completionDateFieldValue').text(),
-                'ENT_EMAIL_ADD': $('#ent_email_field').text(),
-                'ENT_PHONE_NO': $('#ent_phone_field').text(),
+                'ENT_EMAIL_ADD': $('#ent_email_field').val(),
+                'ENT_PHONE_NO': $('#ent_phone_field').val(),
             },
             cache: false,
             success: function (data) {
