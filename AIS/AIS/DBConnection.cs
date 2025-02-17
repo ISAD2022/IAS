@@ -21353,7 +21353,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_sm.P_GET_LOANS_SAMPLE";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+               // cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("S_ID", OracleDbType.Varchar2).Value = SAMPLE_ID;
                 cmd.Parameters.Add("LStatus", OracleDbType.Int32).Value = STATUS_ID;
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;

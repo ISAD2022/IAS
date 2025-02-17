@@ -14,7 +14,6 @@
         g_engId = url.searchParams.get("engId");
         g_sampleId = url.searchParams.get("sample_id");
         g_loanStatus = url.searchParams.get("loan_status");
-      //  g_indicator = url.searchParams.get("indicator");
         loadLoanSamples();
     });
 
@@ -44,8 +43,6 @@
         var tableBody = $("#loan_sample_list tbody");
         destroyDatatable('loan_sample_list'); // Clear existing DataTable
 
-        tableBody.empty(); // Clear existing rows
-
         $.each(data, function (index, item) {
             var row = `<tr>
                 <td>${index + 1}</td>
@@ -74,7 +71,7 @@
 
     // Function to format amounts properly
     function formatCurrency(amount) {
-        if (isNaN(amount) || amount === null) return "0.00";
+        if (isNaN(amount) || amount == null) return "0.00";
         return parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     }
 
