@@ -322,7 +322,6 @@ namespace AIS.Controllers
                     return View();
                 }
             }
-
         public IActionResult cau_observation()
             {
             ViewData["TopMenu"] = tm.GetTopMenus();

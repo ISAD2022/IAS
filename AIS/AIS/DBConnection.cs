@@ -3396,13 +3396,15 @@ Dear {userFullName},
             }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
             {
+            string sampleAddResp = "";
+            string sampleCreateResp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
-                {
+            {
                 cmd.CommandText = "pkg_pg.P_ApproveAuditEngagementPlan";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
@@ -3410,12 +3412,95 @@ Dear {userFullName},
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.ExecuteReader();
+                cmd.ExecuteReader();             
+
+                }
+            con.Dispose();
+            sampleAddResp=AddSampleDataAfterEngagementApproval(ENG_ID);
+            if (sampleAddResp == "Y")
+                {
+                   CreateSampleDataAfterEngagementApproval(ENG_ID);
+                }
+            return true;
+            }
+        public string AddSampleDataAfterEngagementApproval(int ENG_ID)
+            {
+            string resp = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.P_add_sample_data";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;               
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["REMARKS"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
+            }
+        public string CreateSampleDataAfterEngagementApproval(int ENG_ID)
+            {
+            string resp = "";
+            string email = "";
+            string email_cc = "";
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_create_Sample";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["REMARKS"].ToString();
+                    email = rdr["email"].ToString();
+                    email_cc = rdr["email_cc"].ToString();
+                    }
                 }
             con.Dispose();
 
-            return true;
+            if (resp == "N")
+                {
+               string emailSubject = $"IAS~Notification: Issue in Audit Sample for Engagement ID: {ENG_ID}";
+
+                string emailBody = $@"
+                    Dear Sir,
+
+                    This is to notify you that the issue has been identified in Audit Sample Creation Please check and fix.  
+
+                  
+
+                    Best Regards,  
+                    Internal Audit System (IAS)
+                    ";
+
+                EmailConfiguration econ = new EmailConfiguration();
+                econ.ConfigEmail(email, email_cc, emailSubject, emailBody);
+                }
+            return resp;
             }
+
         public UserModel GetMatchedPPNumbers(string PPNO)
             {
             UserModel um = new UserModel();
@@ -4502,15 +4587,15 @@ Dear {userFullName},
                 string emailBody = $@"
             Dear Sir,
 
-            This is to notify you that the audit team has officially joined for the audit of '{auditEntity}'.  
+            This is to notify you that the audit team has officially joined for the audit of {auditEntity}.  
 
-            Please coordinate with the team for any necessary assistance during the audit process.  
+            Please coordinate with the Audit Team for any necessary assistance during the audit process.  
 
           
             Audit Team Details 
-              {teamLead}  {teamMembers} 
+            {teamLead}  {teamMembers} 
 
-            If you have any questions or require further information, please feel free to reach out.  
+            You must provide all information desired by the Audit Team during the course of Audit.
 
             Best Regards,  
             Internal Audit System (IAS)
@@ -10240,38 +10325,39 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-        public List<FADNewOldParaPerformanceModel> GetFunctionalResponsibilityWiseParaForDashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0)
+        public List<FunctionalResponsibilitiesWiseParasModel> GetFunctionalResponsibilityWiseParaForDashboard(int FUNCTIONAL_ENTITY_ID = 0)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
             var loggedInUser = sessionHandler.GetSessionUser();
-            List<FADNewOldParaPerformanceModel> list = new List<FADNewOldParaPerformanceModel>();
+            List<FunctionalResponsibilitiesWiseParasModel> list = new List<FunctionalResponsibilitiesWiseParasModel>();
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
                 {
                 cmd.CommandText = "pkg_db.P_GET_Dash_table_functionwise";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("UserEntityID", OracleDbType.Int32).Value = FUNCTIONAL_ENTITY_ID;
-                cmd.Parameters.Add("PROCESSID", OracleDbType.Int32).Value = PROCESS_ID;
-                cmd.Parameters.Add("SUB_PROCESSID", OracleDbType.Int32).Value = SUB_PROCESS_ID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = FUNCTIONAL_ENTITY_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
-                OracleDataReader rdr = cmd.ExecuteReader();
+               OracleDataReader rdr = cmd.ExecuteReader();
 
                 while (rdr.Read())
                     {
-                    FADNewOldParaPerformanceModel zb = new FADNewOldParaPerformanceModel();
-                    zb.Process = rdr["Functional_owner"].ToString();
-                    zb.D_ID = rdr["d_id"].ToString();
-                    zb.Total_Paras = rdr["Total_Paras"].ToString();
-                    zb.Setteled_Para = rdr["Setteled_Para"].ToString();
-                    zb.Unsetteled_Para = rdr["Unsetteled_Para"].ToString();
-                    zb.Ratio = rdr["Ratio"].ToString();
-                    zb.R1 = rdr["R1"].ToString();
-                    zb.R2 = rdr["R2"].ToString();
-                    zb.R3 = rdr["R3"].ToString();
+                    FunctionalResponsibilitiesWiseParasModel zb = new FunctionalResponsibilitiesWiseParasModel();
+                    zb.OBS_ID = rdr["d_id"].ToString();
+                    zb.PARA_REF = rdr["ref_p"].ToString();
+                    zb.PARA_CATEGORY = rdr["pc"].ToString();
+                    zb.REP_OFFICE = rdr["p_name"].ToString();
+                    zb.ENTITY_NAME = rdr["c_name"].ToString();
+                    zb.ANNEXURE = rdr["Annex"].ToString();
+                    zb.PARA_NO = rdr["final_para_no"].ToString();
+                    zb.RISK = rdr["Risk"].ToString();
+                    zb.GIST = rdr["Gist"].ToString();
                     list.Add(zb);
                     }
                 }
@@ -21217,7 +21303,7 @@ Dear {userFullName},
             return list;
             }
 
-        public List<ListOfSamplesModel> GetListOfSamples()
+        public List<ListOfSamplesModel> GetListOfSamples(int ENG_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21227,17 +21313,26 @@ Dear {userFullName},
             List<ListOfSamplesModel> list = new List<ListOfSamplesModel>();
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_fad.P_GET_SAMPLE";
+                cmd.CommandText = "pkg_sm.P_GET_SAMPLE";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();           
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+             
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                     {
                     ListOfSamplesModel chk = new ListOfSamplesModel();
-                    chk.ID = Convert.ToInt32(rdr["ID"].ToString());
+                    chk.SAMPLE_ID = Convert.ToInt32(rdr["S_ID"].ToString());
                     chk.SAMPLE_TYPE = rdr["SAMPLE_TYPE"].ToString();
                     chk.SAMPLE_PERCENTAGE = rdr["SAMPLE_PERCENTAGE"].ToString();
+                    chk.TOTAL_COUNT = rdr["samp_tot"].ToString();
+                    chk.SAMPLE_COUNT = rdr["sample_final"].ToString();
+                    chk.LOAN_STATUS = rdr["sample_final"].ToString();
+                    chk.SAMPLE_INDICATOR = rdr["IND"].ToString();
                     list.Add(chk);
                     }
                 }
@@ -21245,7 +21340,7 @@ Dear {userFullName},
             return list;
             }
 
-        public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID)
+        public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21259,7 +21354,8 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
-                cmd.Parameters.Add("Status", OracleDbType.Int32).Value = STATUS_ID;
+                cmd.Parameters.Add("S_ID", OracleDbType.Varchar2).Value = SAMPLE_ID;
+                cmd.Parameters.Add("LStatus", OracleDbType.Int32).Value = STATUS_ID;
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;

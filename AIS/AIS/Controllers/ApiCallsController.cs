@@ -1408,9 +1408,9 @@ namespace AIS.Controllers
             return dBConnection.GetRelationObservationForDashboard(ENTITY_ID);
             }
         [HttpPost]
-        public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0)
+        public List<FunctionalResponsibilitiesWiseParasModel> get_functional_responsibility_wise_paras_for_dashboard(int FUNCTIONAL_ENTITY_ID=0)
             {
-            return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(PROCESS_ID, SUB_PROCESS_ID, PROCESS_DETAIL_ID, FUNCTIONAL_ENTITY_ID);
+            return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(FUNCTIONAL_ENTITY_ID);
             }
         [HttpPost]
         public List<FADNewOldParaPerformanceModel> get_functional_responsibility_wise_paras_for_dashboard_ho(int PROCESS_ID = 0, int SUB_PROCESS_ID = 0, int PROCESS_DETAIL_ID = 0, int FUNCTIONAL_ENTITY_ID = 0, int DEPT_ID = 0)
@@ -2744,14 +2744,14 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<ListOfSamplesModel> get_list_of_samples()
+        public List<ListOfSamplesModel> get_list_of_samples(int ENG_ID)
             {
-            return dBConnection.GetListOfSamples();
+            return dBConnection.GetListOfSamples(ENG_ID);
             }
         [HttpPost]
-        public List<LoanCaseSampleModel> get_loan_samples(string INDICATOR, int STATUS_ID, int ENG_ID)
+        public List<LoanCaseSampleModel> get_loan_samples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
-            return dBConnection.GetLoanSamples(INDICATOR, STATUS_ID, ENG_ID);
+            return dBConnection.GetLoanSamples(INDICATOR, STATUS_ID, ENG_ID, SAMPLE_ID);
             }
 
         //get_list_of_samples
