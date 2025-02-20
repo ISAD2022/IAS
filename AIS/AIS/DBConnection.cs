@@ -3396,8 +3396,6 @@ Dear {userFullName},
             }
         public bool ApproveAuditEngagementPlan(int ENG_ID)
             {
-            string sampleAddResp = "";
-            string sampleCreateResp = "";
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -3415,41 +3413,10 @@ Dear {userFullName},
                 cmd.ExecuteReader();             
 
                 }
-            con.Dispose();
-            sampleAddResp=AddSampleDataAfterEngagementApproval(ENG_ID);
-            if (sampleAddResp == "Y")
-                {
-                   CreateSampleDataAfterEngagementApproval(ENG_ID);
-                }
+            con.Dispose();            
             return true;
             }
-        public string AddSampleDataAfterEngagementApproval(int ENG_ID)
-            {
-            string resp = "";
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var loggedInUser = sessionHandler.GetSessionUser();
-            var con = this.DatabaseConnection(); con.Open();
-            using (OracleCommand cmd = con.CreateCommand())
-                {
-                cmd.CommandText = "pkg_sm.P_add_sample_data";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;               
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    {
-                    resp = rdr["REMARKS"].ToString();
-                    }
-                }
-            con.Dispose();
-            return resp;
-            }
+   
         public string CreateSampleDataAfterEngagementApproval(int ENG_ID)
             {
             string resp = "";
@@ -3462,7 +3429,7 @@ Dear {userFullName},
             var con = this.DatabaseConnection(); con.Open();
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_sm.p_create_Sample";
+                cmd.CommandText = "pkg_sm.P_add_sample_data";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
@@ -3474,8 +3441,8 @@ Dear {userFullName},
                 while (rdr.Read())
                     {
                     resp = rdr["REMARKS"].ToString();
-                    email = rdr["email"].ToString();
-                    email_cc = rdr["email_cc"].ToString();
+                    //email = rdr["email"].ToString();
+                   // email_cc = rdr["email_cc"].ToString();
                     }
                 }
             con.Dispose();
@@ -20743,7 +20710,6 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-
         public ObservationModel GetObservationDetailsByIdForPreConcludingHO(int OBS_ID)
             {
             sessionHandler = new SessionHandler();
@@ -20787,7 +20753,6 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-
         public List<AuditeeEntitiesModel> GetGMOffices()
             {
             sessionHandler = new SessionHandler();
@@ -20906,7 +20871,6 @@ Dear {userFullName},
 
             return resp;
             }
-
 
         public async Task<string> UploadAuditReport(int ENG_ID)
             {
@@ -21032,7 +20996,6 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-
         public FinalAuditReportModel GetCheckAuditReportExisits(int ENG_ID)
             {
             sessionHandler = new SessionHandler();
@@ -21080,7 +21043,7 @@ Dear {userFullName},
 
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_sm.p_get_Biomet";
+                cmd.CommandText = "pkg_sm.p_get_Account";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
@@ -21095,30 +21058,22 @@ Dear {userFullName},
                         {
                         BiometSamplingModel record = new BiometSamplingModel()
                             {
-                            ID = rdr["ID"] != DBNull.Value ? Convert.ToInt32(rdr["ID"]) : 0,
-                            EngId = rdr["ENG_ID"] != DBNull.Value ? Convert.ToInt32(rdr["ENG_ID"]) : 0,
-                            AcNo = rdr["AC_NO"].ToString(),
-                            AcTitle = rdr["AC_TITLE"].ToString(),
-                            CustName = rdr["CUT_NAME"].ToString(),
-                            Dob = rdr["DOB"].ToString(),
-                            Cell = rdr["CELL"].ToString(),
-                            Cnic = rdr["CNIC"].ToString(),
-                            CnicExpiry = rdr["CNIC_EXPIRY"].ToString(),
-                            AcType = rdr["AC_TYPE"].ToString(),
-                            AcCat = rdr["AC_CAT"].ToString(),
-                            AcOpeningDate = rdr["AC_OPENING_DATE"].ToString(),
-                            BmVeriDate = rdr["BM_VERI_DATE"].ToString(),
-                            LastTransaction = rdr["LAST_TRANSACTION"].ToString(),
-                            BmVerified = rdr["BM_VERIFIED"].ToString(),
-                            Observation = rdr["OBSERVATION"].ToString(),
-                            CheckBy = rdr["CHECK_BY"].ToString(),
-                            CheckedOn = rdr["CHECKED_ON"].ToString(),
-                            NName = rdr["N_NAME"].ToString(),
-                            FName = rdr["F_NAME"].ToString(),
-                            NDob = rdr["N_DOB"].ToString(),
-                            NCell = rdr["N_CELL"].ToString(),
-                            NExpiry = rdr["N_EXPIRY"].ToString()
+                            BRANCH_CODE = rdr["branchcode"].ToString(),
+                            ACCOUNT_NO = rdr["oldaccountno"].ToString(),
+                            ACCOUNT_TITLE = rdr["name"].ToString(),
+                            CUSTOMER_NAME = rdr["customername"].ToString(),
+                            DOB = rdr["dob"].ToString(),
+                            PHONE_CELL = rdr["phonecell"].ToString(),
+                            CNIC = rdr["cnic"].ToString(),
+                            CNIC_EXPIRY_DATE = rdr["cnicexpirydate"].ToString(),
+                            OPENING_DATE = rdr["openingdate"].ToString(),
+                            BMVS_VERIFIED = rdr["bmvs_verified"].ToString(),
+                            PURPOSE = rdr["purpose"].ToString(),
+                            ACCOUNT_TYPE = rdr["acc_type"].ToString(),
+                            ACCOUNT_CATEGORY = rdr["acc_category"].ToString(),
+                            RISK = rdr["risk"].ToString()
                             };
+
                         responseList.Add(record);
                         }
                     }
@@ -21339,7 +21294,6 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-
         public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
             sessionHandler = new SessionHandler();

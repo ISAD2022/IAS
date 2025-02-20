@@ -2716,6 +2716,13 @@ namespace AIS.Controllers
             {
             return dBConnection.GetCheckAuditReportExisits(ENG_ID);
             }
+
+        [HttpPost]
+        public string create_engagement_sample_data(int ENG_ID)
+            {
+                return "{\"Status\":true,\"Message\":\"" + dBConnection.CreateSampleDataAfterEngagementApproval(ENG_ID) + "\"}";
+            }
+
         [HttpPost]
         public List<BiometSamplingModel> get_biomet_sampling_details(int ENG_ID)
             {

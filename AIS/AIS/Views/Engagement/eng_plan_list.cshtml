@@ -46,7 +46,22 @@
                 cache: false,
                 success: function (data) {
                     alert("Successfully approved Engagement Plan");
+                    createSampleRecord();
                     onAlertCallback(reloadLocation);
+                },
+                dataType: "json",
+            });
+    }
+    function createSampleRecord(){
+          $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/create_engagement_sample_data",
+                type: "POST",
+                data: {
+                    'ENG_ID': g_engId
+                },
+                cache: false,
+                success: function (data) {
+                  
                 },
                 dataType: "json",
             });

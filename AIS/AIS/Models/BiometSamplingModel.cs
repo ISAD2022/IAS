@@ -5,29 +5,20 @@ namespace AIS.Models
 {
     public class BiometSamplingModel
         {
-        public int ID { get; set; }
-        public int EngId { get; set; }
-        public string AcNo { get; set; }           
-        public string AcTitle { get; set; }        
-        public string CustName { get; set; }        
-        public string Dob { get; set; }          
-        public string Cell { get; set; }            
-        public string Cnic { get; set; }            
-        public string CnicExpiry { get; set; }    
-        public string AcType { get; set; }          
-        public string AcCat { get; set; }           
-        public string AcOpeningDate { get; set; } 
-        public string BmVeriDate { get; set; }   
-        public string LastTransaction { get; set; }
-        public string BmVerified { get; set; }       
-        public string Observation { get; set; }    
-        public string CheckBy { get; set; }        
-        public string CheckedOn { get; set; }    
-        public string NName { get; set; }          
-        public string FName { get; set; }          
-        public string NDob { get; set; }         
-        public string NCell { get; set; }          
-        public string NExpiry { get; set; }
+        public string BRANCH_CODE { get; set; }
+        public string ACCOUNT_NO { get; set; }
+        public string ACCOUNT_TITLE { get; set; }           
+        public string CUSTOMER_NAME { get; set; }              
+        public string DOB { get; set; }          
+        public string PHONE_CELL { get; set; }            
+        public string CNIC { get; set; }            
+        public string CNIC_EXPIRY_DATE { get; set; }    
+        public string OPENING_DATE { get; set; }
+        public string BMVS_VERIFIED { get; set; }       
+        public string PURPOSE { get; set; }    
+        public string ACCOUNT_TYPE { get; set; }        
+        public string ACCOUNT_CATEGORY { get; set; }    
+        public string RISK { get; set; }          
 
         }
-}
+    }

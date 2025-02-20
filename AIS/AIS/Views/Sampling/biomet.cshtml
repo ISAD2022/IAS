@@ -34,27 +34,27 @@
         tableBody.empty(); // Clear existing rows
 
         $.each(data, function (index, item) {
-            var row = `<tr>
-                <td>${index + 1}</td>
-                <td>${item.acNo}</td>
-                <td>${item.acTitle}</td>
-                <td>${item.custName}</td>
-                <td>${formatDate(item.dob)}</td>
-                <td>${item.cell}</td>
-                <td>${item.cnic}</td>
-                <td>${formatDate(item.cnicExpiry)}</td>
-                <td>${item.acType}</td>
-                <td>${item.acCat}</td>
-                <td>
-                    <a href="./account_document?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-primary btn-sm">Documents</a>
-                </td>
-                <td>
-                    <a href="./account_transaction?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-success btn-sm">Transactions</a>
-                </td>
-                <td>
-                    <a href="./account_transaction_master?engId=${g_engId}&acNo=${item.acNo}" class="btn btn-warning btn-sm">Master</a>
-                </td>
-            </tr>`;
+               var row = `<tr>
+        <td>${index + 1}</td>
+        <td>${item.accounT_NO}</td>
+        <td>${item.accounT_TITLE}</td>
+        <td>${item.customeR_NAME}</td>
+        <td>${formatDate(item.dob)}</td>
+        <td>${item.phonE_CELL}</td>
+        <td>${item.cnic}</td>
+        <td>${formatDate(item.cniC_EXPIRY_DATE)}</td>
+        <td>${item.accounT_TYPE}</td>
+        <td>${item.accounT_CATEGORY}</td>
+        <td>
+            <a href="./account_document?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-primary btn-sm">Documents</a>
+        </td>
+        <td>
+            <a href="./account_transaction?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-success btn-sm">Transactions</a>
+        </td>
+        <td>
+            <a href="./account_transaction_master?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-warning btn-sm">Master</a>
+        </td>
+    </tr>`;
             tableBody.append(row);
         });
 
