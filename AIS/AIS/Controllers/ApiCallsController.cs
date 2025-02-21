@@ -2760,7 +2760,11 @@ namespace AIS.Controllers
             {
             return dBConnection.GetLoanSamples(INDICATOR, STATUS_ID, ENG_ID, SAMPLE_ID);
             }
-
+        [HttpPost]
+        public List<LoanCaseSampleDocumentsModel> get_loan_documents(int ENG_ID, int LOAN_DISB_ID)
+            {
+            return dBConnection.GetLoanSamplesDocuments(ENG_ID, LOAN_DISB_ID);
+            }
         //get_list_of_samples
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

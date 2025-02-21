@@ -55,6 +55,8 @@
                 <td>${formatDate(item.disB_DATE)}</td>
                 <td>${formatCurrency(item.deV_AMOUNT)}</td>
                 <td>${formatCurrency(item.outstanding)}</td>
+                <td><a href="#" onclick="getLoanTransactions(${item.loaN_DISB_ID});" >View Transactions</a></td>
+                <td><a href="#" onclick="getLoanDocuments(${item.loaN_DISB_ID});" >View Documents</a></td>
             </tr>`;
             tableBody.append(row);
         });
@@ -73,6 +75,12 @@
     function formatCurrency(amount) {
         if (isNaN(amount) || amount == null) return "0.00";
         return parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+    function getLoanTransactions (l_disb_id){
+        window.location.href=  "./loan_transactions?engId="+g_engId+"&disbId="+l_disb_id;
+    }
+      function getLoanDocuments (l_disb_id){
+        window.location.href=  "./loan_documents?engId="+g_engId+"&disbId="+l_disb_id;
     }
 
 </script>
@@ -96,6 +104,8 @@
                 <th>Disbursement Date</th>
                 <th>Disbursement Amount</th>
                 <th>Current Outstanding</th>
+                <th></th>
+                <th></th>
              
             </tr>
         </thead>

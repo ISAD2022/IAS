@@ -16,6 +16,7 @@ namespace AIS.Models
         public DateTime DISB_DATE { get; set; }
         public decimal DEV_AMOUNT { get; set; }
         public decimal OUTSTANDING { get; set; }
+        public string  LOAN_DISB_ID { get; set; }
 
 
         }

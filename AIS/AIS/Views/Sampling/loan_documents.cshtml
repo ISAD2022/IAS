@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Loan Document List";
+    Layout = "_Layout";
+}
+<script type="text/javascript">
+    var g_engId = 0;
+    var g_accountNo = 0;
+    var g_loanDisbId = 0;  // Fix: Declare this variable
+
+    $(document).ready(function () {
+        var url_string = window.location.href;
+        var url = new URL(url_string);
+        g_engId = url.searchParams.get("engId");
+        g_loanDisbId = url.searchParams.get("disbId");
+        loadLoanDocuments();
+    });
+
+    function loadLoanDocuments() {
+        destroyDatatable('loan_document_list');
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_loan_documents",
+            type: "POST",
+            data: {
+                'LOAN_DISB_ID': g_loanDisbId,
+                'ENG_ID': g_engId
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    populateTable(data);
+                }
+            },
+            dataType: "json",
+            error: function (xhr, status, error) { // Fix: Catch AJAX errors
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    }
+
+     function populateTable(data) {
+        var tableBody = $("#loan_document_list tbody");
+        tableBody.empty();  // Clear table before adding new data
+
+        $.each(data, function (index, item) {
+            var row = `<tr>
+                <td>${index + 1}</td>
+                    <td>${item.brancH_CODE}</td>
+                <td>${item.loaN_CASE_NO}</td>
+                <td>${item.customeR_NAME}</td>
+                <td>${item.doC_NAME}</td>  
+                <td>
+                    ${item.imagE_DATA ?
+                        `<a href="javascript:void(0);" onclick="viewDocument('${item.imagE_DATA}');" class="btn btn-info btn-sm">View Document</a>` :
+                        `<span class="text-muted">No Image</span>`}
+                </td>
+            </tr>`;
+            tableBody.append(row);
+        });
+
+        initializeDataTable('loan_document_list');
+    }
+    function viewDocument(docImage) {
+        if (!docImage) {  // Fix: Check for null/undefined values
+            console.error("Document image is missing.");
+            alert("Document image is missing.");
+            return;
+        }
+
+        let win = window.open("", "_blank");
+        if (!win) {
+            console.error("Popup blocked");
+            alert("Please allow popups to view the document.");
+            return;
+        }
+
+        if (docImage.startsWith("/9j/")) {
+            let imageSrc = "data:image/jpeg;base64," + docImage;
+                       win.location.href = imageSrc;
+
+        } else if (docImage.startsWith("JVBERi0xL")) {
+            let pdfSrc = "data:application/pdf;base64," + docImage;
+            win.location.href = pdfSrc;
+        } else {
+            console.error("Unsupported document type");
+            alert("The document type is not supported.");
+            win.close();
+        }
+    }
+</script>
+
+<div class="row col-md-12 mt-3">
+    <h3 style="color: #45c545;">Loan Documents List</h3>
+</div>
+
+<div class="row col-md-12 mt-3">
+    <table id="loan_document_list" class="table table-hover table-bordered table-striped">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important;">
+            <tr>
+                <th>Sr No</th>
+                <th>Branch Code</th>                
+                <th>Loan Case</th>                
+                <th>Customer Name</th>
+                <th>Document Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

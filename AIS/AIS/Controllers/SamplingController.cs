@@ -64,6 +64,25 @@ namespace AIS.Controllers
                     return View();
             }
         }
+        public IActionResult loan_documents()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["ZonesList"] = dBConnection.GetZones();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+            }
         [HttpGet]
         public IActionResult account_document()
             {
