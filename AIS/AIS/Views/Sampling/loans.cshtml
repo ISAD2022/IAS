@@ -55,8 +55,8 @@
                 <td>${formatDate(item.disB_DATE)}</td>
                 <td>${formatCurrency(item.deV_AMOUNT)}</td>
                 <td>${formatCurrency(item.outstanding)}</td>
-                <td><a href="#" onclick="getLoanTransactions(${item.loaN_DISB_ID});" >View Transactions</a></td>
-                <td><a href="#" onclick="getLoanDocuments(${item.loaN_DISB_ID});" >View Documents</a></td>
+                <td><a href="#" onclick="event.preventDefault();getLoanTransactions(${item.loaN_DISB_ID});" >View Transactions</a></td>
+                <td><a href="#" onclick="event.preventDefault();getLoanDocuments(${item.loaN_DISB_ID});" >View Documents</a></td>
             </tr>`;
             tableBody.append(row);
         });
@@ -72,10 +72,11 @@
     }
 
     // Function to format amounts properly
-    function formatCurrency(amount) {
-        if (isNaN(amount) || amount == null) return "0.00";
-        return parseFloat(amount).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+     function formatCurrency(amount) {
+        if (isNaN(amount) || amount == null) return "₨0.00";
+        return parseFloat(amount).toLocaleString('en-PK', { style: 'currency', currency: 'PKR' });
     }
+
     function getLoanTransactions (l_disb_id){
         window.location.href=  "./loan_transactions?engId="+g_engId+"&disbId="+l_disb_id;
     }

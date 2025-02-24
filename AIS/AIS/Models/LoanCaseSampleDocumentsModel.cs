@@ -15,6 +15,7 @@ namespace AIS.Models
         public string LOAN_DISB_ID { get; set; }  
         public string DOC_NAME { get; set; }  
         public string IMAGE_DATA { get; set; }
+        public string IMAGE_ID { get; set; }
 
 
         }

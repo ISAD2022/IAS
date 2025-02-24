@@ -47,9 +47,9 @@
                 <td>${item.loaN_CASE_NO}</td>
                 <td>${item.customeR_NAME}</td>
                 <td>${item.doC_NAME}</td>  
-                <td>
-                    ${item.imagE_DATA ?
-                        `<a href="javascript:void(0);" onclick="viewDocument('${item.imagE_DATA}');" class="btn btn-info btn-sm">View Document</a>` :
+                <td class="text-center">
+                    ${item.imagE_ID ?
+                        `<a href="#" onclick="event.preventDefault();viewDocument('${item.imagE_ID}','${item.doC_NAME}');" class="btn btn-info btn-sm">View Document</a>` :
                         `<span class="text-muted">No Image</span>`}
                 </td>
             </tr>`;
@@ -58,33 +58,56 @@
 
         initializeDataTable('loan_document_list');
     }
-    function viewDocument(docImage) {
-        if (!docImage) {  // Fix: Check for null/undefined values
-            console.error("Document image is missing.");
-            alert("Document image is missing.");
+
+      function viewDocument(docId) {
+        if (!docId) {  // Fix: Check for null/undefined values
+            alert("Document ID is missing.");
             return;
         }
 
-        let win = window.open("", "_blank");
-        if (!win) {
-            console.error("Popup blocked");
-            alert("Please allow popups to view the document.");
-            return;
-        }
+        $.ajax({
+            url: g_asiBaseURL + "/ApiCalls/get_loan_document_data",
+            type: "POST",
+            data: { 'IMAGE_ID': docId },
+            dataType: "json",
+            success: function (data) {
+                var docImage = data[0].imagE_DATA;
 
-        if (docImage.startsWith("/9j/")) {
-            let imageSrc = "data:image/jpeg;base64," + docImage;
-                       win.location.href = imageSrc;
+                if (!docImage) {
+                    console.error("No document data available");
+                    alert("No document data received.");
+                    return;
+                }
 
-        } else if (docImage.startsWith("JVBERi0xL")) {
-            let pdfSrc = "data:application/pdf;base64," + docImage;
-            win.location.href = pdfSrc;
-        } else {
-            console.error("Unsupported document type");
-            alert("The document type is not supported.");
-            win.close();
-        }
+                docImage = docImage.trim(); // Remove extra spaces or newlines
+                let win = window.open("", "_blank");
+                if (!win) {
+                    alert("Please allow popups to view the document.");
+                    return;
+                }
+
+                if (docImage.startsWith("/9j/")) {  // JPEG image
+                    let imageSrc = "data:image/jpeg;base64," + docImage;
+                    win.document.write(`<html><body style="margin:0;"><img src="${imageSrc}" style="width:100%; height:auto;"/></body></html>`);
+                    win.document.close();
+
+                } else if (docImage.startsWith("JVBERi0xL")) {  // PDF document
+                    let pdfSrc = "data:application/pdf;base64," + docImage;
+                    win.document.write(`<html><body style="margin:0;"><embed src="${pdfSrc}" type="application/pdf" width="100%" height="100%"/></body></html>`);
+                    win.document.close();
+
+                } else {
+                    console.error("Unsupported document type");
+                    alert("The document type is not supported.");
+                    win.close();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
     }
+
 </script>
 
 <div class="row col-md-12 mt-3">

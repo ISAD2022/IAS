@@ -5,24 +5,24 @@
 
 <script type="text/javascript">
     var g_engId = 0;
-    var g_accountNo = 0;
+    var g_loanDisbId = 0;
 
     $(document).ready(function () {
         var url_string = window.location.href;
         var url = new URL(url_string);
-        g_engId = url.searchParams.get("engId");
-        g_accountNo = url.searchParams.get("acNo");
+          g_engId = url.searchParams.get("engId");
+        g_loanDisbId = url.searchParams.get("disbId");
         loadAccountTransactions();
     });
 
     function loadAccountTransactions() {
         destroyDatatable('account_transaction_list');
         $.ajax({
-            url: g_asiBaseURL + "/ApiCalls/get_biomet_account_transaction_sampling_details",
+            url: g_asiBaseURL + "/ApiCalls/get_sample_loan_transactions",
             type: "POST",
             data: {
-                ENG_ID: g_engId,
-                AC_NO: g_accountNo
+                'LOAN_DISB_ID': g_loanDisbId,
+                'ENG_ID': g_engId
             },
             success: function (data) {
                 if (data.length > 0) {
@@ -37,26 +37,26 @@
 
     function populateTable(data) {
         var tableBody = $("#account_transaction_list tbody");
-      //  tableBody.empty(); // Clear existing rows
 
         $.each(data, function (index, item) {
             var row = `<tr>
                 <td>${index + 1}</td>
-                <td>${item.transactionMasterCode}</td>
-                <td>${item.description}</td>
+                  <td>${item.lN_ACCOUNT_ID}</td>
+                <td>${item.manuaL_VOUCHER_NO}</td>
+                <td>${item.description}</td>             
+                <td>${formatDate(item.transactioN_DATE)}</td>
+                <td>${formatAmount(item.dR_AMOUNT)}</td>
+                <td>${formatAmount(item.cR_AMOUNT)}</td>              
+                <td>${item.mcO_RECEIPT_NO}</td>
+                <td>${item.mcO_BOOK_NO}</td>  
+                <td>${formatDate(item.authorizatioN_DATE)}</td>
+                <td>${formatDate(item.rejectioN_DATE)}</td>
+                <td>${formatDate(item.reversaL_DATE)}</td>              
                 <td>${item.remarks}</td>
-                <td>${formatDate(item.transactionDate)}</td>
-                <td>${formatDate(item.authorizationDate)}</td>
-                <td>${formatAmount(item.drAmount)}</td>
-                <td>${formatAmount(item.crAmount)}</td>
-                <td>${item.toAccountId}</td>
-                <td>${item.toAccountTitle}</td>
-                <td>${item.toAccountNo}</td>
-                <td>${item.toAccBranchId}</td>
-                <td>${item.instrumentNo}</td>
             </tr>`;
             tableBody.append(row);
         });
+
         initializeDataTable('account_transaction_list');
     }
 
@@ -72,7 +72,6 @@
 </script>
 
 <div class="row col-md-12 mt-3">
-
     <h3 style="color: #45c545;">Loan Transactions</h3>
 </div>
 
@@ -81,18 +80,18 @@
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
                 <th>Sr No</th>
-                <th>Transaction Code</th>
-                <th>Description</th>
-                <th>Remarks</th>
+                <th>Loan Account ID</th>
+                <th>Manual Voucher No</th>
+                <th>Description</th>             
                 <th>Transaction Date</th>
-                <th>Authorization Date</th>
                 <th>Debit Amount</th>
-                <th>Credit Amount</th>
-                <th>To Account ID</th>
-                <th>To Account Title</th>
-                <th>To Account No</th>
-                <th>Branch ID</th>
-                <th>Instrument No</th>
+                <th>Credit Amount</th>                
+                <th>MCO Receipt No</th>
+                <th>MCO Book No</th>
+                <th>Authorization Date</th>
+                <th>Rejection Date</th>
+                <th>Reversal Date</th>
+                <th>Remarks</th>
             </tr>
         </thead>
         <tbody></tbody>

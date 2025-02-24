@@ -21360,6 +21360,7 @@ Dear {userFullName},
                 while (rdr.Read())
                     {
                     LoanCaseSampleDocumentsModel chk = new LoanCaseSampleDocumentsModel();
+                    chk.IMAGE_ID = rdr["IMAGEID"].ToString();
                     chk.BRANCH_CODE = rdr["branchcode"].ToString();
                     chk.LOAN_APP_ID = rdr["loan_app_id"].ToString();
                     chk.CNIC = rdr["cnic"].ToString();
@@ -21367,7 +21368,6 @@ Dear {userFullName},
                     chk.LOAN_CASE_NO = rdr["loan_case_no"].ToString();
                     chk.LOAN_DISB_ID = rdr["loan_disb_id"].ToString();
                     chk.DOC_NAME = rdr["docname"].ToString();
-                    chk.IMAGE_DATA = rdr["IMAGES"].ToString();
                     list.Add(chk);
 
                     }
@@ -21376,6 +21376,134 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
+
+        public List<LoanCaseSampleDocumentsModel> GetLoanSamplesDocumentData(int IMAGE_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanCaseSampleDocumentsModel> list = new List<LoanCaseSampleDocumentsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_get_Loan_Documents_image";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                // cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
+                cmd.Parameters.Add("image_ID", OracleDbType.Varchar2).Value = IMAGE_ID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    LoanCaseSampleDocumentsModel chk = new LoanCaseSampleDocumentsModel();
+
+                    if (rdr["imagedata"] != DBNull.Value)
+                        {
+                        byte[] imageBytes = (byte[])rdr["imagedata"];
+                        chk.IMAGE_DATA = Convert.ToBase64String(imageBytes);
+                        }
+                    else
+                        {
+                        chk.IMAGE_DATA = string.Empty;
+                        }
+
+                    list.Add(chk);
+                    }
+
+
+                }
+            con.Dispose();
+            return list;
+            }
+        public List<LoanCaseSampleTransactionsModel> GetLoanSamplesTransactions(int ENG_ID, int LOAN_DISB_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<LoanCaseSampleTransactionsModel> list = new List<LoanCaseSampleTransactionsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_get_Loan_Transactions";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENG_ID;
+                cmd.Parameters.Add("L_DISB_ID", OracleDbType.Int32).Value = LOAN_DISB_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    LoanCaseSampleTransactionsModel chk = new LoanCaseSampleTransactionsModel
+                        {
+                        DESCRIPTION = rdr["description"]?.ToString(),
+                        MANUAL_VOUCHER_NO = rdr["manualvoucherno"]?.ToString(),
+                        TRANSACTION_DATE = rdr["transactiondate"]?.ToString(),
+                        DR_AMOUNT = rdr["dramount"] != DBNull.Value ? Convert.ToDecimal(rdr["dramount"]) : 0,
+                        CR_AMOUNT = rdr["cramount"] != DBNull.Value ? Convert.ToDecimal(rdr["cramount"]) : 0,
+                        LN_ACCOUNT_ID = rdr["ln_accountid"]?.ToString(),
+                        CREATED_ON = rdr["createdon"]?.ToString(),
+                        REMARKS = rdr["remarks"]?.ToString(),
+                        REJECTION_DATE = rdr["rejectiondate"]?.ToString(),
+                        REVERSAL_DATE = rdr["reversaldate"]?.ToString(),
+                        WORKING_DATE = rdr["workingdate"]?.ToString(),
+                        AUTHORIZATION_DATE = rdr["authorizationdate"]?.ToString(),
+                        MCO_RECEIPT_NO = rdr["mco_receipt_no"]?.ToString(),
+                        MCO_BOOK_NO = rdr["mco_book_no"]?.ToString()
+                        };
+
+                    list.Add(chk);
+                    }
+
+
+                }
+            con.Dispose();
+            return list;
+            }
+
+        public List<ParaTextSearchModel> GetAuditParasByText(string SEARCH_KEYWORD)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ParaTextSearchModel> list = new List<ParaTextSearchModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GET_PARA_TEXT_WORDS";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_TEXT", OracleDbType.Varchar2).Value = SEARCH_KEYWORD;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    ParaTextSearchModel chk = new ParaTextSearchModel
+                        {
+                        ENTITY_NAME = rdr["name"]?.ToString(),
+                        PARENT_NAME = rdr["p_name"]?.ToString(),
+                        CHILD_NAME = rdr["c_name"]?.ToString(),
+                        AUDIT_PERIOD = rdr["audit_period"]?.ToString(),
+                        PARA_NO = rdr["para_no"]?.ToString(),
+                        GIST_OF_PARAS = rdr["gist_of_paras"]?.ToString(),
+                         TEXT = rdr["text"]?.ToString()
+
+                        };
+
+                    list.Add(chk);
+                    }
+
+
+                }
+            con.Dispose();
+            return list;
+            }
+
         }
 
     }

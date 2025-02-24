@@ -2765,7 +2765,22 @@ namespace AIS.Controllers
             {
             return dBConnection.GetLoanSamplesDocuments(ENG_ID, LOAN_DISB_ID);
             }
-        //get_list_of_samples
+        [HttpPost]
+        public List<LoanCaseSampleDocumentsModel> get_loan_document_data(int IMAGE_ID)
+            {
+            return dBConnection.GetLoanSamplesDocumentData(IMAGE_ID);
+            }
+        [HttpPost]
+        public List<LoanCaseSampleTransactionsModel> get_sample_loan_transactions(int ENG_ID, int LOAN_DISB_ID)
+            {
+            return dBConnection.GetLoanSamplesTransactions(ENG_ID, LOAN_DISB_ID);
+            }
+
+        [HttpPost]
+        public List<ParaTextSearchModel> get_para_text_in_audit_report(string SEARCH_KEYWORD)
+            {
+            return dBConnection.GetAuditParasByText(SEARCH_KEYWORD);
+            }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
