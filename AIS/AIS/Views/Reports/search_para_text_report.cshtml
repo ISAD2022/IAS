@@ -18,13 +18,11 @@
                 },
                 cache: false,
                 success: function (data) {
+                      var tableBody = $('#searchtextTable tbody');
                      $.each(data, function (i, v) {
-                                   var tableBody = $('#searchtextTable tbody');
-
-                                  tableBody.append(`
+                         tableBody.append(`
                                       <tr>
-                                          <td class="text-center">${i + 1}</td>
-                                         
+                                          <td class="text-center">${i + 1}</td>                                         
                                           <td class="text-center">${v.parenT_NAME }</td>
                                           <td class="text-center">${v.entitY_NAME }</td>
                                           <td class="text-center">${v.audiT_PERIOD }</td>
@@ -34,7 +32,6 @@
                                       </tr>
                                   `);
                               });
-
                               initializeDataTable('searchtextTable');
                 },
                 dataType: "json",
