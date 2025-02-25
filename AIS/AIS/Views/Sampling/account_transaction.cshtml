@@ -36,6 +36,7 @@
     }
 
     function populateTable(data) {
+        $('#wait').show();
         var tableBody = $("#account_transaction_list tbody");
       //  tableBody.empty(); // Clear existing rows
 
@@ -43,21 +44,21 @@
             var row = `<tr>
                 <td>${index + 1}</td>
                 <td>${item.transactionMasterCode}</td>
-                <td>${item.description}</td>
-                <td>${item.remarks}</td>
+                <td>${item.instrumentNo}</td>   
+                 <td>${item.description}</td>
                 <td>${formatDate(item.transactionDate)}</td>
                 <td>${formatDate(item.authorizationDate)}</td>
                 <td>${formatAmount(item.drAmount)}</td>
                 <td>${formatAmount(item.crAmount)}</td>
-                <td>${item.toAccountId}</td>
-                <td>${item.toAccountTitle}</td>
-                <td>${item.toAccountNo}</td>
-                <td>${item.toAccBranchId}</td>
-                <td>${item.instrumentNo}</td>
+                
+                <td>${item.remarks}</td>
+              
+                
             </tr>`;
             tableBody.append(row);
         });
         initializeDataTable('account_transaction_list');
+        $('#wait').hide();
     }
 
     function formatDate(dateString) {
@@ -82,17 +83,14 @@
             <tr>
                 <th>Sr No</th>
                 <th>Transaction Code</th>
+                <th>Instrument No</th>
                 <th>Description</th>
-                <th>Remarks</th>
                 <th>Transaction Date</th>
                 <th>Authorization Date</th>
                 <th>Debit Amount</th>
                 <th>Credit Amount</th>
-                <th>To Account ID</th>
-                <th>To Account Title</th>
-                <th>To Account No</th>
-                <th>Branch ID</th>
-                <th>Instrument No</th>
+               
+                <th>Remarks</th>                
             </tr>
         </thead>
         <tbody></tbody>

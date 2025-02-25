@@ -4,7 +4,7 @@ namespace AIS.Models
 {
     public class ParaTextSearchModel
         {
-        public string ENTITY_NAME { get; set; }  
+        public string AUDIT_ZONE { get; set; }  
         public string PARENT_NAME { get; set; } 
         public string CHILD_NAME { get; set; } 
         public string AUDIT_PERIOD { get; set; } 

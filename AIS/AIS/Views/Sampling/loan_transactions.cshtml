@@ -36,6 +36,7 @@
     }
 
     function populateTable(data) {
+        $('#wait').show();
         var tableBody = $("#account_transaction_list tbody");
 
         $.each(data, function (index, item) {
@@ -58,6 +59,7 @@
         });
 
         initializeDataTable('account_transaction_list');
+        $('#wait').hide();
     }
 
     function formatDate(dateString) {

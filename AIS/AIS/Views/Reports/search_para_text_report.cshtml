@@ -3,6 +3,7 @@
     Layout = "_Layout";
 }
 <head>
+  
     <script type="text/javascript">
         var g_cnic = 0;
         $('#document').ready(function () {
@@ -22,13 +23,14 @@
                      $.each(data, function (i, v) {
                          tableBody.append(`
                                       <tr>
-                                          <td class="text-center">${i + 1}</td>                                         
+                                          <td class="text-center">${i + 1}</td>
+                                          <td class="text-center">${v.audiT_ZONE }</td>
                                           <td class="text-center">${v.parenT_NAME }</td>
-                                          <td class="text-center">${v.entitY_NAME }</td>
+                                          <td class="text-center">${v.chilD_NAME }</td>
                                           <td class="text-center">${v.audiT_PERIOD }</td>
                                           <td class="text-center">${v.parA_NO }</td>
                                           <td class="text-left">${v.gisT_OF_PARAS }</td>
-                                          <td class="text-left">${v.text }</td>
+                                          <td class="text-left"><div style="max-width:500px !important; overflow-y:auto;">${v.text }</div></td>
                                       </tr>
                                   `);
                               });
@@ -52,21 +54,19 @@
 </div>
 
 <div class="row col-md-12 mt-3">
-    <table id="searchtextTable" class="table table-hover table-bordered table-hover mt-3 table-striped">
-        <thead style="background-color: rgb(181 229 117 / 93%) !important; ">
+    <table id="searchtextTable" class="table table-hover table-bordered table-striped mt-3">
+        <thead style="background-color: rgb(181 229 117 / 93%) !important;">
             <tr>
                 <th class="col-md-auto">Sr No.</th>
-                <th class="col-md-auto">Parent Name</th>
-                <th class="col-md-auto">Child Name</th>
+                <th class="col-md-auto">Audit Zone</th>
+                <th class="col-md-auto">Reporting Office</th>
+                <th class="col-md-auto">Entity Name</th>
                 <th class="col-md-auto">Audit Period</th>
                 <th class="col-md-auto">Para No.</th>
-                <th class="col-md-3">Gist of Para</th>
-                <th class="col-md-4">Para Text</th>
+                <th class="col-md-auto">Gist of Para</th>
+                <th class="col-md-auto">Para Text</th>
             </tr>
         </thead>
-        <tbody>
-        </tbody>
-
-
+        <tbody></tbody>
     </table>
 </div>

@@ -40,6 +40,7 @@
         });
     }
       function populateTable(data) {
+          $('#wait').show();
         var tableBody = $("#loan_sample_list tbody");
         destroyDatatable('loan_sample_list'); // Clear existing DataTable
 
@@ -62,6 +63,7 @@
         });
 
         initializeDataTable('loan_sample_list'); // Reinitialize DataTable
+        $('#wait').hide();
     }
 
     // Function to format dates properly

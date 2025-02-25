@@ -19,7 +19,6 @@
              url: g_asiBaseURL + "/ApiCalls/get_biomet_sampling_details",
             type: "POST",
                cache: false,
-
             data: { ENG_ID: g_engId },
             success: function (data) {
                 if (data.length > 0) {
@@ -30,6 +29,7 @@
         });
     }
         function populateTable(data) {
+        $('#wait').show();
         var tableBody = $("#biomet_sample_list tbody");
         tableBody.empty(); // Clear existing rows
 
@@ -50,15 +50,13 @@
         </td>
         <td>
             <a href="./account_transaction?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-success btn-sm">Transactions</a>
-        </td>
-        <td>
-            <a href="./account_transaction_master?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-warning btn-sm">Master</a>
-        </td>
+        </td>       
     </tr>`;
             tableBody.append(row);
         });
 
         initializeDataTable('biomet_sample_list');
+        $('#wait').hide();
     }
         function formatDate(dateString) {
         if (!dateString || dateString.trim() === "") return "";
@@ -87,7 +85,6 @@
                 <th>CNIC Expiry</th>
                 <th>Account Type</th>
                 <th>Account Category</th>
-                <th></th>
                 <th></th>
                 <th></th>
             </tr>

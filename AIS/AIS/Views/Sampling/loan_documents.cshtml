@@ -37,6 +37,7 @@
     }
 
      function populateTable(data) {
+         $('#wait').show();
         var tableBody = $("#loan_document_list tbody");
         tableBody.empty();  // Clear table before adding new data
 
@@ -57,6 +58,7 @@
         });
 
         initializeDataTable('loan_document_list');
+        $('#wait').hide();
     }
 
       function viewDocument(docId) {

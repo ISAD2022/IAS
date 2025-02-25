@@ -33,6 +33,7 @@
         });
     }
         function populateTable(data) {
+            $('#wait').show();
              destroyDatatable('listOfSamples');
         let tableBody = $("#listOfSamples tbody");
                  
@@ -56,6 +57,7 @@
 
         // Reinitialize DataTable after populating data
         initializeDataTable("listOfSamples");
+        $('#wait').hide();
     }
 
     function viewSample(sampleId, loanStatus, indicator) {

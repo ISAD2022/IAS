@@ -11706,6 +11706,13 @@ Dear {userFullName},
             {
 
             string resp = "";
+            string to_email = "";
+            string cc_email = "";
+            string cc2_email = "";
+            string para_no = "";
+            string para_gist = "";
+            string para_status = "";
+
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
             sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
@@ -11728,10 +11735,37 @@ Dear {userFullName},
                 while (rdr.Read())
                     {
                     resp = rdr["remarks"].ToString();
+                    para_no = rdr["PARA_NO"].ToString();
+                    para_gist = rdr["GIST_OF_PARAS"].ToString();
+                    to_email = rdr["TO_EMAIL"].ToString();
+                    cc_email = rdr["CC_EMAIL"].ToString();
+                    cc2_email = rdr["CC_EMAIL2"].ToString();
+                    cc2_email = rdr["CC_EMAIL2"].ToString();
+                    para_status = rdr["para_status"].ToString();
+
 
                     }
                 }
+            if(to_email != "")
+                {
+                string emailSubject = $"IAS~Notification: Para No: {para_no} is marked {para_status}";
 
+                string emailBody = $@"
+            Dear Sir,  
+
+            This is to notify you that Para No. {para_no} has been marked as {para_status}.  
+
+            Gist of Para:  
+            {para_gist}  
+
+            Best Regards,  
+            Internal Audit System (IAS)  
+            ";
+                string ccEmails = string.Join(";", new[] { cc_email, cc2_email }.Where(e => !string.IsNullOrWhiteSpace(e)));
+                EmailConfiguration econ = new EmailConfiguration();
+                econ.ConfigEmail(to_email, ccEmails, emailSubject, emailBody);
+                }
+          
             con.Dispose();
             return resp;
             }
@@ -21100,7 +21134,7 @@ Dear {userFullName},
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
-                    cmd.Parameters.Add("AC_number", OracleDbType.Int32).Value = AC_NO;
+                    cmd.Parameters.Add("AC_number", OracleDbType.Varchar2).Value = AC_NO;
                     cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                     cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                     cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -21151,7 +21185,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_sm.P_GET_ACCOUNT_DOC ";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("AC_number", OracleDbType.Int32).Value = AC_NO;
+                cmd.Parameters.Add("AC_number", OracleDbType.Varchar2).Value = AC_NO;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -21351,7 +21385,7 @@ Dear {userFullName},
                 cmd.Parameters.Clear();
                 // cmd.Parameters.Add("IND", OracleDbType.Varchar2).Value = INDICATOR;
                 cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENG_ID;
-                cmd.Parameters.Add("L_DISB_ID", OracleDbType.Int32).Value = LOAN_DISB_ID;
+                cmd.Parameters.Add("L_DISB_ID", OracleDbType.Varchar2).Value = LOAN_DISB_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -21430,7 +21464,7 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENG_ID;
-                cmd.Parameters.Add("L_DISB_ID", OracleDbType.Int32).Value = LOAN_DISB_ID;
+                cmd.Parameters.Add("L_DISB_ID", OracleDbType.Varchar2).Value = LOAN_DISB_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
@@ -21475,7 +21509,7 @@ Dear {userFullName},
             List<ParaTextSearchModel> list = new List<ParaTextSearchModel>();
             using (OracleCommand cmd = con.CreateCommand())
                 {
-                cmd.CommandText = "pkg_rpt.P_GET_PARA_TEXT_WORDS";
+                cmd.CommandText = "pkg_rpt.P_GET_PARA_TEXT_WORDS_V2";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("T_TEXT", OracleDbType.Varchar2).Value = SEARCH_KEYWORD;
@@ -21485,7 +21519,7 @@ Dear {userFullName},
                     {
                     ParaTextSearchModel chk = new ParaTextSearchModel
                         {
-                        ENTITY_NAME = rdr["name"]?.ToString(),
+                        AUDIT_ZONE = rdr["name"]?.ToString(),
                         PARENT_NAME = rdr["p_name"]?.ToString(),
                         CHILD_NAME = rdr["c_name"]?.ToString(),
                         AUDIT_PERIOD = rdr["audit_period"]?.ToString(),

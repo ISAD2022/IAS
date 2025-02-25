@@ -33,9 +33,9 @@
     }
 
     function populateTable(data) {
+        $('#wait').show();
         var tableBody = $("#account_document_list tbody");
-        tableBody.empty(); // Clear existing rows
-
+        tableBody.empty();
         $.each(data, function (index, item) {
             var row = `<tr>
                 <td>${index + 1}</td>
@@ -49,8 +49,8 @@
             </tr>`;
             tableBody.append(row);
         });
-
         initializeDataTable('account_document_list');
+        $('#wait').hide();
     }
 
          function viewDocument(docImage) {
