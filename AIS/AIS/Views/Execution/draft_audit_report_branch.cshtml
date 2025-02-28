@@ -58,7 +58,7 @@
                 },
                 cache: false,
                 success: function (data) {
-                   
+
                     $('#entitySelectField').removeAttr('disabled');
                     g_obsList = data;
                     var isbranch = false;
@@ -240,6 +240,7 @@
          g_subProcId=data.subchecklisT_ID;
          g_procDetailId=data.checklistdetaiL_ID;
          getSubCheckListOfProcess();
+         $('#viewMemo_respPP_ObSent tbody').empty();
            if(data.responsiblE_PPNO != null){
                     if (data.responsiblE_PPNO.length > 0) {
                     $.each(data.responsiblE_PPNO, function (j, pp) {
@@ -516,7 +517,7 @@
                 success: function (data) {
                     alert(data.Message);
                    onAlertCallback(submissionOfDSA);
-                  
+
                 },
                 dataType: "json",
             });
@@ -526,7 +527,7 @@
     function submissionOfDSA(){
           $('#DSAModel').modal('hide');
                     $('#viewMemoDetailsModel').modal('show');
-                   
+
     }
 
 </script>
@@ -584,8 +585,8 @@
                 <tr>
                     <th class="col-md-auto">Memo No.</th>
                     <th class="col-md-auto">Draft Para No.</th>
-                    <th class="col-md-auto">Final Para No.</th>                  
-                    <th class="col-md-auto branchfield">Title of Para</th>                 
+                    <th class="col-md-auto">Final Para No.</th>
+                    <th class="col-md-auto branchfield">Title of Para</th>
                     <th class="col-md-auto">Risk Category</th>
                     <th class="col-md-auto">Status</th>
                     <th class="col-md-auto">Action</th>
@@ -760,7 +761,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="dsa_audit_obs_button" onclick="dsaObservationDetails(g_obsId);" type="button" class="btn btn-warning">Create DSA</button> 
+                <button id="dsa_audit_obs_button" onclick="dsaObservationDetails(g_obsId);" type="button" class="btn btn-warning">Create DSA</button>
                 <button id="update_audit_obs_button" onclick="updateObservationDetails(g_obsId);" type="button" class="btn btn-primary">Update Para Details</button>
                 <button id="un_settle_audit_obs_button" onclick="updateObservationStatus(g_obsId,8);" type="button" data-dismiss="modal" class="btn btn-danger">Add to Final Report</button>
                 <button id="settle_audit_obs_button" onclick="updateObservationStatus(g_obsId, 9);" type="button" data-dismiss="modal" class="btn btn-success">Settle</button>

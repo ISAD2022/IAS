@@ -2761,7 +2761,7 @@ namespace AIS.Controllers
             return dBConnection.GetLoanSamples(INDICATOR, STATUS_ID, ENG_ID, SAMPLE_ID);
             }
         [HttpPost]
-        public List<LoanCaseSampleDocumentsModel> get_loan_documents(int ENG_ID, int LOAN_DISB_ID)
+        public List<LoanCaseSampleDocumentsModel> get_loan_documents(int ENG_ID, string LOAN_DISB_ID)
             {
             return dBConnection.GetLoanSamplesDocuments(ENG_ID, LOAN_DISB_ID);
             }
@@ -2771,7 +2771,7 @@ namespace AIS.Controllers
             return dBConnection.GetLoanSamplesDocumentData(IMAGE_ID);
             }
         [HttpPost]
-        public List<LoanCaseSampleTransactionsModel> get_sample_loan_transactions(int ENG_ID, int LOAN_DISB_ID)
+        public List<LoanCaseSampleTransactionsModel> get_sample_loan_transactions(int ENG_ID, string LOAN_DISB_ID)
             {
             return dBConnection.GetLoanSamplesTransactions(ENG_ID, LOAN_DISB_ID);
             }
@@ -2780,6 +2780,11 @@ namespace AIS.Controllers
         public List<ParaTextSearchModel> get_para_text_in_audit_report(string SEARCH_KEYWORD)
             {
             return dBConnection.GetAuditParasByText(SEARCH_KEYWORD);
+            }
+        [HttpPost]
+        public string regenerate_sample_of_loans(int ENG_ID, int LOAN_SAMPLE_ID)
+            {
+                return "{\"Status\":true,\"Message\":\"" + dBConnection.RegenerateSampleofLoan(ENG_ID, LOAN_SAMPLE_ID) + "\"}";
             }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

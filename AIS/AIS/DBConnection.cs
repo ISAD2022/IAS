@@ -18302,7 +18302,7 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("C_NIC", OracleDbType.Int32).Value = CNIC;
-                cmd.Parameters.Add("DIS_ID", OracleDbType.Int32).Value = LOAN_DISB_ID;
+                cmd.Parameters.Add("DIS_ID", OracleDbType.Varchar2).Value = LOAN_DISB_ID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -21357,6 +21357,7 @@ Dear {userFullName},
                     chk.TYPE = rdr["TYPE"].ToString();
                     chk.SCHEME = rdr["SCHEME"].ToString();
                     chk.L_PURPOSE = rdr["L_PURPOSE"].ToString();
+                    chk.LC_NO = rdr["LC_NO"].ToString();
                     chk.CNIC = rdr["CNIC"].ToString();
                     chk.CUSTOMERNAME = rdr["CUSTOMERNAME"].ToString();
                     chk.APP_DATE = Convert.ToDateTime(rdr["APP_DATE"]);
@@ -21370,7 +21371,7 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-        public List<LoanCaseSampleDocumentsModel> GetLoanSamplesDocuments( int ENG_ID, int LOAN_DISB_ID)
+        public List<LoanCaseSampleDocumentsModel> GetLoanSamplesDocuments( int ENG_ID, string LOAN_DISB_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21450,7 +21451,7 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
-        public List<LoanCaseSampleTransactionsModel> GetLoanSamplesTransactions(int ENG_ID, int LOAN_DISB_ID)
+        public List<LoanCaseSampleTransactionsModel> GetLoanSamplesTransactions(int ENG_ID, string LOAN_DISB_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21523,6 +21524,7 @@ Dear {userFullName},
                         PARENT_NAME = rdr["p_name"]?.ToString(),
                         CHILD_NAME = rdr["c_name"]?.ToString(),
                         AUDIT_PERIOD = rdr["audit_period"]?.ToString(),
+                        ANNEXURE = rdr["annex"]?.ToString(),
                         PARA_NO = rdr["para_no"]?.ToString(),
                         GIST_OF_PARAS = rdr["gist_of_paras"]?.ToString(),
                          TEXT = rdr["text"]?.ToString()
@@ -21536,6 +21538,68 @@ Dear {userFullName},
                 }
             con.Dispose();
             return list;
+            }
+        public List<AuditeeEntitiesModel> GetSampleEntities()
+            {
+         
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<AuditeeEntitiesModel> entitiesList = new List<AuditeeEntitiesModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.P_GET_SAMPLE_ENTITIES";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+              cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                    AuditeeEntitiesModel entity = new AuditeeEntitiesModel();
+                    if (rdr["eng_id"].ToString() != "" && rdr["eng_id"].ToString() != null)
+                        entity.ENG_ID = Convert.ToInt32(rdr["eng_id"]);
+
+                    if (rdr["E_NAME"].ToString() != "" && rdr["E_NAME"].ToString() != null)
+                        entity.NAME = rdr["E_NAME"].ToString();
+
+                    entitiesList.Add(entity);
+                    }
+                }
+            con.Dispose();
+            return entitiesList;
+
+            }
+
+        public string RegenerateSampleofLoan(int ENG_ID, int LOAN_SAMPLE_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            string resp = "";
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.P_add_sample_data_update";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENG_ID;                
+                cmd.Parameters.Add("SID", OracleDbType.Varchar2).Value = LOAN_SAMPLE_ID;                
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    resp = rdr["remarks"].ToString();
+                    }
+                }
+            con.Dispose();
+            return resp;
             }
 
         }

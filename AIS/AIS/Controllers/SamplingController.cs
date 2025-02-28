@@ -30,7 +30,6 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -49,7 +48,6 @@ namespace AIS.Controllers
         {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
@@ -68,7 +66,6 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -87,7 +84,6 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -107,7 +103,6 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -127,7 +122,6 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");
@@ -147,7 +141,26 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
-            ViewData["ZonesList"] = dBConnection.GetZones();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+            }
+
+        public IActionResult sample_monitoring()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["EntityList"] = dBConnection.GetSampleEntities();
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

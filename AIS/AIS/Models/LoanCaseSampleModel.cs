@@ -10,6 +10,7 @@ namespace AIS.Models
         public string TYPE { get; set; }
         public string SCHEME { get; set; }
         public string L_PURPOSE { get; set; }
+        public string LC_NO { get; set; }
         public string CNIC { get; set; }
         public string CUSTOMERNAME { get; set; }
         public DateTime APP_DATE { get; set; }
