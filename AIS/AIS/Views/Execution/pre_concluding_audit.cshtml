@@ -127,6 +127,7 @@
            g_subProcId=data.subchecklisT_ID;
            g_procDetailId=data.checklistdetaiL_ID;
            getSubCheckListOfProcess();
+            $('#viewMemo_respPP_ObSent tbody').empty();
              if(data.responsiblE_PPNO != null){
                       if (data.responsiblE_PPNO.length > 0) {
                       $.each(data.responsiblE_PPNO, function (j, pp) {

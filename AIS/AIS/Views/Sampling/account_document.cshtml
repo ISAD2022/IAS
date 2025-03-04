@@ -31,7 +31,6 @@
             dataType:"json"
         });
     }
-
     function populateTable(data) {
         $('#wait').show();
         var tableBody = $("#account_document_list tbody");
@@ -52,8 +51,7 @@
         initializeDataTable('account_document_list');
         $('#wait').hide();
     }
-
-         function viewDocument(docImage) {
+    function viewDocument(docImage) {
         let win = window.open("", "_blank");
         if (!win) {
             console.error("Popup blocked");
@@ -87,14 +85,8 @@
             win.close();
         }
     }
-
-
-
-
-
-</script>
-
-<div class="row col-md-12 mt-3">
+ </script>
+ <div class="row col-md-12 mt-3">
     <h3 style="color: #45c545;">Account Document List</h3>
 </div>
 

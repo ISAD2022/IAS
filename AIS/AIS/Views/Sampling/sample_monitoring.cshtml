@@ -4,15 +4,15 @@
 }
 
 <script type="text/javascript">
-    
+
     var g_engID = 0;
     $(document).ready(function () {
        listSamples();
-     
+
     });
     function listSamples(){
         if( $('#entitySelectField').val()=="0"){
-            
+
            return;
         }
          $('#regenerateSampleBtn').show();
@@ -22,7 +22,7 @@
             type: "POST",
                cache: false,
 
-            data: { 
+            data: {
             'ENG_ID':g_engID
             },
             success: function (data) {
@@ -33,11 +33,11 @@
             dataType: "json",
         });
     }
-        function populateTable(data) {
+    function populateTable(data) {
             $('#wait').show();
              destroyDatatable('listOfSamples');
         let tableBody = $("#listOfSamples tbody");
-                 
+
 
          data.forEach((item, index) => {
         let row = `<tr>
@@ -59,7 +59,7 @@
         </tr>`;
 
         tableBody.append(row);
-    });      
+    });
 
         // Reinitialize DataTable after populating data
         initializeDataTable("listOfSamples");
@@ -76,7 +76,7 @@
 
 
     function redirectToBiomet(sampleId,loanStatus){
-        
+
         window.location.href = g_asiBaseURL + "/Sampling/biomet?engId="+g_engID+"&sample_id="+sampleId+"&loan_status="+loanStatus;
     }
       function redirectToLoan(sampleId,loanStatus){
@@ -110,20 +110,20 @@
 
     <div class="row col-md-12 mt-1">
         <label>Entity:</label>
-        <select id="entitySelectField" onchange="listSamples();" class="form-select form-control" >
-                <option value="0" id="0" selected>--Select Entity Name--</option>
-                @{
-                    if (ViewData["EntityList"] != null)
+        <select id="entitySelectField" onchange="listSamples();" class="form-select form-control">
+            <option value="0" id="0" selected>--Select Entity Name--</option>
+            @{
+                if (ViewData["EntityList"] != null)
                     {
-                        foreach (var ent in (dynamic)(ViewData["EntityList"]))
+                    foreach (var ent in (dynamic)(ViewData["EntityList"]))
                         {
-                            <option id="@ent.ENG_ID" value="@ent.ENG_ID">@ent.NAME</option>
+                        <option id="@ent.ENG_ID" value="@ent.ENG_ID">@ent.NAME</option>
                         }
                     }
-                }
-            </select>       
+            }
+        </select>
     </div>
-   
+
 
     <div class="row col-md-12 mt-3">
         <table id="listOfSamples" class="table table-hover table-bordered table-hover mt-3 table-striped">
@@ -141,7 +141,7 @@
             <tbody>
             </tbody>
         </table>
-  </div>
+    </div>
 
-  
+
 </div>
