@@ -28,7 +28,8 @@
             dataType: "json",
         });
     }
-        function populateTable(data) {
+        
+    function populateTable(data) {
         $('#wait').show();
         var tableBody = $("#biomet_sample_list tbody");
         tableBody.empty(); // Clear existing rows
@@ -50,7 +51,7 @@
         </td>
         <td>
             <a href="./account_transaction?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-success btn-sm">Transactions</a>
-        </td>       
+        </td>
     </tr>`;
             tableBody.append(row);
         });
@@ -58,7 +59,8 @@
         initializeDataTable('biomet_sample_list');
         $('#wait').hide();
     }
-        function formatDate(dateString) {
+        
+    function formatDate(dateString) {
         if (!dateString || dateString.trim() === "") return "";
         let date = new Date(dateString);
         return date.toLocaleDateString();

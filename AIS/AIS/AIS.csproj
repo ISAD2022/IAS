@@ -25,6 +25,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.5.1" />
     <PackageReference Include="Portable.itextsharp.xmlworker" Version="5.5.13.3" />
+    <PackageReference Include="WebEssentials.AspNetCore.PWA" Version="1.0.85" />
   </ItemGroup>
 
   <ItemGroup>
@@ -101,6 +102,14 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\AIS\ais\AIS\AIS\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\AIS\ais\AIS\AIS\.editorconfig" />
   </ItemGroup>
 
 </Project>
