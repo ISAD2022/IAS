@@ -2261,9 +2261,9 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<AuditPeriodModel> audit_periods(int dept_code)
+        public List<AuditPeriodModel> audit_periods(int dept_code=0, int AUDIT_PERIOD_ID=0)
             {
-            return dBConnection.GetAuditPeriods(dept_code);
+            return dBConnection.GetAuditPeriods(dept_code, AUDIT_PERIOD_ID);
             }
 
         [HttpPost]
@@ -2785,6 +2785,12 @@ namespace AIS.Controllers
         public string regenerate_sample_of_loans(int ENG_ID, int LOAN_SAMPLE_ID)
             {
                 return "{\"Status\":true,\"Message\":\"" + dBConnection.RegenerateSampleofLoan(ENG_ID, LOAN_SAMPLE_ID) + "\"}";
+            }
+
+        [HttpPost]
+        public List<YearWiseAllParasModel> get_year_wise_all_audit_paras(int AUDIT_PERIOD_ID)
+            {
+            return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD_ID);
             }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

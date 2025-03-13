@@ -1492,6 +1492,47 @@ namespace AIS.Controllers
                 }
 
             }
+        public IActionResult year_wise_all_paras_details()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+
+            }
+
+        public IActionResult master_cdms_trns()
+            {
+            ViewData["TopMenu"] = tm.GetTopMenus();
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+            if (!sessionHandler.IsUserLoggedIn())
+                {
+                return RedirectToAction("Index", "Login");
+                }
+            else
+                {
+                if (!sessionHandler.HasPermissionToViewPage(MethodBase.GetCurrentMethod().Name))
+                    {
+                    return RedirectToAction("Index", "PageNotFound");
+                    }
+                else
+                    return View();
+                }
+
+            }
 
         public IActionResult Error()
         {
