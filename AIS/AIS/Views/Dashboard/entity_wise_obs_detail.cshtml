@@ -30,7 +30,7 @@
                 var sr = 1;
 
                 $.each(data, function (index, item) {
-                    $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td> <td class=\"text-left\">" + item.parA_GIST + "</td><td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
+                    $('#entitywise_panel tbody').append("<tr><td>" + sr + "</td><td>" + item.name + "</td><td>" + item.audiT_PERIOD + "</td> <td class=\"text-right\">" + item.parA_NO + "</td> <td class=\"text-left\">" + item.parA_GIST + "</td><td class=\"text-left\">" + item.p_RISK + "</td> <td><a href=\"#\" onclick=\"getParaText('" + item.parA_REF + "','" + item.obS_ID + "', '" + item.parA_CATEGORY + "');\">View Para Text</a></td></tr>");
                     sr++;
                 });
                 initializeDataTable('entitywise_panel');
@@ -73,7 +73,8 @@
                     <th class="col-md-auto text-light">Entity Name</th>
                     <th class="col-md-auto text-center text-light">Audit Period</th>
                     <th class="col-md-auto text-center text-light">Para No</th>
-                    <th class="col-md-auto text-center text-light">Gist of Para</th>
+                    <th class="col-md-auto text-center text-light">Gist of ParaS</th>
+                    <th class="col-md-auto text-center text-light">Risk</th>
                     <th class="col-md-auto text-center text-light"></th>
                 </tr>
             </thead>

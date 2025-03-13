@@ -15617,6 +15617,7 @@ Dear {userFullName},
                     zb.OBS_ID = rdr["au_obs_id"].ToString();
                     zb.AUDIT_PERIOD = rdr["audit_period"].ToString();
                     zb.PARA_GIST = rdr["gist_of_paras"].ToString();
+                    zb.P_RISK = rdr["risk"].ToString();
                     pdetails.Add(zb);
                     }
                 }

@@ -16,5 +16,6 @@ namespace AIS.Models
         public string PARA_REF { get; set; }
         public string OBS_ID { get; set; }
         public string PARA_GIST { get; set; }
-    }
+        public string P_RISK { get; set; }
+        }
 }
