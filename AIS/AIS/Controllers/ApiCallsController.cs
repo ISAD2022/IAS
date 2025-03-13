@@ -2788,9 +2788,9 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<YearWiseAllParasModel> get_year_wise_all_audit_paras(int AUDIT_PERIOD_ID)
+        public List<YearWiseAllParasModel> get_year_wise_all_audit_paras(string AUDIT_PERIOD)
             {
-            return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD_ID);
+            return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD);
             }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

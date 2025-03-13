@@ -1030,6 +1030,31 @@ namespace AIS.Controllers
             con.Dispose();
             return periodList;
             }
+        public List<AuditPeriodModel> GetAllParasYears()
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            var con = this.DatabaseConnection(); con.Open();
+            List<AuditPeriodModel> periodList = new List<AuditPeriodModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_rpt.P_GetAllParasYear";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    AuditPeriodModel period = new AuditPeriodModel();
+                    period.AUDITPERIODID = Convert.ToInt32(rdr["audit_period"]);                    
+                    periodList.Add(period);
+                    }
+                }
+            con.Dispose();
+            return periodList;
+            }
         public List<AuditPeriodModel> GetInsYearsForCAU(int dept_code = 0)
             {
             var con = this.DatabaseConnection(); con.Open();
@@ -21599,7 +21624,7 @@ Dear {userFullName},
             con.Dispose();
             return resp;
             }
-        public List<YearWiseAllParasModel> GetYearWiseAllParas(int AUDIT_PERIOD_ID)
+        public List<YearWiseAllParasModel> GetYearWiseAllParas(string A_PERIOD)
             {
 
             var con = this.DatabaseConnection(); con.Open();
@@ -21613,7 +21638,7 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_rpt.P_GET_YEAR_WISE_ALL_PARAS";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("PERIOD_ID", OracleDbType.Int32).Value = AUDIT_PERIOD_ID;
+                cmd.Parameters.Add("A_PERIOD", OracleDbType.Int32).Value = A_PERIOD;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -21621,19 +21646,19 @@ Dear {userFullName},
                     {
                     YearWiseAllParasModel entity = new YearWiseAllParasModel
                         {
-                        AUDIT_PERIOD = rdr["AUDIT_PERIOD"]?.ToString(),
+                        AUDIT_PERIOD = rdr["audit_period"]?.ToString(),
                         ENTITY_TYPE = rdr["ENTITY_TYPE"]?.ToString(),
-                        REPORTING_OFFICE = rdr["REPORTING_OFFICE"]?.ToString(),
-                        ENTITY_NAME = rdr["ENTITY_NAME"]?.ToString(),
-                        ENTITY_RISK_LEVEL = rdr["ENTITY_RISK"]?.ToString(),
-                        FUNCTION_RESP = rdr["FUNCTION_RESP"]?.ToString(),
-                        AUDIT_ZONE = rdr["AUDIT_ZONE"]?.ToString(),
-                        PARA_NO = rdr["PARA_NO"]?.ToString(),
-                        GIST_OF_PARAS = rdr["GIST_OF_PARAS"]?.ToString(),
+                        REPORTING_OFFICE = rdr["reporting_office"]?.ToString(),
+                        ENTITY_NAME = rdr["entity_name"]?.ToString(),
+                        ENTITY_RISK_LEVEL = rdr["entity_risk"]?.ToString(),
+                        FUNCTION_RESP = rdr["func_resp"]?.ToString(),
+                        AUDIT_ZONE = rdr["Audit_Zone"]?.ToString(),
+                        PARA_NO = rdr["para_no"]?.ToString(),
+                        GIST_OF_PARAS = rdr["gist_of_paras"]?.ToString(),
                         RISK = rdr["RISK"]?.ToString(),
-                        ANNEXURE = rdr["ANNEXURE"]?.ToString(),
-                        AMOUNT_INVOLVED = rdr["AMOUNT_INVOLVED"]?.ToString(),
-                        NO_OF_INSTANCES = rdr["NO_OF_INSTANCES"]?.ToString(),
+                        ANNEXURE = rdr["annexure"]?.ToString(),
+                        AMOUNT_INVOLVED = rdr["amount_involved"]?.ToString(),
+                        NO_OF_INSTANCES = rdr["no_of_instances"]?.ToString(),
                         PARA_STATUS = rdr["PARA_STATUS"]?.ToString()
                         };
                     entitiesList.Add(entity);

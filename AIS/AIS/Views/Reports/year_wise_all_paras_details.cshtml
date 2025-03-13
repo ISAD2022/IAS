@@ -19,7 +19,7 @@
             url: g_asiBaseURL + "/ApiCalls/get_year_wise_all_audit_paras",
             type: "POST",
             data: {
-                "AUDIT_PERIOD_ID": $('#auditPeriodSelectBox').val()
+                "AUDIT_PERIOD": $('#auditPeriodSelectBox').val()
             },
             cache: false,
             success: function (data) {
@@ -68,7 +68,7 @@
                     {
                         foreach (var p in (dynamic)(ViewData["AuditPeriodList"]))
                         {
-                            <option value="@p.AUDITPERIODID">@p.DESCRIPTION</option>
+                        <option value="@p.AUDITPERIODID">@p.AUDITPERIODID</option>
                         }
                     }
             }
