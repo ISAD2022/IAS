@@ -2724,9 +2724,9 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<BiometSamplingModel> get_biomet_sampling_details(int ENG_ID)
+        public List<BiometSamplingModel> get_biomet_sampling_details(int ENG_ID, int SAMPLE_ID)
             {
-            return dBConnection.GetBiometSamplingDetails(ENG_ID);
+            return dBConnection.GetBiometSamplingDetails(ENG_ID, SAMPLE_ID);
             }
         [HttpPost]
         public List<AccountTransactionSampleModel> get_biomet_account_transaction_sampling_details(int ENG_ID, string AC_NO)
@@ -2792,7 +2792,11 @@ namespace AIS.Controllers
             {
             return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD);
             }
-
+        [HttpPost]
+        public List<CDMSMasterTransactionModel> get_CDMS_master_transactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO )
+            {
+            return dBConnection.GetCDMSMasterTransactions(ENTITY_ID, START_DATE, END_DATE, CNIC_NO, ACC_NO);
+            }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {

@@ -5,10 +5,12 @@
 
 <script type="text/javascript">
     var g_engId = 0;
+    var g_sampleID = 0;
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
         g_engId = url.searchParams.get("engId");
+        g_sampleID  = url.searchParams.get("sample_id");
         loadBIOMETSamples();
     });
 
@@ -19,7 +21,7 @@
              url: g_asiBaseURL + "/ApiCalls/get_biomet_sampling_details",
             type: "POST",
                cache: false,
-            data: { ENG_ID: g_engId },
+            data: { ENG_ID: g_engId, SAMPLE_ID:g_sampleID },
             success: function (data) {
                 if (data.length > 0) {
                     populateTable(data);

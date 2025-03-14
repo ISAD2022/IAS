@@ -21086,7 +21086,7 @@ Dear {userFullName},
             return resp;
             }
 
-        public List<BiometSamplingModel> GetBiometSamplingDetails(int ENG_ID)
+        public List<BiometSamplingModel> GetBiometSamplingDetails(int ENG_ID, int SAMPLE_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21105,6 +21105,7 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SAMPLE_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -21669,6 +21670,63 @@ Dear {userFullName},
             return entitiesList;
 
             }
+        public List<CDMSMasterTransactionModel> GetCDMSMasterTransactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO)
+            {
+
+            var con = this.DatabaseConnection(); con.Open();
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<CDMSMasterTransactionModel> list = new List<CDMSMasterTransactionModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_get_account_transcations_master";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENTITY_ID;
+                cmd.Parameters.Add("AC_number", OracleDbType.Varchar2).Value = ACC_NO;
+                cmd.Parameters.Add("CNIC_NO", OracleDbType.Varchar2).Value = CNIC_NO;
+                cmd.Parameters.Add("ST_DATE", OracleDbType.Date).Value = START_DATE;
+                cmd.Parameters.Add("ED_DATE", OracleDbType.Date).Value = END_DATE;
+                cmd.Parameters.Add("P_NO", OracleDbType.Date).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Date).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Date).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                    {
+                    CDMSMasterTransactionModel m = new CDMSMasterTransactionModel
+                        {
+                        TRANSACTION_ID = rdr["transactionid"]?.ToString(),
+                        ENTITY_NAME = rdr["name"]?.ToString(),
+                        OLD_ACCOUNT_NO = rdr["oldaccountno"]?.ToString(),
+                        CNIC = rdr["cnic"]?.ToString(),
+                        ACCOUNT_NAME = rdr["name"]?.ToString(),
+                        CUSTOMER_NAME = rdr["customername"]?.ToString(),
+                        TR_MASTER_CODE = rdr["transactionmastercode"]?.ToString(),
+                        DESCRIPTION = rdr["description"]?.ToString(),
+                        REMARKS = rdr["remarks"]?.ToString(),
+                        TRANSACTION_DATE = rdr["transactiondate"] != DBNull.Value ? Convert.ToDateTime(rdr["transactiondate"]) : DateTime.MinValue,
+                        AUTHORIZATION_DATE = rdr["authorizationdate"] != DBNull.Value ? Convert.ToDateTime(rdr["authorizationdate"]) : (DateTime?)null,
+                        DR_AMOUNT = rdr["dramount"]?.ToString(),
+                        CR_AMOUNT = rdr["cramount"]?.ToString(),
+                        TO_ACCOUNT_ID = rdr["toaccountid"]?.ToString(),
+                        TO_ACCOUNT_TITLE = rdr["toaccounttitle"]?.ToString(),
+                        TO_ACCOUNT_NO = rdr["toaccountno"]?.ToString(),
+                        TO_ACC_BRANCH_ID = rdr["to_acc_branchid"]?.ToString(),
+                        INSTRUMENT_NO = rdr["instrumentno"]?.ToString()
+                        };
+                    list.Add(m);
+                    }
+                }
+            con.Dispose();
+            return list;
+
+            }
+
+
         }
 
     }
