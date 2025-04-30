@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class LoanDetailReportModel
     {
+    public class LoanDetailReportModel
+        {
         public string CNIC { get; set; }
         public string BRANCHID { get; set; }
         public string LOAN_CASE_NO { get; set; }
@@ -21,10 +17,10 @@ namespace AIS.Models
         public string PRINCIPLE { get; set; }
         public string MARKUP { get; set; }
 
+        }
+
+
+
+
     }
-
-
-
-
-}
 

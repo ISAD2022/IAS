@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class AssignedObservations
-    {        
+        {
         public int ID { get; set; }
         public int? RESP_ID { get; set; }
         public int OBS_ID { get; set; }
@@ -33,10 +32,10 @@ namespace AIS.Models
         public int? CAN_REPLY { get; set; }
         public string MEMO_DATE { get; set; }
         public string MEMO_NUMBER { get; set; }
-        public string MEMO_REPLY_DATE{ get; set; }
+        public string MEMO_REPLY_DATE { get; set; }
         public string AUDIT_YEAR { get; set; }
         public string OPERATION_STARTDATE { get; set; }
         public string OPERATION_ENDDATE { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNOs { get; set; }
+        }
     }
-}

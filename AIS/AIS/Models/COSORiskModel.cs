@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
+    {
     public class COSORiskModel
-    {        
+        {
         public string AUDIT_PERIOD { get; set; }
         public string DEPT_NAME { get; set; }
         public string RATING_FACTORS { get; set; }
@@ -16,5 +14,5 @@ namespace AIS.Models
         public string AUDIT_RATING { get; set; }
         public string FINAL_AUDIT_RATING { get; set; }
         public string STATUS { get; set; }
+        }
     }
-}

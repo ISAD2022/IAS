@@ -1,11 +1,8 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class OldParasModelCAD
     {
-        public int PARA_ID { get; set; }       
+    public class OldParasModelCAD
+        {
+        public int PARA_ID { get; set; }
         public string AUDIT_PERIOD { get; set; }
         public string ENTITY_NAME { get; set; }
         public string GIST_OF_PARAS { get; set; }
@@ -17,5 +14,5 @@ namespace AIS.Models
         public int V_CAT_ID { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
         public int RISK_ID { get; set; }
+        }
     }
-}

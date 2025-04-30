@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class AuditVoilationcatModel
     {
+    public class AuditVoilationcatModel
+        {
         public int ID { get; set; }
         public string V_NAME { get; set; }
 
@@ -12,5 +9,5 @@ namespace AIS.Models
 
         public string STATUS { get; set; }
 
+        }
     }
-}

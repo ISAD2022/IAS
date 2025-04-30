@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class GetTeamDetailsModel
     {
+    public class GetTeamDetailsModel
+        {
         public string TEAM_NAME { get; set; }
         public string MEMBER_PPNO { get; set; }
         public string MEMBER_NAME { get; set; }
@@ -15,5 +12,5 @@ namespace AIS.Models
 
 
 
+        }
     }
-}

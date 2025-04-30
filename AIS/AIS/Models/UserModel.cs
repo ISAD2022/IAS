@@ -1,10 +1,8 @@
-using System;
-
 namespace AIS.Models
-{
-    public class UserModel
     {
-        
+    public class UserModel
+        {
+
         public int ID { get; set; }
         public string SessionId { get; set; }
         public string IPAddress { get; set; }
@@ -43,5 +41,5 @@ namespace AIS.Models
         public bool isAlreadyLoggedIn { get; set; }
         public bool passwordChangeRequired { get; set; }
         public string changePassword { get; set; }
+        }
     }
-}

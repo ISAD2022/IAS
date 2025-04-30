@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class AuditPeriodModel
-    {        
+        {
         public int AUDITPERIODID { get; set; }
         public string DESCRIPTION { get; set; }
         public DateTime START_DATE { get; set; }
@@ -14,5 +13,5 @@ namespace AIS.Models
         public string REMARKS_OUT { get; set; }
         public string IS_SUCCESS { get; set; }
 
+        }
     }
-}

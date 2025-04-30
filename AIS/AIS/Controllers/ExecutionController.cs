@@ -1,11 +1,8 @@
 ﻿using AIS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace AIS.Controllers
@@ -96,7 +93,7 @@ namespace AIS.Controllers
                 }
             else
                 {
-                if(sessionHandler.GetSessionUser().UserRoleID == 12 && sessionHandler.GetSessionUser().UserEntityID== 112259)
+                if (sessionHandler.GetSessionUser().UserRoleID == 12 && sessionHandler.GetSessionUser().UserEntityID == 112259)
                     {
                     return View();
                     }
@@ -476,7 +473,7 @@ namespace AIS.Controllers
         public IActionResult manage_draft_report_paras(int engId = 0)
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
-            ViewData["TopMenuPages"] = tm.GetTopMenusPages();     
+            ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForManageObservations();
             if (!sessionHandler.IsUserLoggedIn())
                 {
@@ -958,7 +955,7 @@ namespace AIS.Controllers
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
             ViewData["EntitiesList"] = dBConnection.GetObservationEntitiesForPreConcluding();
             ViewData["AnnexList"] = dBConnection.GetAnnexuresForChecklistDetail();
-            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();            
+            ViewData["ProcessList"] = dBConnection.GetAuditChecklist();
             ViewData["RiskList"] = dBConnection.GetRisks();
             if (!sessionHandler.IsUserLoggedIn())
                 {

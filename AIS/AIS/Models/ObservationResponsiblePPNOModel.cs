@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ObservationResponsiblePPNOModel
     {
+    public class ObservationResponsiblePPNOModel
+        {
 
         public int RESP_ROW_ID { get; set; }
         public string EMP_NAME { get; set; }
@@ -18,5 +14,5 @@ namespace AIS.Models
         public string REMARKS { get; set; }
         public string ACTION { get; set; }
         public string INDICATOR { get; set; }
+        }
     }
-}

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ComplianceSummaryModel
     {
+    public class ComplianceSummaryModel
+        {
         public string ID { get; set; }
         public string NAME { get; set; }
         public string TOTAL_PARA { get; set; }
@@ -15,9 +11,9 @@ namespace AIS.Models
         public string REJECTED { get; set; }
         public string SETTLED { get; set; }
         public string ROLE_ID { get; set; }
-        
 
 
 
+
+        }
     }
-}

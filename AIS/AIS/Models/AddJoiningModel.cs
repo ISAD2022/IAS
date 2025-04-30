@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class AddJoiningModel
-    {        
+        {
         public int ID { get; set; }
         public int ENG_PLAN_ID { get; set; }
         public int TEAM_MEM_PPNO { get; set; }
@@ -17,5 +15,5 @@ namespace AIS.Models
         public int LASTUPDATEDBY { get; set; }
         public string STATUS { get; set; }
 
+        }
     }
-}

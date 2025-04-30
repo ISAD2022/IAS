@@ -1,9 +1,8 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace AIS.Models
-{
-    public class AuditTeamModel
     {
+    public class AuditTeamModel
+        {
         public int ID { get; set; }
         public int T_ID { get; set; }
         public string CODE { get; set; }
@@ -16,5 +15,5 @@ namespace AIS.Models
         [NotMapped]
         public string PLACE_OF_POSTING { get; set; }
         public string STATUS { get; set; }
+        }
     }
-}

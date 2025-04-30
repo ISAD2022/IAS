@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class JoiningCompletionReportModel
     {
+    public class JoiningCompletionReportModel
+        {
         public string AUDIT_BY { get; set; }
         public string AUDITEE_NAME { get; set; }
         public string TEAM_NAME { get; set; }
@@ -14,6 +13,6 @@ namespace AIS.Models
         public DateTime? JOINING_DATE { get; set; }
         public DateTime? COMPLETION_DATE { get; set; }
         public string STATUS { get; set; }
-        
+
+        }
     }
-}

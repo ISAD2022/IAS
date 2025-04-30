@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Reports\master_cdms.cshtml" />
     <Content Remove="Views\Reports\master_cdms_trns.cshtml" />
   </ItemGroup>
 
@@ -43,6 +44,10 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Views\Dashboard\serious_fraudulent_obs_gm.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Sampling\list_reports.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -114,6 +119,7 @@
 
   <ItemGroup>
     <None Include="D:\AIS\ais\AIS\AIS\.editorconfig" />
+    <None Include="Views\Reports\master_cdms.cshtml" />
     <None Include="Views\Reports\master_cdms_trns.cshtml" />
   </ItemGroup>
 

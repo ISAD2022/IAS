@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class GetOldParasBranchComplianceModel
     {
+    public class GetOldParasBranchComplianceModel
+        {
         public string AUDIT_PERIOD { get; set; }
         public string AUDIT_DATE { get; set; }
         public string PARA_RISK { get; set; }
@@ -23,7 +20,7 @@ namespace AIS.Models
         public string PREV_ROLE { get; set; }
         public string NEXT_ROLE { get; set; }
         public string RECEIVED_FROM { get; set; }
-        public string COM_ID { get; set; }       
+        public string COM_ID { get; set; }
 
+        }
     }
-}

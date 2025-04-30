@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class BranchModel
-    {        
+        {
         public int BRANCHID { get; set; }
         public int ZONEID { get; set; }
         public string BRANCHNAME { get; set; }
@@ -16,5 +15,5 @@ namespace AIS.Models
         public string BRANCH_SIZE { get; set; }
         [NotMapped]
         public string ZONE_NAME { get; set; }
+        }
     }
-}

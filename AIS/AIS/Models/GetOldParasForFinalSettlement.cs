@@ -1,12 +1,9 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class GetOldParasForFinalSettlement
     {
-      
-        public string REPORTINGOFFICE { get; set; } 
+    public class GetOldParasForFinalSettlement
+        {
+
+        public string REPORTINGOFFICE { get; set; }
         public string REF_P { get; set; }
         public string AUDITEENAME { get; set; }
         public string AUDIT_PERIOD { get; set; }
@@ -23,7 +20,7 @@ namespace AIS.Models
         public string LASTUPDATEDDATE { get; set; }
         public string REMARKS { get; set; }
         public string SEQUENCE { get; set; }
-        
+
         public string IMP_REMARKS { get; set; }
         public string SUBMITTED { get; set; }
         public string AUDITED_BY { get; set; }
@@ -34,5 +31,5 @@ namespace AIS.Models
 
 
 
+        }
     }
-}

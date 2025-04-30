@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class TentativePlanModel
     {
+    public class TentativePlanModel
+        {
         public int PLAN_ID { get; set; }
         public int CRITERIA_ID { get; set; }
         public int AUDIT_PERIOD_ID { get; set; }
@@ -21,6 +19,6 @@ namespace AIS.Models
         public string FREQUENCY_DESCRIPTION { get; set; }
         public string REPORTING_OFFICE { get; set; }
         public int NO_OF_DAYS { get; set; }
-      
+
+        }
     }
-}

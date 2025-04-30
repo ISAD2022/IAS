@@ -1,7 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 namespace AIS.Models
-{
+    {
     public class CDMSMasterTransactionModel
         {
 
@@ -14,8 +12,8 @@ namespace AIS.Models
         public string TR_MASTER_CODE { get; set; }
         public string DESCRIPTION { get; set; }
         public string REMARKS { get; set; }
-        public DateTime TRANSACTION_DATE { get; set; }
-        public DateTime? AUTHORIZATION_DATE { get; set; }
+        public string TRANSACTION_DATE { get; set; }
+        public string AUTHORIZATION_DATE { get; set; }
         public string? DR_AMOUNT { get; set; }
         public string? CR_AMOUNT { get; set; }
         public string? TO_ACCOUNT_ID { get; set; }
@@ -24,4 +22,4 @@ namespace AIS.Models
         public string? TO_ACC_BRANCH_ID { get; set; }
         public string INSTRUMENT_NO { get; set; }
         }
-}
+    }

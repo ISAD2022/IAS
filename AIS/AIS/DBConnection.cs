@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using AIS.Models;
-using Oracle.ManagedDataAccess.Client;
-using System.Security.Cryptography;
-using System.Text;
-using System.Linq;
+﻿using AIS.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Oracle.ManagedDataAccess.Client;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace AIS.Controllers
     {
@@ -1048,7 +1046,7 @@ namespace AIS.Controllers
                 while (rdr.Read())
                     {
                     AuditPeriodModel period = new AuditPeriodModel();
-                    period.AUDITPERIODID = Convert.ToInt32(rdr["audit_period"]);                    
+                    period.AUDITPERIODID = Convert.ToInt32(rdr["audit_period"]);
                     periodList.Add(period);
                     }
                 }
@@ -10345,6 +10343,7 @@ Dear {userFullName},
                     zb.REP_OFFICE = rdr["p_name"].ToString();
                     zb.ENTITY_NAME = rdr["c_name"].ToString();
                     zb.ANNEXURE = rdr["Annex"].ToString();
+                    zb.CHECK_LIST = rdr["chlist"].ToString();
                     zb.PARA_NO = rdr["final_para_no"].ToString();
                     zb.RISK = rdr["Risk"].ToString();
                     zb.GIST = rdr["Gist"].ToString();
@@ -11784,9 +11783,9 @@ Dear {userFullName},
             Best Regards,  
             Internal Audit System (IAS)  
             ";
-                string ccEmails = string.Join(";", new[] { cc_email, cc2_email }.Where(e => !string.IsNullOrWhiteSpace(e)));
+                //    string ccEmails = string.Join(";", new[] { cc_email, cc2_email }.Where(e => !string.IsNullOrWhiteSpace(e)));
                 EmailConfiguration econ = new EmailConfiguration();
-                econ.ConfigEmail(to_email, ccEmails, emailSubject, emailBody);
+                econ.ConfigEmail(to_email, emailSubject, emailBody);
                 }
 
             con.Dispose();
@@ -21353,6 +21352,41 @@ Dear {userFullName},
             con.Dispose();
             return list;
             }
+
+        public List<ListOfReportsModel> GetListOfreports(int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ListOfReportsModel> list = new List<ListOfReportsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.T_AU_EXCEPTION_REPORT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    ListOfReportsModel chk = new ListOfReportsModel();
+                    chk.REPORT_ID = Convert.ToInt32(rdr["R_ID"].ToString());
+                    chk.REPORT_TITLE = rdr["REPORT_TITLE"].ToString();
+                    chk.DISCRIPTION = rdr["DISCRIPTION"].ToString();
+                    chk.LOAN_STATUS = rdr["sample_final"].ToString();
+                    chk.REPORT_INDICATOR = rdr["IND"].ToString();
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
         public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
             sessionHandler = new SessionHandler();
@@ -21684,14 +21718,14 @@ Dear {userFullName},
                 cmd.CommandText = "pkg_sm.p_get_account_transcations_master";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_ID", OracleDbType.Varchar2).Value = ENTITY_ID;
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENTITY_ID;
                 cmd.Parameters.Add("AC_number", OracleDbType.Varchar2).Value = ACC_NO;
                 cmd.Parameters.Add("CNIC_NO", OracleDbType.Varchar2).Value = CNIC_NO;
                 cmd.Parameters.Add("ST_DATE", OracleDbType.Date).Value = START_DATE;
                 cmd.Parameters.Add("ED_DATE", OracleDbType.Date).Value = END_DATE;
-                cmd.Parameters.Add("P_NO", OracleDbType.Date).Value = loggedInUser.PPNumber;
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Date).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("R_ID", OracleDbType.Date).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
                 OracleDataReader rdr = cmd.ExecuteReader();
 
@@ -21708,8 +21742,8 @@ Dear {userFullName},
                         TR_MASTER_CODE = rdr["transactionmastercode"]?.ToString(),
                         DESCRIPTION = rdr["description"]?.ToString(),
                         REMARKS = rdr["remarks"]?.ToString(),
-                        TRANSACTION_DATE = rdr["transactiondate"] != DBNull.Value ? Convert.ToDateTime(rdr["transactiondate"]) : DateTime.MinValue,
-                        AUTHORIZATION_DATE = rdr["authorizationdate"] != DBNull.Value ? Convert.ToDateTime(rdr["authorizationdate"]) : (DateTime?)null,
+                        TRANSACTION_DATE = rdr["transactiondate"]?.ToString(),
+                        AUTHORIZATION_DATE = rdr["authorizationdate"]?.ToString(),
                         DR_AMOUNT = rdr["dramount"]?.ToString(),
                         CR_AMOUNT = rdr["cramount"]?.ToString(),
                         TO_ACCOUNT_ID = rdr["toaccountid"]?.ToString(),

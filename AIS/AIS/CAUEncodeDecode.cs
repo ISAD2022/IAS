@@ -1,28 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using AIS.Models;
-using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-using System.Net;
-using System.Net.Sockets;
-using System.Globalization;
-using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
-using System.IO;
 
 namespace AIS
-{
-    public class CAUEncodeDecode
     {
+    public class CAUEncodeDecode
+        {
         // This constant is used to determine the keysize of the encryption algorithm in bits.
         // We divide this by 8 within the code below to get the equivalent number of bytes.
         private const int Keysize = 128;
@@ -32,26 +17,26 @@ namespace AIS
         private const int DerivationIterations = 1000;
 
         public string Encrypt(string plainText)
-        {
-           // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
+            {
+            // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
             // so that the same Salt and IV values can be used when decrypting.  
             var saltStringBytes = Generate256BitsOfRandomEntropy();
             var ivStringBytes = Generate256BitsOfRandomEntropy();
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
             using (var password = new Rfc2898DeriveBytes(_PASSWORD, saltStringBytes, DerivationIterations))
-            {
+                {
                 var keyBytes = password.GetBytes(Keysize / 8);
                 using (var symmetricKey = new RijndaelManaged())
-                {
+                    {
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
                     using (var encryptor = symmetricKey.CreateEncryptor(keyBytes, ivStringBytes))
-                    {
-                        using (var memoryStream = new MemoryStream())
                         {
-                            using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                        using (var memoryStream = new MemoryStream())
                             {
+                            using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                                {
                                 cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
                                 cryptoStream.FlushFinalBlock();
                                 // Create the final bytes as a concatenation of the random salt bytes, the random iv bytes and the cipher bytes.
@@ -61,15 +46,15 @@ namespace AIS
                                 memoryStream.Close();
                                 cryptoStream.Close();
                                 return Convert.ToBase64String(cipherTextBytes);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
         public string Decrypt(string cipherText)
-        {
+            {
             // Get the complete stream of bytes that represent:
             // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
             var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(cipherText);
@@ -81,40 +66,40 @@ namespace AIS
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((Keysize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((Keysize / 8) * 2)).ToArray();
 
             using (var password = new Rfc2898DeriveBytes(_PASSWORD, saltStringBytes, DerivationIterations))
-            {
+                {
                 var keyBytes = password.GetBytes(Keysize / 8);
                 using (var symmetricKey = new RijndaelManaged())
-                {
+                    {
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
                     using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes))
-                    {
-                        using (var memoryStream = new MemoryStream(cipherTextBytes))
                         {
-                            using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                        using (var memoryStream = new MemoryStream(cipherTextBytes))
                             {
+                            using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                                {
                                 var plainTextBytes = new byte[cipherTextBytes.Length];
                                 var decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
                                 memoryStream.Close();
                                 cryptoStream.Close();
                                 return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
         private byte[] Generate256BitsOfRandomEntropy()
-        {
+            {
             var randomBytes = new byte[16]; // 32 Bytes will give us 256 bits.
             using (var rngCsp = new RNGCryptoServiceProvider())
-            {
+                {
                 // Fill the array with cryptographically secure random bytes.
                 rngCsp.GetBytes(randomBytes);
-            }
+                }
             return randomBytes;
+            }
         }
     }
-}

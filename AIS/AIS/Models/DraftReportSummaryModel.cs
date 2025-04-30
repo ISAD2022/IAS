@@ -1,9 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 namespace AIS.Models
-{
-    public class DraftReportSummaryModel
     {
+    public class DraftReportSummaryModel
+        {
         public int Total { get; set; }
         public int High { get; set; }
         public int Medium { get; set; }
@@ -12,5 +10,5 @@ namespace AIS.Models
         public int Dropped { get; set; }
         public int AddtoDraft { get; set; }
         public string ReportName { get; set; }
+        }
     }
-}

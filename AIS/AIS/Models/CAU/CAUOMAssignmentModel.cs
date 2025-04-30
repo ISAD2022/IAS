@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class CAUOMAssignmentModel
-    {        
+        {
         public int ID { get; set; }
         public string OM_NO { get; set; }
         public int INS_YEAR { get; set; }
@@ -15,5 +11,5 @@ namespace AIS.Models
         public int STATUS { get; set; }
         public string STATUS_DES { get; set; }
         public string KEY { get; set; }
+        }
     }
-}

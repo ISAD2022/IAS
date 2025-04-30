@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class ManageObservations
-    {        
+        {
         public int OBS_ID { get; set; }
         public string ANNEXURE_ID { get; set; }
         public string ANNEXURE_CODE { get; set; }
@@ -35,9 +33,9 @@ namespace AIS.Models
         public int? NO_OF_INSTANCES { get; set; }
         public string AMOUNT { get; set; }
         public string PPNO_TEST { get; set; }
-        public string INDICATOR {  get; set; }
-        public string TYPE_INDICATOR {  get; set; }
+        public string INDICATOR { get; set; }
+        public string TYPE_INDICATOR { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
         public List<AuditeeResponseEvidenceModel> ATTACHED_EVIDENCES { get; set; }
+        }
     }
-}

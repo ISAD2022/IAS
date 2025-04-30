@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ObservationSummaryModel
     {
-       
+    public class ObservationSummaryModel
+        {
+
         public int? ENG_ID { get; set; }
         public string PPNO { get; set; }
         public string E_NAME { get; set; }
@@ -20,6 +16,6 @@ namespace AIS.Models
         public string ADDED_TO_FINAL { get; set; }
         public string SETTELED { get; set; }
         public string TOTAL { get; set; }
-        
+
+        }
     }
-}

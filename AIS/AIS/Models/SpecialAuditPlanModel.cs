@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class SpecialAuditPlanModel
-    {        
+        {
         public string PLAN_ID { get; set; }
         public string AUDITED_BY { get; set; }
         public string AUDITED_BY_ID { get; set; }
@@ -19,5 +15,5 @@ namespace AIS.Models
         public string NATURE_ID { get; set; }
         public string NO_DAYS { get; set; }
 
+        }
     }
-}

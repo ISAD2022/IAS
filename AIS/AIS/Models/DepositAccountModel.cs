@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class DepositAccountModel
-    {        
+        {
         public string BRANCH_NAME { get; set; }
         public double ACC_NUMBER { get; set; }
         public string ACCOUNTCATEGORY { get; set; }
@@ -15,12 +13,12 @@ namespace AIS.Models
         public string CUSTOMERNAME { get; set; }
         public string BMVS_VERIFIED { get; set; }
 
-     
-        public string ACCOUNTSTATUS  { get; set; }
-        
+
+        public string ACCOUNTSTATUS { get; set; }
+
         public DateTime LASTTRANSACTIONDATE { get; set; }
-        
+
         public DateTime CNICEXPIRYDATE { get; set; }
 
+        }
     }
-}

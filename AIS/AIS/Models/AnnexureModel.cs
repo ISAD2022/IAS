@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AnnexureModel
-    {        
+        {
         public int ID { get; set; }
         public string ANNEX { get; set; }
         public string CODE { get; set; }
@@ -20,11 +16,11 @@ namespace AIS.Models
         public string FUNCTION_OWNER { get; set; }
         public string RISK_MODEL { get; set; }
         public string STATUS { get; set; }
-        
+
         public string MAX_NUMBER { get; set; }
         public string WEIGHTAGE { get; set; }
         public string GRAVITY { get; set; }
-      
 
+
+        }
     }
-}

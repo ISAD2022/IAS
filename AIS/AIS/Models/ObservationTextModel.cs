@@ -1,12 +1,9 @@
-using Org.BouncyCastle.Asn1.Mozilla;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class ObservationTextModel
-    {        
+        {
         public int OBS_ID { get; set; }
         public string CP_ID { get; set; }
         public string CP { get; set; }
@@ -23,6 +20,6 @@ namespace AIS.Models
         public string IND { get; set; }
         public string OBS_REPLY { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPs { get; set; }
-        
+
+        }
     }
-}

@@ -1,14 +1,11 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class DraftDSAList
     {
+    public class DraftDSAList
+        {
         public string ID { get; set; }
-        public string DSA_NO { get; set; } 
-        public string AUDIT_PERIOD { get; set; } 
-        public string REPORTING_OFFICE { get; set; } 
+        public string DSA_NO { get; set; }
+        public string AUDIT_PERIOD { get; set; }
+        public string REPORTING_OFFICE { get; set; }
         public string ENTITY_ID { get; set; }
         public string ENTITY_NAME { get; set; }
         public string AZ_NAME { get; set; }
@@ -17,7 +14,7 @@ namespace AIS.Models
         public string OBS_ID { get; set; }
         public string ROW_RESP_ID { get; set; }
         public string RESP_PP_NO { get; set; }
-        public string EMP_NAME { get; set; } 
+        public string EMP_NAME { get; set; }
         public string LOAN_CASE { get; set; }
         public string LC_AMOUNT { get; set; }
         public string AC_NUMBER { get; set; }
@@ -27,4 +24,4 @@ namespace AIS.Models
         public string STATUS_DOWN { get; set; }
         public string DSA_STATUS { get; set; }
         }
-}
+    }

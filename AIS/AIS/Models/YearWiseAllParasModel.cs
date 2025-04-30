@@ -1,8 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class YearWiseAllParasModel
         {
         public string AUDIT_PERIOD { get; set; }
@@ -21,4 +18,4 @@ namespace AIS.Models
         public string PARA_STATUS { get; set; }
 
         }
-}
+    }

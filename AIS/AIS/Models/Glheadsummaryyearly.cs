@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class Glheadsummaryyearlymodel
     {
+    public class Glheadsummaryyearlymodel
+        {
 
         public string COL1 { get; set; }
         public string COL2 { get; set; }
         public string COL3 { get; set; }
         public int GLSUBCODE { get; set; }
         public int BRANCHID { get; set; }
-        public string GLSUBNAME { get; set; }  
+        public string GLSUBNAME { get; set; }
         public double DEBIT_2021 { get; set; }
         public double CREDIT_2021 { get; set; }
         public double BALANCE_2021 { get; set; }
@@ -26,5 +22,5 @@ namespace AIS.Models
         public string CURRENT_DEBIT { get; set; }
         public string CURRENT_BALANCE { get; set; }
 
+        }
     }
-}

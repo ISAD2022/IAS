@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class TraditionalRiskRatingModel
-    {        
-        
+        {
+
         public string MAIN_PROCESS { get; set; }
         public string RISK_MODEL { get; set; }
         public string MAX_NUMBER { get; set; }
@@ -19,5 +15,5 @@ namespace AIS.Models
         public string CIA_MARKS { get; set; }
 
 
+        }
     }
-}

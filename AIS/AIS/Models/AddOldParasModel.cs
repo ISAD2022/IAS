@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class AddOldParasModel
     {
+    public class AddOldParasModel
+        {
         public int ID { get; set; }
         public int ENGPLANID { get; set; }
         public int STATUS { get; set; }
@@ -29,5 +28,5 @@ namespace AIS.Models
         public int V_CAT_ID { get; set; }
         public int V_CAT_NATURE_ID { get; set; }
 
+        }
     }
-}

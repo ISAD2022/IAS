@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class OldParasHOModel
     {
+    public class OldParasHOModel
+        {
         public int ID { get; set; }
         public string REF_P { get; set; }
         public string ENTITY_ID { get; set; }
@@ -30,5 +26,5 @@ namespace AIS.Models
         public int VIOLATION { get; set; }
         public int NATURE { get; set; }
 
+        }
     }
-}

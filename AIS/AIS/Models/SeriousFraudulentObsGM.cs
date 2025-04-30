@@ -1,8 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class SeriousFraudulentObsGM
         {
         public int PARENT_ID { get; set; }
@@ -16,5 +13,5 @@ namespace AIS.Models
         public string PER_INV { get; set; }
         public string C_PER_INV { get; set; }
 
+        }
     }
-}

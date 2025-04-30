@@ -1,33 +1,27 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+using AIS.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using Microsoft.AspNetCore.Session;
-using Microsoft.AspNetCore.Http;
-using AIS;
-using AIS.Controllers;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace AIS
-{
-    public class Startup
     {
-        public Startup(IConfiguration configuration)
+    public class Startup
         {
+        public Startup(IConfiguration configuration)
+            {
             Configuration = configuration;
-        }
+            }
 
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+            {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
@@ -39,7 +33,7 @@ namespace AIS
             services.AddScoped<TopMenus>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddHttpContextAccessor();
-            
+
 
             // Configure form options globally
             services.Configure<FormOptions>(options =>
@@ -56,20 +50,20 @@ namespace AIS
             {
                 options.MaxRequestBodySize = 104857600; // 100 MB
             });
-        }
+            }
 
-         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            {
             app.UsePathBase("/ZTBLAIS/");
             if (env.IsDevelopment() || env.IsProduction())
-            {
+                {
                 app.UseDeveloperExceptionPage();
-            }
+                }
             else
-            {
+                {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
-            }
+                }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
@@ -82,7 +76,7 @@ namespace AIS
                     name: "default",
                     pattern: "{controller=Login}/{action=Index}/{id?}");
             });
-        }
+            }
 
+        }
     }
-}

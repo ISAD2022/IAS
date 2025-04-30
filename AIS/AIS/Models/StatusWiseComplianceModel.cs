@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class StatusWiseComplianceModel
     {
+    public class StatusWiseComplianceModel
+        {
         public string parent_id { get; set; }
         public string parent_Office { get; set; }
         public string entity_id { get; set; }
@@ -18,5 +16,5 @@ namespace AIS.Models
         public string complaince_Referred_back_by_Incharge_AZ { get; set; }
 
 
+        }
     }
-}

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class FunctionalAnnexureWiseObservationModel
     {
+    public class FunctionalAnnexureWiseObservationModel
+        {
         public int ID { get; set; }
         public string D_ID { get; set; }
         public string NAME { get; set; }
@@ -18,4 +14,4 @@ namespace AIS.Models
         public string PARA_GIST { get; set; }
         public string P_RISK { get; set; }
         }
-}
+    }

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ComplianceFlowModel
     {
+    public class ComplianceFlowModel
+        {
         public int ID { get; set; }
         public string ENTITY_TYPE_ID { get; set; }
         public string ENTITY_TYPE_NAME { get; set; }
@@ -19,6 +15,6 @@ namespace AIS.Models
         public string COMP_UP_STATUS_DESC { get; set; }
         public string COMP_DOWN_STATUS { get; set; }
         public string COMP_DOWN_STATUS_DESC { get; set; }
-       
+
+        }
     }
-}

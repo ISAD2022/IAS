@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class RiskProcessTransactions
     {
+    public class RiskProcessTransactions
+        {
         public int ID { get; set; }
         public int V_ID { get; set; }
         public int PD_ID { get; set; }
@@ -22,10 +21,10 @@ namespace AIS.Models
         public string PROCESS_NAME { get; set; }
         [NotMapped]
         public string PROCESS_STATUS { get; set; }
-        [NotMapped] 
+        [NotMapped]
         public string PROCESS_COMMENTS { get; set; }
         [NotMapped]
         public string VIOLATION_NAME { get; set; }
 
+        }
     }
-}

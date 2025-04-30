@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class RiskActivityModel
-    {        
+        {
         public int ACTIVITY_ID { get; set; }
         public int S_GR_ID { get; set; }
         public int MAX_NUMBER { get; set; }
@@ -12,5 +11,5 @@ namespace AIS.Models
         [NotMapped]
         public string SUB_GROUP_DESC { get; set; }
 
+        }
     }
-}

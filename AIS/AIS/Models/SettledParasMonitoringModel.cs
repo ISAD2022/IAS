@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class SettledParasMonitoringModel
     {
+    public class SettledParasMonitoringModel
+        {
         public string REPORTING_OFFICE { get; set; }
         public string ENTITY_NAME { get; set; }
         public string AUDIT_PERIOD { get; set; }
@@ -18,9 +15,9 @@ namespace AIS.Models
         public string COMPLIANCE_CYCLE { get; set; }
         public string ENTITY_ID { get; set; }
         public string AUDITED_BY { get; set; }
-      
-      
-       
 
+
+
+
+        }
     }
-}

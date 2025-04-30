@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AuditeeResponseEvidenceModel
-    {        
+        {
         public int? TEXT_ID { get; set; }
         public int? COM_ID { get; set; }
         public int? SEQUENCE { get; set; }
@@ -19,5 +16,5 @@ namespace AIS.Models
         public string FILE_ID { get; set; }
 
 
+        }
     }
-}

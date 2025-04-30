@@ -1,8 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class PreConcludingModel
         {
         public string OBS_ID { get; set; }
@@ -12,7 +9,7 @@ namespace AIS.Models
         public string STATUS { get; set; }
         public string OBS_STATUS { get; set; }
 
-    
 
+
+        }
     }
-}

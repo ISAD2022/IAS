@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class BACCIAAnalysisModel
     {
+    public class BACCIAAnalysisModel
+        {
         public int ID { get; set; }
         public string ANNEX { get; set; }
         public string INDICATOR { get; set; }
@@ -16,6 +12,6 @@ namespace AIS.Models
         public string COUNT { get; set; }
         public string OLDCOUNT { get; set; }
         public string NEWCOUNT { get; set; }
-     
+
+        }
     }
-}

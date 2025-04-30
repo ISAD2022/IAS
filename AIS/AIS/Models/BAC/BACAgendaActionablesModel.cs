@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class BACAgendaActionablesModel
     {
+    public class BACAgendaActionablesModel
+        {
         public int ID { get; set; }
         public string MEETING_NO { get; set; }
         public string ITEM_HEADING { get; set; }
@@ -18,7 +14,7 @@ namespace AIS.Models
         public string ENTERED_BY { get; set; }
         public string ENTERED_ON { get; set; }
         public string DELAY { get; set; }
-        public string STATUS { get; set; }     
-     
+        public string STATUS { get; set; }
+
+        }
     }
-}

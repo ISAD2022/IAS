@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class PreDisbInfoModel
-    {        
-       
+        {
+
         public string COL1 { get; set; }
         public string COL2 { get; set; }
         public string COL3 { get; set; }
@@ -33,5 +29,5 @@ namespace AIS.Models
 
 
 
+        }
     }
-}

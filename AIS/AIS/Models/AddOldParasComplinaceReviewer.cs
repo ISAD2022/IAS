@@ -1,16 +1,13 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class AddOldParasComplinaceReviewer
     {
+    public class AddOldParasComplinaceReviewer
+        {
         public int? PPNO { get; set; }
         public int PID { get; set; }
         public string REMARKS { get; set; }
         public string R_STATUS { get; set; }
-    
 
 
+
+        }
     }
-}

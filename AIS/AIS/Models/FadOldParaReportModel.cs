@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class FadOldParaReportModel
     {
+    public class FadOldParaReportModel
+        {
 
         public int PERIOD { get; set; }
         public string ENTITY_NAME { get; set; }
@@ -17,5 +15,5 @@ namespace AIS.Models
         public string OBS_STATUS { get; set; }
 
 
+        }
     }
-}

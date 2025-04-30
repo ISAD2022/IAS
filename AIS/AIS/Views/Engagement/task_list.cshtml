@@ -150,11 +150,11 @@
                                     @{
                                         if (item.PRE_INFO.Trim().Length > 0)
                                         {
-                                            <a href="../Execution/pre_audit_info?engId=@item.ENG_PLAN_ID">Pre Audit Info</a>
+                                            <a href="../sampling/list_reports?engId=@item.ENG_PLAN_ID">Execption Reports</a>
                                         }
                                         else
                                         {
-                                            <span>-</span>
+                                            <a href="../sampling/list_reports?engId=@item.ENG_PLAN_ID">Execption Reports</a>
                                         }
                                     }
 

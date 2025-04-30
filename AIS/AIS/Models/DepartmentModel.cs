@@ -1,10 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class DepartmentModel
-    {        
+        {
         public int ID { get; set; }
         public int DIV_ID { get; set; }
         public string NAME { get; set; }
@@ -18,5 +17,5 @@ namespace AIS.Models
         public string AUDITED_BY_NAME { get; set; }
         public int AUDITED_BY_DEPID { get; set; }
 
+        }
     }
-}

@@ -1,19 +1,13 @@
 ﻿using AIS.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
-using Microsoft.CodeAnalysis;
-using System.Security.Cryptography;
-using System.Runtime.ConstrainedExecution;
 using System.IO;
-using System.IO.Compression;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
 
 
 namespace AIS.Controllers
@@ -1408,7 +1402,7 @@ namespace AIS.Controllers
             return dBConnection.GetRelationObservationForDashboard(ENTITY_ID);
             }
         [HttpPost]
-        public List<FunctionalResponsibilitiesWiseParasModel> get_functional_responsibility_wise_paras_for_dashboard(int FUNCTIONAL_ENTITY_ID=0)
+        public List<FunctionalResponsibilitiesWiseParasModel> get_functional_responsibility_wise_paras_for_dashboard(int FUNCTIONAL_ENTITY_ID = 0)
             {
             return dBConnection.GetFunctionalResponsibilityWiseParaForDashboard(FUNCTIONAL_ENTITY_ID);
             }
@@ -2261,7 +2255,7 @@ namespace AIS.Controllers
             }
 
         [HttpPost]
-        public List<AuditPeriodModel> audit_periods(int dept_code=0, int AUDIT_PERIOD_ID=0)
+        public List<AuditPeriodModel> audit_periods(int dept_code = 0, int AUDIT_PERIOD_ID = 0)
             {
             return dBConnection.GetAuditPeriods(dept_code, AUDIT_PERIOD_ID);
             }
@@ -2666,13 +2660,13 @@ namespace AIS.Controllers
         [HttpPost]
         public string update_gm_office(int GM_OFF_ID, int ENTITY_ID)
             {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateGMOffice(GM_OFF_ID,ENTITY_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateGMOffice(GM_OFF_ID, ENTITY_ID) + "\"}";
 
             }
         [HttpPost]
         public string update_reporting_line(int REP_OFF_ID, int ENTITY_ID)
             {
-            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateReportingLine(REP_OFF_ID,ENTITY_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.UpdateReportingLine(REP_OFF_ID, ENTITY_ID) + "\"}";
 
             }
 
@@ -2720,7 +2714,7 @@ namespace AIS.Controllers
         [HttpPost]
         public string create_engagement_sample_data(int ENG_ID)
             {
-                return "{\"Status\":true,\"Message\":\"" + dBConnection.CreateSampleDataAfterEngagementApproval(ENG_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.CreateSampleDataAfterEngagementApproval(ENG_ID) + "\"}";
             }
 
         [HttpPost]
@@ -2731,7 +2725,7 @@ namespace AIS.Controllers
         [HttpPost]
         public List<AccountTransactionSampleModel> get_biomet_account_transaction_sampling_details(int ENG_ID, string AC_NO)
             {
-            return dBConnection.GetBiometAccountTransactionSamplingDetails(ENG_ID,AC_NO);
+            return dBConnection.GetBiometAccountTransactionSamplingDetails(ENG_ID, AC_NO);
             }
         [HttpPost]
         public List<AccountDocumentBiometSamplingModel> get_biomet_account_documents_sampling_details(string AC_NO)
@@ -2755,6 +2749,13 @@ namespace AIS.Controllers
             {
             return dBConnection.GetListOfSamples(ENG_ID);
             }
+
+        [HttpPost]
+        public List<ListOfReportsModel> get_list_of_reports(int ENG_ID)
+            {
+            return dBConnection.GetListOfreports(ENG_ID);
+            }
+
         [HttpPost]
         public List<LoanCaseSampleModel> get_loan_samples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
@@ -2784,7 +2785,7 @@ namespace AIS.Controllers
         [HttpPost]
         public string regenerate_sample_of_loans(int ENG_ID, int LOAN_SAMPLE_ID)
             {
-                return "{\"Status\":true,\"Message\":\"" + dBConnection.RegenerateSampleofLoan(ENG_ID, LOAN_SAMPLE_ID) + "\"}";
+            return "{\"Status\":true,\"Message\":\"" + dBConnection.RegenerateSampleofLoan(ENG_ID, LOAN_SAMPLE_ID) + "\"}";
             }
 
         [HttpPost]
@@ -2793,7 +2794,7 @@ namespace AIS.Controllers
             return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD);
             }
         [HttpPost]
-        public List<CDMSMasterTransactionModel> get_CDMS_master_transactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO )
+        public List<CDMSMasterTransactionModel> get_CDMS_master_transactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO)
             {
             return dBConnection.GetCDMSMasterTransactions(ENTITY_ID, START_DATE, END_DATE, CNIC_NO, ACC_NO);
             }

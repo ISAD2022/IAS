@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class ObservationReversalModel
-    {        
-    
+        {
+
         public string PLAN_ID { get; set; }
         public string ENG_ID { get; set; }
         public string TEAM_NAME { get; set; }
@@ -18,7 +14,7 @@ namespace AIS.Models
         public string AUDITED_BY_ID { get; set; }
         public string STATUS_ID { get; set; }
         public string STATUS { get; set; }
-      
 
+
+        }
     }
-}

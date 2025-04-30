@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class GetFinalReportModel
     {
+    public class GetFinalReportModel
+        {
         public string ASSIGNEDTO { get; set; }
         public string ENTITY_NAME { get; set; }
         public string PARA_NO { get; set; }
@@ -24,10 +20,10 @@ namespace AIS.Models
         public string RECOMMENDATION { get; set; }
         public string MESSAGE { get; set; }
         public string REMARKS { get; set; }
-      
-    
-        public string REF_OUT { get; set; }
-        
 
+
+        public string REF_OUT { get; set; }
+
+
+        }
     }
-}

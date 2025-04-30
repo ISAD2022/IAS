@@ -1,13 +1,10 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class AuditPlanReportModel
     {
+    public class AuditPlanReportModel
+        {
         public string AUDITEDBY { get; set; }
         public string PARRENTOFFICE { get; set; }
-        public string AUDITEENAME { get; set; }   
+        public string AUDITEENAME { get; set; }
         public int? ENTITYCODE { get; set; }
         public int? ANTITYID { get; set; }
         public string LASTAUDITOPSENDATE { get; set; }
@@ -21,5 +18,5 @@ namespace AIS.Models
         public string AUDITENDDATE { get; set; }
         public string TNAME { get; set; }
         public string TEAMLEAD { get; set; }
+        }
     }
-}

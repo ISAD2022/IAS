@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class GetOldParasforComplianceSettlement
     {
+    public class GetOldParasforComplianceSettlement
+        {
         public int? ID { get; set; }
         public string AU_OBS_ID { get; set; }
         public string REPORTINGOFFICE { get; set; }
@@ -33,5 +32,5 @@ namespace AIS.Models
         public string C_STATUS { get; set; }
         public string SEQUENCE { get; set; }
 
+        }
     }
-}

@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class RiskRatingModelForBranchesWorking
     {
+    public class RiskRatingModelForBranchesWorking
+        {
 
         public string MainProcessRiskSequence { get; set; }
         public string MainProcess { get; set; }
@@ -29,5 +26,5 @@ namespace AIS.Models
 
 
 
+        }
     }
-}

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class LoanCaseSampleModel
         {
 
@@ -17,8 +15,8 @@ namespace AIS.Models
         public DateTime DISB_DATE { get; set; }
         public decimal DEV_AMOUNT { get; set; }
         public decimal OUTSTANDING { get; set; }
-        public string  LOAN_DISB_ID { get; set; }
+        public string LOAN_DISB_ID { get; set; }
 
 
         }
-}
+    }

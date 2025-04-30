@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class TaskListModel
-    {        
+        {
         public int ID { get; set; }
         public int ENG_PLAN_ID { get; set; }
         public int TEAM_ID { get; set; }
@@ -31,5 +29,5 @@ namespace AIS.Models
         public DateTime OPERATION_STARTDATE { get; set; }
         public DateTime OPERATION_ENDDATE { get; set; }
 
+        }
     }
-}

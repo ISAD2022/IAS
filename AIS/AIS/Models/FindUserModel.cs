@@ -1,10 +1,8 @@
-using System;
-
 namespace AIS.Models
-{
-    public class FindUserModel
     {
-        
+    public class FindUserModel
+        {
+
         public int PPNUMBER { get; set; }
         public int LOGINNAME { get; set; }
         public string EMAIL { get; set; }
@@ -16,5 +14,5 @@ namespace AIS.Models
         public int GROUPID { get; set; }
         public int ENTITYID { get; set; }
 
+        }
     }
-}

@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Http;
-
 namespace AIS.Models
-{
-    public class SessionModel {
+    {
+    public class SessionModel
+        {
         public int ID { get; set; }
         public string SessionId { get; set; }
         public string IPAddress { get; set; }
@@ -31,5 +28,5 @@ namespace AIS.Models
         public string UserRoleName { get; set; }
         public int? UserEntityTypeID { get; set; }
         public int? UserParentEntityTypeID { get; set; }
+        }
     }
-}

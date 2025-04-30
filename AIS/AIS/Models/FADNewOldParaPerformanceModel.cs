@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class FADNewOldParaPerformanceModel
     {
+    public class FADNewOldParaPerformanceModel
+        {
         public string D_ID { get; set; }
         public string Audit_Zone { get; set; }
         public string Checklist { get; set; }
@@ -20,5 +16,5 @@ namespace AIS.Models
         public string R2 { get; set; }
         public string R3 { get; set; }
 
+        }
     }
-}

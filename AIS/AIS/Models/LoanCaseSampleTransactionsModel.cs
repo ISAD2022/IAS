@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class LoanCaseSampleTransactionsModel
         {
 
@@ -23,4 +19,4 @@ namespace AIS.Models
         public string MCO_BOOK_NO { get; set; }
 
         }
-}
+    }

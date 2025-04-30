@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class RepetativeParaModel
     {
+    public class RepetativeParaModel
+        {
         public int ID { get; set; }
         public string PROCESS { get; set; }
         public string SUB_PROCESS { get; set; }
@@ -24,5 +20,5 @@ namespace AIS.Models
         public string Y2012 { get; set; }
         public string Y2011 { get; set; }
         public string Y2010 { get; set; }
+        }
     }
-}

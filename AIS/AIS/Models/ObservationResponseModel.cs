@@ -1,11 +1,10 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 
 namespace AIS.Models
-{
-    public class ObservationResponseModel
     {
+    public class ObservationResponseModel
+        {
         public int ID { get; set; }
         public int AU_OBS_ID { get; set; }
         public string REPLY { get; set; }
@@ -17,7 +16,7 @@ namespace AIS.Models
         public int REPLY_ROLE { get; set; }
         public string REMARKS { get; set; }
         public string SUBMITTED { get; set; }
-        public List<AuditeeResponseEvidenceModel> EVIDENCE_LIST {get; set;}
+        public List<AuditeeResponseEvidenceModel> EVIDENCE_LIST { get; set; }
 
+        }
     }
-}

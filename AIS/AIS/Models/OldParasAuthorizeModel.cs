@@ -1,23 +1,20 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class OldParasAuthorizeModel
     {
+    public class OldParasAuthorizeModel
+        {
         public int ID { get; set; }
         public string REF_P { get; set; }
         public string AU_OBS_ID { get; set; }
         public string IND { get; set; }
         public string ENTITY_CODE { get; set; }
-       public string ENTITY_ID { get; set; }
+        public string ENTITY_ID { get; set; }
         public string TYPE_ID { get; set; }
         public string AUDIT_PERIOD { get; set; }
         public string ENTITY_NAME { get; set; }
         public string PARA_NO { get; set; }
 
         public string GIST_OF_PARAS { get; set; }
-   
+
         public string ANNEXURE { get; set; }
         public string AMOUNT_INVOLVED { get; set; }
         public string VOL_I_II { get; set; }
@@ -40,7 +37,7 @@ namespace AIS.Models
         public string ENTERED_BY { get; set; }
         public string REMARKS { get; set; }
         public string ENTERED_ON { get; set; }
-        
 
+
+        }
     }
-}

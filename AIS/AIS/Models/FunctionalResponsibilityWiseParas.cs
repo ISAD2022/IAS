@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class FunctionalResponsibilityWiseParas
     {
+    public class FunctionalResponsibilityWiseParas
+        {
         public int PROCESS_ID { get; set; }
         public string PROCESS { get; set; }
         public int SUB_PROCESS_ID { get; set; }
@@ -18,6 +16,6 @@ namespace AIS.Models
         public string OBS_RISK { get; set; }
         public int OBS_RISK_ID { get; set; }
         public string OBS_STATUS { get; set; }
-        public int OBS_STATUS_ID { get; set; }        
+        public int OBS_STATUS_ID { get; set; }
+        }
     }
-}

@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AdminNewUsersAIS
-    {        
-        
+        {
+
         public string PPNO { get; set; }
         public string EMP_NAME { get; set; }
         public string DESIGNATION_CODE { get; set; }
@@ -16,8 +12,8 @@ namespace AIS.Models
         public string CODE { get; set; }
         public string ENTITY_NAME { get; set; }
         public string ENTITY_ID { get; set; }
-        
-      
 
+
+
+        }
     }
-}

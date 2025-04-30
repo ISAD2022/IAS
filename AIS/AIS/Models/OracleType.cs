@@ -3,9 +3,9 @@
 #endregion
 
 namespace System.Data.OracleClient
-{
-    public enum OracleType
     {
+    public enum OracleType
+        {
         BFile = 1,
         Blob = 2,
         Char = 3,
@@ -34,5 +34,5 @@ namespace System.Data.OracleClient
         Int32 = 28,
         Float = 29,
         Double = 30
+        }
     }
-}

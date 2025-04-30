@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ComplianceHistoryModel
     {
+    public class ComplianceHistoryModel
+        {
         public int ID { get; set; }
         public string REF_P { get; set; }
         public string OBS_ID { get; set; }
@@ -22,5 +18,5 @@ namespace AIS.Models
         public string SEQ { get; set; }
         public string COM_SEQ_NO { get; set; }
         public string PARA_CATEGORY { get; set; }
+        }
     }
-}

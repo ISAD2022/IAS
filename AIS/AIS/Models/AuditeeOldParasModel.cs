@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class AuditeeOldParasModel
-    {        
+        {
         public int? ID { get; set; }
         public string ENG_ID { get; set; }
         public string REF_P { get; set; }
@@ -24,5 +23,5 @@ namespace AIS.Models
         public string AUDITOR_REMARKS { get; set; }
         public DateTime? DATE_OF_LAST_COMPLIANCE_RECEIVED { get; set; }
         public string AUDITEDBY { get; set; }
+        }
     }
-}

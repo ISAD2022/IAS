@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class LoanCaseModel
     {
+    public class LoanCaseModel
+        {
 
         public string TEAM_MEM_PPNO { get; set; }
         public int BRANCHID { get; set; }
@@ -30,5 +28,5 @@ namespace AIS.Models
         public int DISB_STATUSID { get; set; }
 
 
+        }
     }
-}

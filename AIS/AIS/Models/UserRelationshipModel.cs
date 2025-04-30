@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class UserRelationshipModel
     {
+    public class UserRelationshipModel
+        {
 
         public int SR { get; set; }
         public int ENTITY_REALTION_ID { get; set; }
@@ -28,10 +26,10 @@ namespace AIS.Models
         public string COMPLICE_BY { get; set; }
 
         public string AUDIT_BY { get; set; }
-        public string GM_OFFICE{ get; set; }
+        public string GM_OFFICE { get; set; }
         public string REPORTING { get; set; }
 
         public string ACTIVE { get; set; }
 
+        }
     }
-}

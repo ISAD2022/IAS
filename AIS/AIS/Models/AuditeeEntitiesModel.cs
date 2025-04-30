@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AuditeeEntitiesModel
-    {        
+        {
         public int? ENTITY_ID { get; set; }
         public int? CODE { get; set; }
         public string DESCRIPTION { get; set; }
@@ -21,5 +18,5 @@ namespace AIS.Models
         public int? ENG_ID { get; set; }
 
         public string COM_BY { get; set; }
+        }
     }
-}

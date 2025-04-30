@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class GetAuditeeParasModel
     {
+    public class GetAuditeeParasModel
+        {
         public string MEMO_NUMBER { get; set; }
         public string PARA_NO { get; set; }
         public string NAME { get; set; }
@@ -20,5 +16,5 @@ namespace AIS.Models
         public string REF_OUT { get; set; }
         public string MESSAGE { get; set; }
 
+        }
     }
-}

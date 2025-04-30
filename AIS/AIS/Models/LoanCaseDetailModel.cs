@@ -1,8 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class LoanCaseDetailModel
         {
         public string Name { get; set; }
@@ -26,4 +25,4 @@ namespace AIS.Models
         public string CadAuthorizerName { get; set; }
 
         }
-}
+    }

@@ -1,14 +1,13 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class AuditRefEngagementPlanModel
     {
+    public class AuditRefEngagementPlanModel
+        {
         public int? PLAN_ID { get; set; }
         public int? ENG_ID { get; set; }
         public int? PERIOD_ID { get; set; }
-        public int? ENTITY_TYPE { get; set; } 
+        public int? ENTITY_TYPE { get; set; }
         public int? AUDIT_BY_ID { get; set; }
         public string AUDIT_STARTDATE { get; set; }
         public string AUDIT_ENDDATE { get; set; }
@@ -32,5 +31,5 @@ namespace AIS.Models
         public string COMMENTS { get; set; }
 
 
+        }
     }
-}

@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations.Schema;
 namespace AIS.Models
-{
-    public class AuditeeRiskModeldetails
     {
+    public class AuditeeRiskModeldetails
+        {
 
         public string RISK_AREAS { get; set; }
         public string MAX_NUMBER { get; set; }
@@ -11,5 +10,5 @@ namespace AIS.Models
         public string AVG_MARKS { get; set; }
         public string G_RISK { get; set; }
         public string W_AVG { get; set; }
+        }
     }
-}

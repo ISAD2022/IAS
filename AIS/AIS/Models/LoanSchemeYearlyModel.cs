@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class LoanSchemeYearlyModel
     {
+    public class LoanSchemeYearlyModel
+        {
 
         public int ENTITY_ID { get; set; }
         public int DISB_STATUSID { get; set; }
-       
+
         public int GLSUBCODE { get; set; }
         public string GLSUBNAME { get; set; }
 
@@ -28,5 +24,5 @@ namespace AIS.Models
         public double MARKUP_OUT_2022 { get; set; }
 
 
+        }
     }
-}

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class FADLagacyParaPerformanceModel
     {
+    public class FADLagacyParaPerformanceModel
+        {
         public string Audit_Zone { get; set; }
         public string Total_Paras { get; set; }
         public string Setteled_Para { get; set; }
@@ -15,5 +11,5 @@ namespace AIS.Models
         public string R2 { get; set; }
         public string R3 { get; set; }
 
+        }
     }
-}

@@ -1,19 +1,15 @@
-using Org.BouncyCastle.Asn1.Mozilla;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ChecklistDetailComparisonModel
     {
-        
+    public class ChecklistDetailComparisonModel
+        {
+
 
         public int ID { get; set; }
         public string PROCESS { get; set; }
         public string PROCESS_ID { get; set; }
         public string SUB_PROCESS { get; set; }
         public string PROCESS_DETAIL { get; set; }
-      
+
         public string VIOLATION { get; set; }
         public string FUNCTIONAL_RESP { get; set; }
         public string ROLE_RESP { get; set; }
@@ -39,5 +35,5 @@ namespace AIS.Models
         public string N_OWNER_ID { get; set; }
         public string N_ANNEX_ID { get; set; }
 
+        }
     }
-}

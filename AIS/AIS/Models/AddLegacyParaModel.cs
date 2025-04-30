@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class AddLegacyParaModel
     {
+    public class AddLegacyParaModel
+        {
         public int ID { get; set; }
         public string REF_P { get; set; }
         public List<ObservationResponsiblePPNOModel> RESP_PP { get; set; }
@@ -18,5 +16,5 @@ namespace AIS.Models
 
 
 
+        }
     }
-}

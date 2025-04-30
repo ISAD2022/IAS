@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class ComplianceProgressReportDetailModel
     {
-       
+    public class ComplianceProgressReportDetailModel
+        {
+
         public string COMPLIANCE_UNIT { get; set; }
         public string PARENT_ID { get; set; }
         public string PARENT_NAME { get; set; }
@@ -19,6 +15,6 @@ namespace AIS.Models
         public string TOTAL { get; set; }
         public string REFERRED_BACK { get; set; }
         public string RECOMMENDED { get; set; }
-        
+
+        }
     }
-}

@@ -1,10 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class SubProcessUpdateModelForReviewAndAuthorizeModel
     {
+    public class SubProcessUpdateModelForReviewAndAuthorizeModel
+        {
         public string P_ID { get; set; }
         public string NEW_P_ID { get; set; }
         public string SP_ID { get; set; }
@@ -14,7 +11,7 @@ namespace AIS.Models
         public string SUB_PROCESS_NAME { get; set; }
         public string NEW_SUB_PROCESS_NAME { get; set; }
         public string COMMENTS { get; set; }
-       
 
+
+        }
     }
-}

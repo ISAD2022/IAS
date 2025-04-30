@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class AuditChecklistDetailsModel
     {
-        public int ID { get; set; }        
+    public class AuditChecklistDetailsModel
+        {
+        public int ID { get; set; }
         public int S_ID { get; set; }
         public int P_ID { get; set; }
         public string S_NAME { get; set; }
@@ -23,5 +19,5 @@ namespace AIS.Models
         public string PROCESS_OWNER { get; set; }
         public string STATUS { get; set; }
         public string OB_STATUS { get; set; }
+        }
     }
-}

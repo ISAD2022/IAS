@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class EntitiesMappingModel
     {
+    public class EntitiesMappingModel
+        {
 
         public string PARENT_ID { get; set; }
         public string PARENT_CODE { get; set; }
@@ -19,5 +15,5 @@ namespace AIS.Models
         public string C_TYPE_ID { get; set; }
         public string RELATION_TYPE_ID { get; set; }
 
+        }
     }
-}

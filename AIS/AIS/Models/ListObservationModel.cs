@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
+    {
     public class ListObservationModel
-    {        
+        {
         public string ID { get; set; }
         public string MEMO { get; set; }
         public string HEADING { get; set; }
@@ -18,5 +16,5 @@ namespace AIS.Models
         public string AMOUNT_INVOLVED { get; set; }
         public string NO_OF_INSTANCES { get; set; }
         public List<ObservationResponsiblePPNOModel> RESPONSIBLE_PPNO { get; set; }
+        }
     }
-}

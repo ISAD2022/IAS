@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class ClosingDraftAuditObservationsModel
-    {        
+        {
         public int OBS_ID { get; set; }
         public string ENTITY_NAME { get; set; }
         public int MEMO_NO { get; set; }
@@ -17,5 +13,5 @@ namespace AIS.Models
         public string OBS_STATUS { get; set; }
         public string PERIOD { get; set; }
         public string PP_NO { get; set; }
+        }
     }
-}

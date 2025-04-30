@@ -1,8 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AccountTransactionSampleModel
         {
         public string TransactionMasterCode { get; set; }
@@ -21,4 +18,4 @@ namespace AIS.Models
 
 
         }
-}
+    }

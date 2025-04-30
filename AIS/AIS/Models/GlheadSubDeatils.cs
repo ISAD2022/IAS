@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class GlHeadSubDetailsModel
     {
+    public class GlHeadSubDetailsModel
+        {
         public int BRANCHID { get; set; }
         public int GLSUBCODE { get; set; }
 
@@ -21,5 +19,5 @@ namespace AIS.Models
         public double CREDIT { get; set; }
         public List<GlHeadSubDetailsModel> GL_SUBDETAILS { get; set; }
 
+        }
     }
-}

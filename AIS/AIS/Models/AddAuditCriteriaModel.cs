@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AddAuditCriteriaModel
-    {        
+        {
         public int ID { get; set; }
         public int ENTITY_TYPEID { get; set; }
         public int ENTITY_ID { get; set; }
@@ -21,5 +17,5 @@ namespace AIS.Models
         public int APPROVAL_STATUS { get; set; }
         public int AUDITPERIODID { get; set; }
         public string AUDITPERIOD { get; set; }
+        }
     }
-}

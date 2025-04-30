@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class AddNewLegacyParaModel
-    {        
+        {
         public int ENTITY_TYPE_ID { get; set; }
         public int ENTITY_ID { get; set; }
         public string E_CODE { get; set; }
@@ -20,9 +16,9 @@ namespace AIS.Models
         public string AMOUNT { get; set; }
         public string ANNEXURE { get; set; }
         public string VOL_I_II { get; set; }
-        public string PARA_REF { get; set;}
+        public string PARA_REF { get; set; }
 
 
+        }
     }
-}
 

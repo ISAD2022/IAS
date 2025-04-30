@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
+    {
     public class PostComplianceHistoryModel
-    {        
+        {
         public int HIST_ID { get; set; }
         public int COM_ID { get; set; }
         public string COM_CYCLE { get; set; }
@@ -18,5 +14,5 @@ namespace AIS.Models
         public string COMMENT_ON { get; set; }
         public string COMMENTS { get; set; }
         public string COM_FLOW { get; set; }
+        }
     }
-}

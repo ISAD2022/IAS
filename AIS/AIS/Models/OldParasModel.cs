@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AIS.Models
-{
-    public class OldParasModel
     {
+    public class OldParasModel
+        {
         public int ID { get; set; }
         public string REF_P { get; set; }
         public string ENTITY_CODE { get; set; }
@@ -40,5 +38,5 @@ namespace AIS.Models
 
         public List<ObservationResponsiblePPNOModel> PARA_RESP { get; set; }
 
+        }
     }
-}

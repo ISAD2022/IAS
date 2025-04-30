@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AIS.Models
-{
-    public class DefaultHisotryLoanDetailReportModel
     {
+    public class DefaultHisotryLoanDetailReportModel
+        {
         public string NPL_LOAN_DISB_ID { get; set; }
         public string DEFAULT_PRINCIPAL { get; set; }
         public string DEFAULT_MARKUP { get; set; }
@@ -16,10 +12,10 @@ namespace AIS.Models
         public string CNIC { get; set; }
         public string LOAN_DISB_ID { get; set; }
 
+        }
+
+
+
+
     }
-
-
-
-
-}
 

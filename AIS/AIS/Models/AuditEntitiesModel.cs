@@ -1,9 +1,7 @@
-using System;
-
 namespace AIS.Models
-{
-    public class AuditEntitiesModel
     {
+    public class AuditEntitiesModel
+        {
         public int TYPE_ID { get; set; }
         public int AUTID { get; set; }
         public int? E_AUTID { get; set; }
@@ -15,5 +13,5 @@ namespace AIS.Models
         public string AUDIT_TYPE { get; set; }
         public string D_RISK { get; set; }
 
+        }
     }
-}
