@@ -1,44 +1,44 @@
 ﻿@{
-    ViewData["Title"] = "Samples for Biometrics";
+    ViewData["Title"] = "Exception Reports Related to Accounts";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
     var g_engId = 0;
-    var g_sampleID = 0;
-    $(document).ready(function () {
+    var g_reportID = 0;
+    var g_rID = 0;
+    $(document).ready(function() {
         var url_string = window.location;
         var url = new URL(url_string);
-       g_engId = url.searchParams.get("engId");
-        g_sampleID  = url.searchParams.get("sample_id"); 
-        loadBIOMETSamples();
+        g_engId = url.searchParams.get("engId");
+        g_reportID  = url.searchParams.get("report_id");
+        //g_rID = url.searchParams.get("r_IND");
+        loadexceptionReport();
     });
 
-
-    function loadBIOMETSamples() {
-       destroyDatatable('biomet_sample_list');
+    function loadexceptionReport(){
+        destroyDatatable('account_exception_report');
         $.ajax({
-             url: g_asiBaseURL + "/ApiCalls/get_biomet_sampling_details",
+            url: g_asiBaseURL + "/ApiCalls/get_biomet_sampling_details
+            //get_exception_account_report",
             type: "POST",
-               cache: false,
-            data: { ENG_ID: g_engId, SAMPLE_ID:g_sampleID },
-            success: function (data) {
-                if (data.length > 0) {
+            Cache: false,
+            data:{g_engId,g_indID,g_reportID},
+            sucess: function (data) {
+                if(data.lenght > 0) {
                     populateTable(data);
                 }
             },
             dataType: "json",
         });
-    }
-        
     function populateTable(data) {
-        $('#wait').show();
-        var tableBody = $("#biomet_sample_list tbody");
-        tableBody.empty(); // Clear existing rows
+        $('wait').show();
+        var TableBody = $("account_exception_report tbody");
+        tablebody.empty();
 
-        $.each(data, function (index, item) {
-               var row = `<tr>
-        <td>${index + 1}</td>
+        $.each(data, function(index, item){
+            var row = `<tr>
+        <td>${index + 1}</td> 
         <td>${item.accounT_NO}</td>
         <td>${item.accounT_TITLE}</td>
         <td>${item.customeR_NAME}</td>
@@ -48,7 +48,7 @@
         <td>${formatDate(item.cniC_EXPIRY_DATE)}</td>
         <td>${item.accounT_TYPE}</td>
         <td>${item.accounT_CATEGORY}</td>
-        <td>
+         <td>
             <a href="./account_document?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-primary btn-sm">Documents</a>
         </td>
         <td>
@@ -56,25 +56,22 @@
         </td>
     </tr>`;
             tableBody.append(row);
-        });
-
-        initializeDataTable('biomet_sample_list');
+          });
+        initializeDataTable('account_exception_report');
         $('#wait').hide();
     }
-        
-    function formatDate(dateString) {
+     function formatDate(dateString) {
         if (!dateString || dateString.trim() === "") return "";
         let date = new Date(dateString);
         return date.toLocaleDateString();
-    }
+    }    
 
 </script>
 
 <div class="row col-md-12 mt-3">
+    <h3 style="color: #45c545;">Accounts Report</h3>
 
-    <h3 style="color: #45c545;">Biomet Samples</h3>
 </div>
-
 <div class="row col-md-12 mt-3">
     <table id="biomet_sample_list" class="table table-hover table-bordered table-striped">
         <thead style="background-color: rgb(181 229 117 / 93%) !important;">

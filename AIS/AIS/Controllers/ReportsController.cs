@@ -1514,7 +1514,7 @@ namespace AIS.Controllers
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
 
-            ViewData["Userrelationship"] = dBConnection.GetrealtionshiptypeForParaPositionReport();
+            ViewData["regionoffice"] = dBConnection.GetparentrepofficeForDashboardPanel(5);
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

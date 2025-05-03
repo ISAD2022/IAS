@@ -5,15 +5,13 @@
 }
 <script type="text/javascript">
     function getrelation(parentEntityId = 0, userEntityId = 0) {
-
-
         $('#controlingsearch').empty();
         $('#childposting').empty();
         $.ajax({
             url: g_asiBaseURL + "/ApiCalls/getparentrelForDashboardPanel",
             type: "POST",
             data: {
-                'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val()
+                'ENTITY_REALTION_ID': $('#RelationshipField option:selected').val(5)
             },
 
 
@@ -31,9 +29,9 @@
                     $('#controlingsearch').append('<option ' + selected + ' value="' + contof.entitY_ID + '" id="' + contof.entitY_REALTION_ID + '">' + contof.description + '</option>')
                 });
                 if (userEntityId != 0)
-                    getplacepost(userEntityId)
+                    getplacepost(userEntityId);
             },
-            dataType: "json",
+            dataType: "json"
         });
 
 
@@ -58,34 +56,33 @@
                     var selected = '';
                     if (gpp.entitY_ID == userEntityId)
                         selected = 'selected="selected"';
-                    $('#childposting').append('<option ' + selected + ' value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>')
+                    $('#childposting').append('<option ' + selected + ' value="' + gpp.entitY_ID + '" id="' + gpp.entitY_ID + '">' + gpp.c_NAME + '</option>');
                 });
             },
-            dataType: "json",
+            dataType: "json"
         });
 
     }
 
       function getCDMSMasterTransaction(){
-           if($('#childposting').val()=="0"){
-               alert("Select entity to proceed");
-               return;
-           }
-            if($('#startDateField').val()==""){
-               alert("Select start date to proceed");
-               return;
-           }
-            if($('#endDateField').val()==""){
-               alert("Select end date to proceed");
-               return;
-           }
-
+           // if($('#childposting').val()=="0"){
+           //     alert("Select entity to proceed");
+           //     return;
+           // }
+           //  if($('#startDateField').val()==""){
+           //     alert("Select start date to proceed");
+           //     return;
+           // }
+           //  if($('#endDateField').val()==""){
+           //     alert("Select end date to proceed");
+           //     return;
+           // }
+              // var selectedValue = $('#auditPeriodField').val(); // Make sure this input exists!
            destroyDatatable('cdms_master_tr_grid');
             $.ajax({
             url: g_asiBaseURL + "/ApiCalls/get_CDMS_master_transactions",
             type: "POST",
-            data: {
-                'AUDIT_PERIOD_ID': selectedValue
+            data: {                
                 'ENTITY_ID':  $('#childposting').val(),
                 'START_DATE': $('#startDateField').val(),
                 'END_DATE': $('#endDateField').val(),
@@ -95,13 +92,7 @@
             },
             cache: false,
             success: function (data) {
-                console.log(data);
-                //$.each(data, function (index, row) {
-                //    $('#settled_paras tbody').append('<tr><td>' + ++index + '</td><td>' + row.reportinG_OFFICE + '</td><td>' + row.placE_OF_POSTING + '</td> <td>' + row.audiT_PERIOD + '</td><td>' + row.parA_NO + '</td><td>' + row.gist + '</td><td>' + row.auditeD_BY + '</td><td>' + row.settleD_ON + '</td></tr>');
-
-                //});
-
-
+                    console.log(data);
                $.each(data, function (index, item) {
                 var row = `<tr>
                     <td>${index + 1}</td>
@@ -109,81 +100,67 @@
                     <td>${item.olD_ACCOUNT_NO}</td>
                     <td>${item.cnic}</td>
                     <td>${item.accounT_NAME}</td>
-                    <td>${item.customeR_NAME}</td>
                     <td>${item.description}</td>
                     <td>${item.remarks}</td>
-                    <td>${item.transactioN_DATE}</td>
+                    <td>${formatDate(item.transactioN_DATE)}</td>
                     <td>${item.authorizatioN_DATE}</td>
                     <td>${item.dR_AMOUNT}</td>
                     <td>${item.cR_AMOUNT}</td>
-                    <td>${item.tO_ACCOUNT_TITLE}</td>
-                    <td>${item.instrumenT_NO}</td>
                 </tr>`;
 
-                $("#cdms_master_tr_grid tbody").append(row);
+                $("#cdms_master_tr_grid tbody").append(row);           
+            
             });
 
             initializeDataTable('cdms_master_tr_grid');
             },
-            dataType: "json",
+            dataType: "json"
         });
 
 
-        alert(selectedValue);
+        //alert(selectedValue);
     }
 
-       }
-
+      // });
+//}
 
 </script>
     <div class="row w-100">
-
     <div class="col-md-12 mt-3">
-
-        <h3 style="color: #45c545;">CDMS Master Transactions Details</h3>
-
-        <div class="row col-md-12 mt-3">
-            <div class="col-md-2">
-                <label class="text-bold">Relationship Type</label>
+        <h3 style="color: #45c545;">CDMS Master Account Transactions</h3>
+        <div class="col-md-12 mt-3">
+            <h6 style="color: #ff051d;">Details of any Account by fetching Account No / CNIC can be check. </h6>
+            <h6 style="color: #ff051d;">If you need transaction of any particular branch then only Start Date will be taken due to system load </h6>
             </div>
-            <div class="col-md-10">
-                <select id="RelationshipField" onchange="getrelation();" class="form-control form-select">
-                    <option id="0" value="0" selected="selected">--Select Relationship Type--</option>
-
-
-    @{
-        if (ViewData["Userrelationship"] != null)
-        {
-            foreach (var item in (dynamic)(ViewData["Userrelationship"]))
-            {
-                                            <option value="@item.ENTITY_REALTION_ID" id="@item.ENTITY_REALTION_ID">@item.FIELD_NAME</option>
-            }
-        }
-    }
-
-
-
-                </select>
-            </div>
-        </div>
-
-        <div class="row col-md-12 mt-3">
+        <div class="row w-100">
+       <div class="row col-md-12 mt-3">
             <div class="col-md-2">
-                <label class="text-bold">Controlling/Reporting Office</label>
+                <label class="text-bold">Regional Office</label>
             </div>
             <div class="col-md-4">
                 <select id="controlingsearch" onchange="getplacepost();" class="form-control form-select">
-                    <option id="0" value="0" selected="selected">--Select Controlling/Reporting Office--</option>
+                    <option id="0" value="0" selected="selected">--Select Regional Office--</option>
+
+                        @{
+                            if (ViewData["regionoffice"] != null)
+                            {
+                                foreach (var item in (dynamic)(ViewData["regionoffice"]))
+                                {
+                                    <option value="@item.ENTITY_ID" id="@item.ENTITY_ID">@item.DESCRIPTION</option>
+                                }
+                            }
+                        }
+
                 </select>
             </div>
 
 
             <div class="col-md-2">
-                <label class="text-bold">Place of Posting</label>
+                <label class="text-bold">Branch</label>
             </div>
             <div class="col-md-4">
                 <select id="childposting" class="form-control form-select">
-                    <option id="0" value="0" selected="selected">--Select Place of Posting--</option>
+                    <option id="0" value="0" selected="selected">--Select Branch--</option>
 
                 </select>
             </div>
@@ -193,7 +170,7 @@
        
 
                     
-@* <div class="row col-md-12 mt-3">
+<div class="row col-md-12 mt-3">
     <div class="col-md-2">
         <label>Start Date</label>
     </div>
@@ -206,9 +183,9 @@
     <div class="col-md-4">
         <input id="endDateField" type="date" class="form-control" />
     </div>
-</div> *@
+</div>
 
-@* <div class="row col-md-12 mt-3">
+<div class="row col-md-12 mt-3">
     <div class="col-md-2">
         <label>CNIC</label>
     </div>
@@ -221,7 +198,7 @@
     <div class="col-md-4">
         <input id="accNumField" type="number" class="form-control" />
     </div>
-</div> *@
+</div>
 <div class="row col-md-12 mt-3">
     <button onclick="getCDMSMasterTransaction();" class="btn btn-danger offset-md-9 col-md-3">Search</button>
 </div>
@@ -236,21 +213,15 @@
                         <tr>
                             <th class="col-md-auto">Sr No.</th>
                             <th class="col-md-auto">Entity Name</th>
-                            <th class="col-md-auto">Old Account No</th>
+                            <th class="col-md-auto">Account No</th>
                             <th class="col-md-auto">CNIC</th>
-                            <th class="col-md-auto">Account Name</th>
-                            <th class="col-md-auto">Customer Name</th>
-                            <th class="col-md-auto">Description</th>
-                            <th class="col-md-auto">Start Date</th>
-                            <th class="col-md-auto">End Date</th>
-                            <th class="col-md-auto">Status</th>
+                            <th class="col-md-auto">Account Title</th>
+                            <th class="col-md-auto">Details </th>
                             <th class="col-md-auto">Remarks</th>
                             <th class="col-md-auto">Transaction Date</th>
                             <th class="col-md-auto">Authorization Date</th>
                             <th class="col-md-auto">Debit Amount</th>
                             <th class="col-md-auto">Credit Amount</th>
-                            <th class="col-md-auto">To Account Title</th>
-                            <th class="col-md-auto">Instrument No</th>
                         </tr>
                     </thead>
                     <tbody>

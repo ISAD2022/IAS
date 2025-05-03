@@ -21734,10 +21734,10 @@ Dear {userFullName},
                     CDMSMasterTransactionModel m = new CDMSMasterTransactionModel
                         {
                         TRANSACTION_ID = rdr["transactionid"]?.ToString(),
-                        ENTITY_NAME = rdr["name"]?.ToString(),
+                        ENTITY_NAME = rdr["b_name"]?.ToString(),
                         OLD_ACCOUNT_NO = rdr["oldaccountno"]?.ToString(),
                         CNIC = rdr["cnic"]?.ToString(),
-                        ACCOUNT_NAME = rdr["name"]?.ToString(),
+                        ACCOUNT_NAME = rdr["title"]?.ToString(),
                         CUSTOMER_NAME = rdr["customername"]?.ToString(),
                         TR_MASTER_CODE = rdr["transactionmastercode"]?.ToString(),
                         DESCRIPTION = rdr["description"]?.ToString(),

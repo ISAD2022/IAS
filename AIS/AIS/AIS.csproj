@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <Content Remove="Views\Reports\master_cdms.cshtml" />
-    <Content Remove="Views\Reports\master_cdms_trns.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -120,7 +119,6 @@
   <ItemGroup>
     <None Include="D:\AIS\ais\AIS\AIS\.editorconfig" />
     <None Include="Views\Reports\master_cdms.cshtml" />
-    <None Include="Views\Reports\master_cdms_trns.cshtml" />
   </ItemGroup>
 
 </Project>
