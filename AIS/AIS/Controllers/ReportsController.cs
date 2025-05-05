@@ -1513,8 +1513,12 @@ namespace AIS.Controllers
             {
             ViewData["TopMenu"] = tm.GetTopMenus();
             ViewData["TopMenuPages"] = tm.GetTopMenusPages();
+<<<<<<< HEAD
 
             ViewData["regionoffice"] = dBConnection.GetparentrepofficeForDashboardPanel(5);
+=======
+            ViewData["AuditPeriodList"] = dBConnection.GetAuditPeriods();
+>>>>>>> parent of 068d39aa (Biomet and MASTER CDMS Transaction)
             if (!sessionHandler.IsUserLoggedIn())
                 {
                 return RedirectToAction("Index", "Login");

@@ -21085,7 +21085,7 @@ Dear {userFullName},
             return resp;
             }
 
-        public List<BiometSamplingModel> GetBiometSamplingDetails(int ENG_ID, int SAMPLE_ID)
+        public List<BiometSamplingModel> GetBiometSamplingDetails(int ENG_ID)
             {
             sessionHandler = new SessionHandler();
             sessionHandler._httpCon = this._httpCon;
@@ -21104,7 +21104,6 @@ Dear {userFullName},
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("SID", OracleDbType.Int32).Value = SAMPLE_ID;
                 cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
                 cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
                 cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
@@ -21670,6 +21669,7 @@ Dear {userFullName},
             return entitiesList;
 
             }
+<<<<<<< HEAD
         public List<CDMSMasterTransactionModel> GetCDMSMasterTransactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO)
             {
 
@@ -21812,6 +21812,8 @@ Dear {userFullName},
             }
 
 
+=======
+>>>>>>> parent of 068d39aa (Biomet and MASTER CDMS Transaction)
         }
 
     }
