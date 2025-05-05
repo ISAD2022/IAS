@@ -21353,40 +21353,6 @@ Dear {userFullName},
             return list;
             }
 
-        public List<ListOfReportsModel> GetListOfreports(int ENG_ID)
-            {
-            sessionHandler = new SessionHandler();
-            sessionHandler._httpCon = this._httpCon;
-            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
-            var con = this.DatabaseConnection(); con.Open();
-            var loggedInUser = sessionHandler.GetSessionUser();
-            List<ListOfReportsModel> list = new List<ListOfReportsModel>();
-            using (OracleCommand cmd = con.CreateCommand())
-                {
-                cmd.CommandText = "pkg_sm.T_AU_EXCEPTION_REPORT";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
-                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
-
-                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
-                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
-                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                OracleDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                    {
-                    ListOfReportsModel chk = new ListOfReportsModel();
-                    chk.REPORT_ID = Convert.ToInt32(rdr["R_ID"].ToString());
-                    chk.REPORT_TITLE = rdr["REPORT_TITLE"].ToString();
-                    chk.DISCRIPTION = rdr["DISCRIPTION"].ToString();
-                    chk.LOAN_STATUS = rdr["sample_final"].ToString();
-                    chk.REPORT_INDICATOR = rdr["IND"].ToString();
-                    list.Add(chk);
-                    }
-                }
-            con.Dispose();
-            return list;
-            }
         public List<LoanCaseSampleModel> GetLoanSamples(string INDICATOR, int STATUS_ID, int ENG_ID, int SAMPLE_ID)
             {
             sessionHandler = new SessionHandler();
@@ -21758,6 +21724,91 @@ Dear {userFullName},
             con.Dispose();
             return list;
 
+            }
+
+        public List<ListOfReportsModel> GetListOfreports(int ENG_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session; sessionHandler._configuration = this._configuration;
+            var con = this.DatabaseConnection(); con.Open();
+            var loggedInUser = sessionHandler.GetSessionUser();
+            List<ListOfReportsModel> list = new List<ListOfReportsModel>();
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.T_AU_EXCEPTION_REPORT";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+                OracleDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                    {
+                    ListOfReportsModel chk = new ListOfReportsModel();
+                    chk.REPORT_ID = Convert.ToInt32(rdr["R_ID"].ToString());
+                    chk.REPORT_TITLE = rdr["REPORT_TITLE"].ToString();
+                    chk.DISCRIPTION = rdr["DISCRIPTION"].ToString();
+                    chk.LOAN_STATUS = rdr["sample_final"].ToString();
+                    chk.REPORT_INDICATOR = rdr["IND"].ToString();
+                    list.Add(chk);
+                    }
+                }
+            con.Dispose();
+            return list;
+            }
+        public List<ExecptionAccountReportModel> Getexceptionaccountreport(int ENG_ID, int RPT_ID)
+            {
+            sessionHandler = new SessionHandler();
+            sessionHandler._httpCon = this._httpCon;
+            sessionHandler._session = this._session;
+            sessionHandler._configuration = this._configuration;
+
+            var con = this.DatabaseConnection();
+            con.Open();
+
+            List<ExecptionAccountReportModel> responseList = new List<ExecptionAccountReportModel>();
+            var loggedInUser = sessionHandler.GetSessionUser();
+
+            using (OracleCommand cmd = con.CreateCommand())
+                {
+                cmd.CommandText = "pkg_sm.p_exception_get_Account";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("E_ID", OracleDbType.Int32).Value = ENG_ID;
+                cmd.Parameters.Add("RPT_ID", OracleDbType.Int32).Value = RPT_ID;
+               // cmd.Parameters.Add("R_IND", OracleDbType.Varchar2).Value = R_IND;
+                cmd.Parameters.Add("P_NO", OracleDbType.Int32).Value = loggedInUser.PPNumber;
+                cmd.Parameters.Add("R_ID", OracleDbType.Int32).Value = loggedInUser.UserRoleID;
+                cmd.Parameters.Add("ENT_ID", OracleDbType.Int32).Value = loggedInUser.UserEntityID;
+                cmd.Parameters.Add("T_CURSOR", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                using (OracleDataReader rdr = cmd.ExecuteReader())
+                    {
+                    while (rdr.Read())
+                        {
+                        ExecptionAccountReportModel record = new ExecptionAccountReportModel()
+                            {
+                            BRANCH_CODE = rdr["branchcode"].ToString(),
+                            ACCOUNT_NO = rdr["oldaccountno"].ToString(),
+                            ACCOUNT_TITLE = rdr["Title"].ToString(),
+                            CUSTOMER_NAME = rdr["customername"].ToString(),
+                            MASTER_CODE = rdr["transactionmastercode"].ToString(),
+                            TR_DESCRIPTION = rdr["description"].ToString(),
+                            TR_DATE = rdr["transactiondate"].ToString(),
+                            TR_AUTHDATE = rdr["authorizationdate"].ToString(),
+                            DR_AMOUNT = rdr["dramount"].ToString(),
+                            CR_AMOUNT = rdr["cramount"].ToString()
+                            };
+
+                        responseList.Add(record);
+                        }
+                    }
+                }
+            con.Dispose();
+            return responseList;
             }
 
 

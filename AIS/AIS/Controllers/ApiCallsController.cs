@@ -2723,6 +2723,12 @@ namespace AIS.Controllers
             return dBConnection.GetBiometSamplingDetails(ENG_ID, SAMPLE_ID);
             }
         [HttpPost]
+
+        public List<ExecptionAccountReportModel> Get_exception_account_report(int ENG_ID,  int RPT_ID)
+            {
+            return dBConnection.Getexceptionaccountreport(ENG_ID, RPT_ID);
+            }
+        [HttpPost]
         public List<AccountTransactionSampleModel> get_biomet_account_transaction_sampling_details(int ENG_ID, string AC_NO)
             {
             return dBConnection.GetBiometAccountTransactionSamplingDetails(ENG_ID, AC_NO);

@@ -1,16 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "CTR Reports Related to Accounts";
+    ViewData["Title"] = "Exception Reports Related to Accounts";
     Layout = "_Layout";
 }
 
 <script type="text/javascript">
     var g_engId = 0;
-    var g_rptID = 0;
+    var g_reportID = 0;
+    var g_rID = 0;
     $(document).ready(function() {
         var url_string = window.location;
         var url = new URL(url_string);
         g_engId = url.searchParams.get("engId");
-        g_rptID  = url.searchParams.get("report_id");
+        g_reportID  = url.searchParams.get("report_id");
+        g_rID = url.searchParams.get("r_IND");
         loadexceptionReport();
     });
 
@@ -20,7 +22,7 @@
             url: g_asiBaseURL + "/ApiCalls/get_exception_account_report            
             type: "POST",
             Cache: false,
-            data:{ENG_ID:g_engId, RPT_ID:g_rptID }, 
+            data:{ENG_ID: g_engId , R_IND : g_indID, RPT_ID : g_reportID},
             sucess: function (data) {
                 if(data.lenght > 0) {
                     populateTable(data);
@@ -39,12 +41,12 @@
         <td>${item.accounT_NO}</td>
         <td>${item.accounT_TITLE}</td>
         <td>${item.customeR_NAME}</td>
-        <td>${item.masteR_CODE}</td>
-        <td>${item.tR_DESCRIPTION}</td>
-        <td>${item.tR_DATE}</td>
-        <td>${formatDate(item.tR_AUTHDATE)}</td>
-        <td>${item.dR_AMOUNT}</td>
-        <td>${item.cR_AMOUNT}</td>
+        <td>${formatDate(item.dob)}</td>
+        <td>${item.phonE_CELL}</td>
+        <td>${item.cnic}</td>
+        <td>${formatDate(item.cniC_EXPIRY_DATE)}</td>
+        <td>${item.accounT_TYPE}</td>
+        <td>${item.accounT_CATEGORY}</td>
          <td>
             <a href="./account_document?engId=${g_engId}&acNo=${item.accounT_NO}" class="btn btn-primary btn-sm">Documents</a>
         </td>
@@ -77,12 +79,12 @@
                 <th>Account No</th>
                 <th>Account Title</th>
                 <th>Customer Name</th>
-                <th>master code</th>
-                <th>Details</th>
-                <th>transaction Date</th>
-                <th>Authorization Date</th>
-                <th>DR Amount</th>
-                <th>CR Amount</th>
+                <th>DOB</th>
+                <th>Cell</th>
+                <th>CNIC</th>
+                <th>CNIC Expiry</th>
+                <th>Account Type</th>
+                <th>Account Category</th>
                 <th></th>
                 <th></th>
             </tr>
