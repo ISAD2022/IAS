@@ -21669,7 +21669,7 @@ Dear {userFullName},
             return entitiesList;
 
             }
-<<<<<<< HEAD
+
         public List<CDMSMasterTransactionModel> GetCDMSMasterTransactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO)
             {
 
@@ -21812,8 +21812,6 @@ Dear {userFullName},
             }
 
 
-=======
->>>>>>> parent of 068d39aa (Biomet and MASTER CDMS Transaction)
         }
 
     }

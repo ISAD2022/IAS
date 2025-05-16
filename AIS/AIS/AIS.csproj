@@ -118,6 +118,8 @@
 
   <ItemGroup>
     <None Include="D:\AIS\ais\AIS\AIS\.editorconfig" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml.user" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml.user" />
     <None Include="Views\Reports\master_cdms.cshtml" />
   </ItemGroup>
 
