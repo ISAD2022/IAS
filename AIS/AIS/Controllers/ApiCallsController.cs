@@ -2799,15 +2799,13 @@ namespace AIS.Controllers
             {
             return dBConnection.GetYearWiseAllParas(AUDIT_PERIOD);
             }
-<<<<<<< HEAD
+
         [HttpPost]
         public List<CDMSMasterTransactionModel> get_CDMS_master_transactions(string ENTITY_ID, DateTime START_DATE, DateTime END_DATE, string CNIC_NO, string ACC_NO)
             {
             return dBConnection.GetCDMSMasterTransactions(ENTITY_ID, START_DATE, END_DATE, CNIC_NO, ACC_NO);
             }
-=======
 
->>>>>>> parent of 068d39aa (Biomet and MASTER CDMS Transaction)
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
             {
