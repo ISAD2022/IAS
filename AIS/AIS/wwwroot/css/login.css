@@ -1,10 +1,10 @@
 .login-bg {
     min-height: 100vh;
-    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    background: linear-gradient(319deg, #f5f5fc, #e0e1e9));
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 0;
+    padding: 80px 0;
 }
 
 .login-card {

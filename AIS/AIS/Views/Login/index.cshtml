@@ -38,7 +38,7 @@
     }
 
     function submitPasswordResetRequest(){
-        $('#resetPasswordModel').modal('show'); 
+        $('#resetPasswordModel').modal('show');
         $('#inputPPNoField_reset').val('');
         $('#inputCnicField_reset').val('');
     }
@@ -87,7 +87,7 @@
                     $('#loginerrormodal').modal('show');
                     $('#errorDescField').text(data.errorMsg);
                 }
-                else if (data.isAlreadyLoggedIn) {                    
+                else if (data.isAlreadyLoggedIn) {
                     $('#submitKillSessionButton').removeClass('d-none');
                     $('#submitLoginButton').addClass('d-none');
                     $('#loginerrormodal').modal('show');
@@ -97,20 +97,20 @@
                 }
                 else {
                       if (data.passwordChangeRequired || data.changePassword=="Y") {
-                        
+
                         window.location.href = g_asiBaseURL + "/Home/Change_Password";
                         return;
                     }else{
                           window.location.href = g_asiBaseURL + "/home";
                     }
-                      
+
                 }
                 $('#submitLoginButton').attr('disabled', false);
             },
             dataType: "json",
         });
-    }  
-   
+    }
+
 </script>
 
 
@@ -138,28 +138,28 @@
     <!-- Section: Design Block -->
     <section class="text-center">
         <!-- Background image -->
-        <div class="p-5 bg-image bg-gradient" style="height: 300px; background: linear-gradient(135deg, #4e54c8, #8f94fb);">
-            <img style="height: 226px;" src="~/Images/ztbllogo.png" />
+        <div class="p-5 bg-image bg-gradient" style="height: 300px; background: linear-gradient(347deg, #a5acff, #ffffff);));;">
+            <img style="height: 300px;" src="~/Images/ztbllogo.png" />
         </div>
         <!-- Background image -->
 
-        <div class="card mx-5 mx-md-5 shadow-5-strong login-card" style="margin-top: -50px;">
-            <div class="card-body py-4 px-md-4">
+        <div class="card mx-5 mx-md-5 shadow-5-strong login-card" style="margin-top: -10px;">
+            <div class="card-body py-8 px-md-8">
                 <div class="row d-flex justify-content-center">
-                    <div class="col-lg-6">
-                        <h2 class="fw-bold mb-5" style="color:#4e54c8;">Internal Audit System</h2>
+                    <div class="col-lg-13" >
+                        <h1 class="fw-bold mb-5" style="color: #51515d;;">Internal Audit System</h1>
                         <form action="#" method="post">
                             <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
                             <!-- Email input -->
-                            <div class="form-outline mb-4">
+                            <div class="form-outline mb-3">
                                 <input autocomplete="off" required type="number" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="6" placeholder="P.P Number" id="inputPPNoField" name="PPNumber" class="form-control" />
                             </div>
 
                             <!-- Password input -->
-                            <div class="form-outline mb-4">
+                            <div class="form-outline mb-3">
                                 <input autocomplete="off" required type="password" placeholder="Password" id="inputPassword" name="Password" class="form-control" />
                             </div>
-                          
+
                             <!-- Submit button -->
                             <button id="submitKillSessionButton" type="button" class="btn btn-block btn-danger mb-4 d-none" onclick="doKillSessionSubmit();">
                                 Kill Session
@@ -170,7 +170,7 @@
                             <div class="form-outline mb-4">
                                 <center class="w-100">
                                     <a href="#" onclick="event.preventDefault();submitPasswordResetRequest();" class="text-danger font-weight-bold">Forgot your password? Click here to reset it.</a>
-                                    </center>
+                                </center>
                             </div>
 
 
