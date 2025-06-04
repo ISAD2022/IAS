@@ -19,13 +19,13 @@
 
 
     function loadLoanSamples() {
-     
+
         $.ajax({
              url: g_asiBaseURL + "/ApiCalls/get_loan_samples",
             type: "POST",
                cache: false,
 
-            data: { 
+            data: {
                 'ENG_ID': g_engId,
                 'INDICATOR':g_indicator,
                 'STATUS_ID':g_loanStatus,
@@ -111,7 +111,7 @@
                 <th>Current Outstanding</th>
                 <th></th>
                 <th></th>
-             
+
             </tr>
         </thead>
         <tbody></tbody>
