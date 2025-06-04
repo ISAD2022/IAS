@@ -1,0 +1,25 @@
+.login-bg {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 1rem;
+}
+
+.login-btn {
+    background: #4e54c8;
+    color: #fff;
+}
+
+.login-btn:hover {
+    background: #3b49a1;
+    color: #fff;
+}
+

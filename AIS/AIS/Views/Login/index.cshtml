@@ -1,15 +1,15 @@
-﻿@{
+@{
     ViewData["Title"] = "Login";
 
 }
+<link rel="stylesheet" href="~/css/login.css" />
+
 <script type="text/javascript">
 
     var g_reqSend = true;
-    var g_retUrl = "";
     $(document).ready(function () {
         var url_string = window.location;
         var url = new URL(url_string);
-        g_retUrl = url.searchParams.get("retUrl");
         $(document).keydown(function (event) {
             var id = event.key || event.which || event.keyCode || 0;
             if (id == "Enter") {
@@ -113,7 +113,8 @@
    
 </script>
 
-<div class="text-center">
+
+<div class="login-bg text-center">
 
     @if (TempData["SessionKill"].ToString() == "killsession")
     {
@@ -137,16 +138,16 @@
     <!-- Section: Design Block -->
     <section class="text-center">
         <!-- Background image -->
-        <div class="p-5 bg-image bg-gradient" style="height: 350px; background: linear-gradient(160deg, hsl(98deg 97% 46%), #0002f3bf);">
+        <div class="p-5 bg-image bg-gradient" style="height: 300px; background: linear-gradient(135deg, #4e54c8, #8f94fb);">
             <img style="height: 226px;" src="~/Images/ztbllogo.png" />
         </div>
         <!-- Background image -->
 
-        <div class="card mx-5 mx-md-5 shadow-5-strong" style="margin-top: -50px; backdrop-filter: blur(30px); background: linear-gradient(160deg, #0002f3bf, hsl(98deg 97% 46%)); ">
+        <div class="card mx-5 mx-md-5 shadow-5-strong login-card" style="margin-top: -50px;">
             <div class="card-body py-4 px-md-4">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-6">
-                        <h2 class="fw-bold mb-5" style="color:white">Internal Audit System</h2>
+                        <h2 class="fw-bold mb-5" style="color:#4e54c8;">Internal Audit System</h2>
                         <form action="#" method="post">
                             <!--<small class="font-weight-bold text-danger">Incorrect UserName or Password</small>-->
                             <!-- Email input -->
@@ -163,7 +164,7 @@
                             <button id="submitKillSessionButton" type="button" class="btn btn-block btn-danger mb-4 d-none" onclick="doKillSessionSubmit();">
                                 Kill Session
                             </button>
-                            <button id="submitLoginButton" type="button" class="btn btn-block mb-4" style="background: #dcde8b; " onclick="doLoginSubmit();">
+                            <button id="submitLoginButton" type="button" class="btn btn-block mb-4 login-btn" onclick="doLoginSubmit();">
                                 Login
                             </button>
                             <div class="form-outline mb-4">
