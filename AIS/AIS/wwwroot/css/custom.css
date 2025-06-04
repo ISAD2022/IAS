@@ -1,0 +1,18 @@
+/* Custom UI overrides */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f6fa;
+}
+
+.navbar-gradient {
+    background: linear-gradient(60deg, #3958a8, #10ce55);
+}
+
+.footer {
+    background-color: #3958a8;
+    color: #ffffff;
+}
+
+.footer a {
+    color: #ffffff;
+}
